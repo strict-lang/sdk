@@ -1,4 +1,9 @@
-# The Strict Programming Language
+<p align="center"><img src="assets/strict_logo.png" width="360"></p>
+
+# The Strict Programming Language Specification
+ 
+`// Work In Progress`
+
 
 ## Translation Units
 
