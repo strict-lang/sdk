@@ -326,3 +326,9 @@ Session.vim
 tags
 # Persistent undo
 [._]*.un~
+
+/vendor/
+/Godeps/
+
+.idea
+*.iml
