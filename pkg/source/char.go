@@ -2,8 +2,11 @@ package source
 
 type Char rune
 
+// Reserved special characters that are not part of any charset and only used internally to
+// indicate the absence or position of a character in a stream.
 const (
-	EndOfFile = Char(-1)
+	EndOfFile   = Char(-1)
+	BeginOfFile = Char(-1)
 )
 
 func (char Char) IsInRange(lower, upper Char) bool {
