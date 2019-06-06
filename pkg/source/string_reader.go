@@ -22,6 +22,10 @@ func (reader *stringReader) IsExhausted() bool {
 	return reader.index >= reader.length
 }
 
+func (reader *stringReader) Index() Offset {
+	return Offset(reader.index)
+}
+
 func (reader *stringReader) Pull() Char {
 	reader.index++
 	if reader.IsExhausted() {
