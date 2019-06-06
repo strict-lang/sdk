@@ -36,7 +36,7 @@ func TestGatherInvalidKeywords(test *testing.T) {
 		"AlsoNoKeyword",
 	}
 
-	for _, name := range token.KeywordNames() {
+	for name := range token.KeywordNames() {
 		// Appends the name of all known keywords as an upper case string to
 		// the set of invalid entries. The language is case sensitive and thus
 		// should not scan those strings as keywords.
