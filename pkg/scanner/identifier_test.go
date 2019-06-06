@@ -13,7 +13,6 @@ func TestInvalidIdentifiers(test *testing.T) {
 		"{curlyBracket}",
 		"[blockBracket]",
 		"(parentheses)",
-		"generic[type]",
 		"", // empty strings
 		"0",
 	}
