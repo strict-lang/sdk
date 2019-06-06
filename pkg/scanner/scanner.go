@@ -41,3 +41,23 @@ func (scanner *Scanner) scanMatching(matcher charMatcher) (source.Char, bool) {
 	}
 	return scanner.reader.Pull(), true
 }
+
+// tryToSkip consumes the next character if it has the same id, as the one
+// passed to the function, otherwise the index remains the same.
+func (scanner *Scanner) tryToSkip(char source.Char) bool {
+	next := scanner.reader.Peek()
+	if next != char {
+		return false
+	}
+	scanner.reader.Pull()
+	return true
+}
+
+func (scanner *Scanner) tryToSkipMultiple(char source.Char, amount int) bool {
+	for count := 0; count < amount; count++ {
+		if !scanner.tryToSkip(char) {
+			return false
+		}
+	}
+	return true
+}
