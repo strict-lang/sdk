@@ -14,6 +14,9 @@ func (scanner *Scanner) GatherKeyword() (token.Kind, error) {
 	if err != nil {
 		return token.Invalid, err
 	}
+	if len(identifier) < token.ShortestKeywordNameLength() {
+		return token.Invalid, ErrNoSuchKeyword
+	}
 	keyword, ok := token.KeywordByName(identifier)
 	if !ok {
 		return token.Invalid, ErrNoSuchKeyword
