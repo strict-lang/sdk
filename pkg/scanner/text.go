@@ -9,11 +9,15 @@ import (
 const textCharacterLimit = 1024
 
 var (
+	ErrNoLeadingQuoteInString = errors.New("string literals does not begin with a quote")
 	ErrStringContainsLineFeed = errors.New("string literal contains linefeed")
 	ErrInvalidEscapedChar     = errors.New("literal contains invalid escaped char")
 )
 
 func (scanner *Scanner) ScanStringLiteral() (token.Token, error) {
+	if !scanner.tryToSkip('"') {
+		return token.InvalidToken, ErrNoLeadingQuoteInString
+	}
 	var builder strings.Builder
 	beginIndex := scanner.reader.Index()
 	for count := 0; count < textCharacterLimit; count++ {
