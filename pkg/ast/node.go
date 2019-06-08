@@ -46,3 +46,7 @@ type Typed interface {
 	// Type returns a pointer to the nodes type.
 	Type() *Type
 }
+
+type Scoped interface {
+	Scope() *Scope
+}
