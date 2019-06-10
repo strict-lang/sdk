@@ -46,3 +46,22 @@ can do and hiding away many facets (like threading, exception handling, no gener
 not limiting itself to hurt a programmer (which is not supposed to write much code in the language anyway), but instead 
 to enable its Intelligence to write code inside a very strict and rigid system where it cannot make many mistakes. By 
 following TDD problems are also always encountered in a small context and refactorings help to only work on one issue at a time. 
+
+### Building from source
+
+When building from source you will first need some prerequisites:
+ 
+  - Git (https://git-scm.com/) 
+  - Golang (https://golang.org/doc/install)
+  - Make (https://www.gnu.org/software/make/)
+
+Once all of the prerequisites are installed, head to the `$GOPATH/src` directory. 
+If the `$GOPATH/src/github.com` directory does not exist, create it. Create another 
+directory called `BenjaminNitschke` in the `$GOPATH/src/github.com` directory. Your
+path should now be `$GOPATH/src/github.com/BenjaminNitschke`. Now clone the git repository by
+executing `git clone git@github.com:BenjaminNitschke/Strict.git`. 
+
+Finally, head to the `$GOPATH/github.com/BenjaminNitschke/Strict` folder and
+run `make deps` and then `make`.
+
+Congrats, you just cloned and built the Strict SDK.
