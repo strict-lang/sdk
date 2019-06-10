@@ -58,9 +58,11 @@ When building from source you will first need some prerequisites:
 Once all of the prerequisites are installed, head to the `$GOPATH/src` directory. 
 If the `$GOPATH/src/github.com` directory does not exist, create it. Create another 
 directory called `BenjaminNitschke` in the `$GOPATH/src/github.com` directory. Your
-path should now be `$GOPATH/src/github.com/BenjaminNitschke`. Now clone the git repository by
-executing `git clone git@github.com:BenjaminNitschke/Strict.git`. 
+path should now be `$GOPATH/src/github.com/BenjaminNitschke`. 
 
+Now clone the git repository by
+executing `git clone git@github.com:BenjaminNitschke/Strict.git`.
+ 
 Finally, head to the `$GOPATH/github.com/BenjaminNitschke/Strict` folder and
 run `make deps` and then `make`.
 
