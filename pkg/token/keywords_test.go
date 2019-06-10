@@ -4,7 +4,7 @@ import "testing"
 
 func TestKeywordByName(test *testing.T) {
 	for keyword := keywordsBegin + 1; keyword < keywordsEnd; keyword++ {
-		name := NameOfKind(keyword)
+		name := keyword.Name()
 		found, ok := KeywordByName(name)
 		if !ok {
 			test.Errorf("keyword %s not found", name)
