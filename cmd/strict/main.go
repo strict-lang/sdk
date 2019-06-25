@@ -1,0 +1,3 @@
+package strict
+
+func main() {}
