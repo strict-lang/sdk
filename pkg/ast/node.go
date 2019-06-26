@@ -31,6 +31,8 @@ type Node interface {
 	// Position returns the area of source code that is covered by the node.
 	// The positions of the nodes children should be inside of its position.
 	Position() Position
+	// Accept invokes the visitor on all of the nodes children.
+	Accept(visitor Visitor)
 }
 
 // Named is implemented by all nodes that have a name.

@@ -1,27 +1,42 @@
 package token
 
-type Operator string
+type Operator int8
 
 const (
-	AddOperator Operator = "+"
+	AddOperator Operator = iota
+	SubOperator
+	MulOperator
+	DivOperator
+	ModOperator
+	EqualsOperator
+	NotEqualsOperator
+	ShiftLeftOperator
+	ShiftRightOperator
+	AndOperator
+	XorOperator
+	OrOperator
+	GreaterOperator
+	GreaterEqualsOperator
+	SmallerOperator
+	SmallerEqualsOperator
 )
 
-const	OperatorTokenName = "operator"
+const OperatorTokenName = "operator"
 
 type OperatorToken struct {
-	operator Operator
+	Operator Operator
 	position Position
 }
 
 func NewOperatorToken(operator Operator, position Position) Token {
 	return &OperatorToken{
-		operator: operator,
+		Operator: operator,
 		position: position,
 	}
 }
 
 func (operator OperatorToken) Value() string {
-	return string(operator.operator)
+	return string(operator.Operator)
 }
 
 func (operator OperatorToken) Position() Position {
@@ -46,4 +61,35 @@ func (OperatorToken) IsLiteral() bool {
 
 func (OperatorToken) IsValid() bool {
 	return true
+}
+
+type Precedence int8
+
+const (
+	LowPrecedence = 0
+	UnaryPrecedence = 6
+	HighPrecedence = 7
+)
+
+func (operator Operator) Precedence() int {
+	switch operator {
+	case EqualsOperator,
+		NotEqualsOperator,
+		GreaterOperator,
+		GreaterEqualsOperator:
+		return 3
+	case AddOperator,
+		SubOperator,
+		OrOperator,
+		XorOperator:
+		return 4
+	case MulOperator,
+		DivOperator,
+		ModOperator,
+		ShiftLeftOperator,
+		ShiftRightOperator,
+		AndOperator:
+		return LowPrecedence
+	}
+	return 0
 }
