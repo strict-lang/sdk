@@ -1,4 +1,4 @@
 package diagnostic
 
-type Diagnostics struct {
+type Recorder struct {
 }

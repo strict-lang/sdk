@@ -4,6 +4,33 @@ import (
 	"github.com/BenjaminNitschke/Strict/pkg/source"
 )
 
+// Node is implemented by every node of the ast.
+type Node interface {
+	// Accept invokes the visitor on all of the nodes children.
+	Accept(visitor Visitor)
+}
+
+// Named is implemented by all nodes that have a name.
+type Named interface {
+	// Name returns the nodes name.
+	Name() string
+}
+
+// Typed is implemented by all nodes that have a time which is known during
+// compilation. While the returned pointer may never be nil, it can point to
+// the UnknownType value, indicating that the type is now known.
+type Typed interface {
+	// Type returns a pointer to the nodes type.
+	Type() *Type
+}
+
+// Scoped is implemented by all nodes that are only visibile in a certain scope
+// and may also only see other nodes within that scope.
+type Scoped interface {
+	// Scope returns a pointer to the nodes scope.
+	Scope() *Scope
+}
+
 // Position is the position of a node in the source code. It may span
 // multiple lines or even the whole file. Positions are represented
 // using two offsets and thus don't give too many information. This
@@ -26,29 +53,10 @@ type Position interface {
 	End() source.Offset
 }
 
-// Node is implemented by every node of the ast.
-type Node interface {
+// Positioned is implemented by all nodes that have a specific position
+// in the source-code, which matters during semantical-analysis.
+type Positioned interface {
 	// Position returns the area of source code that is covered by the node.
 	// The positions of the nodes children should be inside of its position.
 	Position() Position
-	// Accept invokes the visitor on all of the nodes children.
-	Accept(visitor Visitor)
-}
-
-// Named is implemented by all nodes that have a name.
-type Named interface {
-	// Name returns the nodes name.
-	Name() string
-}
-
-// Typed is implemented by all nodes that have a time which is known during
-// compilation. While the returned pointer may never be nil, it can point to
-// the UnknownType value, indicating that the type is now known.
-type Typed interface {
-	// Type returns a pointer to the nodes type.
-	Type() *Type
-}
-
-type Scoped interface {
-	Scope() *Scope
 }

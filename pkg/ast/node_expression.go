@@ -24,13 +24,16 @@ func (identifier Identifier) Position() Position {
 	return identifier.position
 }
 
-func (identifier Identifier) Accept(visitor Visitor) { }
-func (identifier Identifier) expression() { }
+func (identifier *Identifier) Accept(visitor Visitor) {
+	visitor.VisitIdentifier(identifier)
+}
+
+func (identifier Identifier) expression() {}
 
 // UnaryExpression is an operation on a single operand.
 type UnaryExpression struct {
 	operator token.Operator
-	operand Expression
+	operand  Expression
 	position Position
 }
 
@@ -38,25 +41,27 @@ func (unary UnaryExpression) Position() Position {
 	return unary.position
 }
 
-func (unary UnaryExpression) Accept(visitor Visitor) {
-	visitor(unary.operand)
+func (unary *UnaryExpression) Accept(visitor Visitor) {
+	visitor.VisitUnaryExpression(unary)
+	unary.operand.Accept(visitor)
 }
 
-func (unary UnaryExpression) expression() { }
+func (UnaryExpression) expression() {}
 
 // BinaryExpression is an operation on two operands.
 type BinaryExpression struct {
-	leftOperand Expression
+	leftOperand  Expression
 	rightOperand Expression
-	operator token.Operator
-	position Position
+	operator     token.Operator
+	position     Position
 }
 
 func (binary BinaryExpression) Position() Position {
 	return binary.position
 }
 
-func (binary BinaryExpression) Accept(visitor Visitor) {
-	visitor(binary.leftOperand)
-	visitor(binary.rightOperand)
+func (binary *BinaryExpression) Accept(visitor Visitor) {
+	visitor.VisitBinaryExpression(binary)
+	binary.leftOperand.Accept(visitor)
+	binary.rightOperand.Accept(visitor)
 }
