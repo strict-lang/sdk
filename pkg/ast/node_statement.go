@@ -1,24 +1,24 @@
 package ast
 
 type ExpressionStatement struct {
-	Expression Expression
+	Expression Node
 }
 
-func (expression *ExpressionStatement) Accept(visitor Visitor) {
+func (expression *ExpressionStatement) Accept(visitor *Visitor) {
 	visitor.VisitExpressionStatement(expression)
 	expression.expression.Accept(visitor)
 }
 
 type MethodCall struct {
 	Method    *Member
-	Arguments []Expression
+	Arguments []Node
 }
 
 func (call MethodCall) Type() *Type {
 	return call.Method.ValueType
 }
 
-func (call *MethodCall) Accept(visitor Visitor) {
+func (call *MethodCall) Accept(visitor *Visitor) {
 	visitor.VisitMethodCall(call)
 	for _, argument := range call.Arguments {
 		argument.Accept(visitor)
@@ -29,7 +29,7 @@ type BlockStatement struct {
 	Children []Node
 }
 
-func (block *BlockStatement) Accept(visitor Visitor) {
+func (block *BlockStatement) Accept(visitor *Visitor) {
 	visitor.VisitBlockStatement(block)
 	for _, statement := range block.Children {
 		statement.Accept(visitor)
@@ -39,10 +39,10 @@ func (block *BlockStatement) Accept(visitor Visitor) {
 type ConditionalStatement struct {
 	Else      Node
 	Body      Node
-	Condition Expression
+	Condition Node
 }
 
-func (conditional *ConditionalStatement) Accept(visitor Visitor) {
+func (conditional *ConditionalStatement) Accept(visitor *Visitor) {
 	visitor.VisitConditionalStatement(conditional)
 	conditional.Condition.Accept(visitor)
 	conditional.Body.Accept(visitor)
@@ -58,7 +58,7 @@ type ForLoopStatement struct {
 	Initialization Node
 }
 
-func (loop *ForLoopStatement) Accept(visitor Visitor) {
+func (loop *ForLoopStatement) Accept(visitor *Visitor) {
 	visitor.VisitForLoopStatement(loop)
 	loop.Increment.Accept(visitor)
 	loop.Termination.Accept(visitor)

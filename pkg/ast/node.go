@@ -7,7 +7,7 @@ import (
 // Node is implemented by every node of the ast.
 type Node interface {
 	// Accept invokes the visitor on all of the nodes children.
-	Accept(visitor Visitor)
+	Accept(visitor *Visitor)
 }
 
 // Named is implemented by all nodes that have a name.

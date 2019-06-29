@@ -28,7 +28,7 @@ func (unit *TranslationUnit) Scope() *Scope {
 	return unit.scope
 }
 
-func (unit *TranslationUnit) Accept(visitor Visitor) {
+func (unit *TranslationUnit) Accept(visitor *Visitor) {
 	visitor.VisitTranslationUnit(unit)
 	for _, child := range unit.Children {
 		child.Accept(visitor)
