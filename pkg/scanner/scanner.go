@@ -24,6 +24,10 @@ func NewStringScanner(input string) *Scanner {
 
 type charMatcher func(source.Char) bool
 
+func (scanner *Scanner) offset() source.Offset {
+	return scanner.reader.Index()
+}
+
 func (scanner *Scanner) scanAllMatching(matcher charMatcher) (string, bool) {
 	var builder strings.Builder
 	for {
@@ -60,4 +64,11 @@ func (scanner *Scanner) tryToSkipMultiple(char source.Char, amount int) bool {
 		}
 	}
 	return true
+}
+
+func (scanner *Scanner) createPositionToOffset(begin source.Offset) Position {
+	return Position{
+		Begin: begin,
+		End:   source.offset(),
+	}
 }

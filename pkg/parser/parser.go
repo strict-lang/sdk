@@ -25,7 +25,15 @@ func NewParser(unit *ast.TranslationUnit, tokens token.Reader, recorder *diagnos
 }
 
 func (parser *Parser) skipOperator(operator token.Operator) (bool, error) {
-	if ok, err := parser.expectOperator(); !ok {
+	if ok, err := parser.expectOperator(operator); !ok {
+		return false, err
+	}
+	parser.tokens.Pull()
+	return true, nil
+}
+
+func (parser *Parser) skipKeyword(keyword token.Keyword) (bool, error) {
+	if ok, err := parser.expectKeyword(keyword); !ok {
 		return false, err
 	}
 	parser.tokens.Pull()
@@ -43,7 +51,14 @@ func (parser *Parser) expectOperator(operator token.Operator) (bool, error) {
 	return ok, nil
 }
 
-func (parser *Parser) expectKeyword(keyword token.Keyword) bool {
+func (parser *Parser) expectKeyword(keyword token.Keyword) (bool, error) {
+	peek := parser.tokens.Peek()
+	if !peek.IsKeyword() {
+		return false
+	}
+	if !peek.(Keyword).Keyword() == keyword {
+
+	}
 	return false
 }
 

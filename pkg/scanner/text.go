@@ -16,7 +16,7 @@ var (
 
 func (scanner *Scanner) ScanStringLiteral() (token.Token, error) {
 	if !scanner.tryToSkip('"') {
-		return token.InvalidToken, ErrNoLeadingQuoteInString
+		return token.NewAnonymousInvalidToken(), ErrNoLeadingQuoteInString
 	}
 	var builder strings.Builder
 	beginIndex := scanner.reader.Index()
@@ -26,12 +26,12 @@ func (scanner *Scanner) ScanStringLiteral() (token.Token, error) {
 			break
 		}
 		if next == '\n' {
-			return token.InvalidToken, ErrStringContainsLineFeed
+			return token.NewAnonymousInvalidToken(), ErrStringContainsLineFeed
 		}
 		if next == '\\' {
 			escaped, ok := findEscapedCharacter(scanner.reader.Pull())
 			if !ok {
-				return token.InvalidToken, ErrInvalidEscapedChar
+				return token.NewAnonymousInvalidToken(), ErrInvalidEscapedChar
 			}
 			builder.WriteRune(rune(escaped))
 			continue
@@ -42,5 +42,5 @@ func (scanner *Scanner) ScanStringLiteral() (token.Token, error) {
 		Begin: beginIndex,
 		End:   scanner.reader.Index(),
 	}
-	return token.NewStringLiteral(builder.String(), position), nil
+	return token.NewStringLiteralToken(builder.String(), position), nil
 }

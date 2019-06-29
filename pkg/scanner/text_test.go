@@ -16,7 +16,7 @@ func TestScanningStringLiteralBody(test *testing.T) {
 			continue
 		}
 		entryBody := removeSurroundingQuotes(entry)
-		if token.Value != entryBody {
+		if token.Value() != entryBody {
 			test.Errorf("scanned '%s' but expected '%s'", token.Value, entryBody)
 		}
 	}

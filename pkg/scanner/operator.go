@@ -2,9 +2,9 @@ package scanner
 
 import "github.com/BenjaminNitschke/Strict/pkg/token"
 
-var complexOperatorScanners = map[rune]map[rune] token.Kind {
+var complexOperatorScanners = map[rune]map[rune]token.Operator{
 	'+': {
-		'=': token.Assign,
+		'=': token.AssignOperator,
 	},
 }
 

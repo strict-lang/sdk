@@ -7,9 +7,13 @@ type InvalidToken struct {
 	position Position
 }
 
+func NewAnonymousInvalidToken() Token {
+	return &InvalidToken{value: ""}
+}
+
 func NewInvalidToken(value string, position Position) Token {
 	return &InvalidToken{
-		value: value,
+		value:    value,
 		position: position,
 	}
 }

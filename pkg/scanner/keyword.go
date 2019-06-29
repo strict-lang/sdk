@@ -2,24 +2,37 @@ package scanner
 
 import (
 	"errors"
+	"github.com/BenjaminNitschke/Strict/pkg/source"
 	"github.com/BenjaminNitschke/Strict/pkg/token"
 )
 
 var (
+	// ErrNoSuchKeyword is returned by the ScanKeyword() method when
+	// a scanned identifier could not be found in the keyword-name-table.
 	ErrNoSuchKeyword = errors.New("unknown keyword")
 )
 
-func (scanner *Scanner) GatherKeyword() (token.Kind, error) {
+// ScanKeyword scans a KeywordToken from the stream of characters.
+func (scanner *Scanner) ScanKeyword() (token.Token, error) {
+	beginOffset := scanner.offset()
 	identifier, err := scanner.GatherIdentifier()
 	if err != nil {
-		return token.Invalid, err
+		return scanner.createInvalidKeyword(beginOffset, identifier), err
 	}
-	if len(identifier) < token.ShortestKeywordNameLength() {
-		return token.Invalid, ErrNoSuchKeyword
-	}
+
 	keyword, ok := token.KeywordByName(identifier)
 	if !ok {
-		return token.Invalid, ErrNoSuchKeyword
+		invalid := scanner.createInvalidKeyword(beginOffset, identifier)
+		return invalid, ErrNoSuchKeyword
 	}
-	return keyword, nil
+
+	position := scanner.createPositionToOffset(beginOffset)
+	return token.NewKeywordToken(keyword, position), nil
+}
+
+func (scanner *Scanner) createInvalidKeyword(
+	beginOffset source.Offset, text string) token.Token {
+
+	position := scanner.createPositionToOffset(beginOffset)
+	return token.NewInvalidToken(text, position)
 }
