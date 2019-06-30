@@ -6,16 +6,14 @@ package ast
 type TranslationUnit struct {
 	name     string
 	scope    *Scope
-	span     Position
 	Children []Node
 }
 
-func NewTranslationUnit(name string, rootScope Scope, span Position, children []Node) TranslationUnit {
+func NewTranslationUnit(name string, rootScope *Scope, children []Node) TranslationUnit {
 	scope := rootScope.NewNamedChild(name)
 	return TranslationUnit{
 		name:     name,
 		scope:    scope,
-		span:     span,
 		Children: children,
 	}
 }

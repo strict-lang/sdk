@@ -10,11 +10,15 @@ const (
 const (
 	MethodKeyword Keyword = iota
 	TypeKeyword
+	IfKeyword
+	ElseKeyword
 )
 
 var keywordNameTable = map[Keyword]string{
 	MethodKeyword: "method",
 	TypeKeyword:   "type",
+	IfKeyword:    "if",
+	ElseKeyword:   "else",
 }
 
 var keywordNameLookupTable map[string]Keyword

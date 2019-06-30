@@ -19,6 +19,8 @@ const (
 	OrOperator
 	GreaterOperator
 	GreaterEqualsOperator
+	AssignOperator
+	ColonOperator
 	SmallerOperator
 	SmallerEqualsOperator
 )

@@ -13,11 +13,7 @@ func NewKeywordToken(keyword Keyword, position Position) Token {
 }
 
 func (keyword KeywordToken) String() string {
-	name, ok := keywordNameTable[keyword.keyword]
-	if !ok {
-		return InvalidKeywordName
-	}
-	return name
+	return keyword.Keyword.String()
 }
 
 func (keyword KeywordToken) Name() string {
@@ -25,7 +21,7 @@ func (keyword KeywordToken) Name() string {
 }
 
 func (keyword KeywordToken) Value() string {
-	return string(keyword.keyword)
+	return string(keyword.Keyword)
 }
 
 func (keyword KeywordToken) Position() Position {
