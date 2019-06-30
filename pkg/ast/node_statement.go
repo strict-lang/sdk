@@ -6,7 +6,7 @@ type ExpressionStatement struct {
 
 func (expression *ExpressionStatement) Accept(visitor *Visitor) {
 	visitor.VisitExpressionStatement(expression)
-	expression.expression.Accept(visitor)
+	expression.Expression.Accept(visitor)
 }
 
 type MethodCall struct {
@@ -66,6 +66,19 @@ func (loop *ForLoopStatement) Accept(visitor *Visitor) {
 }
 
 type PreIncrementStatement struct {
+	Operand   Node
+	Decrement bool
 }
 
-type PostIncrementStatement struct{}
+type PostIncrementStatement struct{
+	Operand  Node
+	Decrement bool
+}
+
+func (preIncrement *PreIncrementStatement) Accept(visitor Visitor) {
+	visitor.VisitPreIncrementStatement(preIncrement)
+}
+
+func (postIncrement *PostIncrementStatement) Accept(visitor Visitor) {
+	visitor.VisitPostIncrementStatement(postIncrement)
+}

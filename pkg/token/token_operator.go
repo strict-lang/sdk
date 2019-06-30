@@ -1,5 +1,7 @@
 package token
 
+import "fmt"
+
 type Operator int8
 
 const (
@@ -66,9 +68,9 @@ func (OperatorToken) IsValid() bool {
 type Precedence int8
 
 const (
-	LowPrecedence = 0
+	LowPrecedence   = 0
 	UnaryPrecedence = 6
-	HighPrecedence = 7
+	HighPrecedence  = 7
 )
 
 func (operator Operator) Precedence() int {
@@ -92,4 +94,8 @@ func (operator Operator) Precedence() int {
 		return LowPrecedence
 	}
 	return 0
+}
+
+func (operator Operator) String() string {
+	return fmt.Sprintf("operator(%d)", operator)
 }

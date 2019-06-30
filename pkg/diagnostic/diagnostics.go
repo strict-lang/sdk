@@ -1,4 +1,5 @@
 package diagnostic
 
-type Recorder struct {
+type Recorder interface {
+	Record(Entry)
 }

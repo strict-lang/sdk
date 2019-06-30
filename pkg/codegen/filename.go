@@ -1,13 +1,15 @@
 package codegen
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 )
 
-const (
-	FileNameFormat    = "%s.generated.hh"
-	FileNameRegexp, _ = regexp.Compile("(\\w+)\\.generated\\.hh")
+var (
+	FileNameFormat     = "%s.generated.hh"
+	FileNameRegexp     = regexp.MustCompile(`(?m)(\w+)\.generated\.hh`)
+	ErrInvalidFilename = errors.New("invalid filename format")
 )
 
 // FilenameByUnitName returns the name of a file that belongs to the passed
@@ -17,5 +19,8 @@ func FilenameByUnitName(unitName string) string {
 }
 
 func UnitNameByFilename(filename string) (string, error) {
-	return FileNameRegexp.FindString(filename)
+	for _, match := range FileNameRegexp.FindAllString(filename, -1) {
+		return match, nil
+	}
+	return "", ErrInvalidFilename
 }

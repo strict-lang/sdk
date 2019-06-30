@@ -12,24 +12,24 @@ func (identifier *Identifier) Accept(visitor *Visitor) {
 
 // UnaryExpression is an operation on a single operand.
 type UnaryExpression struct {
-	operator token.Operator
-	operand  Node
+	Operator token.Operator
+	Operand  Node
 }
 
 func (unary *UnaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitUnaryExpression(unary)
-	unary.operand.Accept(visitor)
+	unary.Operand.Accept(visitor)
 }
 
 // BinaryExpression is an operation on two operands.
 type BinaryExpression struct {
-	leftOperand  Node
-	rightOperand Node
-	operator     token.Operator
+	LeftOperand  Node
+	RightOperand Node
+	Operator     token.Operator
 }
 
-func (binary *BinaryExpression) Accept(visitor Visitor) {
+func (binary *BinaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitBinaryExpression(binary)
-	binary.leftOperand.Accept(visitor)
-	binary.rightOperand.Accept(visitor)
+	binary.LeftOperand.Accept(visitor)
+	binary.RightOperand.Accept(visitor)
 }

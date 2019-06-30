@@ -1,13 +1,13 @@
 package token
 
 type KeywordToken struct {
-	keyword  Keyword
+	Keyword  Keyword
 	position Position
 }
 
 func NewKeywordToken(keyword Keyword, position Position) Token {
 	return &KeywordToken{
-		keyword:  keyword,
+		Keyword:  keyword,
 		position: position,
 	}
 }

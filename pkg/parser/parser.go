@@ -1,8 +1,9 @@
 package parser
 
 import (
+	"fmt"
+	"github.com/BenjaminNitschke/Strict/pkg/ast"
 	"github.com/BenjaminNitschke/Strict/pkg/diagnostic"
-	"github.com/BenjaminNitschke/Strict/pkg/source"
 	"github.com/BenjaminNitschke/Strict/pkg/token"
 )
 
@@ -10,13 +11,13 @@ import (
 type Parser struct {
 	tokens   token.Reader
 	unit     *ast.TranslationUnit
-	recorder *diagnostics.Recorder
+	recorder *diagnostic.Recorder
 }
 
 // NewParser creates a parser instance that parses the tokens of the given
 // token.Reader and uses the 'unit' as its ast-root node. Errors while parsing
 // are recorded by the 'recorder'.
-func NewParser(unit *ast.TranslationUnit, tokens token.Reader, recorder *diagnostics.Recorder) *Parser {
+func NewParser(unit *ast.TranslationUnit, tokens token.Reader, recorder *diagnostic.Recorder) *Parser {
 	return &Parser{
 		unit:     unit,
 		tokens:   tokens,
@@ -24,16 +25,35 @@ func NewParser(unit *ast.TranslationUnit, tokens token.Reader, recorder *diagnos
 	}
 }
 
-func (parser *Parser) skipOperator(operator token.Operator) (bool, error) {
-	if ok, err := parser.expectOperator(operator); !ok {
-		return false, err
-	}
-	parser.tokens.Pull()
-	return true, nil
+// UnexpectedTokenError indicates that the parser expected a certain kind of token, but
+// got a different one. It captures the token and has an optional 'expected' field, which
+// stores the name of the kind of token that was expected.
+type UnexpectedTokenError struct {
+	token token.Token
+	expected string
 }
 
+func (err *UnexpectedTokenError) Error() string {
+	if err.expected != "" {
+		return fmt.Sprintf("expected %s but got %s", err.expected, err.token)
+	}
+	return fmt.Sprintf("unexpected token: %s", err.token)
+}
+
+// skipOperator skips the next keyword if it the passed operator, otherwise
+// otherwise an UnexpectedTokenError is returned.
+func (parser *Parser) skipOperator(operator token.Operator) error {
+	if err := parser.expectOperator(operator); err != nil {
+		return err
+	}
+	parser.tokens.Pull()
+	return nil
+}
+
+// skipKeyword skips the next keyword if it the passed keyword, otherwise
+// otherwise an UnexpectedTokenError is returned.
 func (parser *Parser) skipKeyword(keyword token.Keyword) (bool, error) {
-	if ok, err := parser.expectKeyword(keyword); !ok {
+	if err := parser.expectKeyword(keyword); err != nil{
 		return false, err
 	}
 	parser.tokens.Pull()
@@ -41,25 +61,29 @@ func (parser *Parser) skipKeyword(keyword token.Keyword) (bool, error) {
 }
 
 // expectOperator peeks the next token and expects it to be the passed operator,
-// else false is returned and an error is recorded.
-func (parser *Parser) expectOperator(operator token.Operator) (bool, error) {
+// otherwise an UnexpectedTokenError is returned.
+func (parser *Parser) expectOperator(expected token.Operator) error {
 	peek := parser.tokens.Peek()
-	if !peek.IsOperator() {
-		return false
+	if !peek.IsOperator() || peek.(token.OperatorToken).Operator != expected {
+		return &UnexpectedTokenError{
+			token:    peek,
+			expected: expected.String(),
+		}
 	}
-	ok := peek.(Operator).Operator() == operator
-	return ok, nil
+	return nil
 }
 
-func (parser *Parser) expectKeyword(keyword token.Keyword) (bool, error) {
+// expectKeyword peeks the next token and expects it to be the passed keyword,
+// otherwise an UnexpectedTokenError is returned.
+func (parser *Parser) expectKeyword(expected token.Keyword) error {
 	peek := parser.tokens.Peek()
-	if !peek.IsKeyword() {
-		return false
+	if !peek.IsKeyword() || peek.(token.KeywordToken).Keyword != expected {
+		return &UnexpectedTokenError{
+			token:    peek,
+			expected: expected.String(),
+		}
 	}
-	if !peek.(Keyword).Keyword() == keyword {
-
-	}
-	return false
+	return nil
 }
 
 func (parser *Parser) expectIdentifier() bool {

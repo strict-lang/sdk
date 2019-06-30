@@ -34,3 +34,11 @@ func KeywordByName(name string) (Keyword, bool) {
 func KeywordNames() map[string]Keyword {
 	return keywordNameLookupTable
 }
+
+func (keyword Keyword) String() string {
+	name, ok := keywordNameTable[keyword]
+	if !ok {
+		return InvalidKeywordName
+	}
+	return name
+}

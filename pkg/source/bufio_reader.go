@@ -21,4 +21,3 @@ func (reader *BufIoReader) Pull() Char {
 func (reader *BufIoReader) Peek() Char {
 	return EndOfFile
 }
-

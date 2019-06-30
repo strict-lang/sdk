@@ -2,9 +2,9 @@ package parser
 
 import (
 	"errors"
+	"github.com/BenjaminNitschke/Strict/pkg/token"
 
 	"github.com/BenjaminNitschke/Strict/pkg/ast"
-	"github.com/BenjaminNitschke/Strict/pkg/token"
 )
 
 var (
@@ -21,14 +21,15 @@ func (parser Parser) ParseExpression() (ast.Node, error) {
 // ParseBinaryExpression parses a binary expression. Binary expressions are
 // operations with two operands. Strict uses the infix notation, therefor
 // binary expressions have a left-hand-side and right-hand-side operand and
-// the operator inbetween. The operands can be any kind of expression.
+// the operator in between. The operands can be any kind of expression.
 // Example: 'a + b' or '(1 + 2) + 3'
 func (parser Parser) ParseBinaryExpression() (ast.BinaryExpression, error) {
 	leftOperand, err := parser.ParseExpression()
 	if err != nil {
 		return ast.BinaryExpression{}, err
 	}
-	if !parser.expectOperator() {
+	operator := parser.tokens.Peek()
+	if !operator.IsOperator() {
 		return ast.BinaryExpression{}, ErrInvalidExpression
 	}
 	rightOperand, err := parser.ParseExpression()
@@ -36,9 +37,9 @@ func (parser Parser) ParseBinaryExpression() (ast.BinaryExpression, error) {
 		return ast.BinaryExpression{}, err
 	}
 	return ast.BinaryExpression{
-		operator:     operator,
-		leftOperand:  leftOperand,
-		rightOperand: rightOperand,
+		Operator:     operator.(token.OperatorToken).Operator,
+		LeftOperand:  leftOperand,
+		RightOperand: rightOperand,
 	}, nil
 }
 
@@ -47,16 +48,16 @@ func (parser Parser) ParseBinaryExpression() (ast.BinaryExpression, error) {
 // expression is the negation '!(expression)'. The single operand may be
 // any kind of expression, including another unary expression.
 func (parser Parser) ParseUnaryExpression() (ast.UnaryExpression, error) {
-	if !parser.expectOperator() {
+	operator := parser.tokens.Pull()
+	if !operator.IsOperator() {
 		return ast.UnaryExpression{}, ErrInvalidExpression
 	}
-	operator := parser.tokens.Pull()
 	expression, err := parser.ParseExpression()
 	if err != nil {
 		return ast.UnaryExpression{}, err
 	}
 	return ast.UnaryExpression{
-		operator: operator,
-		operand:  expression,
+		Operator: operator.(token.OperatorToken).Operator,
+		Operand:  expression,
 	}, nil
 }
