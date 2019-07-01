@@ -10,8 +10,8 @@ const (
 	BinaryRadix      Radix = iota
 )
 
-func (scanner *Scanner) ScanNumber() (token.Token, error) {
-	return token.NewInvalidToken("", token.Position{}), nil
+func (scanner *Scanner) ScanNumber() token.Token {
+	return token.NewInvalidToken("", token.Position{})
 }
 
 func (scanner *Scanner) GatherDecimal() (string, error) {

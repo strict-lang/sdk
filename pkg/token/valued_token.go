@@ -1,5 +1,7 @@
 package token
 
+import "fmt"
+
 const (
 	StringLiteralTokenName = "StringLiteralToken"
 	NumberLiteralTokenName = "NumberLiteralToken"
@@ -66,4 +68,8 @@ func (token ValuedToken) IsLiteral() bool {
 
 func (ValuedToken) IsValid() bool {
 	return true
+}
+
+func (token ValuedToken) String() string {
+	return fmt.Sprintf("%s(%s)", token.name, token.value)
 }

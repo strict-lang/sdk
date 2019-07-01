@@ -98,6 +98,12 @@ func (scanner *Scanner) nextNonEndOfFile() token.Token {
 	switch next := scanner.reader.Peek(); {
 	case next.IsAlphabetic():
 		return scanner.ScanIdentifier()
+	case next.IsNumeric():
+		return scanner.ScanNumber()
+	case isKnownOperator(next):
+		return scanner.ScanOperator()
+	case next == '"':
+		return scanner.ScanStringLiteral()
 	}
-	return token.EndOfFile
+	return scanner.createInvalidToken()
 }

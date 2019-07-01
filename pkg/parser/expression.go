@@ -37,7 +37,7 @@ func (parser Parser) ParseBinaryExpression() (ast.BinaryExpression, error) {
 		return ast.BinaryExpression{}, err
 	}
 	return ast.BinaryExpression{
-		Operator:     operator.(token.OperatorToken).Operator,
+		Operator:     operator.(*token.OperatorToken).Operator,
 		LeftOperand:  leftOperand,
 		RightOperand: rightOperand,
 	}, nil
@@ -57,7 +57,7 @@ func (parser Parser) ParseUnaryExpression() (ast.UnaryExpression, error) {
 		return ast.UnaryExpression{}, err
 	}
 	return ast.UnaryExpression{
-		Operator: operator.(token.OperatorToken).Operator,
+		Operator: operator.(*token.OperatorToken).Operator,
 		Operand:  expression,
 	}, nil
 }

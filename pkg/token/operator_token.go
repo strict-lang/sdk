@@ -2,36 +2,6 @@ package token
 
 import "fmt"
 
-type Operator int8
-
-const (
-	InvalidOperator Operator = iota
-	AddOperator
-	SubOperator
-	MulOperator
-	DivOperator
-	ModOperator
-	EqualsOperator
-	NotEqualsOperator
-	ShiftLeftOperator
-	ShiftRightOperator
-	AndOperator
-	XorOperator
-	OrOperator
-	GreaterOperator
-	GreaterEqualsOperator
-	AssignOperator
-	AddAssignOperator
-	SubAssignOperator
-	MulAssignOperator
-	DivAssignOperator
-	ColonOperator
-	SmallerOperator
-	SmallerEqualsOperator
-	IncrementOperator
-	DecrementOperator
-)
-
 const OperatorTokenName = "operator"
 
 type OperatorToken struct {
@@ -74,37 +44,6 @@ func (OperatorToken) IsValid() bool {
 	return true
 }
 
-type Precedence int8
-
-const (
-	LowPrecedence   = 0
-	UnaryPrecedence = 6
-	HighPrecedence  = 7
-)
-
-func (operator Operator) Precedence() int {
-	switch operator {
-	case EqualsOperator,
-		NotEqualsOperator,
-		GreaterOperator,
-		GreaterEqualsOperator:
-		return 3
-	case AddOperator,
-		SubOperator,
-		OrOperator,
-		XorOperator:
-		return 4
-	case MulOperator,
-		DivOperator,
-		ModOperator,
-		ShiftLeftOperator,
-		ShiftRightOperator,
-		AndOperator:
-		return LowPrecedence
-	}
-	return 0
-}
-
-func (operator Operator) String() string {
-	return fmt.Sprintf("operator(%d)", operator)
+func (operator OperatorToken) String() string {
+	return fmt.Sprintf("%s(%d)", OperatorTokenName, operator.Operator)
 }

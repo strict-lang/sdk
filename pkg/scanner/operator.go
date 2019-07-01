@@ -14,20 +14,11 @@ type OperatorOptions map[source.Char]token.Operator
 type OperatorTable map[source.Char]OperatorOptions
 const singleChar = source.Char(0)
 
-var operatorTable = OperatorTable{
-	'+': {
-		singleChar: token.AddOperator,
-		'=': token.AddAssignOperator,
-		'+': token.IncrementOperator,
-	},
-	'-': {
-		singleChar: token.SubOperator,
-		'=': token.SubAssignOperator,
-		'-': token.DecrementOperator,
-	},
+func singleOperatorOption(operator token.Operator) OperatorOptions {
+	return OperatorOptions{singleChar: operator}
 }
 
-func (scanner *Scanner) isOperator(char source.Char) bool {
+func isKnownOperator(char source.Char) bool {
 	_, ok := operatorTable[char]
 	return ok
 }

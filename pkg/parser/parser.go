@@ -64,7 +64,7 @@ func (parser *Parser) skipKeyword(keyword token.Keyword) (bool, error) {
 // otherwise an UnexpectedTokenError is returned.
 func (parser *Parser) expectOperator(expected token.Operator) error {
 	peek := parser.tokens.Peek()
-	if !peek.IsOperator() || peek.(token.OperatorToken).Operator != expected {
+	if !peek.IsOperator() || peek.(*token.OperatorToken).Operator != expected {
 		return &UnexpectedTokenError{
 			token:    peek,
 			expected: expected.String(),
@@ -77,7 +77,7 @@ func (parser *Parser) expectOperator(expected token.Operator) error {
 // otherwise an UnexpectedTokenError is returned.
 func (parser *Parser) expectKeyword(expected token.Keyword) error {
 	peek := parser.tokens.Peek()
-	if !peek.IsKeyword() || peek.(token.KeywordToken).Keyword != expected {
+	if !peek.IsKeyword() || peek.(*token.KeywordToken).Keyword != expected {
 		return &UnexpectedTokenError{
 			token:    peek,
 			expected: expected.String(),
