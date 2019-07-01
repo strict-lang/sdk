@@ -19,7 +19,7 @@ func TestInvalidIdentifiers(test *testing.T) {
 
 	for _, entry := range entries {
 		scanner := NewStringScanner(entry)
-		identifier, err := scanner.GatherIdentifier()
+		identifier, err := scanner.gatherIdentifier()
 		if err == nil {
 			test.Errorf("scanner scanned invalid identifier %s as %s", entry, identifier)
 			continue
@@ -53,7 +53,7 @@ func TestValidIdentifiers(test *testing.T) {
 
 	for _, entry := range entries {
 		scanner := NewStringScanner(entry)
-		identifier, err := scanner.GatherIdentifier()
+		identifier, err := scanner.gatherIdentifier()
 		if err != nil {
 			test.Errorf("unexpected error %s", err.Error())
 		}

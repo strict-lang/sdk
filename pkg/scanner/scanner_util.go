@@ -56,3 +56,23 @@ func (scanner *Scanner) createPositionToOffset(begin source.Offset) token.Positi
 		End:   scanner.offset(),
 	}
 }
+
+func (scanner *Scanner) currentPosition() token.Position {
+	return token.Position{
+		Begin: scanner.reader.internalIndex,
+		End:   scanner.offset(),
+	}
+}
+
+func (scanner *Scanner) SkipWhitespaces() {
+	for {
+		next := scanner.reader.Pull()
+		if next.IsWhitespace() || next == '\r' {
+			break
+		}
+		if next == '\n' {
+			scanner.incrementLineIndex()
+			break
+		}
+	}
+}

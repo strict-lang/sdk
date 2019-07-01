@@ -10,7 +10,12 @@ type Entry struct {
 	Source   string
 	Message  string
 	UnitName string
-	Position source.Position
+	Position Position
+}
+
+type Position struct {
+	Column    source.Offset
+	LineIndex source.LineIndex
 }
 
 func (entry Entry) PrintColored(printer Printer) {

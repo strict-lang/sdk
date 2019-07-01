@@ -29,7 +29,7 @@ func NewParser(unit *ast.TranslationUnit, tokens token.Reader, recorder diagnost
 // got a different one. It captures the token and has an optional 'expected' field, which
 // stores the name of the kind of token that was expected.
 type UnexpectedTokenError struct {
-	token token.Token
+	token    token.Token
 	expected string
 }
 
@@ -53,7 +53,7 @@ func (parser *Parser) skipOperator(operator token.Operator) error {
 // skipKeyword skips the next keyword if it the passed keyword, otherwise
 // otherwise an UnexpectedTokenError is returned.
 func (parser *Parser) skipKeyword(keyword token.Keyword) (bool, error) {
-	if err := parser.expectKeyword(keyword); err != nil{
+	if err := parser.expectKeyword(keyword); err != nil {
 		return false, err
 	}
 	parser.tokens.Pull()

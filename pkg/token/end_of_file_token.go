@@ -7,10 +7,11 @@ const (
 var (
 	EndOfFile Token = &EndOfFileToken{}
 )
-type EndOfFileToken struct {}
+
+type EndOfFileToken struct{}
 
 func (EndOfFileToken) Position() Position {
-	return Position{Begin: 0, End: 0,}
+	return Position{Begin: 0, End: 0}
 }
 
 func (EndOfFileToken) Value() string {

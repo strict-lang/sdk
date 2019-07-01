@@ -15,7 +15,7 @@ var (
 // ScanKeyword scans a KeywordToken from the stream of characters.
 func (scanner *Scanner) ScanKeyword() (token.Token, error) {
 	beginOffset := scanner.offset()
-	identifier, err := scanner.GatherIdentifier()
+	identifier, err := scanner.gatherIdentifier()
 	if err != nil {
 		return scanner.createInvalidKeyword(beginOffset, identifier), err
 	}

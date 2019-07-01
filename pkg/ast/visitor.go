@@ -42,7 +42,7 @@ type Visitor struct {
 	VisitConditionalStatement func(*ConditionalStatement)
 
 	// VisitPreIncrementStatement visits a PreIncrementStatement node.
-	VisitPreIncrementStatement func (*PreIncrementStatement)
+	VisitPreIncrementStatement func(*PreIncrementStatement)
 
 	// VisitPostIncrementStatement visits a PostIncrementStatement node.
 	VisitPostIncrementStatement func(*PostIncrementStatement)

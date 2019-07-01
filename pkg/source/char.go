@@ -25,6 +25,14 @@ func (char Char) IsAlphanumeric() bool {
 	return char.IsNumeric() || char.IsAlphabetic()
 }
 
+func (char Char) IsWhitespaceOrLineFeed() bool {
+	return char.IsWhitespace() || char.IsLineFeed()
+}
+
 func (char Char) IsWhitespace() bool {
 	return char == ' ' || char == '\t'
+}
+
+func (char Char) IsLineFeed() bool {
+	return char == '\n' || char == '\r'
 }

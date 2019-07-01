@@ -14,33 +14,38 @@ var (
 	ErrInvalidEscapedChar     = errors.New("literal contains invalid escaped char")
 )
 
-func (scanner *Scanner) ScanStringLiteral() (token.Token, error) {
+func (scanner *Scanner) gatherStringLiteral() (string, error) {
 	if !scanner.tryToSkip('"') {
-		return token.NewAnonymousInvalidToken(), ErrNoLeadingQuoteInString
+		return "", ErrNoLeadingQuoteInString
 	}
 	var builder strings.Builder
-	beginIndex := scanner.reader.Index()
 	for count := 0; count < textCharacterLimit; count++ {
 		next := scanner.reader.Pull()
 		if next == '"' {
 			break
 		}
 		if next == '\n' {
-			return token.NewAnonymousInvalidToken(), ErrStringContainsLineFeed
+			return "", ErrStringContainsLineFeed
 		}
 		if next == '\\' {
 			escaped, ok := findEscapedCharacter(scanner.reader.Pull())
 			if !ok {
-				return token.NewAnonymousInvalidToken(), ErrInvalidEscapedChar
+				return "", ErrInvalidEscapedChar
 			}
 			builder.WriteRune(rune(escaped))
 			continue
 		}
 		builder.WriteRune(rune(next))
 	}
-	position := token.Position{
-		Begin: beginIndex,
-		End:   scanner.reader.Index(),
+	return builder.String(), nil
+}
+
+func (scanner *Scanner) ScanStringLiteral() token.Token {
+	literal, err := scanner.gatherStringLiteral()
+	position := scanner.currentPosition()
+	if err != nil {
+		scanner.reportError(err)
+		return token.NewInvalidToken(scanner.reader.String(), position)
 	}
-	return token.NewStringLiteralToken(builder.String(), position), nil
+	return token.NewStringLiteralToken(literal, position)
 }

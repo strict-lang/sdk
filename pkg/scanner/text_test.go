@@ -10,14 +10,14 @@ func TestScanningStringLiteralBody(test *testing.T) {
 	}
 	for _, entry := range entries {
 		scanner := NewStringScanner(entry)
-		token, err := scanner.ScanStringLiteral()
+		literal, err := scanner.gatherStringLiteral()
 		if err != nil {
 			test.Errorf("unexpected error while scanning: %s", entry)
 			continue
 		}
 		entryBody := removeSurroundingQuotes(entry)
-		if token.Value() != entryBody {
-			test.Errorf("scanned '%s' but expected '%s'", token.Value, entryBody)
+		if literal != entryBody {
+			test.Errorf("scanned '%s' but expected '%s'", literal, entryBody)
 		}
 	}
 }
@@ -34,9 +34,9 @@ func TestScanningInvalidStringLiteralBody(test *testing.T) {
 	}
 	for entry, expected := range entries {
 		scanner := NewStringScanner(entry)
-		token, err := scanner.ScanStringLiteral()
+		literal, err := scanner.gatherStringLiteral()
 		if err == nil {
-			test.Errorf("scanned invalid string %s as %s", entry, token.Value)
+			test.Errorf("scanned invalid string %s as %s", entry, literal)
 			continue
 		}
 		if err != expected {

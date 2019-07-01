@@ -38,9 +38,9 @@ func (parser *Parser) ParseConditionalStatement() (*ast.ConditionalStatement, er
 		return &ast.ConditionalStatement{}, err
 	}
 	return &ast.ConditionalStatement{
-		Else: elseClause,
-		Body:       body,
-		Condition:  condition,
+		Else:      elseClause,
+		Body:      body,
+		Condition: condition,
 	}, nil
 }
 

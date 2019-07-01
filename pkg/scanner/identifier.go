@@ -3,6 +3,7 @@ package scanner
 import (
 	"errors"
 	"github.com/BenjaminNitschke/Strict/pkg/source"
+	"github.com/BenjaminNitschke/Strict/pkg/token"
 )
 
 var (
@@ -19,7 +20,7 @@ func isIdentifierChar(char source.Char) bool {
 }
 
 // GatherIdentifier scans an identifier and returns it or an error if it fails.
-func (scanner *Scanner) GatherIdentifier() (string, error) {
+func (scanner *Scanner) gatherIdentifier() (string, error) {
 	leading, ok := scanner.scanMatching(isIdentifierBegin)
 	if !ok {
 		return "", ErrInvalidIdentifier
@@ -29,4 +30,15 @@ func (scanner *Scanner) GatherIdentifier() (string, error) {
 		return string(leading), nil
 	}
 	return string(leading) + remaining, nil
+}
+
+// tryToScanIdentifier tries to scan an identifier and records an error, if it fails.
+func (scanner *Scanner) ScanIdentifier() token.Token {
+	identifier, err := scanner.gatherIdentifier()
+	position := scanner.currentPosition()
+	if err != nil {
+		scanner.reportError(err)
+		return token.NewInvalidToken(scanner.reader.String(), position)
+	}
+	return token.NewIdentifierToken(identifier, position)
 }

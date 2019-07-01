@@ -17,7 +17,7 @@ const (
 var keywordNameTable = map[Keyword]string{
 	MethodKeyword: "method",
 	TypeKeyword:   "type",
-	IfKeyword:    "if",
+	IfKeyword:     "if",
 	ElseKeyword:   "else",
 }
 

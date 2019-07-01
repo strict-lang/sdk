@@ -70,8 +70,8 @@ type PreIncrementStatement struct {
 	Decrement bool
 }
 
-type PostIncrementStatement struct{
-	Operand  Node
+type PostIncrementStatement struct {
+	Operand   Node
 	Decrement bool
 }
 
