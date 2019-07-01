@@ -1,13 +1,20 @@
 package ast
 
-import "github.com/BenjaminNitschke/Strict/pkg/token"
+import (
+	"fmt"
+	"github.com/BenjaminNitschke/Strict/pkg/token"
+)
 
 type Identifier struct {
-	value string
+	Value string
 }
 
 func (identifier *Identifier) Accept(visitor *Visitor) {
 	visitor.VisitIdentifier(identifier)
+}
+
+func (identifier *Identifier) String() string {
+	return identifier.Value
 }
 
 // UnaryExpression is an operation on a single operand.
@@ -21,6 +28,10 @@ func (unary *UnaryExpression) Accept(visitor *Visitor) {
 	unary.Operand.Accept(visitor)
 }
 
+func (unary *UnaryExpression) String() string {
+	return fmt.Sprintf("UnaryExpression(%s, %s)", unary.Operator, unary.Operand)
+}
+
 // BinaryExpression is an operation on two operands.
 type BinaryExpression struct {
 	LeftOperand  Node
@@ -32,4 +43,8 @@ func (binary *BinaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitBinaryExpression(binary)
 	binary.LeftOperand.Accept(visitor)
 	binary.RightOperand.Accept(visitor)
+}
+
+func (binary *BinaryExpression) String() string {
+	return fmt.Sprintf("BinaryExpression(%s, %s, %s)", binary.Operator, binary.LeftOperand, binary.RightOperand)
 }

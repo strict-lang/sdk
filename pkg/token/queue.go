@@ -17,7 +17,7 @@ func NewQueueReader(queue Queue) *QueueReader {
 }
 
 func (reader *QueueReader) hasNext() bool {
-	return len(reader.queue) <= reader.index
+	return len(reader.queue) > reader.index
 }
 
 func (reader *QueueReader) Pull() Token {

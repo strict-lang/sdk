@@ -8,6 +8,18 @@ package ast
 // to implement every method. Instead one can create a default-visitor, which
 // only has noop-methods, and then set the visit-methods that should be custom.
 type Visitor struct {
+	// VisitType visits a Type node.
+	VisitType func(*Type)
+
+	// VisitMember visits a Member node.
+	VisitMember func(*Member)
+
+	// VisitMethod visits a Method node.
+	VisitMethod func(*Method)
+
+	// VisitParameter visits a Parameter node.
+	VisitParameter func(*Parameter)
+
 	// VisitMethodCall visits a MethodCall node.
 	VisitMethodCall func(*MethodCall)
 

@@ -15,7 +15,10 @@ var (
 )
 
 func (parser Parser) ParseExpression() (ast.Node, error) {
-	return nil, nil
+	next := parser.tokens.Pull()
+	return &ast.Identifier{
+		Value: next.Value(),
+	}, nil
 }
 
 // ParseBinaryExpression parses a binary expression. Binary expressions are
