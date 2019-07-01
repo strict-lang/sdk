@@ -13,7 +13,7 @@ func (identifier *Identifier) Accept(visitor *Visitor) {
 	visitor.VisitIdentifier(identifier)
 }
 
-func (identifier *Identifier) String() string {
+func (identifier Identifier) String() string {
 	return identifier.Value
 }
 
@@ -28,7 +28,7 @@ func (unary *UnaryExpression) Accept(visitor *Visitor) {
 	unary.Operand.Accept(visitor)
 }
 
-func (unary *UnaryExpression) String() string {
+func (unary UnaryExpression) String() string {
 	return fmt.Sprintf("UnaryExpression(%s, %s)", unary.Operator, unary.Operand)
 }
 
@@ -45,6 +45,6 @@ func (binary *BinaryExpression) Accept(visitor *Visitor) {
 	binary.RightOperand.Accept(visitor)
 }
 
-func (binary *BinaryExpression) String() string {
+func (binary BinaryExpression) String() string {
 	return fmt.Sprintf("BinaryExpression(%s, %s, %s)", binary.Operator, binary.LeftOperand, binary.RightOperand)
 }

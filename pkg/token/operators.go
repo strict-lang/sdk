@@ -1,7 +1,5 @@
 package token
 
-import "fmt"
-
 type Operator int8
 
 const (
@@ -42,6 +40,45 @@ const (
 	SemicolonOperator
 )
 
+const InvalidOperatorName = "invalid"
+var operatorNames = map[Operator] string{
+	InvalidOperator: InvalidOperatorName,
+	AddOperator: "+",
+	SubOperator: "-",
+	MulOperator: "*",
+	DivOperator: "/",
+	ModOperator: "%",
+	EqualsOperator: "==",
+	NotEqualsOperator: "!=",
+	ShiftLeftOperator: "<<",
+	ShiftRightOperator: ">>",
+	AndOperator: "&&",
+	XorOperator: "^",
+	OrOperator: "||",
+	BitOrOperator: "|",
+	BitAndOperator: "&",
+	GreaterOperator: ">",
+	GreaterEqualsOperator: ">=",
+	NegateOperator: "!",
+	AssignOperator: "==",
+	AddAssignOperator: "+=",
+	SubAssignOperator: "-=",
+	MulAssignOperator: "*=",
+	DivAssignOperator: "/=",
+	ColonOperator: ":",
+	SmallerOperator: "<",
+	SmallerEqualsOperator: "<=",
+	IncrementOperator: "++",
+	DecrementOperator: "--",
+	LeftParenOperator: "(",
+	RightParenOperator: ")",
+	LeftCurlyOperator: "{",
+	RightCurlyOperator: "}",
+	LeftBracketOperator: "]",
+	RightBracketOperator: "[",
+	SemicolonOperator: ";",
+}
+
 type Precedence int8
 
 const (
@@ -74,5 +111,9 @@ func (operator Operator) Precedence() int {
 }
 
 func (operator Operator) String() string {
-	return fmt.Sprintf("operator(%d)", operator)
+	name, ok := operatorNames[operator]
+	if !ok {
+		return InvalidOperatorName
+	}
+	return name
 }

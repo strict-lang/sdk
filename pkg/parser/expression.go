@@ -31,7 +31,7 @@ func (parser Parser) ParseBinaryExpression() (ast.BinaryExpression, error) {
 	if err != nil {
 		return ast.BinaryExpression{}, err
 	}
-	operator := parser.tokens.Peek()
+	operator := parser.tokens.Pull()
 	if !operator.IsOperator() {
 		return ast.BinaryExpression{}, ErrInvalidExpression
 	}
