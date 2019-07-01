@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/BenjaminNitschke/Strict/pkg/ast"
 	"github.com/BenjaminNitschke/Strict/pkg/diagnostic"
+	"github.com/BenjaminNitschke/Strict/pkg/scope"
 	"github.com/BenjaminNitschke/Strict/pkg/token"
 	"testing"
 )
@@ -27,6 +28,6 @@ func TestExpectOperator(test *testing.T) {
 }
 
 func NewTestParser(tokens token.Reader) *Parser {
-	unit := ast.NewTranslationUnit("test", ast.NewRootScope(), []ast.Node{})
+	unit := ast.NewTranslationUnit("test", scope.NewRootScope(), []ast.Node{})
 	return NewParser(&unit, tokens, diagnostic.NewRecorder())
 }

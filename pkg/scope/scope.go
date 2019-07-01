@@ -1,4 +1,4 @@
-package ast
+package scope
 
 import (
 	"errors"
@@ -10,6 +10,10 @@ var (
 	ErrNoSuchSymbol = errors.New("symbol does not exist")
 )
 
+type Scoped interface {
+	Scope() *Scope
+}
+
 type Scope struct {
 	parent     *Scope
 	name       string
@@ -18,7 +22,7 @@ type Scope struct {
 	symbols    map[string]Scoped
 }
 
-func NewRootScope() *Scope {
+func NewRoot() *Scope {
 	return &Scope{
 		parent:     nil,
 		name:       "@",

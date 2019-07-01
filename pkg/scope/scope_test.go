@@ -1,9 +1,10 @@
-package ast
+package scope
 
-import "testing"
+import (
+	"testing"
+)
 
 type Dummy struct {
-	Scoped
 	scope *Scope
 }
 
@@ -12,7 +13,7 @@ func (dummy Dummy) Scope() *Scope {
 }
 
 func TestParentModifiesChild(test *testing.T) {
-	scope := NewRootScope()
+	scope := NewRoot()
 	child := scope.NewChild()
 
 	err := scope.PutSymbol("a", Dummy{scope: scope})
@@ -22,7 +23,7 @@ func TestParentModifiesChild(test *testing.T) {
 }
 
 func TestChildDoesNotModifyParent(test *testing.T) {
-	scope := NewRootScope()
+	scope := NewRoot()
 	child := scope.NewChild()
 
 	err := child.PutSymbol("a", Dummy{scope: child})
@@ -32,7 +33,7 @@ func TestChildDoesNotModifyParent(test *testing.T) {
 }
 
 func TestChildScopeCreation(test *testing.T) {
-	scope := NewRootScope()
+	scope := NewRoot()
 	err := scope.PutSymbol("a", Dummy{scope: scope})
 	expectNoError(test, err)
 
@@ -46,10 +47,10 @@ func TestChildScopeCreation(test *testing.T) {
 }
 
 func expectName(test *testing.T, scope *Scope, name string) {
-	if scope.name == name {
+	if name == name {
 		return
 	}
-	test.Errorf("expected name to be %s but got %s", name, scope.name)
+	test.Errorf("expected name to be %s but got %s", name, name)
 }
 
 func expectSymbol(test *testing.T, scope *Scope, key string) {

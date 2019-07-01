@@ -21,18 +21,3 @@ func (lines *Linemap) PositionAtOffset(offset source.Offset) source.Position {
 func (lines *Linemap) PositionAtLine(index source.LineIndex) source.Position {
 	return source.Position{}
 }
-
-type Builder struct {
-}
-
-func (builder *Builder) Append(length source.Offset) {
-
-}
-
-func (builder *Builder) NewLinemap() *Linemap {
-	return nil
-}
-
-func NewBuilder() *Builder {
-	return &Builder{}
-}

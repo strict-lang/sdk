@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"github.com/BenjaminNitschke/Strict/pkg/scope"
 	"github.com/BenjaminNitschke/Strict/pkg/source"
 )
 
@@ -28,7 +29,7 @@ type Typed interface {
 // and may also only see other nodes within that scope.
 type Scoped interface {
 	// Scope returns a pointer to the nodes scope.
-	Scope() *Scope
+	Scope() *scope.Scope
 }
 
 // Position is the position of a node in the source code. It may span
