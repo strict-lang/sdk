@@ -11,8 +11,7 @@ import (
 type Scanner struct {
 	reader    *RecordingSourceReader
 	linemap   *linemap.Builder
-	recorder  diagnostic.Recorder
-	exhausted bool
+	recorder  *diagnostic.Recorder
 	peeked    token.Token
 	last      token.Token
 	begin     source.Offset
@@ -36,7 +35,7 @@ func NewStringScanner(input string) *Scanner {
 }
 
 func (scanner *Scanner) Pull() token.Token {
-	if scanner.exhausted {
+	if scanner.reader.IsExhausted() {
 		return token.EndOfFile
 	}
 	if peeked := scanner.peeked; peeked != nil {
@@ -48,7 +47,7 @@ func (scanner *Scanner) Pull() token.Token {
 }
 
 func (scanner *Scanner) Peek() token.Token {
-	if scanner.exhausted {
+	if scanner.reader.IsExhausted() {
 		return token.EndOfFile
 	}
 	if scanner.peeked == nil {
@@ -75,7 +74,6 @@ func (scanner *Scanner) next() token.Token {
 	scanner.SkipWhitespaces()
 	scanner.resetTokenRecording()
 	if scanner.reader.Peek() == source.EndOfFile {
-		scanner.exhausted = true
 		return token.EndOfFile
 	}
 	return scanner.nextNonEndOfFile()
@@ -99,4 +97,5 @@ func (scanner *Scanner) nextNonEndOfFile() token.Token {
 	case next.IsAlphabetic():
 		return scanner.ScanIdentifier()
 	}
+	return token.EndOfFile
 }

@@ -11,13 +11,13 @@ import (
 type Parser struct {
 	tokens   token.Reader
 	unit     *ast.TranslationUnit
-	recorder diagnostic.Recorder
+	recorder *diagnostic.Recorder
 }
 
 // NewParser creates a parser instance that parses the tokens of the given
 // token.Reader and uses the 'unit' as its ast-root node. Errors while parsing
 // are recorded by the 'recorder'.
-func NewParser(unit *ast.TranslationUnit, tokens token.Reader, recorder diagnostic.Recorder) *Parser {
+func NewParser(unit *ast.TranslationUnit, tokens token.Reader, recorder *diagnostic.Recorder) *Parser {
 	return &Parser{
 		unit:     unit,
 		tokens:   tokens,

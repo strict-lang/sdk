@@ -19,7 +19,7 @@ type Position struct {
 }
 
 func (entry Entry) PrintColored(printer Printer) {
-	line := entry.Position.Line.Index
+	line := entry.Position.LineIndex
 
 	highlight := entry.Kind.Color.SprintFunc()
 	underscore := underlinedColor.SprintFunc()

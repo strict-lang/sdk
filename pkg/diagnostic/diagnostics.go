@@ -1,9 +1,12 @@
 package diagnostic
 
-type Recorder interface {
-	Record(Entry)
+type Recorder struct {
 }
 
-func NewRecorder() Recorder {
+func NewRecorder() *Recorder {
 	return nil
+}
+
+func (recorder *Recorder) Record(entry Entry) {
+
 }
