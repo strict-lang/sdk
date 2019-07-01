@@ -66,7 +66,7 @@ func (scanner *Scanner) currentPosition() token.Position {
 
 func (scanner *Scanner) SkipWhitespaces() {
 	for {
-		next := scanner.reader.Peek();
+		next := scanner.reader.Peek()
 		if next == '\n' {
 			scanner.incrementLineIndex()
 			scanner.reader.Pull()

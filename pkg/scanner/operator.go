@@ -12,6 +12,7 @@ var (
 
 type OperatorOptions map[source.Char]token.Operator
 type OperatorTable map[source.Char]OperatorOptions
+
 const singleChar = source.Char(0)
 
 func singleOperatorOption(operator token.Operator) OperatorOptions {

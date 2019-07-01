@@ -18,8 +18,11 @@ const (
 	AndOperator
 	XorOperator
 	OrOperator
+	BitOrOperator
+	BitAndOperator
 	GreaterOperator
 	GreaterEqualsOperator
+	NegateOperator
 	AssignOperator
 	AddAssignOperator
 	SubAssignOperator

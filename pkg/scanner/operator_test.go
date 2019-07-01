@@ -6,11 +6,11 @@ import (
 )
 
 func TestGatheringOperator(test *testing.T) {
-	entries := map[string] token.Operator{
-		"+": token.AddOperator,
-		"++": token.IncrementOperator,
-		"+=": token.AddAssignOperator,
-		"+-": token.AddOperator,
+	entries := map[string]token.Operator{
+		"+":   token.AddOperator,
+		"++":  token.IncrementOperator,
+		"+=":  token.AddAssignOperator,
+		"+-":  token.AddOperator,
 		"--+": token.DecrementOperator,
 		"+=,": token.AddAssignOperator,
 		"+,=": token.AddOperator,
