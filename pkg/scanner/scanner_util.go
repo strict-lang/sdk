@@ -66,13 +66,14 @@ func (scanner *Scanner) currentPosition() token.Position {
 
 func (scanner *Scanner) SkipWhitespaces() {
 	for {
-		next := scanner.reader.Pull()
-		if next.IsWhitespace() || next == '\r' {
-			break
-		}
+		next := scanner.reader.Pull();
 		if next == '\n' {
 			scanner.incrementLineIndex()
-			break
+			continue
 		}
+		if next.IsWhitespace() || next == '\r' {
+			continue
+		}
+		return
 	}
 }

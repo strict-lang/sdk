@@ -19,15 +19,13 @@ type Scanner struct {
 }
 
 func NewScanner(reader source.Reader) *Scanner {
-	scanner := &Scanner{
+	return &Scanner{
 		reader:   decorateSourceReader(reader),
 		linemap:  linemap.NewBuilder(),
 		recorder: diagnostic.NewRecorder(),
-		last:     token.EndOfFile,
+		last:     token.NewInvalidToken("begin", token.Position{}),
 		peeked:   nil,
 	}
-	scanner.Pull()
-	return scanner
 }
 
 func NewStringScanner(input string) *Scanner {
@@ -63,6 +61,10 @@ func (scanner *Scanner) Last() token.Token {
 func (scanner *Scanner) resetTokenRecording() {
 	scanner.reader.Reset()
 	scanner.begin = scanner.reader.Index()
+}
+
+func (scanner *Scanner) createInvalidToken() token.Token {
+	return token.NewInvalidToken(scanner.reader.String(), scanner.currentPosition())
 }
 
 func (scanner *Scanner) incrementLineIndex() {

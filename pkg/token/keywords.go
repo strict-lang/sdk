@@ -8,7 +8,8 @@ const (
 )
 
 const (
-	MethodKeyword Keyword = iota
+	InvalidKeyword Keyword = iota
+	MethodKeyword
 	TypeKeyword
 	IfKeyword
 	ElseKeyword

@@ -38,7 +38,7 @@ func (scanner *Scanner) ScanIdentifier() token.Token {
 	position := scanner.currentPosition()
 	if err != nil {
 		scanner.reportError(err)
-		return token.NewInvalidToken(scanner.reader.String(), position)
+		return scanner.createInvalidToken()
 	}
 	return token.NewIdentifierToken(identifier, position)
 }

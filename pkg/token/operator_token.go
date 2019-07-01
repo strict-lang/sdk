@@ -5,7 +5,8 @@ import "fmt"
 type Operator int8
 
 const (
-	AddOperator Operator = iota
+	InvalidOperator Operator = iota
+	AddOperator
 	SubOperator
 	MulOperator
 	DivOperator
@@ -20,9 +21,15 @@ const (
 	GreaterOperator
 	GreaterEqualsOperator
 	AssignOperator
+	AddAssignOperator
+	SubAssignOperator
+	MulAssignOperator
+	DivAssignOperator
 	ColonOperator
 	SmallerOperator
 	SmallerEqualsOperator
+	IncrementOperator
+	DecrementOperator
 )
 
 const OperatorTokenName = "operator"

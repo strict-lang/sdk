@@ -13,7 +13,7 @@ import (
 func TestGatherKnownKeywords(test *testing.T) {
 	for entryName, entry := range token.KeywordNames() {
 		scanner := NewStringScanner(entryName)
-		scanned, err := scanner.ScanKeyword()
+		scanned, err := scanner.gatherKeyword()
 		if err != nil {
 			if err == ErrNoSuchKeyword {
 				test.Errorf("scanner did not recognize keyword %s", entryName)
@@ -23,7 +23,7 @@ func TestGatherKnownKeywords(test *testing.T) {
 			continue
 		}
 		if scanned != entry {
-			test.Errorf("scanned keyword %s, expected %s", scanned.Value(), entryName)
+			test.Errorf("scanned keyword %s, expected %s", scanned.String(), entryName)
 			return
 		}
 	}
@@ -47,7 +47,7 @@ func TestGatherInvalidKeywords(test *testing.T) {
 
 	for _, entry := range entries {
 		scanner := NewStringScanner(entry)
-		_, err := scanner.ScanKeyword()
+		_, err := scanner.gatherKeyword()
 		if err == nil {
 			test.Errorf("scanner scanned invalid keyword %s", entry)
 			return
