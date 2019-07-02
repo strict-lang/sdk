@@ -30,7 +30,20 @@ func (scanner *Scanner) ScanOperator() token.Token {
 		scanner.reportError(err)
 		return scanner.createInvalidToken()
 	}
+	scanner.operatorGathered(operator)
 	return token.NewOperatorToken(operator, scanner.currentPosition(), scanner.indent)
+}
+
+// operatorGathered is called once an operator is gathered. It checks whether the operator
+// is enabling or disabling the 'insertEos' flag and applies it.
+func (scanner *Scanner) operatorGathered(operator token.Operator) {
+	if _, ok := endOfStatementDisablingOperators[operator]; ok {
+		scanner.endOfStatementPrevention++
+		return
+	}
+	if _, ok := endOfStatementEnablingOperators[operator]; ok {
+		scanner.endOfStatementPrevention--
+	}
 }
 
 func (scanner Scanner) gatherOperator() (token.Operator, error) {

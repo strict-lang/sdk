@@ -2,7 +2,7 @@ package token
 
 import "fmt"
 
-const OperatorTokenName = "operator"
+const OperatorTokenName = "OperatorToken"
 
 type OperatorToken struct {
 	Operator Operator
@@ -51,5 +51,5 @@ func (operator OperatorToken) Indent() Indent {
 }
 
 func (operator OperatorToken) String() string {
-	return fmt.Sprintf("%s(%d)", OperatorTokenName, operator.Operator)
+	return fmt.Sprintf("%s(%s)", OperatorTokenName, operator.Operator)
 }

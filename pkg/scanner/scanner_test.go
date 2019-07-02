@@ -5,6 +5,39 @@ import (
 	"testing"
 )
 
+func TestScannerEndOfStatementInsertion(test *testing.T) {
+	entries := map[string] int {
+		`add(
+			a,
+			b
+		 )`: 1,
+
+		 `add(a, b)
+			add(b, c)
+			add(b, add(a, c))`: 3,
+	}
+
+	for entry, expectedCount := range entries {
+		scanner := NewStringScanner(entry)
+		tokens := scanAllTokens(scanner)
+		count := countEndOfStatements(tokens)
+		if count != expectedCount {
+			test.Errorf("%s has %d EndOfFile tokens, expected %d", entry, count, expectedCount)
+			test.Logf("The tokens: %s", tokens)
+		}
+	}
+}
+
+func countEndOfStatements(tokens []token.Token) int {
+	var count int
+	for _, element := range tokens {
+		if _, ok := element.(*token.EndOfStatementToken); ok {
+			count++
+		}
+	}
+	return count
+}
+
 func TestScanner_SkipWhitespaces(test *testing.T) {
 	scanner := NewStringScanner("   \t  \r\n  \n")
 	scanner.SkipWhitespaces()

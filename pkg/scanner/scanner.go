@@ -28,9 +28,11 @@ type Scanner struct {
 	// lineIndex current lineIndex of the scanner, incremented each time a linefeed is hit.
 	// The scanner keeps track of his line-index to report better errors to the diagnostics.
 	lineIndex source.LineIndex
-	// insertEos tells the scanner whether it has to return an EndOfStatement token when
-	// it hits a newline. This flag is set and unset during scanning.
-	insertEos bool
+	// endOfStatementPrevention tells the scanner whether it should insert an EndOfStatement or not.
+	// It will only insert an EndOfStatement token when this field is zero. This is not a boolean,
+	// because preventers can be nested. Common tokens that prevent the scanner from generating
+	// an EndOfStatement token are: Parentheses and Brackets
+	endOfStatementPrevention int
 	// indent is the current indentation level. It is updates while scanning and assigned
 	// to all tokens that are created.
 	indent   token.Indent
@@ -40,6 +42,9 @@ type Scanner struct {
 	// will get the indent value of the 'ident' field, which can not change anymore. Once
 	// a linefeed is hit, the indent is reset and the updateIndent is set to true.
 	updateIndent bool
+	// emptyLine records whether the currently scanned line is empty. If it is, the scanner
+	// will not insert an EndOfStatement token even if 'insertEos' is set to true.
+	emptyLine bool
 }
 
 func NewScanner(reader source.Reader) *Scanner {
@@ -59,7 +64,7 @@ func NewStringScanner(input string) *Scanner {
 
 func (scanner *Scanner) Pull() token.Token {
 	if scanner.reader.IsExhausted() {
-		return token.EndOfFile
+		return scanner.endOfFile()
 	}
 	if peeked := scanner.peeked; peeked != nil {
 		scanner.peeked = nil
@@ -71,12 +76,25 @@ func (scanner *Scanner) Pull() token.Token {
 
 func (scanner *Scanner) Peek() token.Token {
 	if scanner.reader.IsExhausted() {
-		return token.EndOfFile
+		return scanner.endOfFile()
 	}
 	if scanner.peeked == nil {
 		scanner.peeked = scanner.next()
 	}
 	return scanner.peeked
+}
+
+// endOfFile returns either an EndOfStatement or an EndOfFile token.
+// If there was no final-newline and therefor no final end-of-statement, the scanner
+// will first return an end-of-statement. There will never be two end-of-statements
+// at the end of a file.
+func (scanner *Scanner) endOfFile() token.Token {
+	if _, ok := scanner.last.(*token.EndOfStatementToken); ok {
+		return token.EndOfFile
+	}
+	last := token.NewEndOfStatementToken(scanner.offset())
+	scanner.last = last
+	return last
 }
 
 func (scanner *Scanner) Last() token.Token {
@@ -97,10 +115,15 @@ func (scanner *Scanner) incrementLineIndex() (token.Token, bool) {
 	scanner.updateIndent = true
 	scanner.reader.resetInternalIndex()
 	scanner.lineIndex++
-	if !scanner.insertEos {
+	if !scanner.shouldInsertEndOfStatement() || scanner.emptyLine {
 		return nil, false
 	}
+	scanner.emptyLine = true
 	return token.NewEndOfStatementToken(scanner.offset()), true
+}
+
+func (scanner *Scanner) shouldInsertEndOfStatement() bool {
+	return scanner.endOfStatementPrevention == 0
 }
 
 func (scanner *Scanner) next() token.Token {
@@ -111,8 +134,9 @@ func (scanner *Scanner) next() token.Token {
 	}
 	scanner.resetTokenRecording()
 	scanner.updateIndent = false
+	scanner.emptyLine = false
 	if scanner.reader.Peek() == source.EndOfFile {
-		return token.EndOfFile
+		return scanner.endOfFile()
 	}
 	return scanner.nextNonEndOfFile()
 }

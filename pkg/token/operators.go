@@ -38,6 +38,7 @@ const (
 	LeftBracketOperator
 	RightBracketOperator
 	SemicolonOperator
+	CommaOperator
 )
 
 const InvalidOperatorName = "invalid"
@@ -78,6 +79,7 @@ var operatorNames = map[Operator]string{
 	LeftBracketOperator:   "]",
 	RightBracketOperator:  "[",
 	SemicolonOperator:     ";",
+	CommaOperator: ",",
 }
 
 type Precedence int8

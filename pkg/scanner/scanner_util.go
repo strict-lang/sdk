@@ -66,22 +66,25 @@ func (scanner *Scanner) currentPosition() token.Position {
 
 func (scanner *Scanner) SkipWhitespaces() (token.Token, bool) {
 	for {
-		switch scanner.reader.Peek() {
-		case '\n':
+		peek :=  scanner.reader.Peek()
+		if peek == '\n' {
 			if endOfStatement, ok := scanner.incrementLineIndex(); ok {
 				return endOfStatement, true
 			}
 			scanner.reader.Pull()
 			continue
-		case ' ':
+		}
+		if peek ==  ' ' {
 			scanner.addWhitespaceIndent()
 			scanner.reader.Pull()
 			continue
-		case '\t':
+		}
+		if peek == '\t' {
 			scanner.addTabIndent()
 			scanner.reader.Pull()
 			continue
-		case '\r':
+		}
+		if peek == '\r' {
 			scanner.reader.Pull()
 			continue
 		}

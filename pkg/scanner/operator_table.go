@@ -55,4 +55,24 @@ var operatorTable = OperatorTable{
 	'}': singleOperatorOption(token.RightCurlyOperator),
 	'[': singleOperatorOption(token.LeftBracketOperator),
 	']': singleOperatorOption(token.RightBracketOperator),
+	',': singleOperatorOption(token.CommaOperator),
+}
+
+// endOfStatementDisablingOperators are operators that disable the scanners 'insertEos' flag.
+// If the scanner gathers one of those operators, it changes the flag to false. The maps
+// keys are the disabling operators and their values are the corresponding enabling operators.
+var endOfStatementDisablingOperators = map[token.Operator] token.Operator {
+	token.LeftParenOperator: token.RightParenOperator,
+	token.LeftBracketOperator: token.RightBracketOperator,
+}
+
+// endOfStatementEnablingOperators is a reversed map of the endOfStatementDisablingOperators.
+var endOfStatementEnablingOperators map[token.Operator] token.Operator
+
+func init() {
+	length := len(endOfStatementDisablingOperators)
+	endOfStatementEnablingOperators = make(map[token.Operator] token.Operator, length)
+	for disabler, enabler := range endOfStatementDisablingOperators {
+		endOfStatementEnablingOperators[enabler] = disabler
+	}
 }
