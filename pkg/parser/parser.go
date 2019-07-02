@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/BenjaminNitschke/Strict/pkg/ast"
 	"github.com/BenjaminNitschke/Strict/pkg/diagnostic"
+	"github.com/BenjaminNitschke/Strict/pkg/scope"
 	"github.com/BenjaminNitschke/Strict/pkg/token"
 )
 
@@ -12,6 +13,7 @@ type Parser struct {
 	tokens   token.Reader
 	unit     *ast.TranslationUnit
 	recorder *diagnostic.Recorder
+	block		 *Block
 }
 
 // NewParser creates a parser instance that parses the tokens of the given
@@ -92,4 +94,26 @@ func (parser *Parser) expectIdentifier() bool {
 
 func (parser *Parser) isLookingAtKeyword(keyword token.Keyword) bool {
 	return false
+}
+
+// openBlock opens a new block of code, updates the parser block pointer and
+// creates a new scope for that block that is a child-scope of the parsers
+// last block. Only statements with the blocks indent may go into the block.
+func (parser *Parser) openBlock(indent token.Indent) {
+	var blockScope *scope.Scope
+	if parser.block == nil {
+		blockScope = parser.unit.Scope().NewChild()
+	} else {
+		blockScope = parser.block.Scope.NewChild()
+	}
+	block := &Block{
+		Indent: indent,
+		Scope: blockScope,
+		Parent: parser.block,
+	}
+	parser.block = block
+}
+
+func (parser *Parser) closeBlock() {
+	parser.block = parser.block.Parent
 }
