@@ -3,14 +3,14 @@ package token
 type KeywordToken struct {
 	Keyword  Keyword
 	position Position
-	indent Indent
+	indent   Indent
 }
 
 func NewKeywordToken(keyword Keyword, position Position, indent Indent) Token {
 	return &KeywordToken{
 		Keyword:  keyword,
 		position: position,
-		indent: indent,
+		indent:   indent,
 	}
 }
 

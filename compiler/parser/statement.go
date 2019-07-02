@@ -13,20 +13,20 @@ func (parser *Parser) ParseMethodCall() (ast.MethodCall, error) {
 	nameToken := parser.tokens.Last()
 	if !token.IsIdentifierToken(nameToken) {
 		return ast.MethodCall{}, &UnexpectedTokenError{
-			Token: nameToken,
+			Token:    nameToken,
 			Expected: "an identifier",
 		}
 	}
- 	if err := parser.skipOperator(token.LeftParenOperator); err != nil {
- 		return ast.MethodCall{}, err
+	if err := parser.skipOperator(token.LeftParenOperator); err != nil {
+		return ast.MethodCall{}, err
 	}
- 	arguments, err := parser.parseArgumentList()
- 	if err != nil {
- 		return ast.MethodCall{}, err
+	arguments, err := parser.parseArgumentList()
+	if err != nil {
+		return ast.MethodCall{}, err
 	}
- 	return ast.MethodCall{
- 		Arguments: arguments,
-		Name: ast.NewIdentifier(nameToken.Value()),
+	return ast.MethodCall{
+		Arguments: arguments,
+		Name:      ast.NewIdentifier(nameToken.Value()),
 	}, nil
 }
 
@@ -41,7 +41,7 @@ func (parser *Parser) parseArgumentList() ([]ast.Node, error) {
 		nextToken := parser.tokens.Pull()
 		if !token.IsOperatorToken(nextToken) {
 			return arguments, &UnexpectedTokenError{
-				Token: nextToken,
+				Token:    nextToken,
 				Expected: "',' or ')'",
 			}
 		}
@@ -51,7 +51,7 @@ func (parser *Parser) parseArgumentList() ([]ast.Node, error) {
 		}
 		if operator != token.CommaOperator {
 			return arguments, &UnexpectedTokenError{
-				Token: nextToken,
+				Token:    nextToken,
 				Expected: "',' or ')'",
 			}
 		}

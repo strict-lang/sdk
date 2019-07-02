@@ -6,11 +6,11 @@ import (
 )
 
 type MethodGeneration struct {
-	generator *CodeGenerator
+	generator          *CodeGenerator
 	prologueGenerators map[string]PrologueGenerator
 	epilogueGenerators map[string]EpilogueGenerator
-	declaration ast.Method
-	buffer *strings.Builder
+	declaration        ast.Method
+	buffer             *strings.Builder
 }
 
 type PrologueGenerator func()
@@ -18,9 +18,9 @@ type EpilogueGenerator func()
 
 func (generator *CodeGenerator) NewMethodGeneration(method ast.Method) *MethodGeneration {
 	return &MethodGeneration{
-		generator: generator,
-		declaration: method,
-		buffer: &strings.Builder{},
+		generator:          generator,
+		declaration:        method,
+		buffer:             &strings.Builder{},
 		epilogueGenerators: map[string]EpilogueGenerator{},
 		prologueGenerators: map[string]PrologueGenerator{},
 	}

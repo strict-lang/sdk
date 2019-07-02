@@ -8,23 +8,23 @@ import (
 )
 
 const (
-	TabIndent 			 token.Indent = 2
-	WhitespaceIndent token.Indent= 1
+	TabIndent        token.Indent = 2
+	WhitespaceIndent token.Indent = 1
 )
 
 // Scanner is a token.Reader that performs lexical analysis on a stream or characters.
 type Scanner struct {
-	reader    *RecordingSourceReader
-	linemap   *linemap.Builder
-	recorder  *diagnostic.Recorder
+	reader   *RecordingSourceReader
+	linemap  *linemap.Builder
+	recorder *diagnostic.Recorder
 	// peeked points to the most recently peeked token.
-	peeked    token.Token
+	peeked token.Token
 	// last points to the most recently scanned token. It is an InvalidToken if no other
 	// token has been scanned. The fields value is never nil.
-	last      token.Token
+	last token.Token
 	// begin is the begin index of the token that is currently scanned. It is set to the
 	// current offset when the scanner starts scanning the next token.
-	begin     source.Offset
+	begin source.Offset
 	// lineIndex current lineIndex of the scanner, incremented each time a linefeed is hit.
 	// The scanner keeps track of his line-index to report better errors to the diagnostics.
 	lineIndex source.LineIndex
@@ -35,7 +35,7 @@ type Scanner struct {
 	endOfStatementPrevention int
 	// indent is the current indentation level. It is updates while scanning and assigned
 	// to all tokens that are created.
-	indent   token.Indent
+	indent token.Indent
 	// updateIndent is a flag that tells the scanner whether it should update the indent
 	// value. It is set and unset during scanning. Once the first non-whitespace character
 	// in a line is hit, the scanner disables this flag. All scanned tokens in that line
@@ -47,17 +47,23 @@ type Scanner struct {
 	emptyLine bool
 }
 
-func NewScanner(reader source.Reader) *Scanner {
+func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Recorder) *Scanner {
 	return &Scanner{
-		reader:   decorateSourceReader(reader),
-		linemap:  linemap.NewBuilder(),
-		recorder: diagnostic.NewRecorder(),
-		last:     token.NewAnonymousInvalidToken(),
-		peeked:   nil,
+		reader:       decorateSourceReader(reader),
+		linemap:      linemap.NewBuilder(),
+		recorder:     recorder,
+		last:         token.NewAnonymousInvalidToken(),
+		peeked:       nil,
 		updateIndent: true,
-		emptyLine: true, // The line is empty until a char is hit
+		emptyLine:    true, // The line is empty until a char is hit
 	}
 }
+
+func NewScanner(reader source.Reader) *Scanner {
+	return NewDiagnosticScanner(reader, diagnostic.NewRecorder())
+}
+
+var _ token.Reader = &Scanner{}
 
 func NewStringScanner(input string) *Scanner {
 	return NewScanner(source.NewStringReader(input))

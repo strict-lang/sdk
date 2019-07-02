@@ -6,13 +6,13 @@ import (
 )
 
 func TestScannerEndOfStatementInsertion(test *testing.T) {
-	entries := map[string] int {
+	entries := map[string]int{
 		`add(
 			a,
 			b
 		 )`: 1,
 
-		 `add(a, b)
+		`add(a, b)
 			add(b, c)
 			add(b, add(a, c))`: 3,
 	}
@@ -47,12 +47,12 @@ func TestScanner_SkipWhitespaces(test *testing.T) {
 }
 
 func TestIndentation(test *testing.T) {
-	entries := map[string] token.Indent {
-		"  a + b": 2,
-		"  b is not true": 2,
+	entries := map[string]token.Indent{
+		"  a + b":                2,
+		"  b is not true":        2,
 		"  b   is   not  true  ": 2,
-		"\t\tc is a":4,
-		"\t return a":3,
+		"\t\tc is a":             4,
+		"\t return a":            3,
 	}
 	for entry, indent := range entries {
 		scanner := NewStringScanner(entry)

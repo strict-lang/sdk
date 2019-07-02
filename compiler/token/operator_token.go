@@ -14,7 +14,7 @@ func NewOperatorToken(operator Operator, position Position, indent Indent) Token
 	return &OperatorToken{
 		Operator: operator,
 		position: position,
-		indent: indent,
+		indent:   indent,
 	}
 }
 

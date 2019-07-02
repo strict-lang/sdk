@@ -8,12 +8,12 @@ import (
 
 // CodeGenerator generates C code from an ast.
 type CodeGenerator struct {
-	unit   		 *ast.TranslationUnit
-	output 		 *strings.Builder
+	unit       *ast.TranslationUnit
+	output     *strings.Builder
 	buffer     *strings.Builder
 	method     *MethodGeneration
 	generators *ast.Visitor
-	indent 			int8
+	indent     int8
 }
 
 // NewCodeGenerator constructs a CodeGenerator that generates C code from
@@ -21,8 +21,8 @@ type CodeGenerator struct {
 func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	generators := ast.NewEmptyVisitor()
 	codeGenerator := &CodeGenerator{
-		unit:   unit,
-		output: &strings.Builder{},
+		unit:       unit,
+		output:     &strings.Builder{},
 		generators: generators,
 	}
 	codeGenerator.buffer = codeGenerator.output
@@ -53,11 +53,11 @@ func (generator *CodeGenerator) Emitf(code string, arguments ...interface{}) {
 }
 
 func (generator *CodeGenerator) enterBlock() {
-	generator.indent ++
+	generator.indent++
 }
 
-func(generator *CodeGenerator) leaveBlock() {
-	generator.indent --
+func (generator *CodeGenerator) leaveBlock() {
+	generator.indent--
 	if generator.indent < 0 {
 		generator.indent = 0
 	}
@@ -67,4 +67,9 @@ func (generator *CodeGenerator) Spaces() {
 	for index := int8(0); index < generator.indent; index++ {
 		generator.Emit("  ")
 	}
+}
+
+func (generator *CodeGenerator) Generate() string {
+	generator.unit.Accept(generator.generators)
+	return generator.String()
 }

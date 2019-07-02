@@ -7,7 +7,7 @@ const InvalidTokenName = "invalid"
 type InvalidToken struct {
 	value    string
 	position Position
-	indent Indent
+	indent   Indent
 }
 
 func NewAnonymousInvalidToken() Token {
@@ -18,7 +18,7 @@ func NewInvalidToken(value string, position Position, indent Indent) Token {
 	return &InvalidToken{
 		value:    value,
 		position: position,
-		indent: indent,
+		indent:   indent,
 	}
 }
 

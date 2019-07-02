@@ -1,6 +1,8 @@
 package ast
 
-import "github.com/BenjaminNitschke/Strict/compiler/scope"
+import (
+	"github.com/BenjaminNitschke/Strict/compiler/scope"
+)
 
 // TranslationUnit represents a unit of translation, a file containing strict
 // source code. It can have multiple children, which are seen as the roots
@@ -11,9 +13,13 @@ type TranslationUnit struct {
 	Children []Node
 }
 
-func NewTranslationUnit(name string, rootScope *scope.Scope, children []Node) TranslationUnit {
+func NewEmptyTranslationUnit(name string) *TranslationUnit {
+	return NewTranslationUnit(name, scope.NewRoot(), []Node{})
+}
+
+func NewTranslationUnit(name string, rootScope *scope.Scope, children []Node) *TranslationUnit {
 	childScope := rootScope.NewNamedChild(name)
-	return TranslationUnit{
+	return &TranslationUnit{
 		name:     name,
 		scope:    childScope,
 		Children: children,

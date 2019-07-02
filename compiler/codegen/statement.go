@@ -15,7 +15,7 @@ func (generator *CodeGenerator) GenerateConditionalStatement(statement *ast.Cond
 }
 
 const (
-	yieldListName = "$yield"
+	yieldListName      = "$yield"
 	yieldGeneratorName = "yield"
 )
 

@@ -4,10 +4,10 @@ import (
 	"github.com/BenjaminNitschke/Strict/compiler/ast"
 )
 
-var builtinTypes = map[string] string {
-	"text": "strict::Text",
+var builtinTypes = map[string]string{
+	"text":   "strict::Text",
 	"number": "strict::Number",
-	"list": "strict::List",
+	"list":   "strict::List",
 }
 
 func updateGenericTypeName(name ast.GenericTypeName) ast.TypeName {

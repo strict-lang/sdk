@@ -52,7 +52,7 @@ func (parser *Parser) expectAnyIdentifier() error {
 	peek := parser.tokens.Peek()
 	if peek.Name() != token.IdentifierTokenName {
 		return &UnexpectedTokenError{
-			Token: peek,
+			Token:    peek,
 			Expected: "any identifier",
 		}
 	}

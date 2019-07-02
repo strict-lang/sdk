@@ -24,7 +24,7 @@ func NewStringLiteralToken(value string, position Position, indent Indent) *Valu
 		value:    value,
 		position: position,
 		literal:  true,
-		indent: indent,
+		indent:   indent,
 	}
 }
 
@@ -34,7 +34,7 @@ func NewNumberLiteralToken(value string, position Position, indent Indent) *Valu
 		value:    value,
 		position: position,
 		literal:  true,
-		indent: indent,
+		indent:   indent,
 	}
 }
 
@@ -44,7 +44,7 @@ func NewIdentifierToken(value string, position Position, indent Indent) *ValuedT
 		value:    value,
 		position: position,
 		literal:  false,
-		indent: indent,
+		indent:   indent,
 	}
 }
 

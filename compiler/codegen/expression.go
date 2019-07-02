@@ -6,6 +6,6 @@ import (
 
 func (generator *CodeGenerator) GenerateBinaryExpression(binary *ast.BinaryExpression) {
 	binary.LeftOperand.Accept(generator.generators)
-	generator.Emitf( " %s ", binary.Operator.String())
+	generator.Emitf(" %s ", binary.Operator.String())
 	binary.RightOperand.Accept(generator.generators)
 }

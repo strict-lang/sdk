@@ -21,7 +21,7 @@ func (err *UnexpectedTokenError) Error() string {
 }
 
 type InvalidIndentationError struct {
-	Token token.Token
+	Token    token.Token
 	Expected token.Indent
 }
 
@@ -30,4 +30,3 @@ func (err *InvalidIndentationError) Error() string {
 		"token %s has an invalid indentation level, expected %d",
 		err.Token, err.Expected)
 }
-

@@ -61,19 +61,19 @@ func TestCodeGeneration(test *testing.T) {
 	}
 
 	call := ast.ExpressionStatement{
-			Expression: &ast.MethodCall{
-				Name: ast.Identifier{Value: "commentOnAge"},
-				Arguments: []ast.Node{
-					 &ast.MethodCall{
-						Name:      ast.Identifier{Value: "inputNumber"},
-						Arguments: []ast.Node{
-							&ast.StringLiteral{
-								Value: "How old are you?",
-							},
+		Expression: &ast.MethodCall{
+			Name: ast.Identifier{Value: "commentOnAge"},
+			Arguments: []ast.Node{
+				&ast.MethodCall{
+					Name: ast.Identifier{Value: "inputNumber"},
+					Arguments: []ast.Node{
+						&ast.StringLiteral{
+							Value: "How old are you?",
 						},
 					},
 				},
 			},
+		},
 	}
 
 	unit := ast.NewTranslationUnit("test", scope.NewRoot(), []ast.Node{&method, &call})

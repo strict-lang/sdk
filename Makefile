@@ -12,7 +12,7 @@ build: build-libstrict
 	$(GO_BUILD) -o $(TARGET_BINARY) -v
 
 test:
-	$(GO_TEST) -v ./pkg/...
+	$(GO_TEST) -v ./compiler/...
 
 run:
 	$(GO_BUILD) -o $(BINARY_NAME) -v ./...
@@ -25,3 +25,4 @@ build-libstrict:
 
 deps:
 	$(GO_GET) github.com/fatih/color
+	$(GO_GET) github.com/urfave/cli

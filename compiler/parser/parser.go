@@ -3,26 +3,29 @@ package parser
 import (
 	"github.com/BenjaminNitschke/Strict/compiler/ast"
 	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
+	"github.com/BenjaminNitschke/Strict/compiler/scanner"
 	"github.com/BenjaminNitschke/Strict/compiler/scope"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 )
 
 // Parser parses an AST from a stream of tokens.
 type Parser struct {
-	tokens   token.Reader
-	unit     *ast.TranslationUnit
-	recorder *diagnostic.Recorder
-	block		 *Block
+	tokens    token.Reader
+	rootScope *scope.Scope
+	recorder  *diagnostic.Recorder
+	block     *Block
+	unitName  string
 }
 
 // NewParser creates a parser instance that parses the tokens of the given
 // token.Reader and uses the 'unit' as its ast-root node. Errors while parsing
 // are recorded by the 'recorder'.
-func NewParser(unit *ast.TranslationUnit, tokens token.Reader, recorder *diagnostic.Recorder) *Parser {
+func NewParser(unitName string, tokens token.Reader, recorder *diagnostic.Recorder) *Parser {
 	return &Parser{
-		unit:     unit,
-		tokens:   tokens,
-		recorder: recorder,
+		rootScope: scope.NewRoot(),
+		tokens:    tokens,
+		recorder:  recorder,
+		unitName:  unitName,
 	}
 }
 
@@ -40,13 +43,13 @@ type Block struct {
 func (parser *Parser) openBlock(indent token.Indent) {
 	var blockScope *scope.Scope
 	if parser.block == nil {
-		blockScope = parser.unit.Scope().NewChild()
+		blockScope = parser.rootScope.NewChild()
 	} else {
 		blockScope = parser.block.Scope.NewChild()
 	}
 	block := &Block{
 		Indent: indent,
-		Scope: blockScope,
+		Scope:  blockScope,
 		Parent: parser.block,
 	}
 	parser.block = block
@@ -54,4 +57,21 @@ func (parser *Parser) openBlock(indent token.Indent) {
 
 func (parser *Parser) closeBlock() {
 	parser.block = parser.block.Parent
+}
+
+func (parser *Parser) parseTopLevelNodes() ([]ast.Node, error) {
+	return []ast.Node{}, nil
+}
+
+func (parser *Parser) ParseTranslationUnit() (*ast.TranslationUnit, error) {
+	topLevelNodes, err := parser.parseTopLevelNodes()
+	if err != nil {
+		return nil, err
+	}
+	return ast.NewTranslationUnit(parser.unitName, parser.rootScope, topLevelNodes), nil
+}
+
+func Parse(unitName string, scanner *scanner.Scanner, recorder *diagnostic.Recorder) (*ast.TranslationUnit, err) {
+	parser := NewParser(unitName, scanner, recorder)
+	return parser.ParseTranslationUnit()
 }

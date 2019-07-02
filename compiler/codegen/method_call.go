@@ -4,9 +4,9 @@ import (
 	"github.com/BenjaminNitschke/Strict/compiler/ast"
 )
 
-var builtinMethods = map[string] string {
-	"log": "strict::Log",
-	"logf": "strict::Logf",
+var builtinMethods = map[string]string{
+	"log":         "strict::Log",
+	"logf":        "strict::Logf",
 	"inputNumber": "strict::InputNumber",
 }
 
