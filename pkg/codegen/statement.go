@@ -15,23 +15,30 @@ func (generator *CodeGenerator) GenerateConditionalStatement(statement *ast.Cond
 }
 
 const (
-	yieldListName = "_GENERATED_yield_list_"
+	yieldListName = "$yield"
+	yieldGeneratorName = "yield"
 )
 
 func (generator *CodeGenerator) GenerateYieldStatement(statement *ast.YieldStatement) {
-	generator.method.addPrologueGenerator(generator.declareYieldList)
-	generator.Spaces()
-	generator.Emitf("%s.append(", yieldListName)
-	statement.Accept(generator.generators)
-	generator.Emitf("%s)")
-	generator.method.addEpilogueGenerator(generator.returnYieldList)
+	generator.method.addPrologueGenerator(yieldGeneratorName, generator.declareYieldList)
+	generator.method.addEpilogueGenerator(yieldGeneratorName, generator.returnYieldList)
+
+	generator.Emitf("%s.insert(", yieldListName)
+	statement.Value.Accept(generator.generators)
+	generator.Emitf(");")
 }
 
 func (generator *CodeGenerator) declareYieldList() {
-	generator.Emitf("List")
+	if generator.method == nil {
+		panic("Yield statement outside of method")
+	}
+	typeName := updateTypeName(generator.method.declaration.Type)
+	generator.Spaces()
+	generator.Emitf("%s %s;\n", typeName.FullName(), yieldListName)
 }
 
 func (generator *CodeGenerator) returnYieldList() {
+	generator.Emit("\n")
 	generator.Spaces()
 	generator.Emitf("return %s;", yieldListName)
 }

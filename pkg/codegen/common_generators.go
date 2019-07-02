@@ -33,5 +33,4 @@ func (generator *CodeGenerator) GenerateBlockStatement(block *ast.BlockStatement
 	generator.Emit("\n")
 	generator.Spaces()
 	generator.Emit("}")
-
 }

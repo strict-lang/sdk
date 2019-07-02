@@ -7,6 +7,7 @@ import (
 var builtinMethods = map[string] string {
 	"log": "strict::Log",
 	"logf": "strict::Logf",
+	"inputNumber": "strict::InputNumber",
 }
 
 func (generator *CodeGenerator) GenerateMethodCall(call *ast.MethodCall) {

@@ -7,8 +7,8 @@ import (
 
 type MethodGeneration struct {
 	generator *CodeGenerator
-	prologueGenerators []PrologueGenerator
-	epilogueGenerators []EpilogueGenerator
+	prologueGenerators map[string]PrologueGenerator
+	epilogueGenerators map[string]EpilogueGenerator
 	declaration ast.Method
 	buffer *strings.Builder
 }
@@ -21,8 +21,8 @@ func (generator *CodeGenerator) NewMethodGeneration(method ast.Method) *MethodGe
 		generator: generator,
 		declaration: method,
 		buffer: &strings.Builder{},
-		epilogueGenerators: []EpilogueGenerator{},
-		prologueGenerators: []PrologueGenerator{},
+		epilogueGenerators: map[string]EpilogueGenerator{},
+		prologueGenerators: map[string]PrologueGenerator{},
 	}
 }
 
@@ -52,7 +52,7 @@ func (generation *MethodGeneration) Complete() {
 	generator.Emit(epilogue)
 	generator.Emit("\n")
 	generator.Spaces()
-	generator.Emit("}")
+	generator.Emit("}\n\n")
 }
 
 func (generation *MethodGeneration) generateDeclaration() string {
@@ -103,10 +103,10 @@ func (generation *MethodGeneration) generateEpilogue() string {
 	return generation.buffer.String()
 }
 
-func (generation *MethodGeneration) addEpilogueGenerator(function EpilogueGenerator) {
-	generation.epilogueGenerators = append(generation.epilogueGenerators, function)
+func (generation *MethodGeneration) addEpilogueGenerator(name string, function EpilogueGenerator) {
+	generation.epilogueGenerators[name] = function
 }
 
-func (generation *MethodGeneration) addPrologueGenerator(function PrologueGenerator) {
-	generation.prologueGenerators = append(generation.prologueGenerators, function)
+func (generation *MethodGeneration) addPrologueGenerator(name string, function PrologueGenerator) {
+	generation.prologueGenerators[name] = function
 }

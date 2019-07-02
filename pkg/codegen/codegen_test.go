@@ -9,13 +9,10 @@ import (
 )
 
 func TestCodeGeneration(test *testing.T) {
-	entry := ast.Method{
+	method := ast.Method{
 		Name: ast.NewIdentifier("commentOnAge"),
-		Type: ast.GenericTypeName{
-			Name: "list",
-			Generic: ast.ConcreteTypeName{
-				Name: "number",
-			},
+		Type: ast.ConcreteTypeName{
+			Name: "void",
 		},
 		Parameters: []ast.Parameter{
 			{
@@ -39,7 +36,7 @@ func TestCodeGeneration(test *testing.T) {
 								Expression: &ast.MethodCall{
 									Name: ast.Identifier{Value: "logf"},
 									Arguments: []ast.Node{
-										&ast.StringLiteral{Value: "%d are still young"},
+										&ast.StringLiteral{Value: "%d is still young"},
 										&ast.Identifier{Value: "age"},
 									},
 								},
@@ -63,9 +60,25 @@ func TestCodeGeneration(test *testing.T) {
 		},
 	}
 
-	unit := ast.NewTranslationUnit("test", scope.NewRoot(), []ast.Node{&entry,})
+	call := ast.ExpressionStatement{
+			Expression: &ast.MethodCall{
+				Name: ast.Identifier{Value: "commentOnAge"},
+				Arguments: []ast.Node{
+					 &ast.MethodCall{
+						Name:      ast.Identifier{Value: "inputNumber"},
+						Arguments: []ast.Node{
+							&ast.StringLiteral{
+								Value: "How old are you?",
+							},
+						},
+					},
+				},
+			},
+	}
+
+	unit := ast.NewTranslationUnit("test", scope.NewRoot(), []ast.Node{&method, &call})
 	generator := NewCodeGenerator(&unit)
-	generator.GenerateMethod(&entry)
+	generator.GenerateTranslationUnit(&unit)
 	generator.PrintOutput()
 }
 
