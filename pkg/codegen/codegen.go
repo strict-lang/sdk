@@ -11,7 +11,10 @@ type CodeGenerator struct {
 	unit   		 *ast.TranslationUnit
 	output 		 *strings.Builder
 	generators *ast.Visitor
+	epilogueGenerators []FunctionEpilogueGenerator
 }
+
+type FunctionEpilogueGenerator func()
 
 // NewCodeGenerator constructs a CodeGenerator that generates C code from
 // the nodes in the passed translation-unit.
@@ -24,6 +27,14 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	}
 	generators.VisitMethodCall = codeGenerator.GenerateMethodCall
 	return codeGenerator
+}
+
+func (generator *CodeGenerator) addEpilogueGenerator(function FunctionEpilogueGenerator) {
+	generator.epilogueGenerators = append(generator.epilogueGenerators, function)
+}
+
+func (generator *CodeGenerator) clearEpilogueGenerators() {
+	generator.epilogueGenerators = []FunctionEpilogueGenerator{}
 }
 
 func (generator *CodeGenerator) String() string {

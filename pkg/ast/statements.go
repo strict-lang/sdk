@@ -16,9 +16,6 @@ type MethodCall struct {
 
 func (call *MethodCall) Accept(visitor *Visitor) {
 	visitor.VisitMethodCall(call)
-	for _, argument := range call.Arguments {
-		argument.Accept(visitor)
-	}
 }
 
 type BlockStatement struct {
@@ -27,9 +24,6 @@ type BlockStatement struct {
 
 func (block *BlockStatement) Accept(visitor *Visitor) {
 	visitor.VisitBlockStatement(block)
-	for _, statement := range block.Children {
-		statement.Accept(visitor)
-	}
 }
 
 type ConditionalStatement struct {
@@ -40,11 +34,6 @@ type ConditionalStatement struct {
 
 func (conditional *ConditionalStatement) Accept(visitor *Visitor) {
 	visitor.VisitConditionalStatement(conditional)
-	conditional.Condition.Accept(visitor)
-	conditional.Body.Accept(visitor)
-	if conditional.Else != nil {
-		conditional.Else.Accept(visitor)
-	}
 }
 
 type ForLoopStatement struct {
@@ -72,9 +61,6 @@ type ForeachLoopStatement struct {
 
 func (loop *ForeachLoopStatement) Accept(visitor *Visitor) {
 	visitor.VisitForeachLoopStatement(loop)
-	loop.Body.Accept(visitor)
-	loop.Variable.Accept(visitor)
-	loop.Target.Accept(visitor)
 }
 
 type PreIncrementStatement struct {

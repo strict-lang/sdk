@@ -30,9 +30,6 @@ func (unit *TranslationUnit) Scope() *scope.Scope {
 
 func (unit *TranslationUnit) Accept(visitor *Visitor) {
 	visitor.VisitTranslationUnit(unit)
-	for _, child := range unit.Children {
-		child.Accept(visitor)
-	}
 }
 
 func (unit *TranslationUnit) AppendChild(node Node) {

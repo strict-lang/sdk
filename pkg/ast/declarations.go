@@ -8,9 +8,6 @@ type Type struct {
 
 func (typeNode *Type) Accept(visitor *Visitor) {
 	visitor.VisitType(typeNode)
-	for _, member := range typeNode.Members {
-		member.Accept(visitor)
-	}
 }
 
 // Member is a typed field of a class. It represents methods and
@@ -35,9 +32,6 @@ type Method struct {
 
 func (method *Method) Accept(visitor *Visitor) {
 	visitor.VisitMethod(method)
-	for _, parameter := range method.Parameters {
-		parameter.Accept(visitor)
-	}
 }
 
 type Parameter struct {

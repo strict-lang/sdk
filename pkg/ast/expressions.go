@@ -29,7 +29,6 @@ type UnaryExpression struct {
 
 func (unary *UnaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitUnaryExpression(unary)
-	unary.Operand.Accept(visitor)
 }
 
 func (unary UnaryExpression) String() string {
@@ -45,8 +44,6 @@ type BinaryExpression struct {
 
 func (binary *BinaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitBinaryExpression(binary)
-	binary.LeftOperand.Accept(visitor)
-	binary.RightOperand.Accept(visitor)
 }
 
 func (binary BinaryExpression) String() string {
