@@ -1,10 +1,8 @@
 package parser
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
 	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
 	"github.com/BenjaminNitschke/Strict/compiler/scanner"
-	"github.com/BenjaminNitschke/Strict/compiler/scope"
 	"testing"
 )
 
@@ -25,7 +23,5 @@ func TestParseBinaryExpression(test *testing.T) {
 }
 
 func createParser(input string) *Parser {
-	// TODO(merlinosayimwen): Use diagnostics.Recorder
-	unit := ast.NewTranslationUnit("test", scope.NewRoot(), []ast.Node{})
-	return NewParser(&unit, scanner.NewStringScanner(input), diagnostic.NewRecorder())
+	return NewParser("test", scanner.NewStringScanner(input), diagnostic.NewRecorder())
 }

@@ -1,9 +1,7 @@
 package parser
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
 	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
-	"github.com/BenjaminNitschke/Strict/compiler/scope"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 	"testing"
 )
@@ -28,6 +26,5 @@ func TestSkipOperator(test *testing.T) {
 }
 
 func NewTestParser(tokens token.Reader) *Parser {
-	unit := ast.NewTranslationUnit("test", scope.NewRoot(), []ast.Node{})
-	return NewParser(&unit, tokens, diagnostic.NewRecorder())
+	return NewParser("test", tokens, diagnostic.NewRecorder())
 }

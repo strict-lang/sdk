@@ -71,7 +71,7 @@ func (parser *Parser) ParseTranslationUnit() (*ast.TranslationUnit, error) {
 	return ast.NewTranslationUnit(parser.unitName, parser.rootScope, topLevelNodes), nil
 }
 
-func Parse(unitName string, scanner *scanner.Scanner, recorder *diagnostic.Recorder) (*ast.TranslationUnit, err) {
+func Parse(unitName string, scanner *scanner.Scanner, recorder *diagnostic.Recorder) (*ast.TranslationUnit, error) {
 	parser := NewParser(unitName, scanner, recorder)
 	return parser.ParseTranslationUnit()
 }

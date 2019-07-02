@@ -77,8 +77,8 @@ func TestCodeGeneration(test *testing.T) {
 	}
 
 	unit := ast.NewTranslationUnit("test", scope.NewRoot(), []ast.Node{&method, &call})
-	generator := NewCodeGenerator(&unit)
-	generator.GenerateTranslationUnit(&unit)
+	generator := NewCodeGenerator(unit)
+	generator.GenerateTranslationUnit(unit)
 	// TODO(merlinosayimwen): Validate ouput
 }
 
