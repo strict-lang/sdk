@@ -59,6 +59,9 @@ func TestIndentation(test *testing.T) {
 		tokens := ScanAllTokens(scanner)
 		for _, scanned := range tokens {
 			if scanned.Indent() != indent {
+				if token.IsEndOfStatementToken(scanned) {
+					continue
+				}
 				test.Errorf("token %s has indent %d, expected %d", scanned, scanned.Indent(), indent)
 			}
 		}
@@ -75,6 +78,7 @@ func TestScanHelloWorld(test *testing.T) {
 	assertTokenValue(test, scanner.Pull(), "Hello, World!")
 	assertOperator(test, scanner.Pull(), token.RightParenOperator)
 	assertOperator(test, scanner.Pull(), token.SemicolonOperator)
+	assertEndOfStatement(test, scanner.Pull())
 	assertEndOfFile(test, scanner.Pull())
 }
 
@@ -86,6 +90,7 @@ func TestScanExpression(test *testing.T) {
 	assertTokenValue(test, scanner.Pull(), "a")
 	assertOperator(test, scanner.Pull(), token.AddOperator)
 	assertTokenValue(test, scanner.Pull(), "b")
+	assertEndOfStatement(test, scanner.Pull())
 	assertEndOfFile(test, scanner.Pull())
 }
 
@@ -101,8 +106,14 @@ func assertOperator(test *testing.T, got token.Token, wanted token.Operator) {
 	}
 }
 
+func assertEndOfStatement(test *testing.T, got token.Token) {
+	if !token.IsEndOfStatementToken(got) {
+		test.Errorf("unexpected token %s, expected %s", got, token.EndOfStatementTokenName)
+	}
+}
+
 func assertEndOfFile(test *testing.T, got token.Token) {
 	if !token.IsEndOfFileToken(got) {
-		test.Errorf("unexpected token %s, expected eof", got)
+		test.Errorf("unexpected token %s, expected %s", got, token.EndOfFileTokenName)
 	}
 }

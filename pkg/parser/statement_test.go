@@ -28,7 +28,7 @@ func TestParser_ParseMethodCall(test *testing.T) {
 		test.Errorf("methodCall has name %s, expected 'add'", call.Name.Value)
 	}
 	if arguments := len(call.Arguments); arguments != 2 {
-		test.Errorf("methodCall has %s argument(s), expected 2", arguments)
+		test.Errorf("methodCall has %d argument(s), expected 2", arguments)
 	}
 	endOfStatement := parser.tokens.Pull()
 	if !token.IsEndOfStatementToken(endOfStatement) {

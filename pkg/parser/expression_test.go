@@ -16,12 +16,11 @@ func TestParseBinaryExpression(test *testing.T) {
 	for _, entry := range entries {
 		parser := createParser(entry)
 		// TODO(merlinosayimwen): Verify result node
-		expression, err := parser.ParseBinaryExpression()
+		_, err := parser.ParseBinaryExpression()
 		if err != nil {
 			test.Errorf("unexpected error: %s", err.Error())
 			continue
 		}
-		test.Log(expression)
 	}
 }
 

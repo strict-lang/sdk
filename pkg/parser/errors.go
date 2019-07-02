@@ -27,7 +27,7 @@ type InvalidIndentationError struct {
 
 func (err *InvalidIndentationError) Error() string {
 	return fmt.Sprintf(
-		"token %s has an invalid indentation level, expected %s",
+		"token %s has an invalid indentation level, expected %d",
 		err.Token, err.Expected)
 }
 

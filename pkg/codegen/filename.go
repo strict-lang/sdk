@@ -8,7 +8,7 @@ import (
 
 var (
 	FileNameFormat     = "%s.generated.hh"
-	FileNameRegexp     = regexp.MustCompile(`(?m)(\w+)\.generated\.hh`)
+	FileNameRegexp     = regexp.MustCompile(`(?P<Unit>\w+)\.generated\.hh`)
 	ErrInvalidFilename = errors.New("invalid filename format")
 )
 
@@ -19,8 +19,9 @@ func FilenameByUnitName(unitName string) string {
 }
 
 func UnitNameByFilename(filename string) (string, error) {
-	for _, match := range FileNameRegexp.FindAllString(filename, -1) {
-		return match, nil
+	matches := FileNameRegexp.FindStringSubmatch(filename)
+	if len(matches) < 2 {
+		return "", ErrInvalidFilename
 	}
-	return "", ErrInvalidFilename
+	return matches[1], nil
 }
