@@ -47,5 +47,5 @@ func (scanner *Scanner) ScanStringLiteral() token.Token {
 		scanner.reportError(err)
 		return scanner.createInvalidToken()
 	}
-	return token.NewStringLiteralToken(literal, position)
+	return token.NewStringLiteralToken(literal, position, scanner.indent)
 }

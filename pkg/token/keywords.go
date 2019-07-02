@@ -11,11 +11,13 @@ const (
 	InvalidKeyword Keyword = iota
 	MethodKeyword
 	TypeKeyword
+	IsKeyword
 	IfKeyword
 	ElseKeyword
 	YieldKeyword
 	ToKeyword
 	OrKeyword
+	NotKeyword
 	AndKeyword
 	ForKeyword
 )
@@ -23,6 +25,7 @@ const (
 var keywordNameTable = map[Keyword]string{
 	MethodKeyword: "method",
 	TypeKeyword:   "type",
+	IsKeyword:     "is",
 	IfKeyword:     "if",
 	ElseKeyword:   "else",
 	ForKeyword:    "for",
@@ -30,6 +33,7 @@ var keywordNameTable = map[Keyword]string{
 	ToKeyword:     "to",
 	AndKeyword:    "and",
 	OrKeyword:     "or",
+	NotKeyword:    "not",
 }
 
 var operatorKeywords = map[Keyword]Operator{

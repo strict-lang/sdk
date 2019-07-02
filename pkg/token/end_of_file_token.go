@@ -37,3 +37,7 @@ func (EndOfFileToken) IsValid() bool {
 func (EndOfFileToken) IsLiteral() bool {
 	return false
 }
+
+func (EndOfFileToken) Indent() Indent {
+	return 0
+}

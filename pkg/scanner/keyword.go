@@ -17,7 +17,7 @@ func (scanner *Scanner) ScanKeyword() token.Token {
 		scanner.reportError(err)
 		return scanner.createInvalidToken()
 	}
-	return token.NewKeywordToken(keyword, scanner.currentPosition())
+	return token.NewKeywordToken(keyword, scanner.currentPosition(), scanner.indent)
 }
 
 // ScanKeyword scans a KeywordToken from the stream of characters.
@@ -33,5 +33,5 @@ func (scanner *Scanner) gatherKeyword() (token.Keyword, error) {
 }
 
 func (scanner *Scanner) createInvalidKeyword(text string) token.Token {
-	return token.NewInvalidToken(text, scanner.currentPosition())
+	return token.NewInvalidToken(text, scanner.currentPosition(), scanner.indent)
 }

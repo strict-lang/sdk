@@ -5,16 +5,18 @@ const InvalidTokenName = "invalid"
 type InvalidToken struct {
 	value    string
 	position Position
+	indent Indent
 }
 
 func NewAnonymousInvalidToken() Token {
-	return &InvalidToken{value: ""}
+	return &InvalidToken{value: "", indent: 0}
 }
 
-func NewInvalidToken(value string, position Position) Token {
+func NewInvalidToken(value string, position Position, indent Indent) Token {
 	return &InvalidToken{
 		value:    value,
 		position: position,
+		indent: indent,
 	}
 }
 
@@ -28,6 +30,10 @@ func (invalid InvalidToken) Value() string {
 
 func (invalid InvalidToken) Position() Position {
 	return invalid.Position()
+}
+
+func (invalid InvalidToken) Indent() Indent {
+	return invalid.indent
 }
 
 func (InvalidToken) IsValid() bool {

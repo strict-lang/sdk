@@ -44,3 +44,7 @@ func (EndOfStatementToken) IsLiteral() bool {
 func (EndOfStatementToken) IsValid() bool {
 	return true
 }
+
+func (EndOfStatementToken) Indent() Indent {
+	return 0
+}

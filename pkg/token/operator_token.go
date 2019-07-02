@@ -7,12 +7,14 @@ const OperatorTokenName = "operator"
 type OperatorToken struct {
 	Operator Operator
 	position Position
+	indent   Indent
 }
 
-func NewOperatorToken(operator Operator, position Position) Token {
+func NewOperatorToken(operator Operator, position Position, indent Indent) Token {
 	return &OperatorToken{
 		Operator: operator,
 		position: position,
+		indent: indent,
 	}
 }
 
@@ -42,6 +44,10 @@ func (OperatorToken) IsLiteral() bool {
 
 func (OperatorToken) IsValid() bool {
 	return true
+}
+
+func (operator OperatorToken) Indent() Indent {
+	return operator.indent
 }
 
 func (operator OperatorToken) String() string {

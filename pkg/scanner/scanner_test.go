@@ -13,6 +13,25 @@ func TestScanner_SkipWhitespaces(test *testing.T) {
 	}
 }
 
+func TestIndentation(test *testing.T) {
+	entries := map[string] token.Indent {
+		"  a + b": 2,
+		"  b is not true": 2,
+		"  b   is   not  true  ": 2,
+		"\t\tc is a":4,
+		"\t return a":3,
+	}
+	for entry, indent := range entries {
+		scanner := NewStringScanner(entry)
+		tokens := scanAllTokens(scanner)
+		for _, scanned := range tokens {
+			if scanned.Indent() != indent {
+				test.Errorf("token %s has indent %d, expected %d", scanned, scanned.Indent(), indent)
+			}
+		}
+	}
+}
+
 func TestScanHelloWorld(test *testing.T) {
 	const entry = `
 	print("Hello, World!");	
@@ -54,4 +73,16 @@ func assertEndOfFile(test *testing.T, got token.Token) {
 	if !ok {
 		test.Errorf("unexpected token %s, expected eof", got)
 	}
+}
+
+func scanAllTokens(scanner *Scanner) []token.Token {
+	var tokens []token.Token
+	for {
+		next := scanner.Pull()
+		if _, ok := next.(*token.EndOfFileToken); ok {
+			break
+		}
+		tokens = append(tokens, next)
+	}
+	return tokens
 }

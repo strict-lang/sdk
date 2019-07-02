@@ -30,7 +30,7 @@ func (scanner *Scanner) ScanOperator() token.Token {
 		scanner.reportError(err)
 		return scanner.createInvalidToken()
 	}
-	return token.NewOperatorToken(operator, scanner.currentPosition())
+	return token.NewOperatorToken(operator, scanner.currentPosition(), scanner.indent)
 }
 
 func (scanner Scanner) gatherOperator() (token.Operator, error) {

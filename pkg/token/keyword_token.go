@@ -3,12 +3,14 @@ package token
 type KeywordToken struct {
 	Keyword  Keyword
 	position Position
+	indent Indent
 }
 
-func NewKeywordToken(keyword Keyword, position Position) Token {
+func NewKeywordToken(keyword Keyword, position Position, indent Indent) Token {
 	return &KeywordToken{
 		Keyword:  keyword,
 		position: position,
+		indent: indent,
 	}
 }
 
@@ -42,6 +44,10 @@ func (KeywordToken) IsLiteral() bool {
 
 func (KeywordToken) IsValid() bool {
 	return false
+}
+
+func (keyword KeywordToken) Indent() Indent {
+	return keyword.indent
 }
 
 func (keyword KeywordToken) IsOperatorKeyword() bool {

@@ -1,6 +1,8 @@
 package token
 
-import "fmt"
+import (
+	"fmt"
+)
 
 const (
 	StringLiteralTokenName = "StringLiteralToken"
@@ -13,32 +15,36 @@ type ValuedToken struct {
 	value    string
 	position Position
 	literal  bool
+	indent   Indent
 }
 
-func NewStringLiteralToken(value string, position Position) *ValuedToken {
+func NewStringLiteralToken(value string, position Position, indent Indent) *ValuedToken {
 	return &ValuedToken{
 		name:     StringLiteralTokenName,
 		value:    value,
 		position: position,
 		literal:  true,
+		indent: indent,
 	}
 }
 
-func NewNumberLiteralToken(value string, position Position) *ValuedToken {
+func NewNumberLiteralToken(value string, position Position, indent Indent) *ValuedToken {
 	return &ValuedToken{
 		name:     NumberLiteralTokenName,
 		value:    value,
 		position: position,
 		literal:  true,
+		indent: indent,
 	}
 }
 
-func NewIdentifierToken(value string, position Position) *ValuedToken {
+func NewIdentifierToken(value string, position Position, indent Indent) *ValuedToken {
 	return &ValuedToken{
 		name:     IdentifierTokenName,
 		value:    value,
 		position: position,
 		literal:  true,
+		indent: indent,
 	}
 }
 
@@ -68,6 +74,10 @@ func (token ValuedToken) IsLiteral() bool {
 
 func (ValuedToken) IsValid() bool {
 	return true
+}
+
+func (token ValuedToken) Indent() Indent {
+	return token.indent
 }
 
 func (token ValuedToken) String() string {

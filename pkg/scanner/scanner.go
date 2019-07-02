@@ -7,18 +7,39 @@ import (
 	"github.com/BenjaminNitschke/Strict/pkg/token"
 )
 
+const (
+	TabIndent 			 token.Indent = 2
+	WhitespaceIndent token.Indent= 1
+)
+
 // Scanner is a token.Reader that performs lexical analysis on a stream or characters.
 type Scanner struct {
 	reader    *RecordingSourceReader
 	linemap   *linemap.Builder
 	recorder  *diagnostic.Recorder
+	// peeked points to the most recently peeked token.
 	peeked    token.Token
+	// last points to the most recently scanned token. It is an InvalidToken if no other
+	// token has been scanned. The fields value is never nil.
 	last      token.Token
+	// begin is the begin index of the token that is currently scanned. It is set to the
+	// current offset when the scanner starts scanning the next token.
 	begin     source.Offset
+	// lineIndex current lineIndex of the scanner, incremented each time a linefeed is hit.
+	// The scanner keeps track of his line-index to report better errors to the diagnostics.
 	lineIndex source.LineIndex
 	// insertEos tells the scanner whether it has to return an EndOfStatement token when
 	// it hits a newline. This flag is set and unset during scanning.
 	insertEos bool
+	// indent is the current indentation level. It is updates while scanning and assigned
+	// to all tokens that are created.
+	indent   token.Indent
+	// updateIndent is a flag that tells the scanner whether it should update the indent
+	// value. It is set and unset during scanning. Once the first non-whitespace character
+	// in a line is hit, the scanner disables this flag. All scanned tokens in that line
+	// will get the indent value of the 'ident' field, which can not change anymore. Once
+	// a linefeed is hit, the indent is reset and the updateIndent is set to true.
+	updateIndent bool
 }
 
 func NewScanner(reader source.Reader) *Scanner {
@@ -26,8 +47,9 @@ func NewScanner(reader source.Reader) *Scanner {
 		reader:   decorateSourceReader(reader),
 		linemap:  linemap.NewBuilder(),
 		recorder: diagnostic.NewRecorder(),
-		last:     token.NewInvalidToken("begin", token.Position{}),
+		last:     token.NewAnonymousInvalidToken(),
 		peeked:   nil,
+		updateIndent: true,
 	}
 }
 
@@ -67,10 +89,12 @@ func (scanner *Scanner) resetTokenRecording() {
 }
 
 func (scanner *Scanner) createInvalidToken() token.Token {
-	return token.NewInvalidToken(scanner.reader.String(), scanner.currentPosition())
+	return token.NewInvalidToken(scanner.reader.String(), scanner.currentPosition(), scanner.indent)
 }
 
 func (scanner *Scanner) incrementLineIndex() (token.Token, bool) {
+	scanner.indent = 0
+	scanner.updateIndent = true
 	scanner.reader.resetInternalIndex()
 	scanner.lineIndex++
 	if !scanner.insertEos {
@@ -86,6 +110,7 @@ func (scanner *Scanner) next() token.Token {
 		return endOfStatement
 	}
 	scanner.resetTokenRecording()
+	scanner.updateIndent = false
 	if scanner.reader.Peek() == source.EndOfFile {
 		return token.EndOfFile
 	}

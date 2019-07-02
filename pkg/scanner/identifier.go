@@ -40,5 +40,5 @@ func (scanner *Scanner) ScanIdentifier() token.Token {
 		scanner.reportError(err)
 		return scanner.createInvalidToken()
 	}
-	return token.NewIdentifierToken(identifier, position)
+	return token.NewIdentifierToken(identifier, position, scanner.indent)
 }

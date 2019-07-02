@@ -11,7 +11,7 @@ const (
 )
 
 func (scanner *Scanner) ScanNumber() token.Token {
-	return token.NewInvalidToken("", token.Position{})
+	return token.NewInvalidToken("", token.Position{}, scanner.indent)
 }
 
 func (scanner *Scanner) GatherDecimal() (string, error) {
