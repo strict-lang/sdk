@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"github.com/BenjaminNitschke/Strict/pkg/ast"
 	"github.com/BenjaminNitschke/Strict/pkg/diagnostic"
 	"github.com/BenjaminNitschke/Strict/pkg/scope"
@@ -27,19 +26,12 @@ func NewParser(unit *ast.TranslationUnit, tokens token.Reader, recorder *diagnos
 	}
 }
 
-// UnexpectedTokenError indicates that the parser expected a certain kind of token, but
-// got a different one. It captures the token and has an optional 'expected' field, which
-// stores the name of the kind of token that was expected.
-type UnexpectedTokenError struct {
-	token    token.Token
-	expected string
-}
-
-func (err *UnexpectedTokenError) Error() string {
-	if err.expected != "" {
-		return fmt.Sprintf("expected %s but got %s", err.expected, err.token)
-	}
-	return fmt.Sprintf("unexpected token: %s", err.token)
+// Block represents a nested sequence of statements that has a set indentation level.
+// It helps the parser to scan code blocks and know where a block ends.
+type Block struct {
+	Indent token.Indent
+	Scope  *scope.Scope
+	Parent *Block
 }
 
 // openBlock opens a new block of code, updates the parser block pointer and
