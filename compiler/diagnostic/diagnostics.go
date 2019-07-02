@@ -38,5 +38,6 @@ func (recorder *Recorder) PrintAllEntries(printer Printer) {
 		for _, entry := range entries {
 			entry.PrintColored(printer)
 		}
+		printer.Print("\n")
 	}
 }
