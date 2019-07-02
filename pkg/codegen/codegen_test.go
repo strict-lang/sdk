@@ -10,16 +10,16 @@ import (
 
 func TestCodeGeneration(test *testing.T) {
 	entry := ast.Method{
-		Name: ast.NewIdentifier("divisibleNumbers"),
+		Name: ast.NewIdentifier("commentOnAge"),
 		Type: ast.GenericTypeName{
 			Name: "list",
 			Generic: ast.ConcreteTypeName{
-				Name:"number",
+				Name: "number",
 			},
 		},
 		Parameters: []ast.Parameter{
 			{
-				Name: ast.NewIdentifier("limit"),
+				Name: ast.NewIdentifier("age"),
 				Type: ast.ConcreteTypeName{
 					Name: "number",
 				},
@@ -29,17 +29,31 @@ func TestCodeGeneration(test *testing.T) {
 			Children: []ast.Node{
 				&ast.ConditionalStatement{
 					Condition: &ast.BinaryExpression{
-						LeftOperand: &ast.Identifier{Value: "limit"},
-						RightOperand: &ast.NumberLiteral{Value: "10"},
-						Operator: token.SmallerEqualsOperator,
+						LeftOperand:  &ast.Identifier{Value: "age"},
+						RightOperand: &ast.NumberLiteral{Value: "18"},
+						Operator:     token.SmallerOperator,
 					},
 					Body: &ast.BlockStatement{
 						Children: []ast.Node{
-							&ast.MethodCall{
-								Name: ast.Identifier{Value: "logf"},
-								Arguments: []ast.Node{
-									&ast.StringLiteral{Value: "The limit of %d is smaller than 11"},
-									&ast.Identifier{Value: "limit"},
+							&ast.ExpressionStatement{
+								Expression: &ast.MethodCall{
+									Name: ast.Identifier{Value: "logf"},
+									Arguments: []ast.Node{
+										&ast.StringLiteral{Value: "%d are still young"},
+										&ast.Identifier{Value: "age"},
+									},
+								},
+							},
+						},
+					},
+					Else: &ast.BlockStatement{
+						Children: []ast.Node{
+							&ast.ExpressionStatement{
+								Expression: &ast.MethodCall{
+									Name: ast.Identifier{Value: "log"},
+									Arguments: []ast.Node{
+										&ast.StringLiteral{Value: "You are an adult"},
+									},
 								},
 							},
 						},

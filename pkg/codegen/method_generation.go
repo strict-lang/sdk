@@ -38,42 +38,51 @@ func (generation *MethodGeneration) Complete() {
 	generator.buffer = generation.buffer
 
 	declaration := generation.generateDeclaration()
+	generator.enterBlock()
 	methodBody := generation.generateBody()
 	prologue := generation.generatePrologue()
 	epilogue := generation.generateEpilogue()
+	generator.leaveBlock()
 
-	generation.buffer = generator.output
-	generation.buffer.WriteString(declaration)
-	generation.buffer.WriteString("\n{")
-	generation.buffer.WriteString(prologue)
-	generation.buffer.WriteString(methodBody)
-	generation.buffer.WriteString(epilogue)
-	generation.buffer.WriteString("}")
+	generator.buffer = generator.output
+	generator.Emit(declaration)
+	generator.Emit(" {\n")
+	generator.Emit(prologue)
+	generator.Emit(methodBody)
+	generator.Emit(epilogue)
+	generator.Emit("\n")
+	generator.Spaces()
+	generator.Emit("}")
 }
 
 func (generation *MethodGeneration) generateDeclaration() string {
 	generation.buffer.Reset()
+	generator := generation.generator
 
 	method := generation.declaration
-	updateTypeName(method.Type)
-	name := method.Type.FullName()
+	returnTypeName := updateTypeName(method.Type)
 
-	generation.buffer.WriteString(name)
-	generation.buffer.WriteString(" ")
-	generation.buffer.WriteString(method.Name.Value)
-	generation.buffer.WriteString("(")
+	generator.Spaces()
+	generator.Emitf("%s %s(", returnTypeName.FullName(), method.Name.Value)
 	for _, parameter := range method.Parameters {
-		updateTypeName(parameter.Type)
-		generation.buffer.WriteString(parameter.Type.FullName())
-		generation.buffer.WriteString( " ")
-		generation.buffer.WriteString(parameter.Name.Value)
+		parameterTypeName := updateTypeName(parameter.Type)
+		generator.Emitf("%s %s", parameterTypeName.FullName(), parameter.Name.Value)
 	}
-	generation.buffer.WriteString(")")
+	generator.Emit(")")
 	return generation.buffer.String()
 }
 
 func (generation *MethodGeneration) generateBody() string {
 	generation.buffer.Reset()
+	// Do not use the normal BlockStatement visitor for BlockStatement generation in
+	// a method body. It will generate open and close brackets and this will produce
+	// faulty code, if a prologue or epilogue is generated.
+	if block, ok := generation.declaration.Body.(*ast.BlockStatement); ok {
+		for _, child := range block.Children {
+			child.Accept(generation.generator.generators)
+		}
+		return generation.buffer.String()
+	}
 	generation.declaration.Body.Accept(generation.generator.generators)
 	return generation.buffer.String()
 }
@@ -85,7 +94,6 @@ func (generation *MethodGeneration) generatePrologue() string {
 	}
 	return generation.buffer.String()
 }
-
 
 func (generation *MethodGeneration) generateEpilogue() string {
 	generation.buffer.Reset()

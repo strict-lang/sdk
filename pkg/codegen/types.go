@@ -1,6 +1,8 @@
 package codegen
 
-import "github.com/BenjaminNitschke/Strict/pkg/ast"
+import (
+	"github.com/BenjaminNitschke/Strict/pkg/ast"
+)
 
 var builtinTypes = map[string] string {
 	"text": "strict::Text",
@@ -8,22 +10,27 @@ var builtinTypes = map[string] string {
 	"list": "strict::List",
 }
 
-func updateGenericTypeName(name *ast.GenericTypeName) {
-	name.Name = lookupTypeName(name.Name)
-	updateTypeName(name.Generic)
-}
-
-func updateConcreteTypeName(name *ast.ConcreteTypeName) {
-	name.Name = lookupTypeName(name.Name)
-}
-
-func updateTypeName(name ast.TypeName) {
-	switch concrete := name.(type) {
-	case *ast.GenericTypeName:
-		updateGenericTypeName(concrete)
-	case *ast.ConcreteTypeName:
-		updateConcreteTypeName(concrete)
+func updateGenericTypeName(name ast.GenericTypeName) ast.TypeName {
+	return ast.GenericTypeName{
+		Name:    lookupTypeName(name.Name),
+		Generic: updateTypeName(name.Generic),
 	}
+}
+
+func updateConcreteTypeName(name ast.ConcreteTypeName) ast.TypeName {
+	return ast.ConcreteTypeName{
+		Name: lookupTypeName(name.Name),
+	}
+}
+
+func updateTypeName(name ast.TypeName) ast.TypeName {
+	switch concrete := name.(type) {
+	case ast.GenericTypeName:
+		return updateGenericTypeName(concrete)
+	case ast.ConcreteTypeName:
+		return updateConcreteTypeName(concrete)
+	}
+	return name
 }
 
 func lookupTypeName(name string) string {

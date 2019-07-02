@@ -3,13 +3,13 @@ package codegen
 import "github.com/BenjaminNitschke/Strict/pkg/ast"
 
 func (generator *CodeGenerator) GenerateConditionalStatement(statement *ast.ConditionalStatement) {
+	generator.Spaces()
 	generator.Emit("if (")
 	statement.Condition.Accept(generator.generators)
-	generator.Emit(") {")
+	generator.Emit(") ")
 	statement.Body.Accept(generator.generators)
-	generator.Emit("}")
 	if statement.Else != nil {
-		generator.Emit("else ")
+		generator.Emit(" else ")
 		statement.Else.Accept(generator.generators)
 	}
 }
@@ -20,6 +20,7 @@ const (
 
 func (generator *CodeGenerator) GenerateYieldStatement(statement *ast.YieldStatement) {
 	generator.method.addPrologueGenerator(generator.declareYieldList)
+	generator.Spaces()
 	generator.Emitf("%s.append(", yieldListName)
 	statement.Accept(generator.generators)
 	generator.Emitf("%s)")
@@ -31,5 +32,6 @@ func (generator *CodeGenerator) declareYieldList() {
 }
 
 func (generator *CodeGenerator) returnYieldList() {
+	generator.Spaces()
 	generator.Emitf("return %s;", yieldListName)
 }

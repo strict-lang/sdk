@@ -13,6 +13,7 @@ type CodeGenerator struct {
 	buffer     *strings.Builder
 	method     *MethodGeneration
 	generators *ast.Visitor
+	indent 			int8
 }
 
 // NewCodeGenerator constructs a CodeGenerator that generates C code from
@@ -31,6 +32,9 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	generators.VisitStringLiteral = codeGenerator.GenerateStringLiteral
 	generators.VisitNumberLiteral = codeGenerator.GenerateNumberLiteral
 	generators.VisitYieldStatement = codeGenerator.GenerateYieldStatement
+	generators.VisitBlockStatement = codeGenerator.GenerateBlockStatement
+	generators.VisitBinaryExpression = codeGenerator.GenerateBinaryExpression
+	generators.VisitExpressionStatement = codeGenerator.GenerateExpressionStatement
 	generators.VisitConditionalStatement = codeGenerator.GenerateConditionalStatement
 	return codeGenerator
 }
@@ -40,10 +44,27 @@ func (generator *CodeGenerator) String() string {
 }
 
 func (generator *CodeGenerator) Emit(code string) {
-	generator.output.WriteString(code)
+	generator.buffer.WriteString(code)
 }
 
 func (generator *CodeGenerator) Emitf(code string, arguments ...interface{}) {
-	formatted := fmt.Sprintf(code, arguments)
-	generator.output.WriteString(formatted)
+	formatted := fmt.Sprintf(code, arguments...)
+	generator.buffer.WriteString(formatted)
+}
+
+func (generator *CodeGenerator) enterBlock() {
+	generator.indent ++
+}
+
+func(generator *CodeGenerator) leaveBlock() {
+	generator.indent --
+	if generator.indent < 0 {
+		generator.indent = 0
+	}
+}
+
+func (generator *CodeGenerator) Spaces() {
+	for index := int8(0); index < generator.indent; index++ {
+		generator.Emit("  ")
+	}
 }

@@ -20,5 +20,5 @@ type GenericTypeName struct {
 }
 
 func (generic GenericTypeName) FullName() string {
-	return fmt.Sprintf("%s<%s>", generic.Name, generic.Generic)
+	return fmt.Sprintf("%s<%s>", generic.Name, generic.Generic.FullName())
 }

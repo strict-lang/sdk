@@ -1,6 +1,8 @@
 package codegen
 
-import "github.com/BenjaminNitschke/Strict/pkg/ast"
+import (
+	"github.com/BenjaminNitschke/Strict/pkg/ast"
+)
 
 var builtinMethods = map[string] string {
 	"log": "strict::Log",

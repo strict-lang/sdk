@@ -6,7 +6,6 @@ type ExpressionStatement struct {
 
 func (expression *ExpressionStatement) Accept(visitor *Visitor) {
 	visitor.VisitExpressionStatement(expression)
-	expression.Expression.Accept(visitor)
 }
 
 type MethodCall struct {
@@ -45,9 +44,6 @@ type ForLoopStatement struct {
 
 func (loop *ForLoopStatement) Accept(visitor *Visitor) {
 	visitor.VisitForLoopStatement(loop)
-	loop.Increment.Accept(visitor)
-	loop.Termination.Accept(visitor)
-	loop.Initialization.Accept(visitor)
 }
 
 type ForeachLoopStatement struct {
