@@ -65,6 +65,22 @@ func (loop *ForLoopStatement) Accept(visitor *Visitor) {
 	loop.Initialization.Accept(visitor)
 }
 
+type ForeachLoopStatement struct {
+	Body Node
+	// Variable is the local field, that has the value of
+	// the current element of target.
+	Variable Node
+	// Target is the collection that is iterated.
+	Target Node
+}
+
+func (loop *ForeachLoopStatement) Accept(visitor *Visitor) {
+	visitor.VisitForeachLoopStatement(loop)
+	loop.Body.Accept(visitor)
+	loop.Variable.Accept(visitor)
+	loop.Target.Accept(visitor)
+}
+
 type PreIncrementStatement struct {
 	Operand   Node
 	Decrement bool
@@ -81,4 +97,13 @@ func (preIncrement *PreIncrementStatement) Accept(visitor Visitor) {
 
 func (postIncrement *PostIncrementStatement) Accept(visitor Visitor) {
 	visitor.VisitPostIncrementStatement(postIncrement)
+}
+
+type YieldStatement struct {
+	// Value is the value that is yielded.
+	Value Node
+}
+
+func (yield *YieldStatement) Accept(visitor *Visitor) {
+	visitor.VisitYieldStatement(yield)
 }

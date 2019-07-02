@@ -43,3 +43,16 @@ func (KeywordToken) IsLiteral() bool {
 func (KeywordToken) IsValid() bool {
 	return false
 }
+
+func (keyword KeywordToken) IsOperatorKeyword() bool {
+	_, ok := operatorKeywords[keyword.Keyword]
+	return ok
+}
+
+func (keyword KeywordToken) AsOperator() Operator {
+	operator, ok := operatorKeywords[keyword.Keyword]
+	if !ok {
+		return InvalidOperator
+	}
+	return operator
+}

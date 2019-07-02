@@ -41,8 +41,8 @@ func (method *Method) Accept(visitor *Visitor) {
 }
 
 type Parameter struct {
-	Type     Type
-	Named    Identifier
+	Type  Type
+	Named Identifier
 }
 
 func (parameter *Parameter) Accept(visitor *Visitor) {

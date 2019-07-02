@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"github.com/BenjaminNitschke/Strict/pkg/ast"
 	"github.com/BenjaminNitschke/Strict/pkg/diagnostic"
 	"github.com/BenjaminNitschke/Strict/pkg/scanner"
@@ -22,7 +21,7 @@ func TestParseBinaryExpression(test *testing.T) {
 			test.Errorf("unexpected error: %s", err.Error())
 			continue
 		}
-		fmt.Println(expression)
+		test.Log(expression)
 	}
 }
 

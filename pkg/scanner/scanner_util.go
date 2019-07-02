@@ -64,11 +64,13 @@ func (scanner *Scanner) currentPosition() token.Position {
 	}
 }
 
-func (scanner *Scanner) SkipWhitespaces() {
+func (scanner *Scanner) SkipWhitespaces() (token.Token, bool) {
 	for {
 		next := scanner.reader.Peek()
 		if next == '\n' {
-			scanner.incrementLineIndex()
+			if endOfStatement, ok := scanner.incrementLineIndex(); ok {
+				return endOfStatement, true
+			}
 			scanner.reader.Pull()
 			continue
 		}
@@ -76,6 +78,6 @@ func (scanner *Scanner) SkipWhitespaces() {
 			scanner.reader.Pull()
 			continue
 		}
-		return
+		return nil, false
 	}
 }

@@ -32,6 +32,9 @@ type Visitor struct {
 	// VisitNumberLiteral visits a NumberLiteral node.
 	VisitNumberLiteral func(*NumberLiteral)
 
+	// VisitYieldStatement visits a yield statement.
+	VisitYieldStatement func(*YieldStatement)
+
 	// VisitBlockStatement visits a BlockStatement node.
 	VisitBlockStatement func(*BlockStatement)
 
@@ -49,6 +52,9 @@ type Visitor struct {
 
 	// VisitExpressionStatement visits an ExpressionStatement node.
 	VisitExpressionStatement func(*ExpressionStatement)
+
+	// VisitForeachLoopStatement visits a ForeachLoopStatement node.
+	VisitForeachLoopStatement func(*ForeachLoopStatement)
 
 	// VisitConditionalStatement visits a ConditionalStatement node.
 	VisitConditionalStatement func(*ConditionalStatement)

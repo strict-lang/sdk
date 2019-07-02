@@ -13,6 +13,11 @@ const (
 	TypeKeyword
 	IfKeyword
 	ElseKeyword
+	YieldKeyword
+	ToKeyword
+	OrKeyword
+	AndKeyword
+	ForKeyword
 )
 
 var keywordNameTable = map[Keyword]string{
@@ -20,6 +25,16 @@ var keywordNameTable = map[Keyword]string{
 	TypeKeyword:   "type",
 	IfKeyword:     "if",
 	ElseKeyword:   "else",
+	ForKeyword:    "for",
+	YieldKeyword:  "yield",
+	ToKeyword:     "to",
+	AndKeyword:    "and",
+	OrKeyword:     "or",
+}
+
+var operatorKeywords = map[Keyword]Operator{
+	OrKeyword:  OrOperator,
+	AndKeyword: AndOperator,
 }
 
 var keywordNameLookupTable map[string]Keyword

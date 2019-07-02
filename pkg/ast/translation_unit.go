@@ -12,10 +12,10 @@ type TranslationUnit struct {
 }
 
 func NewTranslationUnit(name string, rootScope *scope.Scope, children []Node) TranslationUnit {
-	scope := rootScope.NewNamedChild(name)
+	childScope := rootScope.NewNamedChild(name)
 	return TranslationUnit{
 		name:     name,
-		scope:    scope,
+		scope:    childScope,
 		Children: children,
 	}
 }
@@ -33,4 +33,8 @@ func (unit *TranslationUnit) Accept(visitor *Visitor) {
 	for _, child := range unit.Children {
 		child.Accept(visitor)
 	}
+}
+
+func (unit *TranslationUnit) AppendChild(node Node) {
+	unit.Children = append(unit.Children, node)
 }

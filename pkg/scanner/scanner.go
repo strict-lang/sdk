@@ -16,6 +16,9 @@ type Scanner struct {
 	last      token.Token
 	begin     source.Offset
 	lineIndex source.LineIndex
+	// insertEos tells the scanner whether it has to return an EndOfStatement token when
+	// it hits a newline. This flag is set and unset during scanning.
+	insertEos bool
 }
 
 func NewScanner(reader source.Reader) *Scanner {
@@ -67,13 +70,21 @@ func (scanner *Scanner) createInvalidToken() token.Token {
 	return token.NewInvalidToken(scanner.reader.String(), scanner.currentPosition())
 }
 
-func (scanner *Scanner) incrementLineIndex() {
+func (scanner *Scanner) incrementLineIndex() (token.Token, bool) {
 	scanner.reader.resetInternalIndex()
 	scanner.lineIndex++
+	if !scanner.insertEos {
+		return nil, false
+	}
+	return token.NewEndOfStatementToken(scanner.offset()), true
 }
 
 func (scanner *Scanner) next() token.Token {
-	scanner.SkipWhitespaces()
+	if endOfStatement, ok := scanner.SkipWhitespaces(); ok {
+		// The SkipWhitespaces method returns an EndOfStatementToken if it hits a
+		// linefeed character while the scanners 'insertEos' flag is set.
+		return endOfStatement
+	}
 	scanner.resetTokenRecording()
 	if scanner.reader.Peek() == source.EndOfFile {
 		return token.EndOfFile
