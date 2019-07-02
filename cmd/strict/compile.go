@@ -10,6 +10,7 @@ import (
 	"github.com/BenjaminNitschke/Strict/compiler/scanner"
 	"github.com/BenjaminNitschke/Strict/compiler/source"
 	"github.com/urfave/cli"
+	"log"
 	"os"
 )
 
@@ -23,7 +24,12 @@ func compile(context *cli.Context) error {
 	}
 	filename := context.Args()[0]
 	targetDirectory := context.String("dir")
-	return compileToDirectory(filename, targetDirectory)
+	err := compileToDirectory(filename, targetDirectory)
+	if err != nil {
+		return err
+	}
+	log.Printf("successfully build %s\n", filename)
+	return nil
 }
 
 func compileToDirectory(filename string, targetDirectory string) error {
@@ -49,32 +55,59 @@ func compileFileToDirectory(filename string, file *os.File, targetDirectory stri
 	if err != nil {
 		return err
 	}
-	filepath := fmt.Sprintf("%s/%s", targetDirectory, filename)
-	return generateCodeToFile(codegen.NewCodeGenerator(unit), filepath)
+	targetFileName := codegen.FilenameByUnitName(unitName)
+	return generateCodeToFile(codegen.NewCodeGenerator(unit), targetFileName, targetDirectory)
 }
 
-func generateCodeToFile(generator *codegen.CodeGenerator, filepath string) error {
-	file, err := createNewFile(filepath)
+func generateCodeToFile(generator *codegen.CodeGenerator, filename, directory string) error {
+	file, err := createNewFile(filename, directory)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
-
 	code := generator.Generate()
-	_, err = file.WriteString(code)
-	return err
+	writer := bufio.NewWriter(file)
+	if _, err := writer.Write([]byte(code)); err != nil {
+		return err
+	}
+	return writer.Flush()
 }
 
-func createNewFile(filepath string) (*os.File, error) {
+func createFilepath(filename, directory string) string {
+	if directory == "" {
+		return filename
+	}
+	return 	fmt.Sprintf("%s/%s", directory, filename)
+}
+
+func createNewFile(filename, directory string) (*os.File, error) {
+	filepath := createFilepath(filename, directory)
 	if err := deleteIfExists(filepath); err != nil {
 		return nil, err
+	}
+	if directory != "" {
+		if err := createDirectoryIfNotExists(directory); err != nil {
+			return nil, err
+		}
 	}
 	return os.Create(filepath)
 }
 
-func deleteIfExists(filepath string) error {
-	if _, err := os.Stat(filepath); !os.IsNotExist(err) {
+func createDirectoryIfNotExists(directory string) error {
+	if _, err := os.Stat(directory); err != nil {
 		return nil
 	}
-	return os.Remove(filepath)
+	dir, err := os.Create(directory)
+	if err != nil {
+		dir.Close()
+	}
+	return err
+}
+
+func deleteIfExists(filepath string) error {
+	err := os.Remove(filepath)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	return err
 }

@@ -1,28 +1,36 @@
 GO=go
+GO_GET=$(GO) get
+GO_TEST=$(GO) test
 GO_BUILD=$(GO) build
 GO_CLEAN=$(GO) clean
-GO_TEST=$(GO) test
-GO_GET=$(GO) get
+GO_INSTALL=$(GO) install
 
-TARGET_BINARY=build/strict_compiler
+all: clean build test install
 
-all: test build
+install: build
+	@-$(GO_INSTALL) ./cmd/strict
 
 build: build-libstrict
-	$(GO_BUILD) -o $(TARGET_BINARY) -v
+	@-$(GO_BUILD) ./cmd/strict
 
 test:
-	$(GO_TEST) -v ./compiler/...
+	@-$(GO_TEST) ./compiler/...
 
 run:
-	$(GO_BUILD) -o $(BINARY_NAME) -v ./...
-	./$(BINARY_NAME)
+	@-$(GO_BUILD) -o $(BINARY_NAME) -v ./cmd/strict
+	@-./$(BINARY_NAME)
+
+clean:
+	@-$(GO_CLEAN)
+	@-rm -rf $(TARGET_BINARY)
 
 build-libstrict:
-	cd libstrict;         \
+	@-cd libstrict;       \
 	cmake CMakeLists.txt; \
-	make
+	make > /dev/null
 
 deps:
-	$(GO_GET) github.com/fatih/color
-	$(GO_GET) github.com/urfave/cli
+	@-$(GO_GET) github.com/fatih/color
+	@-$(GO_GET) github.com/urfave/cli
+
+.PHONY: all

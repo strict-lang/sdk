@@ -5,7 +5,7 @@ type Recorder struct {
 }
 
 func NewRecorder() *Recorder {
-	return nil
+	return &Recorder{}
 }
 
 func (recorder *Recorder) Record(entry Entry) {

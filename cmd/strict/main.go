@@ -29,6 +29,13 @@ func main() {
 			Usage:     "compile a strict file",
 			Action:    compile,
 			ArgsUsage: "compile <path>",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name: "dir, d",
+					Usage: "the target directory",
+					Value: "",
+				},
+			},
 		},
 		{
 			Name:      "run",
