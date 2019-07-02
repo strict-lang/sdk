@@ -8,8 +8,9 @@ import (
 
 // CodeGenerator generates C code from an ast.
 type CodeGenerator struct {
-	unit   *ast.TranslationUnit
-	output *strings.Builder
+	unit   		 *ast.TranslationUnit
+	output 		 *strings.Builder
+	generators *ast.Visitor
 }
 
 // NewCodeGenerator constructs a CodeGenerator that generates C code from
@@ -18,6 +19,7 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	return &CodeGenerator{
 		unit:   unit,
 		output: &strings.Builder{},
+		generators: ast.NewEmptyVisitor(),
 	}
 }
 

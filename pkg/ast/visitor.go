@@ -65,3 +65,27 @@ type Visitor struct {
 	// VisitPostIncrementStatement visits a PostIncrementStatement node.
 	VisitPostIncrementStatement func(*PostIncrementStatement)
 }
+
+func NewEmptyVisitor() *Visitor {
+	return &Visitor{
+		VisitType:                   func(*Type) {},
+		VisitMember:                 func(*Member) {},
+		VisitMethod:                 func(*Method) {},
+		VisitParameter:              func(*Parameter) {},
+		VisitMethodCall:             func(*MethodCall) {},
+		VisitIdentifier:             func(*Identifier) {},
+		VisitStringLiteral:          func(*StringLiteral) {},
+		VisitNumberLiteral:          func(*NumberLiteral) {},
+		VisitYieldStatement:         func(*YieldStatement) {},
+		VisitBlockStatement:         func(*BlockStatement) {},
+		VisitUnaryExpression:        func(*UnaryExpression) {},
+		VisitTranslationUnit:        func(*TranslationUnit) {},
+		VisitForLoopStatement:       func(*ForLoopStatement) {},
+		VisitBinaryExpression:       func(*BinaryExpression) {},
+		VisitExpressionStatement:    func(*ExpressionStatement) {},
+		VisitForeachLoopStatement:   func(*ForeachLoopStatement) {},
+		VisitConditionalStatement:   func(*ConditionalStatement) {},
+		VisitPreIncrementStatement:  func(*PreIncrementStatement) {},
+		VisitPostIncrementStatement: func(*PostIncrementStatement) {},
+	}
+}
