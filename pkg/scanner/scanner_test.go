@@ -19,7 +19,7 @@ func TestScannerEndOfStatementInsertion(test *testing.T) {
 
 	for entry, expectedCount := range entries {
 		scanner := NewStringScanner(entry)
-		tokens := scanAllTokens(scanner)
+		tokens := ScanAllTokens(scanner)
 		count := countEndOfStatements(tokens)
 		if count != expectedCount {
 			test.Errorf("%s has %d EndOfFile tokens, expected %d", entry, count, expectedCount)
@@ -56,7 +56,7 @@ func TestIndentation(test *testing.T) {
 	}
 	for entry, indent := range entries {
 		scanner := NewStringScanner(entry)
-		tokens := scanAllTokens(scanner)
+		tokens := ScanAllTokens(scanner)
 		for _, scanned := range tokens {
 			if scanned.Indent() != indent {
 				test.Errorf("token %s has indent %d, expected %d", scanned, scanned.Indent(), indent)
@@ -96,26 +96,13 @@ func assertTokenValue(test *testing.T, got token.Token, expected string) {
 }
 
 func assertOperator(test *testing.T, got token.Token, wanted token.Operator) {
-	if !got.IsOperator() || got.(*token.OperatorToken).Operator != wanted {
+	if !token.IsOperatorToken(got) || got.(*token.OperatorToken).Operator != wanted {
 		test.Errorf("unexpected token %s, expected %s", got, wanted.String())
 	}
 }
 
 func assertEndOfFile(test *testing.T, got token.Token) {
-	_, ok := got.(*token.EndOfFileToken)
-	if !ok {
+	if !token.IsEndOfFileToken(got) {
 		test.Errorf("unexpected token %s, expected eof", got)
 	}
-}
-
-func scanAllTokens(scanner *Scanner) []token.Token {
-	var tokens []token.Token
-	for {
-		next := scanner.Pull()
-		if _, ok := next.(*token.EndOfFileToken); ok {
-			break
-		}
-		tokens = append(tokens, next)
-	}
-	return tokens
 }

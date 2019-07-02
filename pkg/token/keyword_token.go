@@ -30,22 +30,6 @@ func (keyword KeywordToken) Position() Position {
 	return keyword.position
 }
 
-func (KeywordToken) IsKeyword() bool {
-	return true
-}
-
-func (KeywordToken) IsOperator() bool {
-	return false
-}
-
-func (KeywordToken) IsLiteral() bool {
-	return false
-}
-
-func (KeywordToken) IsValid() bool {
-	return false
-}
-
 func (keyword KeywordToken) Indent() Indent {
 	return keyword.indent
 }
@@ -61,4 +45,9 @@ func (keyword KeywordToken) AsOperator() Operator {
 		return InvalidOperator
 	}
 	return operator
+}
+
+func IsKeywordToken(token Token) bool {
+	_, ok := token.(*KeywordToken)
+	return ok
 }

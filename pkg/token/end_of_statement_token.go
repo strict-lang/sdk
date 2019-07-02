@@ -29,22 +29,15 @@ func (EndOfStatementToken) Value() string {
 	return EndOfStatementTokenValue
 }
 
-func (EndOfStatementToken) IsOperator() bool {
-	return false
-}
-
-func (EndOfStatementToken) IsKeyword() bool {
-	return false
-}
-
-func (EndOfStatementToken) IsLiteral() bool {
-	return false
-}
-
-func (EndOfStatementToken) IsValid() bool {
-	return true
-}
-
 func (EndOfStatementToken) Indent() Indent {
 	return 0
+}
+
+func (EndOfStatementToken) String() string {
+	return EndOfStatementTokenName
+}
+
+func IsEndOfStatementToken(token Token) bool {
+	_, ok := token.(*EndOfStatementToken)
+	return ok
 }

@@ -43,7 +43,7 @@ func NewIdentifierToken(value string, position Position, indent Indent) *ValuedT
 		name:     IdentifierTokenName,
 		value:    value,
 		position: position,
-		literal:  true,
+		literal:  false,
 		indent: indent,
 	}
 }
@@ -60,26 +60,26 @@ func (token ValuedToken) Position() Position {
 	return token.position
 }
 
-func (ValuedToken) IsKeyword() bool {
-	return false
-}
-
-func (ValuedToken) IsOperator() bool {
-	return false
-}
-
-func (token ValuedToken) IsLiteral() bool {
-	return token.literal
-}
-
-func (ValuedToken) IsValid() bool {
-	return true
-}
-
 func (token ValuedToken) Indent() Indent {
 	return token.indent
 }
 
 func (token ValuedToken) String() string {
 	return fmt.Sprintf("%s(%s)", token.name, token.value)
+}
+
+func IsLiteralToken(token Token) bool {
+	valued, ok := token.(*ValuedToken)
+	if !ok {
+		return false
+	}
+	return valued.literal
+}
+
+func IsIdentifierToken(token Token) bool {
+	valued, ok := token.(*ValuedToken)
+	if !ok {
+		return false
+	}
+	return !valued.literal
 }

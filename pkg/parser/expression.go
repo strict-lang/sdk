@@ -32,7 +32,7 @@ func (parser Parser) ParseBinaryExpression() (ast.BinaryExpression, error) {
 		return ast.BinaryExpression{}, err
 	}
 	operator := parser.tokens.Pull()
-	if !operator.IsOperator() {
+	if !token.IsOperatorToken(operator) {
 		return ast.BinaryExpression{}, ErrInvalidExpression
 	}
 	rightOperand, err := parser.ParseExpression()
@@ -52,7 +52,7 @@ func (parser Parser) ParseBinaryExpression() (ast.BinaryExpression, error) {
 // any kind of expression, including another unary expression.
 func (parser Parser) ParseUnaryExpression() (ast.UnaryExpression, error) {
 	operator := parser.tokens.Pull()
-	if !operator.IsOperator() {
+	if !token.IsOperatorToken(operator) {
 		return ast.UnaryExpression{}, ErrInvalidExpression
 	}
 	expression, err := parser.ParseExpression()

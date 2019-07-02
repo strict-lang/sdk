@@ -22,22 +22,15 @@ func (EndOfFileToken) Name() string {
 	return EndOfFileTokenName
 }
 
-func (EndOfFileToken) IsOperator() bool {
-	return false
-}
-
-func (EndOfFileToken) IsKeyword() bool {
-	return false
-}
-
-func (EndOfFileToken) IsValid() bool {
-	return true
-}
-
-func (EndOfFileToken) IsLiteral() bool {
-	return false
-}
-
 func (EndOfFileToken) Indent() Indent {
 	return 0
+}
+
+func (EndOfFileToken) String() string {
+	return EndOfFileTokenName
+}
+
+func IsEndOfFileToken(token Token) bool {
+	_, ok := token.(*EndOfFileToken)
+	return ok
 }

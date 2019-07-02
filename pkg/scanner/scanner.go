@@ -55,6 +55,7 @@ func NewScanner(reader source.Reader) *Scanner {
 		last:     token.NewAnonymousInvalidToken(),
 		peeked:   nil,
 		updateIndent: true,
+		emptyLine: true, // The line is empty until a char is hit
 	}
 }
 

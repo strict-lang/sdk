@@ -1,5 +1,7 @@
 package token
 
+import "fmt"
+
 const InvalidTokenName = "invalid"
 
 type InvalidToken struct {
@@ -36,18 +38,14 @@ func (invalid InvalidToken) Indent() Indent {
 	return invalid.indent
 }
 
-func (InvalidToken) IsValid() bool {
-	return false
+func (invalid InvalidToken) String() string {
+	if invalid.value == "" {
+		return InvalidTokenName
+	}
+	return fmt.Sprintf("%s(%s)", InvalidTokenName, invalid.value)
 }
 
-func (InvalidToken) IsKeyword() bool {
-	return false
-}
-
-func (InvalidToken) IsOperator() bool {
-	return false
-}
-
-func (InvalidToken) IsLiteral() bool {
-	return false
+func IsInvalidToken(token Token) bool {
+	_, ok := token.(*InvalidToken)
+	return ok
 }

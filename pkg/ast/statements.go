@@ -10,12 +10,8 @@ func (expression *ExpressionStatement) Accept(visitor *Visitor) {
 }
 
 type MethodCall struct {
-	Method    *Member
+	Name      Identifier
 	Arguments []Node
-}
-
-func (call MethodCall) Type() *Type {
-	return call.Method.ValueType
 }
 
 func (call *MethodCall) Accept(visitor *Visitor) {

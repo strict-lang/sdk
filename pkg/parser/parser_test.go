@@ -11,11 +11,11 @@ import (
 func TestSkipOperator(test *testing.T) {
 	entries := map[token.Operator]token.Queue{
 		token.AddOperator: {
-			token.NewOperatorToken(token.AddOperator, token.Position{Begin: 0, End: 1}),
-			token.NewOperatorToken(token.SubOperator, token.Position{Begin: 1, End: 2}),
+			token.NewOperatorToken(token.AddOperator, token.Position{Begin: 0, End: 1}, 0),
+			token.NewOperatorToken(token.SubOperator, token.Position{Begin: 1, End: 2}, 0),
 		},
 		token.SubOperator: {
-			token.NewOperatorToken(token.SubOperator, token.Position{Begin: 0, End: 1}),
+			token.NewOperatorToken(token.SubOperator, token.Position{Begin: 0, End: 1}, 0),
 		},
 	}
 

@@ -26,10 +26,10 @@ func (parser *Parser) skipKeyword(keyword token.Keyword) (bool, error) {
 // otherwise an UnexpectedTokenError is returned.
 func (parser *Parser) expectOperator(expected token.Operator) error {
 	peek := parser.tokens.Peek()
-	if !peek.IsOperator() || peek.(*token.OperatorToken).Operator != expected {
+	if !token.IsOperatorToken(peek) || peek.(*token.OperatorToken).Operator != expected {
 		return &UnexpectedTokenError{
-			token:    peek,
-			expected: expected.String(),
+			Token:    peek,
+			Expected: expected.String(),
 		}
 	}
 	return nil
@@ -39,10 +39,10 @@ func (parser *Parser) expectOperator(expected token.Operator) error {
 // otherwise an UnexpectedTokenError is returned.
 func (parser *Parser) expectKeyword(expected token.Keyword) error {
 	peek := parser.tokens.Peek()
-	if !peek.IsKeyword() || peek.(*token.KeywordToken).Keyword != expected {
+	if !token.IsKeywordToken(peek) || peek.(*token.KeywordToken).Keyword != expected {
 		return &UnexpectedTokenError{
-			token:    peek,
-			expected: expected.String(),
+			Token:    peek,
+			Expected: expected.String(),
 		}
 	}
 	return nil
@@ -52,8 +52,8 @@ func (parser *Parser) expectAnyIdentifier() error {
 	peek := parser.tokens.Peek()
 	if peek.Name() != token.IdentifierTokenName {
 		return &UnexpectedTokenError{
-			token: peek,
-			expected: "any identifier",
+			Token: peek,
+			Expected: "any identifier",
 		}
 	}
 	return nil
@@ -61,7 +61,7 @@ func (parser *Parser) expectAnyIdentifier() error {
 
 func (parser *Parser) isLookingAtKeyword(keyword token.Keyword) bool {
 	peek := parser.tokens.Peek()
-	if !peek.IsKeyword() {
+	if !token.IsKeywordToken(peek) {
 		return false
 	}
 	return peek.(*token.KeywordToken).Keyword == keyword
@@ -69,7 +69,7 @@ func (parser *Parser) isLookingAtKeyword(keyword token.Keyword) bool {
 
 func (parser *Parser) isLookingAtOperator(operator token.Operator) bool {
 	peek := parser.tokens.Peek()
-	if !peek.IsOperator() {
+	if !token.IsOperatorToken(peek) {
 		return parser.isLookingAtOperatorKeyword(operator)
 	}
 	return peek.(*token.OperatorToken).Operator == operator
@@ -77,7 +77,7 @@ func (parser *Parser) isLookingAtOperator(operator token.Operator) bool {
 
 func (parser *Parser) isLookingAtOperatorKeyword(operator token.Operator) bool {
 	peek := parser.tokens.Peek()
-	if !peek.IsKeyword() {
+	if !token.IsKeywordToken(peek) {
 		return false
 	}
 	keyword := peek.(*token.KeywordToken)

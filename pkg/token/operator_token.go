@@ -53,3 +53,8 @@ func (operator OperatorToken) Indent() Indent {
 func (operator OperatorToken) String() string {
 	return fmt.Sprintf("%s(%s)", OperatorTokenName, operator.Operator)
 }
+
+func IsOperatorToken(token Token) bool {
+	_, ok := token.(*OperatorToken)
+	return ok
+}

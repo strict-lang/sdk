@@ -105,3 +105,15 @@ func (scanner *Scanner) addIndent(indent token.Indent) {
 		scanner.indent += indent
 	}
 }
+
+func ScanAllTokens(scanner *Scanner) []token.Token {
+	var tokens []token.Token
+	for {
+		next := scanner.Pull()
+		if token.IsEndOfFileToken(next) {
+			break
+		}
+		tokens = append(tokens, next)
+	}
+	return tokens
+}
