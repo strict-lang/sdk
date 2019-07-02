@@ -19,8 +19,8 @@ run:
 	./$(BINARY_NAME)
 
 build-libstrict:
-	cd libstrict
-	cmake CMakeLists.txt
+	cd libstrict;         \
+	cmake CMakeLists.txt; \
 	make
 
 deps:
