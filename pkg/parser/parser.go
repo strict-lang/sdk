@@ -88,12 +88,40 @@ func (parser *Parser) expectKeyword(expected token.Keyword) error {
 	return nil
 }
 
-func (parser *Parser) expectIdentifier() bool {
-	return false
+func (parser *Parser) expectAnyIdentifier() error {
+	peek := parser.tokens.Peek()
+	if peek.Name() != token.IdentifierTokenName {
+		return &UnexpectedTokenError{
+			token: peek,
+			expected: "any identifier",
+		}
+	}
+	return nil
 }
 
 func (parser *Parser) isLookingAtKeyword(keyword token.Keyword) bool {
-	return false
+	peek := parser.tokens.Peek()
+	if !peek.IsKeyword() {
+		return false
+	}
+	return peek.(*token.KeywordToken).Keyword == keyword
+}
+
+func (parser *Parser) isLookingAtOperator(operator token.Operator) bool {
+	peek := parser.tokens.Peek()
+	if !peek.IsOperator() {
+		return parser.isLookingAtOperatorKeyword(operator)
+	}
+	return peek.(*token.OperatorToken).Operator == operator
+}
+
+func (parser *Parser) isLookingAtOperatorKeyword(operator token.Operator) bool {
+	peek := parser.tokens.Peek()
+	if !peek.IsKeyword() {
+		return false
+	}
+	keyword := peek.(*token.KeywordToken)
+	return keyword.AsOperator() == operator
 }
 
 // openBlock opens a new block of code, updates the parser block pointer and
