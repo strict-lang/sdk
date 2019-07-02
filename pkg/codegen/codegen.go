@@ -16,11 +16,14 @@ type CodeGenerator struct {
 // NewCodeGenerator constructs a CodeGenerator that generates C code from
 // the nodes in the passed translation-unit.
 func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
-	return &CodeGenerator{
+	generators := ast.NewEmptyVisitor()
+	codeGenerator := &CodeGenerator{
 		unit:   unit,
 		output: &strings.Builder{},
-		generators: ast.NewEmptyVisitor(),
+		generators: generators,
 	}
+	generators.VisitMethodCall = codeGenerator.GenerateMethodCall
+	return codeGenerator
 }
 
 func (generator *CodeGenerator) String() string {
