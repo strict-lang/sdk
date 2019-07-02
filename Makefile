@@ -4,7 +4,7 @@ GO_TEST=$(GO) test
 GO_BUILD=$(GO) build
 GO_CLEAN=$(GO) clean
 GO_INSTALL=$(GO) install
-BINARY_NAME=$GOPATH/bin/strict
+BINARY_NAME=$(GOPATH)/bin/strict
 all: clean build test install
 
 install: build
