@@ -13,12 +13,8 @@ func (typeNode *Type) Accept(visitor *Visitor) {
 // Member is a typed field of a class. It represents methods and
 // attributes. The type of a method member is its return-type.
 type Member struct {
-	Name      Identifier
-	ValueType *Type
-}
-
-func (member Member) Type() *Type {
-	return member.ValueType
+	Name   Identifier
+	Type  TypeName
 }
 
 func (member *Member) Accept(visitor *Visitor) {
@@ -26,8 +22,10 @@ func (member *Member) Accept(visitor *Visitor) {
 }
 
 type Method struct {
-	Member
+	Name Identifier
+	Type TypeName
 	Parameters []Parameter
+	Body Node
 }
 
 func (method *Method) Accept(visitor *Visitor) {
@@ -35,8 +33,8 @@ func (method *Method) Accept(visitor *Visitor) {
 }
 
 type Parameter struct {
-	Type  Type
-	Named Identifier
+	Type TypeName
+	Name Identifier
 }
 
 func (parameter *Parameter) Accept(visitor *Visitor) {

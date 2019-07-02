@@ -1,11 +1,11 @@
 package ast
 
 type StringLiteral struct {
-	value string
+	Value string
 }
 
 type NumberLiteral struct {
-	value string
+	Value string
 }
 
 func (literal *StringLiteral) Accept(visitor *Visitor) {
