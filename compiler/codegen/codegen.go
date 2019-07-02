@@ -33,10 +33,13 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	generators.VisitNumberLiteral = codeGenerator.GenerateNumberLiteral
 	generators.VisitYieldStatement = codeGenerator.GenerateYieldStatement
 	generators.VisitBlockStatement = codeGenerator.GenerateBlockStatement
+	generators.VisitReturnStatement = codeGenerator.GenerateReturnStatement
 	generators.VisitTranslationUnit = codeGenerator.GenerateTranslationUnit
 	generators.VisitBinaryExpression = codeGenerator.GenerateBinaryExpression
 	generators.VisitExpressionStatement = codeGenerator.GenerateExpressionStatement
+	generators.VisitFromToLoopStatement = codeGenerator.GenerateFromToLoopStatement
 	generators.VisitConditionalStatement = codeGenerator.GenerateConditionalStatement
+	generators.VisitForeachLoopStatement = codeGenerator.GenerateForEachLoopStatement
 	return codeGenerator
 }
 

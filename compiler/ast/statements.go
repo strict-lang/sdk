@@ -35,22 +35,22 @@ func (conditional *ConditionalStatement) Accept(visitor *Visitor) {
 	visitor.VisitConditionalStatement(conditional)
 }
 
-type ForLoopStatement struct {
+type FromToLoopStatement struct {
 	Body           Node
-	Increment      Node
-	Termination    Node
-	Initialization Node
+	Field Identifier
+	From Node
+	To Node
 }
 
-func (loop *ForLoopStatement) Accept(visitor *Visitor) {
-	visitor.VisitForLoopStatement(loop)
+func (loop *FromToLoopStatement) Accept(visitor *Visitor) {
+	visitor.VisitFromToLoopStatement(loop)
 }
 
 type ForeachLoopStatement struct {
 	Body Node
-	// Variable is the local field, that has the value of
+	// Field is the name of the local field that has the value of
 	// the current element of target.
-	Variable Node
+	Field Identifier
 	// Target is the collection that is iterated.
 	Target Node
 }
@@ -84,4 +84,14 @@ type YieldStatement struct {
 
 func (yield *YieldStatement) Accept(visitor *Visitor) {
 	visitor.VisitYieldStatement(yield)
+}
+
+type ReturnStatement struct {
+	// Value is the value that is returned.
+	// This pointer can be nil, if the return does not return a value.
+	Value Node
+}
+
+func (statement *ReturnStatement) Accept(visitor *Visitor) {
+	visitor.VisitReturnStatement(statement)
 }
