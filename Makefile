@@ -4,14 +4,14 @@ GO_TEST=$(GO) test
 GO_BUILD=$(GO) build
 GO_CLEAN=$(GO) clean
 GO_INSTALL=$(GO) install
-
+BINARY_NAME=$GOPATH/bin/strict
 all: clean build test install
 
 install: build
 	@-$(GO_INSTALL) ./cmd/strict
 
 build: build-libstrict
-	@-$(GO_BUILD) ./cmd/strict
+	@-$(GO_BUILD) -o $(BINARY_NAME) ./cmd/strict
 
 test:
 	@-$(GO_TEST) ./compiler/...
