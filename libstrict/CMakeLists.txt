@@ -9,4 +9,6 @@ add_library(libstrict STATIC
   src/strict/strict.cc
   src/strict/strict.hh)
 
-install(TARGETS libstrict DESTINATION lib)
+install(TARGETS libstrict DESTINATION include)
+
+include_directories(src/)

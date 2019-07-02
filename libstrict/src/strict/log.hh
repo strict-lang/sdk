@@ -3,9 +3,6 @@
 
 #include "strict/strict.hh"
 
-#include <iostream>
-#include <cstdarg>
-
 namespace strict {
 
 // Logs the message followed by a linefeed character.
