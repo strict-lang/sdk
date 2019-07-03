@@ -11,7 +11,10 @@ func (expression *ExpressionStatement) Accept(visitor *Visitor) {
 }
 
 type MethodCall struct {
-	Name      Identifier
+	// Method is the called method. It can be any kind of expression
+	// with the value of a method. Common nodes are identifiers and
+	// field selectors.
+	Method     Node
 	Arguments []Node
 }
 

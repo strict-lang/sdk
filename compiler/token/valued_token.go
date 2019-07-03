@@ -76,6 +76,14 @@ func IsLiteralToken(token Token) bool {
 	return valued.literal
 }
 
+func IsStringLiteralToken(token Token) bool {
+	return token.Name() == StringLiteralTokenName
+}
+
+func IsNumberLiteralToken(token Token) bool {
+	return token.Name() == NumberLiteralTokenName
+}
+
 func IsIdentifierToken(token Token) bool {
 	valued, ok := token.(*ValuedToken)
 	if !ok {

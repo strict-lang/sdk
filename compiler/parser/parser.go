@@ -17,6 +17,10 @@ type Parser struct {
 	linemap   *linemap.Linemap
 	block     *Block
 	unitName  string
+	// expressionDepth is the amount of parentheses encountered at the
+	// current time. It is incremented every time the parser looks at a
+	// LeftParenOperator and decremented when it looks at a RightParenOperator.
+	expressionDepth int
 }
 
 // NewParser creates a parser instance that parses the tokens of the given

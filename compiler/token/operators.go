@@ -4,10 +4,13 @@ type Operator int8
 
 const (
 	InvalidOperator Operator = iota
+	unaryOperatorBegin
 	AddOperator
 	SubOperator
 	MulOperator
 	DivOperator
+	NegateOperator
+	unaryOperatorEnd
 	ModOperator
 	EqualsOperator
 	NotEqualsOperator
@@ -20,7 +23,6 @@ const (
 	BitAndOperator
 	GreaterOperator
 	GreaterEqualsOperator
-	NegateOperator
 	assignOperatorBegin
 	AssignOperator
 	AddAssignOperator
@@ -117,6 +119,10 @@ func (operator Operator) Precedence() int {
 
 func (operator Operator) IsAssign() bool {
 	return operator > assignOperatorBegin && operator < assignOperatorEnd
+}
+
+func (operator Operator) IsUnaryOperator() bool {
+	return operator > unaryOperatorBegin && operator < unaryOperatorEnd
 }
 
 func (operator Operator) String() string {
