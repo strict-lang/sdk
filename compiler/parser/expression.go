@@ -43,7 +43,7 @@ func (parser *Parser) completeLeftParenExpression() (ast.Node, error) {
 	parser.expressionDepth--
 	if token.OperatorValue(parser.tokens.Last()) != token.RightParenOperator {
 		return nil, &UnexpectedTokenError{
-			Token: parser.tokens.Last(),
+			Token:    parser.tokens.Last(),
 			Expected: token.RightParenOperator.String(),
 		}
 	}

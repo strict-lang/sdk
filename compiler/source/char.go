@@ -7,7 +7,7 @@ type Char rune
 const (
 	EndOfFile   = Char(-1)
 	BeginOfFile = Char(-1)
-	NoChar = Char(-2)
+	NoChar      = Char(-2)
 )
 
 func (char Char) IsInRange(lower, upper Char) bool {
