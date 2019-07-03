@@ -20,9 +20,7 @@ func (parser *Parser) ParseConditionalStatement() (*ast.ConditionalStatement, er
 	if err := parser.expectOperator(token.ColonOperator); err != nil {
 		return &ast.ConditionalStatement{}, err
 	}
-	body := &ast.BlockStatement{
-		Children: parser.ParseStatementSequence(),
-	}
+	body := parser.ParseStatementBlock()
 	if !parser.isLookingAtKeyword(token.ElseKeyword) {
 		return &ast.ConditionalStatement{
 			Body:      body,
@@ -48,8 +46,5 @@ func (parser *Parser) ParseElseClause() (ast.Node, error) {
 	if parser.isLookingAtKeyword(token.IfKeyword) {
 		return parser.ParseConditionalStatement()
 	}
-	// TODO(merlinosaymwen): Open block
-	return &ast.BlockStatement{
-		Children: parser.ParseStatementSequence(),
-	}, nil
+	return parser.ParseStatementBlock(), nil
 }
