@@ -3,9 +3,9 @@ package codegen
 import "testing"
 
 var entries = map[string]string{
-	"main": "main.generated.hh",
-	"test": "test.generated.hh",
-	"a_bc": "a_bc.generated.hh",
+	"main": "main.generated.cc",
+	"test": "test.generated.cc",
+	"a_bc": "a_bc.generated.cc",
 }
 
 func TestFilenameByUnitName(test *testing.T) {

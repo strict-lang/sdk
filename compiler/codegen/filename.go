@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	FileNameFormat     = "%s.generated.hh"
-	FileNameRegexp     = regexp.MustCompile(`(?P<Unit>\w+)\.generated\.hh`)
+	FileNameFormat     = "%s.generated.cc"
+	FileNameRegexp     = regexp.MustCompile(`(?P<Unit>\w+)\.generated\.cc`)
 	ErrInvalidFilename = errors.New("invalid filename format")
 )
 
