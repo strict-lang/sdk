@@ -5,25 +5,6 @@ import (
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 )
 
-func (parser *Parser) reportInvalidStatement() {
-	offset := parser.tokens.Peek().Position().Begin
-	lineIndex := parser.linemap.LineAtOffset(offset)
-	parser.reportError(&InvalidStatementError {
-		LineIndex: lineIndex,
-	})
-}
-
-// skipEndOfStatement skips the next token if it is an EndOfStatement token.
-func (parser *Parser) skipEndOfStatement() {
-	if next := parser.tokens.Peek(); !token.IsEndOfStatementToken(next) {
-		parser.reportError(&UnexpectedTokenError{
-			Token: next,
-			Expected: "end of statement",
-		})
-	}
-	parser.tokens.Pull()
-}
-
 // ParseIfStatement parses a conditional statement and it's optional else-clause.
 func (parser *Parser) ParseIfStatement() ast.Node {
 	if err := parser.expectKeyword(token.IfKeyword); err != nil {
@@ -42,15 +23,15 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 	if !token.HasKeywordValue(parser.tokens.Pull(), token.ElseKeyword) {
 		return &ast.ConditionalStatement{
 			Condition: condition,
-			Body: body,
+			Body:      body,
 		}
 	}
 	parser.skipEndOfStatement()
 	elseBody := parser.ParseStatementBlock()
 	return &ast.ConditionalStatement{
 		Condition: condition,
-		Body: body,
-		Else: elseBody,
+		Body:      body,
+		Else:      elseBody,
 	}
 }
 
@@ -92,9 +73,9 @@ func (parser *Parser) completeForEachStatement() ast.Node {
 	}
 	body := parser.ParseStatementBlock()
 	return &ast.ForeachLoopStatement{
-		Field: field,
+		Field:  field,
 		Target: value,
-		Body: body,
+		Body:   body,
 	}
 }
 
@@ -107,7 +88,7 @@ func (parser *Parser) completeFromToStatement() ast.Node {
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
-	if err :=	parser.skipKeyword(token.FromKeyword); err != nil {
+	if err := parser.skipKeyword(token.FromKeyword); err != nil {
 		return parser.createInvalidStatement(err)
 	}
 	from, err := parser.ParseExpression()
@@ -127,9 +108,9 @@ func (parser *Parser) completeFromToStatement() ast.Node {
 	body := parser.ParseStatementBlock()
 	return &ast.FromToLoopStatement{
 		Field: &field,
-		From: from,
-		To: to,
-		Body: body,
+		From:  from,
+		To:    to,
+		Body:  body,
 	}
 }
 
@@ -214,8 +195,8 @@ func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide
 		return &ast.InvalidStatement{}, err
 	}
 	return &ast.AssignStatement{
-		Target: leftHandSide,
-		Value: rightHandSide,
+		Target:   leftHandSide,
+		Value:    rightHandSide,
 		Operator: operator,
 	}, nil
 }
@@ -237,7 +218,7 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 		return &ast.DecrementStatement{Operand: leftHandSide}, nil
 	}
 	return &ast.InvalidStatement{}, &UnexpectedTokenError{
-		Token: nextToken,
+		Token:    nextToken,
 		Expected: "operator",
 	}
 }
@@ -260,7 +241,7 @@ func (parser *Parser) ParseStatement() ast.Node {
 		nextToken := parser.tokens.Pull()
 		if !token.IsEndOfStatementToken(nextToken) {
 			parser.reportError(&UnexpectedTokenError{
-				Token: nextToken,
+				Token:    nextToken,
 				Expected: "end of statement",
 			})
 		}

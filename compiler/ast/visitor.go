@@ -54,7 +54,7 @@ type Visitor struct {
 	VisitTranslationUnit func(*TranslationUnit)
 
 	// VisitInvalidStatement visits an InvalidStatement node.
-	VisitInvalidStatement func (*InvalidStatement)
+	VisitInvalidStatement func(*InvalidStatement)
 
 	// VisitBinaryExpression visits an BinaryExpression node.
 	VisitBinaryExpression func(*BinaryExpression)
@@ -76,33 +76,32 @@ type Visitor struct {
 
 	// VisitConditionalStatement visits a ConditionalStatement node.
 	VisitConditionalStatement func(*ConditionalStatement)
-
 }
 
 func NewEmptyVisitor() *Visitor {
 	return &Visitor{
-		VisitType:                   func(*Type) {},
-		VisitMember:                 func(*Member) {},
-		VisitMethod:                 func(*Method) {},
-		VisitParameter:              func(*Parameter) {},
-		VisitMethodCall:             func(*MethodCall) {},
-		VisitIdentifier:             func(*Identifier) {},
-		VisitStringLiteral:          func(*StringLiteral) {},
-		VisitNumberLiteral:          func(*NumberLiteral) {},
-		VisitYieldStatement:         func(*YieldStatement) {},
-		VisitBlockStatement:         func(*BlockStatement) {},
-		VisitUnaryExpression:        func(*UnaryExpression) {},
-		VisitEmptyStatement: 				 func(*EmptyStatement) {},
-		VisitReturnStatement:        func(*ReturnStatement) {},
-		VisitTranslationUnit:        func(*TranslationUnit) {},
-		VisitBinaryExpression:       func(*BinaryExpression) {},
-		VisitAssignStatement:        func(*AssignStatement) {},
-		VisitInvalidStatement:       func(*InvalidStatement) {},
-		VisitIncrementStatement:  	 func(*IncrementStatement) {},
-		VisitDecrementStatement:     func(*DecrementStatement) {},
-		VisitFromToLoopStatement:    func(*FromToLoopStatement) {},
-		VisitExpressionStatement:    func(*ExpressionStatement) {},
-		VisitForeachLoopStatement:   func(*ForeachLoopStatement) {},
-		VisitConditionalStatement:   func(*ConditionalStatement) {},
+		VisitType:                 func(*Type) {},
+		VisitMember:               func(*Member) {},
+		VisitMethod:               func(*Method) {},
+		VisitParameter:            func(*Parameter) {},
+		VisitMethodCall:           func(*MethodCall) {},
+		VisitIdentifier:           func(*Identifier) {},
+		VisitStringLiteral:        func(*StringLiteral) {},
+		VisitNumberLiteral:        func(*NumberLiteral) {},
+		VisitYieldStatement:       func(*YieldStatement) {},
+		VisitBlockStatement:       func(*BlockStatement) {},
+		VisitUnaryExpression:      func(*UnaryExpression) {},
+		VisitEmptyStatement:       func(*EmptyStatement) {},
+		VisitReturnStatement:      func(*ReturnStatement) {},
+		VisitTranslationUnit:      func(*TranslationUnit) {},
+		VisitBinaryExpression:     func(*BinaryExpression) {},
+		VisitAssignStatement:      func(*AssignStatement) {},
+		VisitInvalidStatement:     func(*InvalidStatement) {},
+		VisitIncrementStatement:   func(*IncrementStatement) {},
+		VisitDecrementStatement:   func(*DecrementStatement) {},
+		VisitFromToLoopStatement:  func(*FromToLoopStatement) {},
+		VisitExpressionStatement:  func(*ExpressionStatement) {},
+		VisitForeachLoopStatement: func(*ForeachLoopStatement) {},
+		VisitConditionalStatement: func(*ConditionalStatement) {},
 	}
 }

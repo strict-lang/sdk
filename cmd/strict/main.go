@@ -31,7 +31,7 @@ func main() {
 			ArgsUsage: "compile <path>",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name: "dir, d",
+					Name:  "dir, d",
 					Usage: "the target directory",
 					Value: "",
 				},

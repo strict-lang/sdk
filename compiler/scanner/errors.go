@@ -6,7 +6,7 @@ import (
 )
 
 type UnexpectedCharError struct {
-	got source.Char
+	got      source.Char
 	expected string
 }
 

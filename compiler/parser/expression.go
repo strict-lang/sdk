@@ -65,14 +65,13 @@ func (parser *Parser) ParseUnaryExpression() (ast.UnaryExpression, error) {
 	}, nil
 }
 
-func (parser *Parser) ParseLeftHandSide() (ast.Node, error){
+func (parser *Parser) ParseLeftHandSide() (ast.Node, error) {
 	return nil, nil
 }
 
 func (parser *Parser) ParseRightHandSide() (ast.Node, error) {
 	return nil, nil
 }
-
 
 // ParseMethodCall parses the call to a method.
 func (parser *Parser) ParseMethodCall() (ast.MethodCall, error) {

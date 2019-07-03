@@ -7,7 +7,7 @@ import (
 )
 
 func TestGatheringValidNumber(test *testing.T) {
-	entries := []string {
+	entries := []string{
 		"0",
 		"10",
 		"0x10",

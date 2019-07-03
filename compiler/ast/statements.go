@@ -62,11 +62,11 @@ func (loop *ForeachLoopStatement) Accept(visitor *Visitor) {
 }
 
 type IncrementStatement struct {
-	Operand   Node
+	Operand Node
 }
 
 type DecrementStatement struct {
-	Operand   Node
+	Operand Node
 }
 
 func (increment *IncrementStatement) Accept(visitor *Visitor) {
@@ -108,9 +108,9 @@ func (statement *EmptyStatement) Accept(visitor *Visitor) {
 	visitor.VisitEmptyStatement(statement)
 }
 
-type AssignStatement struct{
-	Target Node
-	Value Node
+type AssignStatement struct {
+	Target   Node
+	Value    Node
 	Operator token.Operator
 }
 

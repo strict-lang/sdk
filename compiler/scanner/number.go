@@ -67,15 +67,15 @@ func (scanner *Scanner) gatherNumber() (string, error) {
 
 func (scanner *Scanner) gatherExponent(builder *strings.Builder) error {
 	switch scanner.reader.Last() {
-		case '-', '+':
-			if scanner.reader.Pull().DigitValue() < int(Decimal) {
-				scanner.gatherNumericDigits(builder, Decimal)
-				return nil
-			}
-			return &UnexpectedCharError{
-				got: scanner.reader.Last(),
-				expected: "digital number",
-			}
+	case '-', '+':
+		if scanner.reader.Pull().DigitValue() < int(Decimal) {
+			scanner.gatherNumericDigits(builder, Decimal)
+			return nil
+		}
+		return &UnexpectedCharError{
+			got:      scanner.reader.Last(),
+			expected: "digital number",
+		}
 	}
 	return nil
 }
@@ -95,7 +95,7 @@ func (scanner *Scanner) gatherNumberWithRadix(builder *strings.Builder, radix Ra
 	scanner.gatherNumericDigits(builder, radix)
 	if scanner.reader.Last().DigitValue() >= int(radix) {
 		return scanner.reader.String(), &UnexpectedCharError{
-			got: scanner.reader.Last(),
+			got:      scanner.reader.Last(),
 			expected: fmt.Sprintf("number with radix %d", radix),
 		}
 	}

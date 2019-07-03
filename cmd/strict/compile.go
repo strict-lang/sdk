@@ -77,7 +77,7 @@ func createFilepath(filename, directory string) string {
 	if directory == "" {
 		return filename
 	}
-	return 	fmt.Sprintf("%s/%s", directory, filename)
+	return fmt.Sprintf("%s/%s", directory, filename)
 }
 
 func createNewFile(filename, directory string) (*os.File, error) {

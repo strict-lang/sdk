@@ -17,7 +17,7 @@ func (parser *Parser) skipOperator(operator token.Operator) error {
 
 // skipKeyword skips the next keyword if it the passed keyword, otherwise
 // otherwise an UnexpectedTokenError is returned.
-func (parser *Parser) skipKeyword(keyword token.Keyword) error{
+func (parser *Parser) skipKeyword(keyword token.Keyword) error {
 	if err := parser.expectKeyword(keyword); err != nil {
 		return err
 	}
@@ -90,4 +90,25 @@ func (parser *Parser) isLookingAtOperatorKeyword(operator token.Operator) bool {
 func (parser *Parser) createInvalidStatement(err error) ast.Node {
 	parser.reportError(err)
 	return &ast.InvalidStatement{}
+}
+
+// reportInvalidStatement reports an InvalidStatementError in the
+// current tokens line.
+func (parser *Parser) reportInvalidStatement() {
+	offset := parser.tokens.Peek().Position().Begin
+	lineIndex := parser.linemap.LineAtOffset(offset)
+	parser.reportError(&InvalidStatementError{
+		LineIndex: lineIndex,
+	})
+}
+
+// skipEndOfStatement skips the next token if it is an EndOfStatement token.
+func (parser *Parser) skipEndOfStatement() {
+	if next := parser.tokens.Peek(); !token.IsEndOfStatementToken(next) {
+		parser.reportError(&UnexpectedTokenError{
+			Token:    next,
+			Expected: "end of statement",
+		})
+	}
+	parser.tokens.Pull()
 }
