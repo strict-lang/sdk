@@ -20,7 +20,7 @@ func TestSkipOperator(test *testing.T) {
 	for entry, queue := range entries {
 		parser := NewTestParser(token.NewQueueReader(queue))
 		if err := parser.skipOperator(entry); err != nil {
-			test.Errorf("failed expecting operator: %s", err.Error())
+			test.Errorf("failed expecting operator %s: %s",entry, err.Error())
 		}
 	}
 }

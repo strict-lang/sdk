@@ -170,7 +170,7 @@ func (scanner *Scanner) reportError(err error) {
 func (scanner *Scanner) nextNonEndOfFile() token.Token {
 	switch next := scanner.reader.Peek(); {
 	case next.IsAlphabetic():
-		return scanner.ScanIdentifier()
+		return scanner.ScanIdentifierOrKeyword()
 	case next.IsNumeric():
 		return scanner.ScanNumber()
 	case isKnownOperator(next):

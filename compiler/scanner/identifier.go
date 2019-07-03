@@ -42,3 +42,15 @@ func (scanner *Scanner) ScanIdentifier() token.Token {
 	}
 	return token.NewIdentifierToken(identifier, position, scanner.indent)
 }
+
+func (scanner *Scanner) ScanIdentifierOrKeyword() token.Token {
+	identifier, err := scanner.gatherIdentifier()
+	if err != nil {
+		scanner.reportError(err)
+		return scanner.createInvalidToken()
+	}
+	if keyword, ok := token.KeywordByName(identifier); ok {
+		return token.NewKeywordToken(keyword, scanner.currentPosition(), scanner.indent)
+	}
+	return token.NewIdentifierToken(identifier, scanner.currentPosition(), scanner.indent)
+}

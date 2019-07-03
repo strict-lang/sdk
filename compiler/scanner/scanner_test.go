@@ -88,6 +88,31 @@ func TestScanExpression(test *testing.T) {
 	assertEndOfFile(test, scanner.Pull())
 }
 
+func TestScanMethodDeclaration(test *testing.T) {
+	const entry = `
+	method number add(number a, number b) 
+		return a + b
+	`
+	scanner := NewStringScanner(entry)
+	assertKeyword(test, scanner.Pull(), token.MethodKeyword)
+	assertTokenValue(test, scanner.Pull(), "number")
+	assertTokenValue(test, scanner.Pull(), "add")
+	assertOperator(test, scanner.Pull(), token.LeftParenOperator)
+	assertTokenValue(test, scanner.Pull(), "number")
+	assertTokenValue(test, scanner.Pull(), "a")
+	assertOperator(test, scanner.Pull(), token.CommaOperator)
+	assertTokenValue(test, scanner.Pull(), "number")
+	assertTokenValue(test, scanner.Pull(), "b")
+	assertOperator(test, scanner.Pull(), token.RightParenOperator)
+	assertEndOfStatement(test, scanner.Pull())
+	assertKeyword(test, scanner.Pull(), token.ReturnKeyword)
+	assertTokenValue(test, scanner.Pull(), "a")
+	assertOperator(test, scanner.Pull(), token.AddOperator)
+	assertTokenValue(test, scanner.Pull(), "b")
+	assertEndOfStatement(test, scanner.Pull())
+	assertEndOfFile(test, scanner.Pull())
+}
+
 func assertTokenValue(test *testing.T, got token.Token, expected string) {
 	if got.Value() != expected {
 		test.Errorf("unexpected token %s, expected %s", got, expected)
@@ -95,7 +120,13 @@ func assertTokenValue(test *testing.T, got token.Token, expected string) {
 }
 
 func assertOperator(test *testing.T, got token.Token, wanted token.Operator) {
-	if !token.IsOperatorToken(got) || got.(*token.OperatorToken).Operator != wanted {
+	if token.OperatorValue(got) != wanted {
+		test.Errorf("unexpected token %s, expected %s", got, wanted.String())
+	}
+}
+
+func assertKeyword(test *testing.T, got token.Token, wanted token.Keyword) {
+	if token.KeywordValue(got) != wanted {
 		test.Errorf("unexpected token %s, expected %s", got, wanted.String())
 	}
 }
