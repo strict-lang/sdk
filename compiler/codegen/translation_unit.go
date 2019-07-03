@@ -18,6 +18,14 @@ func (generator *CodeGenerator) GenerateTranslationUnit(unit *ast.TranslationUni
 	generator.Emit("\n")
 }
 
+func (generator *CodeGenerator) generateBuiltins() {
+	generator.Emit(`
+static int toInt(double number) {
+	return (int) number;
+}
+`)
+}
+
 func splitTopLevelNodes(unit *ast.TranslationUnit) (methods []ast.Node, others []ast.Node) {
 	for _, node := range unit.Children {
 		if _, ok := node.(*ast.Method); ok {
