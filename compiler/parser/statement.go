@@ -262,7 +262,7 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 		expectedIndent := parser.block.Indent
 		if next.Indent() > expectedIndent {
 			invalid := parser.createInvalidStatement(&InvalidIndentationError{
-				Token: next,
+				Token:    next,
 				Expected: string(expectedIndent),
 			})
 			statements = append(statements, invalid)
@@ -281,7 +281,7 @@ func (parser *Parser) ParseStatementBlock() ast.Node {
 	peek := parser.tokens.Peek()
 	if peek.Indent() < parser.block.Indent {
 		return parser.createInvalidStatement(&InvalidIndentationError{
-			Token: peek,
+			Token:    peek,
 			Expected: "indent bigger than 0",
 		})
 	}

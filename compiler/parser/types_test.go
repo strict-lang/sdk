@@ -6,7 +6,7 @@ import (
 )
 
 func TestParser_ParseTypeName(test *testing.T) {
-	entries := []string {
+	entries := []string{
 		"number",
 		"string",
 		"list<number>",

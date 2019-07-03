@@ -18,7 +18,7 @@ func (identifier *Identifier) Accept(visitor *Visitor) {
 }
 
 func (identifier Identifier) String() string {
-	return identifier.Value
+	return fmt.Sprintf("Identifier(%s)", identifier.Value)
 }
 
 // UnaryExpression is an operation on a single operand.

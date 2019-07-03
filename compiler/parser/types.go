@@ -21,7 +21,7 @@ func (parser *Parser) ParseTypeName() (ast.TypeName, error) {
 	typename := parser.tokens.Last()
 	if !token.IsIdentifierToken(typename) {
 		return nil, &UnexpectedTokenError{
-			Token: typename,
+			Token:    typename,
 			Expected: "typename",
 		}
 	}
@@ -38,12 +38,12 @@ func (parser *Parser) ParseTypeName() (ast.TypeName, error) {
 	closingOperator := parser.tokens.Pull()
 	if token.OperatorValue(closingOperator) != token.GreaterOperator {
 		return nil, &UnexpectedTokenError{
-			Token: closingOperator,
+			Token:    closingOperator,
 			Expected: token.GreaterOperator.String(),
 		}
 	}
 	return &ast.GenericTypeName{
-		Name: typename.Value(),
+		Name:    typename.Value(),
 		Generic: generic,
 	}, nil
 }

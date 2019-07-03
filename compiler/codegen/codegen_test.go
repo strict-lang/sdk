@@ -34,7 +34,7 @@ func TestCodeGeneration(test *testing.T) {
 						Children: []ast.Node{
 							&ast.ExpressionStatement{
 								Expression: &ast.MethodCall{
-									Name: ast.Identifier{Value: "logf"},
+									Method: &ast.Identifier{Value: "logf"},
 									Arguments: []ast.Node{
 										&ast.StringLiteral{Value: "%d is still young"},
 										&ast.Identifier{Value: "age"},
@@ -47,7 +47,7 @@ func TestCodeGeneration(test *testing.T) {
 						Children: []ast.Node{
 							&ast.ExpressionStatement{
 								Expression: &ast.MethodCall{
-									Name: ast.Identifier{Value: "log"},
+									Method: &ast.Identifier{Value: "log"},
 									Arguments: []ast.Node{
 										&ast.StringLiteral{Value: "You are an adult"},
 									},
@@ -62,10 +62,10 @@ func TestCodeGeneration(test *testing.T) {
 
 	call := ast.ExpressionStatement{
 		Expression: &ast.MethodCall{
-			Name: ast.Identifier{Value: "commentOnAge"},
+			Method: &ast.Identifier{Value: "commentOnAge"},
 			Arguments: []ast.Node{
 				&ast.MethodCall{
-					Name: ast.Identifier{Value: "inputNumber"},
+					Method: &ast.Identifier{Value: "inputNumber"},
 					Arguments: []ast.Node{
 						&ast.StringLiteral{
 							Value: "How old are you?",

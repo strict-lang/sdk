@@ -1,6 +1,9 @@
 package ast
 
-import "github.com/BenjaminNitschke/Strict/compiler/token"
+import (
+	"fmt"
+	"github.com/BenjaminNitschke/Strict/compiler/token"
+)
 
 type ExpressionStatement struct {
 	Expression Node
@@ -14,12 +17,16 @@ type MethodCall struct {
 	// Method is the called method. It can be any kind of expression
 	// with the value of a method. Common nodes are identifiers and
 	// field selectors.
-	Method     Node
+	Method    Node
 	Arguments []Node
 }
 
 func (call *MethodCall) Accept(visitor *Visitor) {
 	visitor.VisitMethodCall(call)
+}
+
+func (call MethodCall) String() string {
+	return fmt.Sprintf("MethodCall(%s, Arguments: %s)", call.Method, call.Arguments)
 }
 
 type BlockStatement struct {

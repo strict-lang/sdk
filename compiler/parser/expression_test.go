@@ -8,18 +8,28 @@ import (
 
 func TestParseBinaryExpression(test *testing.T) {
 	entries := []string{
-		"a + b",
+		`call(call(1))`,
+		`1 + 1`,
+		`!1`,
+		`1 + 2 + 3`,
+		`(1 + 2) + 3`,
+		`printf("%d", limit(10) + 1)`,
 	}
 
 	for _, entry := range entries {
-		parser := createParser(entry)
-		// TODO(merlinosayimwen): Verify result node
-		_, err := parser.ParseBinaryExpression()
-		if err != nil {
-			test.Errorf("unexpected error: %s", err.Error())
-			continue
-		}
+		testParsingBinaryExpression(test, entry)
 	}
+}
+
+func testParsingBinaryExpression(test *testing.T, entry string) {
+	parser := createParser(entry)
+	defer parser.recorder.PrintAllEntries(diagnostic.NewTestPrinter(test))
+	expression, err := parser.ParseExpression()
+	if err != nil {
+		test.Errorf("unexpected error while parsing (%s): %s", entry, err.Error())
+		return
+	}
+	test.Log(expression)
 }
 
 func createParser(input string) *Parser {

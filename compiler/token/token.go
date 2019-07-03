@@ -1,6 +1,7 @@
 package token
 
 type Indent uint8
+
 const NoIndent Indent = 0
 
 type Token interface {

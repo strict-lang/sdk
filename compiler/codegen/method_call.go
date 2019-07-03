@@ -11,8 +11,12 @@ var builtinMethods = map[string]string{
 }
 
 func (generator *CodeGenerator) GenerateMethodCall(call *ast.MethodCall) {
-	name := lookupMethodName(call.Name.Value)
-	generator.Emit(name)
+	if identifier, ok := call.Method.(*ast.Identifier); ok {
+		call.Method = &ast.Identifier{
+			Value: lookupMethodName(identifier.Value),
+		}
+	}
+	call.Method.Accept(generator.generators)
 	generator.Emit("(")
 	for index, argument := range call.Arguments {
 		if index != 0 {

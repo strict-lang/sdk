@@ -20,7 +20,7 @@ func (concrete ConcreteTypeName) FullName() string {
 }
 
 type GenericTypeName struct {
-	Name    string
+	Name string
 	// TODO(merlinosayimwen) Change this to a slice to support
 	//  types like maps and tuples.
 	Generic TypeName

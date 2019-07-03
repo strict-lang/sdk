@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 
 	"github.com/BenjaminNitschke/Strict/compiler/ast"
@@ -15,6 +16,7 @@ var (
 )
 
 func (parser *Parser) ParseExpression() (ast.Node, error) {
+	parser.tokens.Pull()
 	return parser.parseBinaryExpression(token.LowPrecedence + 1)
 }
 
@@ -33,15 +35,17 @@ func (parser *Parser) ParseOperand() (ast.Node, error) {
 }
 
 func (parser *Parser) completeLeftParenExpression() (ast.Node, error) {
-	parser.tokens.Pull()
 	parser.expressionDepth++
 	expression, err := parser.ParseExpression()
 	if err != nil {
 		return expression, err
 	}
 	parser.expressionDepth--
-	if err := parser.skipOperator(token.RightParenOperator); err != nil {
-		return expression, err
+	if token.OperatorValue(parser.tokens.Last()) != token.RightParenOperator {
+		return nil, &UnexpectedTokenError{
+			Token: parser.tokens.Last(),
+			Expected: token.RightParenOperator.String(),
+		}
 	}
 	return expression, nil
 }
@@ -55,16 +59,15 @@ func (parser *Parser) ParseOperation() (ast.Node, error) {
 	}
 	// TODO(merlinosayimwen): Add field selector
 	for {
-		stop, node, err := parser.parseOperationOnOperand(operand)
+		done, node, err := parser.parseOperationOnOperand(operand)
 		if err != nil {
 			return operand, err
 		}
-		if stop {
-			break
-		}
 		operand = node
+		if done {
+			return operand, nil
+		}
 	}
-	return operand, nil
 }
 
 // ParseOperationOnOperand parses an operation on an operand that has already
@@ -74,9 +77,8 @@ func (parser *Parser) parseOperationOnOperand(operand ast.Node) (done bool, node
 	case token.OperatorValue(next) == token.LeftParenOperator:
 		call, err := parser.ParseMethodCall(operand)
 		return false, call, err
-	default:
-		return true, operand, nil
 	}
+	return true, operand, nil
 }
 
 // ParseBinaryExpression parses a binary expression. Binary expressions are
@@ -90,20 +92,24 @@ func (parser *Parser) parseBinaryExpression(requiredPrecedence token.Precedence)
 		return nil, err
 	}
 	for {
-		next := parser.tokens.Pull()
+		next := parser.tokens.Peek()
 		precedence := token.PrecedenceOfAny(next)
 		if precedence < requiredPrecedence {
+			parser.tokens.Pull()
+			fmt.Printf("%s -> %s\n", parser.tokens.Last(), leftHandSide)
 			return leftHandSide, nil
 		}
-		rightHandSide, err := parser.parseBinaryExpression(precedence+1)
+		parser.tokens.Pull()
+		parser.tokens.Pull()
+		rightHandSide, err := parser.parseBinaryExpression(precedence)
 		if err != nil {
 			return leftHandSide, err
 		}
-		return &ast.BinaryExpression{
-			LeftOperand: leftHandSide,
+		leftHandSide = &ast.BinaryExpression{
+			LeftOperand:  leftHandSide,
 			RightOperand: rightHandSide,
-			Operator: token.OperatorValue(next),
-		}, nil
+			Operator:     token.OperatorValue(next),
+		}
 	}
 }
 
@@ -120,7 +126,8 @@ func (parser *Parser) ParseUnaryExpression() (ast.Node, error) {
 	if !operator.IsUnaryOperator() {
 		return parser.ParseOperation()
 	}
-	operand, err := parser.ParseOperation()
+	parser.tokens.Pull()
+	operand, err := parser.ParseUnaryExpression()
 	if err != nil {
 		return nil, err
 	}
@@ -141,12 +148,16 @@ func (parser *Parser) ParseMethodCall(method ast.Node) (*ast.MethodCall, error) 
 	}
 	return &ast.MethodCall{
 		Arguments: arguments,
-		Method: method,
+		Method:    method,
 	}, nil
 }
 
 // parseArgumentList parses the arguments of a MethodCall.
 func (parser *Parser) parseArgumentList() ([]ast.Node, error) {
+	if token.OperatorValue(parser.tokens.Peek()) == token.RightParenOperator {
+		parser.tokens.Pull()
+		return []ast.Node{}, nil
+	}
 	var arguments []ast.Node
 	for {
 		next, err := parser.ParseExpression()
@@ -154,23 +165,16 @@ func (parser *Parser) parseArgumentList() ([]ast.Node, error) {
 			return arguments, err
 		}
 		arguments = append(arguments, next)
-		nextToken := parser.tokens.Pull()
-		if !token.IsOperatorToken(nextToken) {
-			return arguments, &UnexpectedTokenError{
-				Token:    nextToken,
-				Expected: "',' or ')'",
-			}
+		nextToken := parser.tokens.Last()
+		switch token.OperatorValue(nextToken) {
+		case token.RightParenOperator:
+			return arguments, nil
+		case token.CommaOperator:
+			continue
 		}
-		operator := nextToken.(*token.OperatorToken).Operator
-		if operator == token.RightParenOperator {
-			break
-		}
-		if operator != token.CommaOperator {
-			return arguments, &UnexpectedTokenError{
-				Token:    nextToken,
-				Expected: "',' or ')'",
-			}
+		return arguments, &UnexpectedTokenError{
+			Token:    nextToken,
+			Expected: "',' or ')'",
 		}
 	}
-	return arguments, nil
 }
