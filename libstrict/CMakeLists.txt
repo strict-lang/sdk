@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(strict)
+project(strict LANGUAGES CXX)
 
 add_subdirectory(src)
