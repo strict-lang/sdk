@@ -32,7 +32,10 @@ type Visitor struct {
 	// VisitNumberLiteral visits a NumberLiteral node.
 	VisitNumberLiteral func(*NumberLiteral)
 
-	// VisitYieldStatement visits a yield statement.
+	// VisitEmptyStatement visits a EmptyStatement node.
+	VisitEmptyStatement func(*EmptyStatement)
+
+	// VisitYieldStatement visits a YieldStatement node.
 	VisitYieldStatement func(*YieldStatement)
 
 	// VisitBlockStatement visits a BlockStatement node.
@@ -46,6 +49,9 @@ type Visitor struct {
 
 	// VisitTranslationUnit visits a TranslationUnit node.
 	VisitTranslationUnit func(*TranslationUnit)
+
+	// VisitInvalidStatement visits an InvalidStatement node.
+	VisitInvalidStatement func (*InvalidStatement)
 
 	// VisitFromToLoopStatement visits a FromToLoopStatement node.
 	VisitFromToLoopStatement func(*FromToLoopStatement)
@@ -82,9 +88,11 @@ func NewEmptyVisitor() *Visitor {
 		VisitYieldStatement:         func(*YieldStatement) {},
 		VisitBlockStatement:         func(*BlockStatement) {},
 		VisitUnaryExpression:        func(*UnaryExpression) {},
+		VisitEmptyStatement: func(*EmptyStatement) {},
 		VisitReturnStatement:        func(*ReturnStatement) {},
 		VisitTranslationUnit:        func(*TranslationUnit) {},
 		VisitBinaryExpression:       func(*BinaryExpression) {},
+		VisitInvalidStatement:       func(*InvalidStatement) {},
 		VisitFromToLoopStatement:    func(*FromToLoopStatement) {},
 		VisitExpressionStatement:    func(*ExpressionStatement) {},
 		VisitForeachLoopStatement:   func(*ForeachLoopStatement) {},

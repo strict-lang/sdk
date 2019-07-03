@@ -50,7 +50,7 @@ func (parser Parser) ParseBinaryExpression() (ast.BinaryExpression, error) {
 // operations with only one operand (arity of one). An example of a unary
 // expression is the negation '!(expression)'. The single operand may be
 // any kind of expression, including another unary expression.
-func (parser Parser) ParseUnaryExpression() (ast.UnaryExpression, error) {
+func (parser *Parser) ParseUnaryExpression() (ast.UnaryExpression, error) {
 	operator := parser.tokens.Pull()
 	if !token.IsOperatorToken(operator) {
 		return ast.UnaryExpression{}, ErrInvalidExpression
@@ -63,4 +63,8 @@ func (parser Parser) ParseUnaryExpression() (ast.UnaryExpression, error) {
 		Operator: operator.(*token.OperatorToken).Operator,
 		Operand:  expression,
 	}, nil
+}
+
+func (parser *Parser) ParseLeftHandSide() (ast.Node, error){
+	return nil, nil
 }

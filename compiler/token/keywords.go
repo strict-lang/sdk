@@ -15,6 +15,7 @@ const (
 	IfKeyword
 	ElseKeyword
 	YieldKeyword
+	ReturnKeyword
 	ToKeyword
 	OrKeyword
 	NotKeyword
@@ -24,6 +25,7 @@ const (
 
 var keywordNameTable = map[Keyword]string{
 	MethodKeyword: "method",
+	ReturnKeyword: "return",
 	TypeKeyword:   "type",
 	IsKeyword:     "is",
 	IfKeyword:     "if",

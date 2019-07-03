@@ -95,3 +95,15 @@ type ReturnStatement struct {
 func (statement *ReturnStatement) Accept(visitor *Visitor) {
 	visitor.VisitReturnStatement(statement)
 }
+
+type InvalidStatement struct {}
+
+func (statement *InvalidStatement) Accept(visitor *Visitor) {
+	visitor.VisitInvalidStatement(statement)
+}
+
+type EmptyStatement struct {}
+
+func (statement *EmptyStatement) Accept(visitor *Visitor) {
+	visitor.VisitorEmptyStatement(statement)
+}

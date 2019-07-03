@@ -55,6 +55,19 @@ func (parser *Parser) openBlock(indent token.Indent) {
 	parser.block = block
 }
 
+func (parser *Parser) reportError(err error) {
+	parser.recorder.Record(diagnostic.Entry{
+		Kind:    &diagnostic.Error,
+		Stage:   &diagnostic.SyntacticalAnalysis,
+		Source:  parser.tokens.Peek().Value(),
+		Message: err.Error(),
+		Position: diagnostic.Position{
+			// TODO(merlinosayimwen): Use linemap to get line information of
+			// 	the token and create a diagnostic.Position from it.
+		},
+	})
+}
+
 func (parser *Parser) closeBlock() {
 	parser.block = parser.block.Parent
 }

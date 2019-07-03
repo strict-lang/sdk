@@ -21,11 +21,13 @@ const (
 	GreaterOperator
 	GreaterEqualsOperator
 	NegateOperator
+	assignOperatorBegin
 	AssignOperator
 	AddAssignOperator
 	SubAssignOperator
 	MulAssignOperator
 	DivAssignOperator
+	assignOperatorEnd
 	ColonOperator
 	SmallerOperator
 	SmallerEqualsOperator
@@ -111,6 +113,10 @@ func (operator Operator) Precedence() int {
 		return LowPrecedence
 	}
 	return 0
+}
+
+func (operator Operator) IsAssign() bool {
+	return operator > assignOperatorBegin && operator < assignOperatorEnd
 }
 
 func (operator Operator) String() string {

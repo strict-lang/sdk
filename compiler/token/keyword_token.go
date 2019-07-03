@@ -51,3 +51,25 @@ func IsKeywordToken(token Token) bool {
 	_, ok := token.(*KeywordToken)
 	return ok
 }
+
+func IsOperatorOrOperatorKeywordToken(token Token) bool {
+	if _, ok := token.(*OperatorToken); ok {
+		return true
+	}
+	keyword, ok := token.(*KeywordToken)
+	if !ok {
+		return false
+	}
+	return keyword.IsOperatorKeyword()
+}
+
+func OperatorValue(token Token) Operator {
+	if operator, ok := token.(*OperatorToken); ok {
+		return operator.Operator
+	}
+	keyword, ok := token.(*KeywordToken)
+	if !ok {
+		return InvalidOperator
+	}
+	return keyword.AsOperator()
+}

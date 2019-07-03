@@ -13,7 +13,7 @@ func TestGatheringValidNumber(test *testing.T) {
 		"0x10",
 		"0x0f",
 		"0xabc",
-		"0xCAFEBABE",
+		"0xACE",
 		"0b100100",
 		"0.1232123",
 		"1232521982",
