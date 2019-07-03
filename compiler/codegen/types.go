@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	BuiltinTypeText   = "strict::Text"
-	BuiltinTypeNumber = "strict::Number"
-	BuiltinTypeList   = "strict::List"
+	BuiltinTypeText   = "std::string"
+	BuiltinTypeNumber = "double"
+	BuiltinTypeList   = "std::vector"
 )
 
 var builtinTypes = map[string]string{
