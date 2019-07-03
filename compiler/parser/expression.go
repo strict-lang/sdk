@@ -68,3 +68,7 @@ func (parser *Parser) ParseUnaryExpression() (ast.UnaryExpression, error) {
 func (parser *Parser) ParseLeftHandSide() (ast.Node, error){
 	return nil, nil
 }
+
+func (parser *Parser) ParseRightHandSide() (ast.Node, error) {
+	return nil, nil
+}

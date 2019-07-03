@@ -44,6 +44,9 @@ type Visitor struct {
 	// VisitUnaryExpression visits an UnaryExpression node.
 	VisitUnaryExpression func(*UnaryExpression)
 
+	// VisitAssignStatement visits an AssignStatement node.
+	VisitAssignStatement func(*AssignStatement)
+
 	// VisitReturnStatement visits a ReturnStatement node.
 	VisitReturnStatement func(*ReturnStatement)
 
@@ -53,11 +56,17 @@ type Visitor struct {
 	// VisitInvalidStatement visits an InvalidStatement node.
 	VisitInvalidStatement func (*InvalidStatement)
 
-	// VisitFromToLoopStatement visits a FromToLoopStatement node.
-	VisitFromToLoopStatement func(*FromToLoopStatement)
-
 	// VisitBinaryExpression visits an BinaryExpression node.
 	VisitBinaryExpression func(*BinaryExpression)
+
+	// VisitIncrementStatement visits a IncrementStatement node.
+	VisitIncrementStatement func(*IncrementStatement)
+
+	// VisitDecrementStatement visits a DecrementStatement node.
+	VisitDecrementStatement func(*DecrementStatement)
+
+	// VisitFromToLoopStatement visits a FromToLoopStatement node.
+	VisitFromToLoopStatement func(*FromToLoopStatement)
 
 	// VisitExpressionStatement visits an ExpressionStatement node.
 	VisitExpressionStatement func(*ExpressionStatement)
@@ -68,11 +77,6 @@ type Visitor struct {
 	// VisitConditionalStatement visits a ConditionalStatement node.
 	VisitConditionalStatement func(*ConditionalStatement)
 
-	// VisitPreIncrementStatement visits a PreIncrementStatement node.
-	VisitPreIncrementStatement func(*PreIncrementStatement)
-
-	// VisitPostIncrementStatement visits a PostIncrementStatement node.
-	VisitPostIncrementStatement func(*PostIncrementStatement)
 }
 
 func NewEmptyVisitor() *Visitor {
@@ -88,16 +92,17 @@ func NewEmptyVisitor() *Visitor {
 		VisitYieldStatement:         func(*YieldStatement) {},
 		VisitBlockStatement:         func(*BlockStatement) {},
 		VisitUnaryExpression:        func(*UnaryExpression) {},
-		VisitEmptyStatement: func(*EmptyStatement) {},
+		VisitEmptyStatement: 				 func(*EmptyStatement) {},
 		VisitReturnStatement:        func(*ReturnStatement) {},
 		VisitTranslationUnit:        func(*TranslationUnit) {},
 		VisitBinaryExpression:       func(*BinaryExpression) {},
+		VisitAssignStatement:        func(*AssignStatement) {},
 		VisitInvalidStatement:       func(*InvalidStatement) {},
+		VisitIncrementStatement:  	 func(*IncrementStatement) {},
+		VisitDecrementStatement:     func(*DecrementStatement) {},
 		VisitFromToLoopStatement:    func(*FromToLoopStatement) {},
 		VisitExpressionStatement:    func(*ExpressionStatement) {},
 		VisitForeachLoopStatement:   func(*ForeachLoopStatement) {},
 		VisitConditionalStatement:   func(*ConditionalStatement) {},
-		VisitPreIncrementStatement:  func(*PreIncrementStatement) {},
-		VisitPostIncrementStatement: func(*PostIncrementStatement) {},
 	}
 }

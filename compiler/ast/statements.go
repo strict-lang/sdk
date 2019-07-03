@@ -1,5 +1,7 @@
 package ast
 
+import "github.com/BenjaminNitschke/Strict/compiler/token"
+
 type ExpressionStatement struct {
 	Expression Node
 }
@@ -36,10 +38,10 @@ func (conditional *ConditionalStatement) Accept(visitor *Visitor) {
 }
 
 type FromToLoopStatement struct {
-	Body           Node
+	Body  Node
 	Field Identifier
-	From Node
-	To Node
+	From  Node
+	To    Node
 }
 
 func (loop *FromToLoopStatement) Accept(visitor *Visitor) {
@@ -59,22 +61,20 @@ func (loop *ForeachLoopStatement) Accept(visitor *Visitor) {
 	visitor.VisitForeachLoopStatement(loop)
 }
 
-type PreIncrementStatement struct {
+type IncrementStatement struct {
 	Operand   Node
-	Decrement bool
 }
 
-type PostIncrementStatement struct {
+type DecrementStatement struct {
 	Operand   Node
-	Decrement bool
 }
 
-func (preIncrement *PreIncrementStatement) Accept(visitor Visitor) {
-	visitor.VisitPreIncrementStatement(preIncrement)
+func (increment *IncrementStatement) Accept(visitor *Visitor) {
+	visitor.VisitIncrementStatement(increment)
 }
 
-func (postIncrement *PostIncrementStatement) Accept(visitor Visitor) {
-	visitor.VisitPostIncrementStatement(postIncrement)
+func (decrement *DecrementStatement) Accept(visitor *Visitor) {
+	visitor.VisitDecrementStatement(decrement)
 }
 
 type YieldStatement struct {
@@ -96,14 +96,24 @@ func (statement *ReturnStatement) Accept(visitor *Visitor) {
 	visitor.VisitReturnStatement(statement)
 }
 
-type InvalidStatement struct {}
+type InvalidStatement struct{}
 
 func (statement *InvalidStatement) Accept(visitor *Visitor) {
 	visitor.VisitInvalidStatement(statement)
 }
 
-type EmptyStatement struct {}
+type EmptyStatement struct{}
 
 func (statement *EmptyStatement) Accept(visitor *Visitor) {
-	visitor.VisitorEmptyStatement(statement)
+	visitor.VisitEmptyStatement(statement)
+}
+
+type AssignStatement struct{
+	Target Node
+	Value Node
+	Operator token.Operator
+}
+
+func (statement *AssignStatement) Accept(visitor *Visitor) {
+	visitor.VisitAssignStatement(statement)
 }

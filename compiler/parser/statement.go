@@ -5,8 +5,12 @@ import (
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 )
 
-func (parser *Parser) ParseStatements() (ast.Node, error) {
-	return nil, nil
+func (parser *Parser) reportInvalidStatement() {
+
+}
+
+func (parser *Parser) expectEndOfStatement() {
+
 }
 
 func (parser *Parser) ParseMethodCall() (ast.MethodCall, error) {
@@ -104,12 +108,17 @@ func (parser *Parser) ParseKeywordStatement(keyword token.Keyword) ast.Node {
 	return &ast.InvalidStatement{}
 }
 
-func (parser *Parser) reportInvalidStatement() {
-
-}
-
-func (parser *Parser) parseAssignStatement(leftHandSide ast.Node) (ast.Node, error) {
-	return nil, nil
+func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide ast.Node) (ast.Node, error) {
+	parser.tokens.Pull()
+	rightHandSide, err := parser.ParseRightHandSide()
+	if err != nil {
+		return &ast.InvalidStatement{}, err
+	}
+	return &ast.AssignStatement{
+		Target: leftHandSide,
+		Value: rightHandSide,
+		Operator: operator,
+	}, nil
 }
 
 func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
@@ -120,9 +129,16 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 	nextToken := parser.tokens.Pull()
 	switch operator := token.OperatorValue(nextToken); {
 	case operator.IsAssign():
-		return parser.parseAssignStatement(leftHandSide)
+		return parser.parseAssignStatement(operator, leftHandSide)
+	case operator == token.IncrementOperator:
+		return &ast.IncrementStatement{Operand: leftHandSide}, nil
+	case operator == token.DecrementOperator:
+		return &ast.DecrementStatement{Operand: leftHandSide}, nil
 	}
-	return nil, nil
+	return &ast.InvalidStatement{}, &UnexpectedTokenError{
+		Token: nextToken,
+		Expected: "operator",
+	}
 }
 
 func (parser *Parser) ParseStatement() ast.Node {
@@ -133,7 +149,13 @@ func (parser *Parser) ParseStatement() ast.Node {
 		token.IsOperatorToken(peek),
 		token.IsLiteralToken(peek):
 
-		return parser.ParseInstructionStatement()
+		statement, err := parser.ParseInstructionStatement()
+		if err != nil {
+			parser.reportInvalidStatement()
+			return &ast.InvalidStatement{}
+		}
+		parser.expectEndOfStatement()
+		return statement
 	default:
 		parser.reportInvalidStatement()
 		return &ast.InvalidStatement{}
