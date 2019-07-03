@@ -21,6 +21,9 @@ func (err *UnexpectedTokenError) Error() string {
 	return fmt.Sprintf("unexpected token: %s", err.Token)
 }
 
+// InvalidIndentationError indicates that the indentation of a token
+// in a block of statements is invalid. The tokens indent always has
+// to match that of its block.
 type InvalidIndentationError struct {
 	Token    token.Token
 	Expected string
@@ -32,6 +35,8 @@ func (err *InvalidIndentationError) Error() string {
 		err.Token, err.Expected)
 }
 
+// InvalidStatementError indicates that the statement in the line is invalid
+// and could not be parsed.
 type InvalidStatementError struct {
 	LineIndex source.LineIndex
 }
