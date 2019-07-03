@@ -1,6 +1,9 @@
 package parser
 
-import "github.com/BenjaminNitschke/Strict/compiler/token"
+import (
+	"github.com/BenjaminNitschke/Strict/compiler/ast"
+	"github.com/BenjaminNitschke/Strict/compiler/token"
+)
 
 // skipOperator skips the next keyword if it the passed operator, otherwise
 // otherwise an UnexpectedTokenError is returned.
@@ -14,12 +17,12 @@ func (parser *Parser) skipOperator(operator token.Operator) error {
 
 // skipKeyword skips the next keyword if it the passed keyword, otherwise
 // otherwise an UnexpectedTokenError is returned.
-func (parser *Parser) skipKeyword(keyword token.Keyword) (bool, error) {
+func (parser *Parser) skipKeyword(keyword token.Keyword) error{
 	if err := parser.expectKeyword(keyword); err != nil {
-		return false, err
+		return err
 	}
 	parser.tokens.Pull()
-	return true, nil
+	return nil
 }
 
 // expectOperator peeks the next token and expects it to be the passed operator,
@@ -82,4 +85,9 @@ func (parser *Parser) isLookingAtOperatorKeyword(operator token.Operator) bool {
 	}
 	keyword := peek.(*token.KeywordToken)
 	return keyword.AsOperator() == operator
+}
+
+func (parser *Parser) createInvalidStatement(err error) ast.Node {
+	parser.reportError(err)
+	return &ast.InvalidStatement{}
 }

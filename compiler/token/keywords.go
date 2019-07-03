@@ -16,7 +16,9 @@ const (
 	ElseKeyword
 	YieldKeyword
 	ReturnKeyword
+	FromKeyword
 	ToKeyword
+	DoKeyword
 	OrKeyword
 	NotKeyword
 	AndKeyword
@@ -31,8 +33,10 @@ var keywordNameTable = map[Keyword]string{
 	IfKeyword:     "if",
 	ElseKeyword:   "else",
 	ForKeyword:    "for",
+	FromKeyword:   "from",
 	YieldKeyword:  "yield",
 	ToKeyword:     "to",
+	DoKeyword:     "do",
 	AndKeyword:    "and",
 	OrKeyword:     "or",
 	NotKeyword:    "not",

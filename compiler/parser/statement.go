@@ -53,7 +53,57 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 }
 
 func (parser *Parser) ParseForStatement() ast.Node {
-	return nil
+	if err := parser.expectKeyword(token.ForKeyword); err != nil {
+		parser.reportError(err)
+		return &ast.InvalidStatement{}
+	}
+	initializerBeginToken := parser.tokens.Pull()
+	if token.IsIdentifierToken(initializerBeginToken) {
+		if token.HasKeywordValue(parser.tokens.Peek(), token.FromKeyword) {
+			return parser.completeFromToStatement()
+		}
+	}
+	return parser.completeForEachStatement()
+}
+
+func (parser *Parser) completeForEachStatement() ast.Node {
+	field := parser.tokens.Last()
+	if !token.IsIdentifierToken(field) {
+		parser.reportError(&UnexpectedTokenError{
+			Token: field,
+			Expected: "identifier",
+		})
+		return &ast.InvalidStatement{}
+	}
+	if err :=	parser.skipKeyword(token.FromKeyword); err != nil {
+		parser.reportError(err)
+		return &ast.InvalidStatement{}
+	}
+	from, err := parser.ParseExpression()
+	if err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	if err := parser.skipKeyword(token.ToKeyword); err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	to, err := parser.ParseExpression()
+	if err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	if err := parser.skipKeyword(token.DoKeyword); err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	body := parser.ParseStatementBlock()
+	return &ast.FromToLoopStatement{
+		Field: ast.NewIdentifier(field.Value()),
+		From: from,
+		To: to,
+		Body: body,
+	}
+}
+
+func (parser *Parser) completeFromToStatement() ast.Node {
+
 }
 
 // ParseYieldStatement parses a 'yield' statement. Yield statements add an
@@ -67,8 +117,7 @@ func (parser *Parser) ParseYieldStatement() ast.Node {
 	parser.tokens.Pull()
 	rightHandSide, err := parser.ParseRightHandSide()
 	if err != nil {
-		parser.reportError(err)
-		return &ast.InvalidStatement{}
+		return parser.createInvalidStatement(err)
 	}
 	return &ast.YieldStatement{
 		Value: rightHandSide,
@@ -82,8 +131,7 @@ func (parser *Parser) ParseYieldStatement() ast.Node {
 // within a StatementSequence / Branch.
 func (parser *Parser) ParseReturnStatement() ast.Node {
 	if err := parser.expectKeyword(token.ReturnKeyword); err != nil {
-		parser.reportError(err)
-		return &ast.InvalidStatement{}
+		return parser.createInvalidStatement(err)
 	}
 
 	nextToken := parser.tokens.Pull()
@@ -92,8 +140,7 @@ func (parser *Parser) ParseReturnStatement() ast.Node {
 	}
 	rightHandSide, err := parser.ParseRightHandSide()
 	if err != nil {
-		parser.reportError(err)
-		return &ast.InvalidStatement{}
+		return parser.createInvalidStatement(err)
 	}
 	return &ast.ReturnStatement{
 		Value: rightHandSide,
@@ -181,8 +228,7 @@ func (parser *Parser) ParseStatement() ast.Node {
 
 		statement, err := parser.ParseInstructionStatement()
 		if err != nil {
-			parser.reportInvalidStatement()
-			return &ast.InvalidStatement{}
+			return parser.createInvalidStatement(err)
 		}
 		nextToken := parser.tokens.Pull()
 		if !token.IsEndOfStatementToken(nextToken) {
