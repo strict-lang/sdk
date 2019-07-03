@@ -23,12 +23,12 @@ func (err *UnexpectedTokenError) Error() string {
 
 type InvalidIndentationError struct {
 	Token    token.Token
-	Expected token.Indent
+	Expected string
 }
 
 func (err *InvalidIndentationError) Error() string {
 	return fmt.Sprintf(
-		"token %s has an invalid indentation level, expected %d",
+		"token %s has an invalid indentation level, expected %s",
 		err.Token, err.Expected)
 }
 

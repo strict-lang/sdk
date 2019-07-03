@@ -23,12 +23,14 @@ type Parser struct {
 // token.Reader and uses the 'unit' as its ast-root node. Errors while parsing
 // are recorded by the 'recorder'.
 func NewParser(unitName string, tokens token.Reader, recorder *diagnostic.Recorder) *Parser {
-	return &Parser{
+	parser := &Parser{
 		rootScope: scope.NewRoot(),
 		tokens:    tokens,
 		recorder:  recorder,
 		unitName:  unitName,
 	}
+	parser.openBlock(token.NoIndent)
+	return parser
 }
 
 // Block represents a nested sequence of statements that has a set indentation level.

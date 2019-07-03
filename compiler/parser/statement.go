@@ -259,7 +259,16 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 	var statements []ast.Node
 	for {
 		next := parser.tokens.Pull()
-		if next.Indent() != parser.block.Indent {
+		expectedIndent := parser.block.Indent
+		if next.Indent() > expectedIndent {
+			invalid := parser.createInvalidStatement(&InvalidIndentationError{
+				Token: next,
+				Expected: string(expectedIndent),
+			})
+			statements = append(statements, invalid)
+			continue
+		}
+		if next.Indent() < expectedIndent {
 			break
 		}
 		statements = append(statements, parser.ParseStatement())
@@ -267,6 +276,19 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 	return statements
 }
 
+// ParseStatementBlock parses a block of statements.
 func (parser *Parser) ParseStatementBlock() ast.Node {
-	return nil
+	peek := parser.tokens.Peek()
+	if peek.Indent() < parser.block.Indent {
+		return parser.createInvalidStatement(&InvalidIndentationError{
+			Token: peek,
+			Expected: "indent bigger than 0",
+		})
+	}
+	parser.openBlock(peek.Indent())
+	statements := parser.ParseStatementSequence()
+	parser.closeBlock()
+	return &ast.BlockStatement{
+		Children: statements,
+	}
 }
