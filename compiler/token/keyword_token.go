@@ -52,6 +52,10 @@ func IsKeywordToken(token Token) bool {
 	return ok
 }
 
+func HasOperatorValue(token Token, value Operator) bool {
+	return OperatorValue(token) == value
+}
+
 func HasKeywordValue(token Token, value Keyword) bool {
 	keyword, ok := token.(*KeywordToken)
 	if !ok {
@@ -80,4 +84,12 @@ func OperatorValue(token Token) Operator {
 		return InvalidOperator
 	}
 	return keyword.AsOperator()
+}
+
+func KeywordValue(token Token) Keyword {
+	keyword, ok := token.(*KeywordToken)
+	if !ok {
+		return InvalidKeyword
+	}
+	return keyword.Keyword
 }

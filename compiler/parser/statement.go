@@ -7,20 +7,16 @@ import (
 
 // ParseIfStatement parses a conditional statement and it's optional else-clause.
 func (parser *Parser) ParseIfStatement() ast.Node {
-	if err := parser.expectKeyword(token.IfKeyword); err != nil {
-		parser.reportError(err)
-		return &ast.InvalidStatement{}
+	if err := parser.skipKeyword(token.IfKeyword); err != nil {
+		return parser.createInvalidStatement(err)
 	}
-	parser.tokens.Pull()
 	condition, err := parser.ParseExpression()
 	if err != nil {
-		parser.reportError(err)
-		return &ast.InvalidStatement{}
+		return parser.createInvalidStatement(err)
 	}
 	parser.skipEndOfStatement()
 	body := parser.ParseStatementBlock()
-
-	if !token.HasKeywordValue(parser.tokens.Pull(), token.ElseKeyword) {
+	if !token.HasKeywordValue(parser.token(), token.ElseKeyword) {
 		return &ast.ConditionalStatement{
 			Condition: condition,
 			Body:      body,
@@ -39,13 +35,12 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 // ForKeyword. The statement may either be a FromToLoopStatement or
 // a ForEachLoopStatement.
 func (parser *Parser) ParseForStatement() ast.Node {
-	if err := parser.expectKeyword(token.ForKeyword); err != nil {
-		parser.reportError(err)
-		return &ast.InvalidStatement{}
+	if err := parser.skipKeyword(token.ForKeyword); err != nil {
+		return parser.createInvalidStatement(err)
 	}
-	initializerBeginToken := parser.tokens.Pull()
+	initializerBeginToken := parser.token()
 	if token.IsIdentifierToken(initializerBeginToken) {
-		if token.HasKeywordValue(parser.tokens.Peek(), token.FromKeyword) {
+		if token.HasKeywordValue(parser.peek(), token.FromKeyword) {
 			return parser.completeFromToStatement()
 		}
 	}
@@ -118,11 +113,9 @@ func (parser *Parser) completeFromToStatement() ast.Node {
 // element to an implicitly created list, which is returned by the method.
 // Any kind of expression can be yielded.
 func (parser *Parser) ParseYieldStatement() ast.Node {
-	if err := parser.expectKeyword(token.YieldKeyword); err != nil {
-		parser.reportError(err)
-		return &ast.InvalidStatement{}
+	if err := parser.skipKeyword(token.YieldKeyword); err != nil {
+		return parser.createInvalidStatement(err)
 	}
-	parser.tokens.Pull()
 	rightHandSide, err := parser.ParseExpression()
 	if err != nil {
 		return parser.createInvalidStatement(err)
@@ -141,9 +134,8 @@ func (parser *Parser) ParseReturnStatement() ast.Node {
 	if err := parser.expectKeyword(token.ReturnKeyword); err != nil {
 		return parser.createInvalidStatement(err)
 	}
-
-	nextToken := parser.tokens.Pull()
-	if token.IsEndOfStatementToken(nextToken) {
+	if token.IsEndOfStatementToken(parser.token()) {
+		parser.advance()
 		return &ast.ReturnStatement{}
 	}
 	rightHandSide, err := parser.ParseExpression()
@@ -179,17 +171,13 @@ func (parser *Parser) ParseKeywordStatement(keyword token.Keyword) ast.Node {
 		return function()
 	}
 	parser.reportError(&UnexpectedTokenError{
-		Token:    parser.tokens.Peek(),
+		Token:    parser.token(),
 		Expected: "statement begin",
 	})
 	return &ast.InvalidStatement{}
 }
 
-// parseAssignStatement completes the parsing of a instruction and produces an
-// AssignStatement node. Assignments also include those using the Add,Sub,Mod,...Assign
-// operators. This method requires that a leftHandSide expression has already been parsed.
 func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide ast.Node) (ast.Node, error) {
-	parser.tokens.Pull()
 	rightHandSide, err := parser.ParseExpression()
 	if err != nil {
 		return &ast.InvalidStatement{}, err
@@ -208,8 +196,7 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	nextToken := parser.tokens.Pull()
-	switch operator := token.OperatorValue(nextToken); {
+	switch operator := token.OperatorValue(parser.token()); {
 	case operator.IsAssign():
 		return parser.parseAssignStatement(operator, leftHandSide)
 	case operator == token.IncrementOperator:
@@ -218,7 +205,7 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 		return &ast.DecrementStatement{Operand: leftHandSide}, nil
 	}
 	return &ast.InvalidStatement{}, &UnexpectedTokenError{
-		Token:    nextToken,
+		Token:    parser.token(),
 		Expected: "operator",
 	}
 }
@@ -227,21 +214,21 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 // conditionals or loops, therefor this function may end up scanning multiple statements
 // and call itself.
 func (parser *Parser) ParseStatement() ast.Node {
-	switch peek := parser.tokens.Peek(); {
-	case token.IsKeywordToken(peek):
-		return parser.ParseKeywordStatement(peek.(*token.KeywordToken).Keyword)
-	case token.IsIdentifierToken(peek),
-		token.IsOperatorToken(peek),
-		token.IsLiteralToken(peek):
-
+	switch current := parser.token(); {
+	case token.IsKeywordToken(current):
+		return parser.ParseKeywordStatement(token.KeywordValue(current))
+	case token.IsIdentifierToken(current):
+		fallthrough
+	case token.IsOperatorToken(current):
+		fallthrough
+	case token.IsLiteralToken(current):
 		statement, err := parser.ParseInstructionStatement()
 		if err != nil {
 			return parser.createInvalidStatement(err)
 		}
-		nextToken := parser.tokens.Pull()
-		if !token.IsEndOfStatementToken(nextToken) {
+		if !token.IsEndOfStatementToken(parser.token()) {
 			parser.reportError(&UnexpectedTokenError{
-				Token:    nextToken,
+				Token:    parser.token(),
 				Expected: "end of statement",
 			})
 		}
@@ -258,19 +245,20 @@ func (parser *Parser) ParseStatement() ast.Node {
 func (parser *Parser) ParseStatementSequence() []ast.Node {
 	var statements []ast.Node
 	for {
-		next := parser.tokens.Pull()
 		expectedIndent := parser.block.Indent
-		if next.Indent() > expectedIndent {
+		current := parser.token()
+		if current.Indent() > expectedIndent {
 			invalid := parser.createInvalidStatement(&InvalidIndentationError{
-				Token:    next,
+				Token:    current,
 				Expected: string(expectedIndent),
 			})
 			statements = append(statements, invalid)
 			continue
 		}
-		if next.Indent() < expectedIndent {
+		if current.Indent() < expectedIndent {
 			break
 		}
+		parser.advance()
 		statements = append(statements, parser.ParseStatement())
 	}
 	return statements
@@ -278,14 +266,14 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 
 // ParseStatementBlock parses a block of statements.
 func (parser *Parser) ParseStatementBlock() ast.Node {
-	peek := parser.tokens.Peek()
-	if peek.Indent() < parser.block.Indent {
+	indent := parser.peek().Indent()
+	if indent < parser.block.Indent {
 		return parser.createInvalidStatement(&InvalidIndentationError{
-			Token:    peek,
+			Token:    parser.peek(),
 			Expected: "indent bigger than 0",
 		})
 	}
-	parser.openBlock(peek.Indent())
+	parser.openBlock(indent)
 	statements := parser.ParseStatementSequence()
 	parser.closeBlock()
 	return &ast.BlockStatement{

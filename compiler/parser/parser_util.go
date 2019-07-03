@@ -11,7 +11,7 @@ func (parser *Parser) skipOperator(operator token.Operator) error {
 	if err := parser.expectOperator(operator); err != nil {
 		return err
 	}
-	parser.tokens.Pull()
+	parser.advance()
 	return nil
 }
 
@@ -21,17 +21,16 @@ func (parser *Parser) skipKeyword(keyword token.Keyword) error {
 	if err := parser.expectKeyword(keyword); err != nil {
 		return err
 	}
-	parser.tokens.Pull()
+	parser.advance()
 	return nil
 }
 
 // expectOperator peeks the next token and expects it to be the passed operator,
 // otherwise an UnexpectedTokenError is returned.
 func (parser *Parser) expectOperator(expected token.Operator) error {
-	peek := parser.tokens.Peek()
-	if !token.IsOperatorToken(peek) || peek.(*token.OperatorToken).Operator != expected {
+	if token.OperatorValue(parser.token()) != expected {
 		return &UnexpectedTokenError{
-			Token:    peek,
+			Token:    parser.token(),
 			Expected: expected.String(),
 		}
 	}
@@ -41,10 +40,9 @@ func (parser *Parser) expectOperator(expected token.Operator) error {
 // expectKeyword peeks the next token and expects it to be the passed keyword,
 // otherwise an UnexpectedTokenError is returned.
 func (parser *Parser) expectKeyword(expected token.Keyword) error {
-	peek := parser.tokens.Peek()
-	if !token.IsKeywordToken(peek) || peek.(*token.KeywordToken).Keyword != expected {
+	if token.KeywordValue(parser.token()) != expected {
 		return &UnexpectedTokenError{
-			Token:    peek,
+			Token:    parser.token(),
 			Expected: expected.String(),
 		}
 	}
@@ -52,39 +50,24 @@ func (parser *Parser) expectKeyword(expected token.Keyword) error {
 }
 
 func (parser *Parser) expectAnyIdentifier() (ast.Identifier, error) {
-	peek := parser.tokens.Peek()
-	if peek.Name() != token.IdentifierTokenName {
+	current := parser.token()
+	if !token.IsIdentifierToken(current) {
 		return ast.Identifier{}, &UnexpectedTokenError{
-			Token:    peek,
+			Token:    parser.token(),
 			Expected: "any identifier",
 		}
 	}
-	return ast.Identifier{Value: peek.Value()}, nil
+	return ast.Identifier{
+		Value: current.Value(),
+	}, nil
 }
 
 func (parser *Parser) isLookingAtKeyword(keyword token.Keyword) bool {
-	peek := parser.tokens.Peek()
-	if !token.IsKeywordToken(peek) {
-		return false
-	}
-	return peek.(*token.KeywordToken).Keyword == keyword
+	return token.HasKeywordValue(parser.peek(), keyword)
 }
 
 func (parser *Parser) isLookingAtOperator(operator token.Operator) bool {
-	peek := parser.tokens.Peek()
-	if !token.IsOperatorToken(peek) {
-		return parser.isLookingAtOperatorKeyword(operator)
-	}
-	return peek.(*token.OperatorToken).Operator == operator
-}
-
-func (parser *Parser) isLookingAtOperatorKeyword(operator token.Operator) bool {
-	peek := parser.tokens.Peek()
-	if !token.IsKeywordToken(peek) {
-		return false
-	}
-	keyword := peek.(*token.KeywordToken)
-	return keyword.AsOperator() == operator
+	return token.HasOperatorValue(parser.peek(), operator)
 }
 
 func (parser *Parser) createInvalidStatement(err error) ast.Node {
@@ -95,7 +78,7 @@ func (parser *Parser) createInvalidStatement(err error) ast.Node {
 // reportInvalidStatement reports an InvalidStatementError in the
 // current tokens line.
 func (parser *Parser) reportInvalidStatement() {
-	offset := parser.tokens.Peek().Position().Begin
+	offset := parser.token().Position().Begin
 	lineIndex := parser.linemap.LineAtOffset(offset)
 	parser.reportError(&InvalidStatementError{
 		LineIndex: lineIndex,
@@ -104,11 +87,11 @@ func (parser *Parser) reportInvalidStatement() {
 
 // skipEndOfStatement skips the next token if it is an EndOfStatement token.
 func (parser *Parser) skipEndOfStatement() {
-	if next := parser.tokens.Peek(); !token.IsEndOfStatementToken(next) {
+	if current := parser.token(); !token.IsEndOfStatementToken(current) {
 		parser.reportError(&UnexpectedTokenError{
-			Token:    next,
+			Token:    current,
 			Expected: "end of statement",
 		})
 	}
-	parser.tokens.Pull()
+	parser.advance()
 }

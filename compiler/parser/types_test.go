@@ -15,7 +15,7 @@ func TestParser_ParseTypeName(test *testing.T) {
 
 	for _, entry := range entries {
 		parser := NewTestParser(scanner.NewStringScanner(entry))
-		name, err := parser.ParseUnPeekedTypeName()
+		name, err := parser.ParseTypeName()
 		if err != nil {
 			test.Errorf("unexpected error while parsing %s: %s", entry, err)
 			continue

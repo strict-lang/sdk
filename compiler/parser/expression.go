@@ -1,3 +1,9 @@
+// The expression file contains methods that are parsing expressions. Every method expects
+// the first token that it requires to be the current one (parser.token()) it responsible
+// to advance all tokens so that the next method can directly continue without having to
+// call the parser.advance() method itself. This is done because developers should always
+// know what the current token is, to prevent bugs.
+
 package parser
 
 import (
@@ -15,12 +21,14 @@ var (
 )
 
 func (parser *Parser) ParseExpression() (ast.Node, error) {
-	parser.tokens.Pull()
+	parser.advance()
 	return parser.parseBinaryExpression(token.LowPrecedence + 1)
 }
 
 func (parser *Parser) ParseOperand() (ast.Node, error) {
-	switch last := parser.tokens.Last(); {
+	defer parser.advance()
+
+	switch last := parser.token(); {
 	case token.IsIdentifierToken(last):
 		return &ast.Identifier{Value: last.Value()}, nil
 	case token.IsStringLiteralToken(last):
@@ -40,12 +48,13 @@ func (parser *Parser) completeLeftParenExpression() (ast.Node, error) {
 		return expression, err
 	}
 	parser.expressionDepth--
-	if token.OperatorValue(parser.tokens.Last()) != token.RightParenOperator {
+	if token.OperatorValue(parser.token()) != token.RightParenOperator {
 		return nil, &UnexpectedTokenError{
-			Token:    parser.tokens.Last(),
+			Token:    parser.token(),
 			Expected: token.RightParenOperator.String(),
 		}
 	}
+	parser.advance()
 	return expression, nil
 }
 
@@ -72,7 +81,7 @@ func (parser *Parser) ParseOperation() (ast.Node, error) {
 // ParseOperationOnOperand parses an operation on an operand that has already
 // been parsed. It is called by the ParseOperand method.
 func (parser *Parser) parseOperationOnOperand(operand ast.Node) (done bool, node ast.Node, err error) {
-	switch next := parser.tokens.Peek(); {
+	switch next := parser.token(); {
 	case token.OperatorValue(next) == token.LeftParenOperator:
 		call, err := parser.ParseMethodCall(operand)
 		return false, call, err
@@ -91,20 +100,20 @@ func (parser *Parser) parseBinaryExpression(requiredPrecedence token.Precedence)
 		return nil, err
 	}
 	for {
-		next := parser.tokens.Pull()
-		precedence := token.PrecedenceOfAny(next)
+		operator := parser.token()
+		precedence := token.PrecedenceOfAny(operator)
 		if precedence < requiredPrecedence {
 			return leftHandSide, nil
 		}
-		parser.tokens.Pull()
+		parser.advance()
 		rightHandSide, err := parser.parseBinaryExpression(precedence)
 		if err != nil {
 			return leftHandSide, err
 		}
 		leftHandSide = &ast.BinaryExpression{
+			Operator: token.OperatorValue(operator),
 			LeftOperand:  leftHandSide,
 			RightOperand: rightHandSide,
-			Operator:     token.OperatorValue(next),
 		}
 	}
 }
@@ -114,7 +123,7 @@ func (parser *Parser) parseBinaryExpression(requiredPrecedence token.Precedence)
 // expression is the negation '!(expression)'. The single operand may be
 // any kind of expression, including another unary expression.
 func (parser *Parser) ParseUnaryExpression() (ast.Node, error) {
-	operatorToken := parser.tokens.Last()
+	operatorToken := parser.token()
 	if !token.IsOperatorOrOperatorKeywordToken(operatorToken) {
 		return parser.ParseOperation()
 	}
@@ -122,7 +131,7 @@ func (parser *Parser) ParseUnaryExpression() (ast.Node, error) {
 	if !operator.IsUnaryOperator() {
 		return parser.ParseOperation()
 	}
-	parser.tokens.Pull()
+	parser.advance()
 	operand, err := parser.ParseUnaryExpression()
 	if err != nil {
 		return nil, err
@@ -150,8 +159,8 @@ func (parser *Parser) ParseMethodCall(method ast.Node) (*ast.MethodCall, error) 
 
 // parseArgumentList parses the arguments of a MethodCall.
 func (parser *Parser) parseArgumentList() ([]ast.Node, error) {
-	if token.OperatorValue(parser.tokens.Peek()) == token.RightParenOperator {
-		parser.tokens.Pull()
+	if token.OperatorValue(parser.token()) == token.RightParenOperator {
+		parser.advance()
 		return []ast.Node{}, nil
 	}
 	var arguments []ast.Node
@@ -161,15 +170,17 @@ func (parser *Parser) parseArgumentList() ([]ast.Node, error) {
 			return arguments, err
 		}
 		arguments = append(arguments, next)
-		nextToken := parser.tokens.Last()
-		switch token.OperatorValue(nextToken) {
+		current := parser.token()
+		switch token.OperatorValue(current) {
 		case token.RightParenOperator:
+			parser.advance()
 			return arguments, nil
 		case token.CommaOperator:
+			parser.advance()
 			continue
 		}
 		return arguments, &UnexpectedTokenError{
-			Token:    nextToken,
+			Token:    current,
 			Expected: "',' or ')'",
 		}
 	}

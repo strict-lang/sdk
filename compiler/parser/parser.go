@@ -11,7 +11,7 @@ import (
 
 // Parser parses an AST from a stream of tokens.
 type Parser struct {
-	tokens    token.Reader
+	tokenReader    token.Reader
 	rootScope *scope.Scope
 	recorder  *diagnostic.Recorder
 	linemap   *linemap.Linemap
@@ -29,11 +29,12 @@ type Parser struct {
 func NewParser(unitName string, tokens token.Reader, recorder *diagnostic.Recorder) *Parser {
 	parser := &Parser{
 		rootScope: scope.NewRoot(),
-		tokens:    tokens,
+		tokenReader:    tokens,
 		recorder:  recorder,
 		unitName:  unitName,
 	}
 	parser.openBlock(token.NoIndent)
+	parser.advance()
 	return parser
 }
 
@@ -67,13 +68,25 @@ func (parser *Parser) reportError(err error) {
 	parser.recorder.Record(diagnostic.Entry{
 		Kind:    &diagnostic.Error,
 		Stage:   &diagnostic.SyntacticalAnalysis,
-		Source:  parser.tokens.Peek().Value(),
+		Source:  parser.tokenReader.Peek().Value(),
 		Message: err.Error(),
 		Position: diagnostic.Position{
 			// TODO(merlinosayimwen): Use linemap to get line information of
 			// 	the token and create a diagnostic.Position from it.
 		},
 	})
+}
+
+func (parser *Parser) token() token.Token {
+	return parser.tokenReader.Last()
+}
+
+func (parser *Parser) advance() {
+	parser.tokenReader.Pull()
+}
+
+func (parser *Parser) peek() token.Token {
+	return parser.tokenReader.Peek()
 }
 
 func (parser *Parser) closeBlock() {

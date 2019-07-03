@@ -29,7 +29,7 @@ func (parser *Parser) ParseConditionalStatement() (*ast.ConditionalStatement, er
 	}
 
 	// Remove the else clause from the token queue
-	parser.tokens.Pull()
+	parser.advance()
 	elseClause, err := parser.ParseElseClause()
 	if err != nil {
 		return &ast.ConditionalStatement{}, err
