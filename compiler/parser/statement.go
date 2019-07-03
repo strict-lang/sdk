@@ -12,57 +12,6 @@ func (parser *Parser) reportInvalidStatement() {
 func (parser *Parser) expectEndOfStatement() {
 
 }
-
-func (parser *Parser) ParseMethodCall() (ast.MethodCall, error) {
-	nameToken := parser.tokens.Last()
-	if !token.IsIdentifierToken(nameToken) {
-		return ast.MethodCall{}, &UnexpectedTokenError{
-			Token:    nameToken,
-			Expected: "an identifier",
-		}
-	}
-	if err := parser.skipOperator(token.LeftParenOperator); err != nil {
-		return ast.MethodCall{}, err
-	}
-	arguments, err := parser.parseArgumentList()
-	if err != nil {
-		return ast.MethodCall{}, err
-	}
-	return ast.MethodCall{
-		Arguments: arguments,
-		Name:      ast.NewIdentifier(nameToken.Value()),
-	}, nil
-}
-
-func (parser *Parser) parseArgumentList() ([]ast.Node, error) {
-	var arguments []ast.Node
-	for {
-		next, err := parser.ParseExpression()
-		if err != nil {
-			return arguments, err
-		}
-		arguments = append(arguments, next)
-		nextToken := parser.tokens.Pull()
-		if !token.IsOperatorToken(nextToken) {
-			return arguments, &UnexpectedTokenError{
-				Token:    nextToken,
-				Expected: "',' or ')'",
-			}
-		}
-		operator := nextToken.(*token.OperatorToken).Operator
-		if operator == token.RightParenOperator {
-			break
-		}
-		if operator != token.CommaOperator {
-			return arguments, &UnexpectedTokenError{
-				Token:    nextToken,
-				Expected: "',' or ')'",
-			}
-		}
-	}
-	return arguments, nil
-}
-
 func (parser *Parser) ParseIfStatement() ast.Node {
 	return nil
 }
@@ -71,17 +20,53 @@ func (parser *Parser) ParseForStatement() ast.Node {
 	return nil
 }
 
+// ParseYieldStatement parses a 'yield' statement. Yield statements add an
+// element to an implicitly created list, which is returned by the method.
+// Any kind of expression can be yielded.
 func (parser *Parser) ParseYieldStatement() ast.Node {
-	return nil
+	if err := parser.expectKeyword(token.YieldKeyword); err != nil {
+		parser.reportError(err)
+		return &ast.InvalidStatement{}
+	}
+	parser.tokens.Pull()
+	rightHandSide, err := parser.ParseRightHandSide()
+	if err != nil {
+		parser.reportError(err)
+		return &ast.InvalidStatement{}
+	}
+	return &ast.YieldStatement{
+		Value: rightHandSide,
+	}
 }
 
+// ParseReturnStatement parses a 'return' statement. Return statements are
+// part of the control flow and used to either return a value from a method
+// or to end the method call within a branch, resulting in the remaining
+// instructions to be ignored. The ReturnStatement is always the last statement
+// within a StatementSequence / Branch.
 func (parser *Parser) ParseReturnStatement() ast.Node {
-	return nil
+	if err := parser.expectKeyword(token.ReturnKeyword); err != nil {
+		parser.reportError(err)
+		return &ast.InvalidStatement{}
+	}
+
+	nextToken := parser.tokens.Pull()
+	if token.IsEndOfStatementToken(nextToken) {
+		return &ast.ReturnStatement{}
+	}
+	rightHandSide, err := parser.ParseRightHandSide()
+	if err != nil {
+		parser.reportError(err)
+		return &ast.InvalidStatement{}
+	}
+	return &ast.ReturnStatement{
+		Value: rightHandSide,
+	}
 }
 
-var keywordStatementParsers = map[token.Keyword]func(*Parser) ast.Node{
-}
-
+// keywordStatementParser returns a function that parses statements based on a passed
+// keyword. Most of the keywords start a statement. The returned bool is true, if a
+// function has been found.
 func (parser *Parser) keywordStatementParser(keyword token.Keyword) (func() ast.Node, bool) {
 	switch keyword {
 	case token.IfKeyword:
@@ -96,6 +81,7 @@ func (parser *Parser) keywordStatementParser(keyword token.Keyword) (func() ast.
 	return nil, false
 }
 
+// ParseKeywordStatement parses a statement that starts with a keyword.
 func (parser *Parser) ParseKeywordStatement(keyword token.Keyword) ast.Node {
 	function, ok := parser.keywordStatementParser(keyword)
 	if ok {
@@ -108,6 +94,9 @@ func (parser *Parser) ParseKeywordStatement(keyword token.Keyword) ast.Node {
 	return &ast.InvalidStatement{}
 }
 
+// parseAssignStatement completes the parsing of a instruction and produces an
+// AssignStatement node. Assignments also include those using the Add,Sub,Mod,...Assign
+// operators. This method requires that a leftHandSide expression has already been parsed.
 func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide ast.Node) (ast.Node, error) {
 	parser.tokens.Pull()
 	rightHandSide, err := parser.ParseRightHandSide()
@@ -121,6 +110,8 @@ func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide
 	}, nil
 }
 
+// ParseInstructionStatement parses a statement that is not a structured-control flow
+// statement. Instructions mostly operate on values and assign fields.
 func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 	leftHandSide, err := parser.ParseLeftHandSide()
 	if err != nil {
@@ -141,6 +132,9 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 	}
 }
 
+// ParseStatement parses the next statement from the stream of tokens. Statements include
+// conditionals or loops, therefor this function may end up scanning multiple statements
+// and call itself.
 func (parser *Parser) ParseStatement() ast.Node {
 	switch peek := parser.tokens.Peek(); {
 	case token.IsKeywordToken(peek):
@@ -162,6 +156,9 @@ func (parser *Parser) ParseStatement() ast.Node {
 	}
 }
 
+// ParseStatementSequence parses a sequence of statements. The sequence
+// is ended when the first token in a line has an indent other than the
+// value in the current blocks indent field.
 func (parser *Parser) ParseStatementSequence() []ast.Node {
 	var statements []ast.Node
 	for {
