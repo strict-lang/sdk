@@ -66,4 +66,8 @@ executing `git clone git@github.com:BenjaminNitschke/Strict.git`.
 Finally, head to the `$GOPATH/github.com/BenjaminNitschke/Strict` folder and
 run `make deps` and then `make`.
 
+In order to execute code that has been compiled with the *StrictToCpp* Compiler,
+you also have to build and install `libstrict`. This is done by running
+`sudo make install`.
+
 Congrats, you just cloned and built the Strict SDK.

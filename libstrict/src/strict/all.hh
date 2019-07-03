@@ -3,5 +3,6 @@
 
 #include "strict/strict.hh"
 #include "strict/log.hh"
+#include "strict/input.hh"
 
 #endif // STRICT_ALL_HH_
