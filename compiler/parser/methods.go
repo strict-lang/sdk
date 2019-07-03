@@ -9,7 +9,7 @@ import (
 func (parser *Parser) ParseMethodDeclaration() (*ast.Method, error) {
 	if last := parser.tokens.Last(); !token.HasKeywordValue(last, token.MethodKeyword) {
 		return nil, &UnexpectedTokenError{
-			Token: last,
+			Token:    last,
 			Expected: token.MethodKeyword.String(),
 		}
 	}
@@ -28,10 +28,10 @@ func (parser *Parser) ParseMethodDeclaration() (*ast.Method, error) {
 	}
 	body := parser.ParseStatementBlock()
 	return &ast.Method{
-		Type: returnTypeName,
-		Name: methodName,
+		Type:       returnTypeName,
+		Name:       methodName,
 		Parameters: parameters,
-		Body: body,
+		Body:       body,
 	}, nil
 }
 
@@ -54,7 +54,7 @@ func (parser *Parser) parseParameterList() ([]ast.Parameter, error) {
 			continue
 		case token.OperatorValue(next) != token.RightParenOperator:
 			return parameters, &UnexpectedTokenError{
-				Token: next,
+				Token:    next,
 				Expected: ", or )",
 			}
 		}
@@ -70,7 +70,7 @@ func (parser *Parser) parseParameter() (ast.Parameter, error) {
 	if next := parser.tokens.Peek(); token.IsIdentifierToken(next) {
 		parser.tokens.Pull()
 		return ast.Parameter{
-			Name: ast.Identifier{Value: next.Value(),},
+			Name: ast.Identifier{Value: next.Value()},
 			Type: typeName,
 		}, nil
 	}

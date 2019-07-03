@@ -10,7 +10,7 @@ import (
 // and an optional else clause which itself has a body. If the body-node of an else-clause
 // is another conditional statement, it is referred to as an 'else-if'.
 func (parser *Parser) ParseConditionalStatement() (*ast.ConditionalStatement, error) {
-	if ok, err := parser.skipKeyword(token.IfKeyword); !ok {
+	if err := parser.skipKeyword(token.IfKeyword); err != nil {
 		return &ast.ConditionalStatement{}, err
 	}
 	condition, err := parser.ParseExpression()

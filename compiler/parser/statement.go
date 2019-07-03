@@ -107,7 +107,7 @@ func (parser *Parser) completeFromToStatement() ast.Node {
 	}
 	body := parser.ParseStatementBlock()
 	return &ast.FromToLoopStatement{
-		Field: &field,
+		Field: field,
 		From:  from,
 		To:    to,
 		Body:  body,
