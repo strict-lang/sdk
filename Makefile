@@ -5,12 +5,12 @@ GO_BUILD=$(GO) build
 GO_CLEAN=$(GO) clean
 GO_INSTALL=$(GO) install
 BINARY_NAME=$(GOPATH)/bin/strict
-all: clean build test install
+all: clean build test
 
-install: build
+install: build install-libstrict
 	@-$(GO_INSTALL) ./cmd/strict
 
-build: build-libstrict
+build:
 	@-$(GO_BUILD) -o $(BINARY_NAME) ./cmd/strict
 
 test:
@@ -25,9 +25,14 @@ clean:
 	@-rm -rf $(TARGET_BINARY)
 
 build-libstrict:
-	@-cd libstrict;       \
-	cmake CMakeLists.txt; \
-	make > /dev/null
+	@-cd libstrict;         \
+		cmake CMakeLists.txt; \
+		make > /dev/null
+
+install-libstrict:
+	@-cd libstrict;         \
+		cmake CMakeLists.txt; \
+		make install > /dev/null
 
 deps:
 	@-$(GO_GET) github.com/fatih/color
