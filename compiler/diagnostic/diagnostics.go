@@ -5,7 +5,9 @@ type Recorder struct {
 }
 
 func NewRecorder() *Recorder {
-	return &Recorder{}
+	return &Recorder{
+		entries: make(map[string][]Entry),
+	}
 }
 
 func (recorder *Recorder) Record(entry Entry) {

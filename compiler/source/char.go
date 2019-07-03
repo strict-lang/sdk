@@ -36,3 +36,15 @@ func (char Char) IsWhitespace() bool {
 func (char Char) IsLineFeed() bool {
 	return char == '\n' || char == '\r'
 }
+
+func (char Char) DigitValue() int {
+	switch {
+	case char.IsInRange('0', '9'):
+		return int(char - '0')
+	case char.IsInRange('a', 'f'):
+		return int(char - 'a' + 10)
+	case char.IsInRange('A', 'F'):
+		return int(char - 'A' + 10)
+	}
+	return 16
+}
