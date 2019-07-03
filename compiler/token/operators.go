@@ -94,7 +94,7 @@ const (
 	HighPrecedence  = 7
 )
 
-func (operator Operator) Precedence() int {
+func (operator Operator) Precedence() Precedence {
 	switch operator {
 	case EqualsOperator,
 		NotEqualsOperator,

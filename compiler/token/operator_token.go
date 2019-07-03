@@ -58,3 +58,8 @@ func IsOperatorToken(token Token) bool {
 	_, ok := token.(*OperatorToken)
 	return ok
 }
+
+func PrecedenceOfAny(token Token) Precedence {
+	// Will be LowestPrecedence if the token has no operator value
+	return OperatorValue(token).Precedence()
+}

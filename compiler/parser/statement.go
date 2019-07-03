@@ -123,7 +123,7 @@ func (parser *Parser) ParseYieldStatement() ast.Node {
 		return &ast.InvalidStatement{}
 	}
 	parser.tokens.Pull()
-	rightHandSide, err := parser.ParseRightHandSide()
+	rightHandSide, err := parser.ParseExpression()
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
@@ -146,7 +146,7 @@ func (parser *Parser) ParseReturnStatement() ast.Node {
 	if token.IsEndOfStatementToken(nextToken) {
 		return &ast.ReturnStatement{}
 	}
-	rightHandSide, err := parser.ParseRightHandSide()
+	rightHandSide, err := parser.ParseExpression()
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
@@ -190,7 +190,7 @@ func (parser *Parser) ParseKeywordStatement(keyword token.Keyword) ast.Node {
 // operators. This method requires that a leftHandSide expression has already been parsed.
 func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide ast.Node) (ast.Node, error) {
 	parser.tokens.Pull()
-	rightHandSide, err := parser.ParseRightHandSide()
+	rightHandSide, err := parser.ParseExpression()
 	if err != nil {
 		return &ast.InvalidStatement{}, err
 	}
@@ -204,7 +204,7 @@ func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide
 // ParseInstructionStatement parses a statement that is not a structured-control flow
 // statement. Instructions mostly operate on values and assign fields.
 func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
-	leftHandSide, err := parser.ParseLeftHandSide()
+	leftHandSide, err := parser.ParseExpression()
 	if err != nil {
 		return nil, err
 	}

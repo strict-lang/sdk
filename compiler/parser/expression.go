@@ -15,10 +15,7 @@ var (
 )
 
 func (parser *Parser) ParseExpression() (ast.Node, error) {
-	next := parser.tokens.Pull()
-	return &ast.Identifier{
-		Value: next.Value(),
-	}, nil
+	return parser.parseBinaryExpression(token.LowPrecedence + 1)
 }
 
 func (parser *Parser) ParseOperand() (ast.Node, error) {
@@ -36,7 +33,17 @@ func (parser *Parser) ParseOperand() (ast.Node, error) {
 }
 
 func (parser *Parser) completeLeftParenExpression() (ast.Node, error) {
-
+	parser.tokens.Pull()
+	parser.expressionDepth++
+	expression, err := parser.ParseExpression()
+	if err != nil {
+		return expression, err
+	}
+	parser.expressionDepth--
+	if err := parser.skipOperator(token.RightParenOperator); err != nil {
+		return expression, err
+	}
+	return expression, nil
 }
 
 // ParseOperation parses the initial operand and continues to parse operands on
@@ -77,24 +84,27 @@ func (parser *Parser) parseOperationOnOperand(operand ast.Node) (done bool, node
 // binary expressions have a left-hand-side and right-hand-side operand and
 // the operator in between. The operands can be any kind of expression.
 // Example: 'a + b' or '(1 + 2) + 3'
-func (parser *Parser) ParseBinaryExpression() (ast.BinaryExpression, error) {
-	leftOperand, err := parser.ParseExpression()
+func (parser *Parser) parseBinaryExpression(requiredPrecedence token.Precedence) (ast.Node, error) {
+	leftHandSide, err := parser.ParseUnaryExpression()
 	if err != nil {
-		return ast.BinaryExpression{}, err
+		return nil, err
 	}
-	operator := parser.tokens.Pull()
-	if !token.IsOperatorToken(operator) {
-		return ast.BinaryExpression{}, ErrInvalidExpression
+	for {
+		next := parser.tokens.Pull()
+		precedence := token.PrecedenceOfAny(next)
+		if precedence < requiredPrecedence {
+			return leftHandSide, nil
+		}
+		rightHandSide, err := parser.parseBinaryExpression(precedence+1)
+		if err != nil {
+			return leftHandSide, err
+		}
+		return &ast.BinaryExpression{
+			LeftOperand: leftHandSide,
+			RightOperand: rightHandSide,
+			Operator: token.OperatorValue(next),
+		}, nil
 	}
-	rightOperand, err := parser.ParseExpression()
-	if err != nil {
-		return ast.BinaryExpression{}, err
-	}
-	return ast.BinaryExpression{
-		Operator:     operator.(*token.OperatorToken).Operator,
-		LeftOperand:  leftOperand,
-		RightOperand: rightOperand,
-	}, nil
 }
 
 // ParseUnaryExpression parses a unary expression. Unary expressions are
