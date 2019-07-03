@@ -5,6 +5,7 @@ import (
 	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
 	"github.com/BenjaminNitschke/Strict/compiler/scanner"
 	"github.com/BenjaminNitschke/Strict/compiler/scope"
+	"github.com/BenjaminNitschke/Strict/compiler/source/linemap"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 )
 
@@ -13,6 +14,7 @@ type Parser struct {
 	tokens    token.Reader
 	rootScope *scope.Scope
 	recorder  *diagnostic.Recorder
+	linemap   *linemap.Linemap
 	block     *Block
 	unitName  string
 }

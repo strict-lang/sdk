@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"github.com/BenjaminNitschke/Strict/compiler/source"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 )
 
@@ -29,4 +30,13 @@ func (err *InvalidIndentationError) Error() string {
 	return fmt.Sprintf(
 		"token %s has an invalid indentation level, expected %d",
 		err.Token, err.Expected)
+}
+
+type InvalidStatementError struct {
+	LineIndex source.LineIndex
+}
+
+func (err *InvalidStatementError) Error() string {
+	return fmt.Sprintf(
+		"invalid statement in line %d", err.LineIndex)
 }

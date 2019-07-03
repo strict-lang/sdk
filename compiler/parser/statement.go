@@ -6,14 +6,50 @@ import (
 )
 
 func (parser *Parser) reportInvalidStatement() {
-
+	offset := parser.tokens.Peek().Position().Begin
+	lineIndex := parser.linemap.LineAtOffset(offset)
+	parser.reportError(&InvalidStatementError {
+		LineIndex: lineIndex,
+	})
 }
 
-func (parser *Parser) expectEndOfStatement() {
-
+func (parser *Parser) checkLookingAtEndOfStatement() {
+	if next := parser.tokens.Pull(); !token.IsEndOfStatementToken(next) {
+		parser.reportError(&UnexpectedTokenError{
+			Token: next,
+			Expected: "end of statement",
+		})
+	}
 }
+
+// ParseIfStatement parses a conditional statement and it's optional else-clause.
 func (parser *Parser) ParseIfStatement() ast.Node {
-	return nil
+	if err := parser.expectKeyword(token.IfKeyword); err != nil {
+		parser.reportError(err)
+		return &ast.InvalidStatement{}
+	}
+	parser.tokens.Pull()
+	condition, err := parser.ParseExpression()
+	if err != nil {
+		parser.reportError(err)
+		return &ast.InvalidStatement{}
+	}
+	parser.checkLookingAtEndOfStatement()
+	body := parser.ParseStatementBlock()
+
+	if !token.HasKeywordValue(parser.tokens.Pull(), token.ElseKeyword) {
+		return &ast.ConditionalStatement{
+			Condition: condition,
+			Body: body,
+		}
+	}
+	parser.checkLookingAtEndOfStatement()
+	elseBody := parser.ParseStatementBlock()
+	return &ast.ConditionalStatement{
+		Condition: condition,
+		Body: body,
+		Else: elseBody,
+	}
 }
 
 func (parser *Parser) ParseForStatement() ast.Node {
@@ -148,7 +184,13 @@ func (parser *Parser) ParseStatement() ast.Node {
 			parser.reportInvalidStatement()
 			return &ast.InvalidStatement{}
 		}
-		parser.expectEndOfStatement()
+		nextToken := parser.tokens.Pull()
+		if !token.IsEndOfStatementToken(nextToken) {
+			parser.reportError(&UnexpectedTokenError{
+				Token: nextToken,
+				Expected: "end of statement",
+			})
+		}
 		return statement
 	default:
 		parser.reportInvalidStatement()
@@ -169,4 +211,8 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 		statements = append(statements, parser.ParseStatement())
 	}
 	return statements
+}
+
+func (parser *Parser) ParseStatementBlock() ast.Node {
+	return nil
 }
