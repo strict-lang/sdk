@@ -7,14 +7,8 @@ import (
 
 func TestScannerEndOfStatementInsertion(test *testing.T) {
 	entries := map[string]int{
-		`add(
-			a,
-			b
-		 )`: 1,
-
-		`add(a, b)
-			add(b, c)
-			add(b, add(a, c))`: 3,
+		"add(\na,\nb\n)": 1,
+		"add(a, b)\nadd(b, c)\nadd(b, add(a, c));": 3,
 	}
 
 	for entry, expectedCount := range entries {

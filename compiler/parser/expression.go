@@ -2,7 +2,6 @@ package parser
 
 import (
 	"errors"
-	"fmt"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 
 	"github.com/BenjaminNitschke/Strict/compiler/ast"
@@ -92,14 +91,11 @@ func (parser *Parser) parseBinaryExpression(requiredPrecedence token.Precedence)
 		return nil, err
 	}
 	for {
-		next := parser.tokens.Peek()
+		next := parser.tokens.Pull()
 		precedence := token.PrecedenceOfAny(next)
 		if precedence < requiredPrecedence {
-			parser.tokens.Pull()
-			fmt.Printf("%s -> %s\n", parser.tokens.Last(), leftHandSide)
 			return leftHandSide, nil
 		}
-		parser.tokens.Pull()
 		parser.tokens.Pull()
 		rightHandSide, err := parser.parseBinaryExpression(precedence)
 		if err != nil {

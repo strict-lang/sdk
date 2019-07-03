@@ -18,10 +18,10 @@ type Scanner struct {
 	linemap  *linemap.Builder
 	recorder *diagnostic.Recorder
 	// peeked points to the most recently peeked token.
-	peeked *token.Token
+	peeked token.Token
 	// last points to the most recently scanned token. It is an InvalidToken if no other
 	// token has been scanned. The fields value is never nil.
-	last *token.Token
+	last token.Token
 	// begin is the begin index of the token that is currently scanned. It is set to the
 	// current offset when the scanner starts scanning the next token.
 	begin source.Offset
@@ -53,7 +53,7 @@ func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Recorder) *
 		reader:       decorateSourceReader(reader),
 		linemap:      linemap.NewBuilder(),
 		recorder:     recorder,
-		last:         &beginOfFile,
+		last:         beginOfFile,
 		peeked:       nil,
 		updateIndent: true,
 		emptyLine:    true, // The line is empty until a char is hit
@@ -77,10 +77,10 @@ func (scanner *Scanner) Pull() token.Token {
 	if peeked := scanner.peeked; peeked != nil {
 		scanner.last = peeked
 		scanner.peeked = nil
-		return *peeked
+		return peeked
 	}
 	next := scanner.next()
-	scanner.last = &next
+	scanner.last = next
 	return next
 }
 
@@ -90,10 +90,10 @@ func (scanner *Scanner) Peek() token.Token {
 	}
 	if scanner.peeked == nil {
 		next := scanner.next()
-		scanner.peeked = &next
+		scanner.peeked = next
 		return next
 	}
-	return *scanner.peeked
+	return scanner.peeked
 }
 
 // endOfFile returns either an EndOfStatement or an EndOfFile token.
@@ -101,17 +101,17 @@ func (scanner *Scanner) Peek() token.Token {
 // will first return an end-of-statement. There will never be two end-of-statements
 // at the end of a file.
 func (scanner *Scanner) endOfFile() token.Token {
-	last := *scanner.last
+	last := scanner.last
 	if _, ok := last.(*token.EndOfStatementToken); ok {
 		return token.EndOfFile
 	}
 	newLast := token.NewEndOfStatementToken(scanner.offset())
-	scanner.last = &newLast
-	return last
+	scanner.last = newLast
+	return scanner.last
 }
 
 func (scanner *Scanner) Last() token.Token {
-	return *scanner.last
+	return scanner.last
 }
 
 func (scanner *Scanner) resetTokenRecording() {
