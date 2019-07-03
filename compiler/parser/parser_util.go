@@ -51,15 +51,15 @@ func (parser *Parser) expectKeyword(expected token.Keyword) error {
 	return nil
 }
 
-func (parser *Parser) expectAnyIdentifier() error {
+func (parser *Parser) expectAnyIdentifier() (ast.Identifier, error) {
 	peek := parser.tokens.Peek()
 	if peek.Name() != token.IdentifierTokenName {
-		return &UnexpectedTokenError{
+		return ast.Identifier{}, &UnexpectedTokenError{
 			Token:    peek,
 			Expected: "any identifier",
 		}
 	}
-	return nil
+	return ast.Identifier{Value: peek.Value()}, nil
 }
 
 func (parser *Parser) isLookingAtKeyword(keyword token.Keyword) bool {

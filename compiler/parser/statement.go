@@ -13,13 +13,15 @@ func (parser *Parser) reportInvalidStatement() {
 	})
 }
 
-func (parser *Parser) checkLookingAtEndOfStatement() {
-	if next := parser.tokens.Pull(); !token.IsEndOfStatementToken(next) {
+// skipEndOfStatement skips the next token if it is an EndOfStatement token.
+func (parser *Parser) skipEndOfStatement() {
+	if next := parser.tokens.Peek(); !token.IsEndOfStatementToken(next) {
 		parser.reportError(&UnexpectedTokenError{
 			Token: next,
 			Expected: "end of statement",
 		})
 	}
+	parser.tokens.Pull()
 }
 
 // ParseIfStatement parses a conditional statement and it's optional else-clause.
@@ -34,7 +36,7 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 		parser.reportError(err)
 		return &ast.InvalidStatement{}
 	}
-	parser.checkLookingAtEndOfStatement()
+	parser.skipEndOfStatement()
 	body := parser.ParseStatementBlock()
 
 	if !token.HasKeywordValue(parser.tokens.Pull(), token.ElseKeyword) {
@@ -43,7 +45,7 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 			Body: body,
 		}
 	}
-	parser.checkLookingAtEndOfStatement()
+	parser.skipEndOfStatement()
 	elseBody := parser.ParseStatementBlock()
 	return &ast.ConditionalStatement{
 		Condition: condition,
@@ -52,6 +54,9 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 	}
 }
 
+// ParseForStatement parses a loop statement, which starts with the
+// ForKeyword. The statement may either be a FromToLoopStatement or
+// a ForEachLoopStatement.
 func (parser *Parser) ParseForStatement() ast.Node {
 	if err := parser.expectKeyword(token.ForKeyword); err != nil {
 		parser.reportError(err)
@@ -66,18 +71,44 @@ func (parser *Parser) ParseForStatement() ast.Node {
 	return parser.completeForEachStatement()
 }
 
+// completeForEachStatement is called by the ParseForStatement method
+// after it checked for a foreach statement. At this point the last token
+// is an identifier that is the name of the foreach loops element field.
+// This method completes the loops parsing.
 func (parser *Parser) completeForEachStatement() ast.Node {
-	field := parser.tokens.Last()
-	if !token.IsIdentifierToken(field) {
-		parser.reportError(&UnexpectedTokenError{
-			Token: field,
-			Expected: "identifier",
-		})
-		return &ast.InvalidStatement{}
+	field, err := parser.expectAnyIdentifier()
+	if err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	if err := parser.skipKeyword(token.InKeyword); err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	value, err := parser.ParseExpression()
+	if err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	if err := parser.skipKeyword(token.DoKeyword); err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	body := parser.ParseStatementBlock()
+	return &ast.ForeachLoopStatement{
+		Field: field,
+		Target: value,
+		Body: body,
+	}
+}
+
+// completeFromToStatement is called by the ParseForStatement method
+// after it peeked the 'from' keyword. At this point, the last token
+// is an identifier that is the name of the loops counter field. This
+// method completes the loops parsing.
+func (parser *Parser) completeFromToStatement() ast.Node {
+	field, err := parser.expectAnyIdentifier()
+	if err != nil {
+		return parser.createInvalidStatement(err)
 	}
 	if err :=	parser.skipKeyword(token.FromKeyword); err != nil {
-		parser.reportError(err)
-		return &ast.InvalidStatement{}
+		return parser.createInvalidStatement(err)
 	}
 	from, err := parser.ParseExpression()
 	if err != nil {
@@ -95,15 +126,11 @@ func (parser *Parser) completeForEachStatement() ast.Node {
 	}
 	body := parser.ParseStatementBlock()
 	return &ast.FromToLoopStatement{
-		Field: ast.NewIdentifier(field.Value()),
+		Field: &field,
 		From: from,
 		To: to,
 		Body: body,
 	}
-}
-
-func (parser *Parser) completeFromToStatement() ast.Node {
-
 }
 
 // ParseYieldStatement parses a 'yield' statement. Yield statements add an

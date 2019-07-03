@@ -12,6 +12,7 @@ const (
 	MethodKeyword
 	TypeKeyword
 	IsKeyword
+	InKeyword
 	IfKeyword
 	ElseKeyword
 	YieldKeyword
@@ -30,6 +31,7 @@ var keywordNameTable = map[Keyword]string{
 	ReturnKeyword: "return",
 	TypeKeyword:   "type",
 	IsKeyword:     "is",
+	InKeyword:     "in",
 	IfKeyword:     "if",
 	ElseKeyword:   "else",
 	ForKeyword:    "for",
