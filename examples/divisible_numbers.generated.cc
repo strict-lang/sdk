@@ -6,14 +6,17 @@
 
 /* BUILTINS: this will be moved to a separate library soon. */
 
-static int toInt(double number) {
-  return (int) number;
+static int inputNumber(const char *message) {
+  puts(message);
+  int value;
+  scanf("%d", &value);
+  return value;
 }
 
 /* GENERATED CODE */
 
-std::vector<double> divisibleNumbers(double limit) {
-	std::vector<double> $yield;
+std::vector<int> divisibleNumbers(int limit) {
+	std::vector<int> $yield;
 
 	for (auto index = 0; index < limit; index++) {
 		if (index % 3 == 0 || index % 5 == 0) {

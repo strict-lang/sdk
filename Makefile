@@ -7,7 +7,7 @@ GO_INSTALL=$(GO) install
 BINARY_NAME=$(GOPATH)/bin/strict
 all: clean build test
 
-install: build install-libstrict
+install: build #disabled: install-libstrict
 	@-$(GO_INSTALL) ./cmd/strict
 
 build:

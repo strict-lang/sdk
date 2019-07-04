@@ -90,12 +90,17 @@ type Precedence int8
 
 const (
 	LowPrecedence   = 0
-	UnaryPrecedence = 6
-	HighPrecedence  = 7
+	UnaryPrecedence = 7
+	HighPrecedence  = 8
 )
 
 func (operator Operator) Precedence() Precedence {
 	switch operator {
+	case MulOperator,
+		DivOperator,
+		ShiftLeftOperator,
+		ShiftRightOperator:
+		return LowPrecedence
 	case EqualsOperator,
 		NotEqualsOperator,
 		GreaterOperator,
@@ -103,16 +108,13 @@ func (operator Operator) Precedence() Precedence {
 		return 3
 	case AddOperator,
 		SubOperator,
-		ModOperator,
-		OrOperator,
-		XorOperator:
+		ModOperator:
 		return 4
-	case MulOperator,
-		DivOperator,
-		ShiftLeftOperator,
-		ShiftRightOperator,
-		AndOperator:
-		return LowPrecedence
+	case AndOperator:
+		return 5
+	case OrOperator,
+		XorOperator:
+		return 6
 	}
 	return 0
 }

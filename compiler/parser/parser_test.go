@@ -1,10 +1,12 @@
 package parser
 
 import (
+	"testing"
+
+	"github.com/BenjaminNitschke/Strict/compiler/ast"
 	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
 	"github.com/BenjaminNitschke/Strict/compiler/scanner"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
-	"testing"
 )
 
 func NewTestParser(tokens token.Reader) *Parser {
@@ -23,5 +25,8 @@ for element in numbers do
   logFormatted("%d", toInt(element))
 `
 	parser := NewTestParser(scanner.NewStringScanner(entry))
-	parser.parseTopLevelNodes()
+	nodes := parser.parseTopLevelNodes()
+	for _, node := range nodes {
+		ast.Print(node)
+	}
 }

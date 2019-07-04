@@ -26,8 +26,8 @@ std::vector<int> range(int begin, int end) {
 
 int main(int argc, char **argv) {
 	for (auto num : range(1, 21)) {
-		if (num % 3 == 0) {
-			puts("Fizz");
+		if (num % 3 == 0 && num % 5 == 0) {
+			puts("FizzBuzz");
 		}
 	}
 }
