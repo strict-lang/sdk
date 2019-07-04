@@ -64,14 +64,16 @@ func TestIndentation(test *testing.T) {
 
 func TestScanHelloWorld(test *testing.T) {
 	const entry = `
-	print("Hello, World!");	
+	print(string(1))
 	`
 	scanner := NewStringScanner(entry)
 	assertTokenValue(test, scanner.Pull(), "print")
 	assertOperator(test, scanner.Pull(), token.LeftParenOperator)
-	assertTokenValue(test, scanner.Pull(), "Hello, World!")
+	assertTokenValue(test, scanner.Pull(), "string")
+	assertOperator(test, scanner.Pull(), token.LeftParenOperator)
+	assertTokenValue(test, scanner.Pull(), "1")
 	assertOperator(test, scanner.Pull(), token.RightParenOperator)
-	assertOperator(test, scanner.Pull(), token.SemicolonOperator)
+	assertOperator(test, scanner.Pull(), token.RightParenOperator)
 	assertEndOfStatement(test, scanner.Pull())
 	assertEndOfFile(test, scanner.Pull())
 }

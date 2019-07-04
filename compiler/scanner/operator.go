@@ -56,10 +56,7 @@ func (scanner Scanner) gatherOperator() (token.Operator, error) {
 	return scanner.findOperatorOption(options, next)
 }
 
-func (scanner *Scanner) findOperatorOption(
-	options OperatorOptions,
-	char source.Char) (token.Operator, error) {
-
+func (scanner *Scanner) findOperatorOption(options OperatorOptions, char source.Char) (token.Operator, error) {
 	operator, ok := options[char]
 	if ok {
 		scanner.reader.Pull()

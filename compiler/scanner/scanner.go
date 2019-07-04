@@ -85,9 +85,6 @@ func (scanner *Scanner) Pull() token.Token {
 }
 
 func (scanner *Scanner) Peek() token.Token {
-	if scanner.reader.IsExhausted() {
-		return scanner.endOfFile()
-	}
 	if scanner.peeked == nil {
 		next := scanner.next()
 		scanner.peeked = next

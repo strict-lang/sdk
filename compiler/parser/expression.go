@@ -21,19 +21,19 @@ var (
 )
 
 func (parser *Parser) ParseExpression() (ast.Node, error) {
-	parser.advance()
 	return parser.parseBinaryExpression(token.LowPrecedence + 1)
 }
 
 func (parser *Parser) ParseOperand() (ast.Node, error) {
-	defer parser.advance()
-
 	switch last := parser.token(); {
 	case token.IsIdentifierToken(last):
+		parser.advance()
 		return &ast.Identifier{Value: last.Value()}, nil
 	case token.IsStringLiteralToken(last):
+		parser.advance()
 		return &ast.StringLiteral{Value: last.Value()}, nil
 	case token.IsNumberLiteralToken(last):
+		parser.advance()
 		return &ast.NumberLiteral{Value: last.Value()}, nil
 	case token.OperatorValue(last) == token.LeftParenOperator:
 		return parser.completeLeftParenExpression()
@@ -42,6 +42,7 @@ func (parser *Parser) ParseOperand() (ast.Node, error) {
 }
 
 func (parser *Parser) completeLeftParenExpression() (ast.Node, error) {
+	parser.advance()
 	parser.expressionDepth++
 	expression, err := parser.ParseExpression()
 	if err != nil {

@@ -23,13 +23,21 @@ func (scanner *Scanner) ScanNumber() token.Token {
 	return token.NewNumberLiteralToken(number, scanner.currentPosition(), scanner.indent)
 }
 
+func isDigitInRadix(digitValue int, base Radix) bool {
+	return digitValue < int(base)
+}
+
 func (scanner *Scanner) gatherNumericDigits(builder *strings.Builder, base Radix) {
-	for scanner.reader.Last().DigitValue() < int(base) {
-		if scanner.reader.IsExhausted() {
+	digitValue := scanner.reader.Last().DigitValue()
+	if !isDigitInRadix(digitValue, base) {
+		return
+	}
+	builder.WriteRune(rune(scanner.reader.Last()))
+	for {
+		if !isDigitInRadix(scanner.reader.Peek().DigitValue(), base) {
 			return
 		}
-		builder.WriteRune(rune(scanner.reader.Last()))
-		scanner.reader.Pull()
+		builder.WriteRune(rune(scanner.reader.Pull()))
 	}
 }
 
@@ -52,6 +60,8 @@ func (scanner *Scanner) gatherNumber() (string, error) {
 			scanner.reader.Pull()
 			err := scanner.gatherFloatingPointNumber(&builder)
 			return builder.String(), err
+		default:
+			return builder.String(), nil
 		}
 	}
 	scanner.gatherNumericDigits(&builder, Decimal)
