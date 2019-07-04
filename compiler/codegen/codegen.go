@@ -35,6 +35,7 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	generators.VisitBlockStatement = codeGenerator.GenerateBlockStatement
 	generators.VisitReturnStatement = codeGenerator.GenerateReturnStatement
 	generators.VisitTranslationUnit = codeGenerator.GenerateTranslationUnit
+	generators.VisitAssignStatement = codeGenerator.GenerateAssignStatement
 	generators.VisitUnaryExpression = codeGenerator.GenerateUnaryExpression
 	generators.VisitBinaryExpression = codeGenerator.GenerateBinaryExpression
 	generators.VisitExpressionStatement = codeGenerator.GenerateExpressionStatement
@@ -70,7 +71,7 @@ func (generator *CodeGenerator) leaveBlock() {
 
 func (generator *CodeGenerator) Spaces() {
 	for index := int8(0); index < generator.indent; index++ {
-		generator.Emit("  ")
+		generator.Emit("\t")
 	}
 }
 

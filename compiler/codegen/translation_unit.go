@@ -25,7 +25,7 @@ func (generator *CodeGenerator) generateBuiltins() {
 /* BUILTINS: this will be moved to a separate library soon. */
 
 static int toInt(double number) {
-	return (int) number;
+  return (int) number;
 }
 `)
 }

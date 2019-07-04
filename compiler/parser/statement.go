@@ -170,7 +170,6 @@ func (parser *Parser) parseNestedMethod() ast.Node {
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
-	parser.skipEndOfStatement()
 	return method
 }
 
@@ -296,7 +295,11 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 		if current.Indent() < expectedIndent {
 			break
 		}
-		statements = append(statements, parser.ParseStatement())
+		statement := parser.ParseStatement()
+		if _, ok := statement.(*ast.InvalidStatement); ok {
+			break
+		}
+		statements = append(statements, statement)
 	}
 	return statements
 }

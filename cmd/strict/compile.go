@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
 	"github.com/BenjaminNitschke/Strict/compiler/codegen"
 	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
 	"github.com/BenjaminNitschke/Strict/compiler/parser"
@@ -13,6 +12,7 @@ import (
 	"github.com/urfave/cli"
 	"log"
 	"os"
+	"os/exec"
 )
 
 var (
@@ -61,9 +61,18 @@ func compileFileToDirectory(filename string, file *os.File, targetDirectory stri
 		log.Fatalf("failed to compile file: %s", err.Error())
 		return ErrCompilationFailure
 	}
-	ast.Print(unit)
 	targetFileName := codegen.FilenameByUnitName(unitName)
-	return generateCodeToFile(codegen.NewCodeGenerator(unit), targetFileName, targetDirectory)
+	err = generateCodeToFile(codegen.NewCodeGenerator(unit), targetFileName, targetDirectory)
+	if err != nil {
+		return err
+	}
+	return generateExecutable(unitName, filename, targetDirectory)
+}
+
+func generateExecutable(unitName, filename, directory string) error {
+	filepath := createFilepath(filename, directory)
+	executableName := GeneratedExecutableName(unitName)
+	return exec.Command("g++", filepath, "-o", executableName).Run()
 }
 
 func generateCodeToFile(generator *codegen.CodeGenerator, filename, directory string) error {

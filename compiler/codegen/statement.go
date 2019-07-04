@@ -3,7 +3,6 @@ package codegen
 import "github.com/BenjaminNitschke/Strict/compiler/ast"
 
 func (generator *CodeGenerator) GenerateConditionalStatement(statement *ast.ConditionalStatement) {
-	generator.Spaces()
 	generator.Emit("if (")
 	statement.Condition.Accept(generator.generators)
 	generator.Emit(") ")
@@ -55,7 +54,7 @@ func (generator *CodeGenerator) GenerateFromToLoopStatement(statement *ast.FromT
 
 func (generator *CodeGenerator) GenerateForEachLoopStatement(statement *ast.ForeachLoopStatement) {
 	generator.Emitf("for (auto %s : ", statement.Field.Value)
-	statement.Accept(generator.generators)
+	statement.Target.Accept(generator.generators)
 	generator.Emit(") ")
 
 	statement.Body.Accept(generator.generators)
@@ -67,6 +66,14 @@ func (generator *CodeGenerator) GenerateReturnStatement(statement *ast.ReturnSta
 		return
 	}
 	generator.Emit("return ")
+	statement.Value.Accept(generator.generators)
+	generator.Emit(";")
+}
+
+func (generator *CodeGenerator) GenerateAssignStatement(statement *ast.AssignStatement) {
+	generator.Emit("auto ")
+	statement.Target.Accept(generator.generators)
+	generator.Emitf(" = ")
 	statement.Value.Accept(generator.generators)
 	generator.Emit(";")
 }
