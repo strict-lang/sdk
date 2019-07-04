@@ -20,7 +20,7 @@ func main() {
 	app.HelpName = "strict"
 	app.Usage = "strict's build tool"
 	app.Description = `The strict cli-tool helps developers to build and execute strict programs`
-	app.Version = "0.1.0"
+	app.Version = "0.2.1"
 
 	app.Commands = []cli.Command{
 		{

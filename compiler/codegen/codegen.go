@@ -35,6 +35,7 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	generators.VisitBlockStatement = codeGenerator.GenerateBlockStatement
 	generators.VisitReturnStatement = codeGenerator.GenerateReturnStatement
 	generators.VisitTranslationUnit = codeGenerator.GenerateTranslationUnit
+	generators.VisitUnaryExpression = codeGenerator.GenerateUnaryExpression
 	generators.VisitBinaryExpression = codeGenerator.GenerateBinaryExpression
 	generators.VisitExpressionStatement = codeGenerator.GenerateExpressionStatement
 	generators.VisitFromToLoopStatement = codeGenerator.GenerateFromToLoopStatement

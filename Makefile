@@ -22,7 +22,7 @@ run:
 
 clean:
 	@-$(GO_CLEAN)
-	@-rm -rf $(TARGET_BINARY)
+	@-rm -rf $(BINARY_NAME)
 
 build-libstrict:
 	@-cd libstrict;         \

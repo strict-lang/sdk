@@ -24,7 +24,10 @@ func (parser *Parser) ParseMethodDeclaration() (*ast.Method, error) {
 		return nil, err
 	}
 	parser.skipEndOfStatement()
-	body := parser.ParseStatementBlock()
+	body, err := parser.ParseStatementBlock()
+	if err != nil {
+		return nil, err
+	}
 	return &ast.Method{
 		Type:       returnTypeName,
 		Name:       methodName,

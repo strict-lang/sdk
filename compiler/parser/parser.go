@@ -93,15 +93,16 @@ func (parser *Parser) closeBlock() {
 	parser.block = parser.block.Parent
 }
 
-func (parser *Parser) parseTopLevelNodes() ([]ast.Node, error) {
-	return []ast.Node{}, nil
+func (parser *Parser) parseTopLevelNodes() []ast.Node {
+	block, err := parser.ParseStatementBlock()
+	if err != nil {
+		return []ast.Node{parser.createInvalidStatement(err)}
+	}
+	return block.Children
 }
 
 func (parser *Parser) ParseTranslationUnit() (*ast.TranslationUnit, error) {
-	topLevelNodes, err := parser.parseTopLevelNodes()
-	if err != nil {
-		return nil, err
-	}
+	topLevelNodes := parser.parseTopLevelNodes()
 	return ast.NewTranslationUnit(parser.unitName, parser.rootScope, topLevelNodes), nil
 }
 

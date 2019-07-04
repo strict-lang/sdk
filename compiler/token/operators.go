@@ -103,12 +103,12 @@ func (operator Operator) Precedence() Precedence {
 		return 3
 	case AddOperator,
 		SubOperator,
+		ModOperator,
 		OrOperator,
 		XorOperator:
 		return 4
 	case MulOperator,
 		DivOperator,
-		ModOperator,
 		ShiftLeftOperator,
 		ShiftRightOperator,
 		AndOperator:

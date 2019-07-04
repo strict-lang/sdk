@@ -31,7 +31,7 @@ func (invalid InvalidToken) Value() string {
 }
 
 func (invalid InvalidToken) Position() Position {
-	return invalid.Position()
+	return invalid.position
 }
 
 func (invalid InvalidToken) Indent() Indent {

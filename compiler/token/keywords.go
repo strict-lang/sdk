@@ -21,7 +21,7 @@ const (
 	ToKeyword
 	DoKeyword
 	OrKeyword
-	NotKeyword
+	IsNotKeyword
 	AndKeyword
 	ForKeyword
 )
@@ -41,12 +41,14 @@ var keywordNameTable = map[Keyword]string{
 	DoKeyword:     "do",
 	AndKeyword:    "and",
 	OrKeyword:     "or",
-	NotKeyword:    "not",
+	IsNotKeyword:    "isnt",
 }
 
 var operatorKeywords = map[Keyword]Operator{
 	OrKeyword:  OrOperator,
 	AndKeyword: AndOperator,
+	IsKeyword: EqualsOperator,
+	IsNotKeyword: NotEqualsOperator,
 }
 
 var keywordNameLookupTable map[string]Keyword

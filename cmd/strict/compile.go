@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"github.com/BenjaminNitschke/Strict/compiler/ast"
 	"github.com/BenjaminNitschke/Strict/compiler/codegen"
 	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
 	"github.com/BenjaminNitschke/Strict/compiler/parser"
@@ -16,6 +17,7 @@ import (
 
 var (
 	ErrNoSuchFile = errors.New("no file with the passed name was found")
+	ErrCompilationFailure = errors.New("compilation failure")
 )
 
 func compile(context *cli.Context) error {
@@ -23,6 +25,7 @@ func compile(context *cli.Context) error {
 		return cli.NewExitError(context.Command.ArgsUsage, StatusInvalidArguments)
 	}
 	filename := context.Args()[0]
+	log.Printf("starting to compile %s", filename)
 	targetDirectory := context.String("dir")
 	err := compileToDirectory(filename, targetDirectory)
 	if err != nil {
@@ -49,12 +52,16 @@ func compileFileToDirectory(filename string, file *os.File, targetDirectory stri
 	recorder := diagnostic.NewRecorder()
 	defer recorder.PrintAllEntries(diagnostic.NewFmtPrinter())
 
+	log.Println("starting to parse the file")
 	reader := source.NewStreamReader(bufio.NewReader(file))
 	tokenSource := scanner.NewDiagnosticScanner(reader, recorder)
 	unit, err := parser.Parse(unitName, tokenSource, recorder)
+
 	if err != nil {
-		return err
+		log.Fatalf("failed to compile file: %s", err.Error())
+		return ErrCompilationFailure
 	}
+	ast.Print(unit)
 	targetFileName := codegen.FilenameByUnitName(unitName)
 	return generateCodeToFile(codegen.NewCodeGenerator(unit), targetFileName, targetDirectory)
 }

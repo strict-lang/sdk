@@ -9,3 +9,9 @@ func (generator *CodeGenerator) GenerateBinaryExpression(binary *ast.BinaryExpre
 	generator.Emitf(" %s ", binary.Operator.String())
 	binary.RightOperand.Accept(generator.generators)
 }
+
+func (generator *CodeGenerator) GenerateUnaryExpression(unary *ast.UnaryExpression) {
+	generator.Emitf("(%s", unary.Operator)
+	unary.Operand.Accept(generator.generators)
+	generator.Emit(")")
+}

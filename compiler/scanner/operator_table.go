@@ -47,6 +47,7 @@ var operatorTable = OperatorTable{
 		'=':        token.SmallerEqualsOperator,
 		// '<':        token.ShiftLeftOperator,
 	},
+	'%': singleOperatorOption(token.ModOperator),
 	';': singleOperatorOption(token.SemicolonOperator),
 	':': singleOperatorOption(token.ColonOperator),
 	')': singleOperatorOption(token.RightParenOperator),
