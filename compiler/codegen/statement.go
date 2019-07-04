@@ -22,7 +22,7 @@ func (generator *CodeGenerator) GenerateYieldStatement(statement *ast.YieldState
 	generator.method.addPrologueGenerator(yieldGeneratorName, generator.declareYieldList)
 	generator.method.addEpilogueGenerator(yieldGeneratorName, generator.returnYieldList)
 
-	generator.Emitf("%s.insert(", yieldListName)
+	generator.Emitf("%s.push_back(", yieldListName)
 	statement.Value.Accept(generator.generators)
 	generator.Emitf(");")
 }

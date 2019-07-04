@@ -12,11 +12,12 @@ static int toInt(double number) {
 
 /* GENERATED CODE */
 
-list<number> divisibleNumbers(number limit) {
-	list<number> $yield;
-for (auto index = 0; index < limit; index++) {
+std::vector<double> divisibleNumbers(double limit) {
+	std::vector<double> $yield;
+
+	for (auto index = 0; index < limit; index++) {
 		if (index % 3 == 0 || index % 5 == 0) {
-			$yield.insert(index);
+			$yield.push_back(index);
 		}
 	}
 	return $yield;
@@ -25,6 +26,6 @@ for (auto index = 0; index < limit; index++) {
 int main(int argc, char **argv) {
 	auto numbers = divisibleNumbers(100);
 	for (auto element : numbers) {
-
+    std::cout << element << std::endl;
 	}
 }

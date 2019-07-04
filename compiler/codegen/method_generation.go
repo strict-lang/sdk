@@ -92,6 +92,8 @@ func (generation *MethodGeneration) generatePrologue() string {
 	for _, prologueGenerator := range generation.prologueGenerators {
 		prologueGenerator()
 	}
+	generation.generator.Emit("\n")
+	generation.generator.Spaces()
 	return generation.buffer.String()
 }
 
