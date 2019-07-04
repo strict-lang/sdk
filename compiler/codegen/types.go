@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"fmt"
 	"github.com/BenjaminNitschke/Strict/compiler/ast"
 )
 
@@ -45,6 +44,5 @@ func lookupTypeName(name string) string {
 	if !ok {
 		return name
 	}
-	fmt.Println(builtin)
 	return builtin
 }

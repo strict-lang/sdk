@@ -75,23 +75,8 @@ func (parser *Parser) createInvalidStatement(err error) ast.Node {
 	return &ast.InvalidStatement{}
 }
 
-// reportInvalidStatement reports an InvalidStatementError in the
-// current tokens line.
-func (parser *Parser) reportInvalidStatement() {
-	offset := parser.token().Position().Begin
-	lineIndex := parser.linemap.LineAtOffset(offset)
-	parser.reportError(&InvalidStatementError{
-		LineIndex: lineIndex,
-	})
-}
-
 // skipEndOfStatement skips the next token if it is an EndOfStatement token.
 func (parser *Parser) skipEndOfStatement() {
-	if current := parser.token(); !token.IsEndOfStatementToken(current) {
-		parser.reportError(&UnexpectedTokenError{
-			Token:    current,
-			Expected: "end of statement",
-		})
-	}
+	// Do not report the missing end of statement.
 	parser.advance()
 }

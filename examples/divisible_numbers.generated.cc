@@ -26,6 +26,6 @@ std::vector<double> divisibleNumbers(double limit) {
 int main(int argc, char **argv) {
 	auto numbers = divisibleNumbers(100);
 	for (auto element : numbers) {
-    std::cout << element << std::endl;
+		printf("%d", toInt(element));
 	}
 }

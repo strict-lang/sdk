@@ -238,10 +238,9 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 		parser.skipEndOfStatement()
 		return &ast.DecrementStatement{Operand: leftHandSide}, nil
 	}
-	return &ast.InvalidStatement{}, &UnexpectedTokenError{
-		Token:    parser.token(),
-		Expected: "operator",
-	}
+	return &ast.ExpressionStatement{
+		Expression: leftHandSide,
+	}, nil
 }
 
 // ParseStatement parses the next statement from the stream of tokens. Statements include
@@ -260,15 +259,10 @@ func (parser *Parser) ParseStatement() ast.Node {
 		if err != nil {
 			return parser.createInvalidStatement(err)
 		}
-		if !token.IsEndOfStatementToken(parser.token()) {
-			parser.reportError(&UnexpectedTokenError{
-				Token:    parser.token(),
-				Expected: "end of statement",
-			})
-		}
+		// if !token.IsEndOfStatementToken(parser.token()) {
+		// }
 		return statement
 	default:
-		parser.reportInvalidStatement()
 		return &ast.InvalidStatement{}
 	}
 }
