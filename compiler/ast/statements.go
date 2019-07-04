@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"fmt"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 )
 
@@ -23,10 +22,6 @@ type MethodCall struct {
 
 func (call *MethodCall) Accept(visitor *Visitor) {
 	visitor.VisitMethodCall(call)
-}
-
-func (call MethodCall) String() string {
-	return fmt.Sprintf("MethodCall(%s, Arguments: %s)", call.Method, call.Arguments)
 }
 
 type BlockStatement struct {

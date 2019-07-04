@@ -18,10 +18,12 @@ func (parser *Parser) ParseMethodDeclaration() (*ast.Method, error) {
 	if err != nil {
 		return nil, err
 	}
+	parser.advance()
 	parameters, err := parser.parseParameterList()
 	if err != nil {
 		return nil, err
 	}
+	parser.skipEndOfStatement()
 	body := parser.ParseStatementBlock()
 	return &ast.Method{
 		Type:       returnTypeName,

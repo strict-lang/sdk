@@ -37,5 +37,6 @@ install-libstrict:
 deps:
 	@-$(GO_GET) github.com/fatih/color
 	@-$(GO_GET) github.com/urfave/cli
+	@-$(GO_GET) github.com/tonnerre/golang-pretty
 
 .PHONY: all

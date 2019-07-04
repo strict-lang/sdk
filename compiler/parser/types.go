@@ -14,13 +14,13 @@ import (
 //  scans a RightShift operator instead of two GreaterOperators.
 func (parser *Parser) ParseTypeName() (ast.TypeName, error) {
 	typename := parser.token()
+	parser.advance()
 	if !token.IsIdentifierToken(typename) {
 		return nil, &UnexpectedTokenError{
 			Token:    typename,
 			Expected: "typename",
 		}
 	}
-	parser.advance()
 	if token.OperatorValue(parser.token()) != token.SmallerOperator {
 		return &ast.ConcreteTypeName{
 			Name: typename.Value(),

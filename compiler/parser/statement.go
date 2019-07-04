@@ -258,7 +258,6 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 		if current.Indent() < expectedIndent {
 			break
 		}
-		parser.advance()
 		statements = append(statements, parser.ParseStatement())
 	}
 	return statements
