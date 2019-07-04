@@ -64,7 +64,10 @@ func (generation *MethodGeneration) generateDeclaration() string {
 
 	generator.Spaces()
 	generator.Emitf("%s %s(", returnTypeName.FullName(), method.Name.Value)
-	for _, parameter := range method.Parameters {
+	for index, parameter := range method.Parameters {
+		if index != 0 {
+			generator.Emit(", ")
+		}
 		parameterTypeName := updateTypeName(parameter.Type)
 		generator.Emitf("%s %s", parameterTypeName.FullName(), parameter.Name.Value)
 	}

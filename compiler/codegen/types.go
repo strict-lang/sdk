@@ -5,8 +5,8 @@ import (
 )
 
 const (
+	BuiltinTypeNumber = "int"
 	BuiltinTypeText   = "std::string"
-	BuiltinTypeNumber = "double"
 	BuiltinTypeList   = "std::vector"
 )
 
