@@ -66,13 +66,12 @@ func compileFileToDirectory(filename string, file *os.File, targetDirectory stri
 	if err != nil {
 		return err
 	}
-	return generateExecutable(unitName, filename, targetDirectory)
+	return generateExecutable(targetFileName, targetDirectory)
 }
 
-func generateExecutable(unitName, filename, directory string) error {
+func generateExecutable(filename, directory string) error {
 	filepath := createFilepath(filename, directory)
-	executableName := GeneratedExecutableName(unitName)
-	return exec.Command("g++", filepath, "-o", executableName).Run()
+	return exec.Command("g++", filepath).Run()
 }
 
 func generateCodeToFile(generator *codegen.CodeGenerator, filename, directory string) error {

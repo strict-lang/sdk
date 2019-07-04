@@ -13,5 +13,7 @@ static int toInt(double number) {
 /* GENERATED CODE */
 
 int main(int argc, char **argv) {
-	puts("Hello, World!");
+	for (auto count = 0; count < 10; count++) {
+		puts("Hello, World");
+	}
 }
