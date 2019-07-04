@@ -83,6 +83,7 @@ func (parser *Parser) completeFromToStatement() ast.Node {
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
+	parser.advance()
 	if err := parser.skipKeyword(token.FromKeyword); err != nil {
 		return parser.createInvalidStatement(err)
 	}
@@ -100,6 +101,7 @@ func (parser *Parser) completeFromToStatement() ast.Node {
 	if err := parser.skipKeyword(token.DoKeyword); err != nil {
 		return parser.createInvalidStatement(err)
 	}
+	parser.skipEndOfStatement()
 	body := parser.ParseStatementBlock()
 	return &ast.FromToLoopStatement{
 		Field: field,
@@ -120,6 +122,7 @@ func (parser *Parser) ParseYieldStatement() ast.Node {
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
+	parser.skipEndOfStatement()
 	return &ast.YieldStatement{
 		Value: rightHandSide,
 	}
@@ -131,7 +134,7 @@ func (parser *Parser) ParseYieldStatement() ast.Node {
 // instructions to be ignored. The ReturnStatement is always the last statement
 // within a StatementSequence / Branch.
 func (parser *Parser) ParseReturnStatement() ast.Node {
-	if err := parser.expectKeyword(token.ReturnKeyword); err != nil {
+	if err := parser.skipKeyword(token.ReturnKeyword); err != nil {
 		return parser.createInvalidStatement(err)
 	}
 	if token.IsEndOfStatementToken(parser.token()) {
@@ -142,6 +145,7 @@ func (parser *Parser) ParseReturnStatement() ast.Node {
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
+	parser.skipEndOfStatement()
 	return &ast.ReturnStatement{
 		Value: rightHandSide,
 	}
@@ -182,6 +186,7 @@ func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide
 	if err != nil {
 		return &ast.InvalidStatement{}, err
 	}
+	parser.skipEndOfStatement()
 	return &ast.AssignStatement{
 		Target:   leftHandSide,
 		Value:    rightHandSide,
@@ -198,10 +203,15 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 	}
 	switch operator := token.OperatorValue(parser.token()); {
 	case operator.IsAssign():
+		parser.skipEndOfStatement()
 		return parser.parseAssignStatement(operator, leftHandSide)
 	case operator == token.IncrementOperator:
+		parser.advance()
+		parser.skipEndOfStatement()
 		return &ast.IncrementStatement{Operand: leftHandSide}, nil
 	case operator == token.DecrementOperator:
+		parser.advance()
+		parser.skipEndOfStatement()
 		return &ast.DecrementStatement{Operand: leftHandSide}, nil
 	}
 	return &ast.InvalidStatement{}, &UnexpectedTokenError{
@@ -247,6 +257,9 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 	for {
 		expectedIndent := parser.block.Indent
 		current := parser.token()
+		if token.IsEndOfFileToken(current) {
+			break
+		}
 		if current.Indent() > expectedIndent {
 			invalid := parser.createInvalidStatement(&InvalidIndentationError{
 				Token:    current,

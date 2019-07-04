@@ -26,7 +26,6 @@ func testParsingBinaryExpression(test *testing.T, entry string) {
 	parser := createParser(entry)
 	defer parser.recorder.PrintAllEntries(diagnostic.NewTestPrinter(test))
 	_, err := parser.ParseExpression()
-	println()
 	if err != nil {
 		test.Errorf("unexpected error while parsing (%s): %s", entry, err.Error())
 		return

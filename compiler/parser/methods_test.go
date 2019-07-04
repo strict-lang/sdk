@@ -10,8 +10,8 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 	var entries = map[string]ast.Method{
 		`
 	method number add(number a, number b)	
-		return a + b
-		return a + b
+		ret = a + b
+		return ret
 `: {
 			Name: ast.Identifier{Value: "add"},
 			Type: ast.ConcreteTypeName{Name: "number"},
@@ -55,6 +55,7 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 		if !compareMethods(*method, expected) {
 			test.Errorf("unexpected node value %s, expected %s", *method, expected)
 		}
+		ast.Print(method)
 	}
 }
 
