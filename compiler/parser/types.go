@@ -38,6 +38,7 @@ func (parser *Parser) ParseTypeName() (ast.TypeName, error) {
 			Expected: token.GreaterOperator.String(),
 		}
 	}
+	parser.advance()
 	return &ast.GenericTypeName{
 		Name:    typename.Value(),
 		Generic: generic,
