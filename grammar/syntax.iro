@@ -1,0 +1,181 @@
+name                   = strict
+file_extensions []     = strict;
+__KEYWORDS    \= \b(method|and|or|in|is|from|to|type|do|for|if|else|yield)(\s|\Z)
+__BUILTINS    \= (number|text|list)
+
+styles [] {
+
+   .comment : style {
+      color                 = #111
+      italic                = true
+      ace_scope             = comment
+      textmate_scope        = comment
+      pygments_scope        = Comment
+   }
+
+   .keyword : style {
+      color     = red
+      ace_scope             = keyword
+      textmate_scope        = keyword
+      pygments_scope        = Keyword
+   }
+
+   .identifier : style {
+      color     = black
+      ace_scope             = identifier
+      textmate_scope        = identifier
+      pygments_scope        = Name
+   }
+
+   .builtin : style {
+      color     = pink
+      ace_scope             = builtin
+      textmate_scope        = builtin
+      pygments_scope        = Name.Builtin
+   }
+
+   .numeric : style {
+      color                 = blue
+      ace_scope             = constant.numeric
+      textmate_scope        = constant.numeric
+      pygments_scope        = Number
+   }
+
+   .punctuation : style {
+      color     = orange
+      ace_scope             = punctuation
+      textmate_scope        = punctuation
+      pygments_scope        = Punctuation
+   }
+
+   .text : style {
+      color                 = blue
+      ace_scope             = text
+      textmate_scope        = text
+      pygments_scope        = String
+   }
+
+   .illegal : style {
+      color                 = white
+      background_color      = red
+      ace_scope             = invalid
+      textmate_scope        = invalid
+      pygments_scope        = Generic.Error
+   }
+}
+
+contexts [] {
+   main : context {
+      : pattern {
+         regex          \= $${__KEYWORDS}
+         styles []       = .keyword;
+      }
+      : include "numeric";
+      : include "identifier";
+      : inline_push {
+         regex          \= (\{)
+         styles []       = .punctuation;
+         : pop {
+            regex       \= (\})
+            styles []    = .punctuation;
+         }
+         : include "main" ;
+      }
+      : pattern {
+         regex          \= (;)
+         styles []       = .punctuation;
+      }
+      : inline_push {
+         regex          \= (\")
+         styles []       = .punctuation;
+         default_style   = .text
+         : pop {
+            regex       \= (\")
+            styles []    = .punctuation;
+         }
+      }
+      : inline_push {
+         regex          \= (\()
+         styles []       = .punctuation;
+         : pop {
+            regex       \= (\))
+            styles []    = .punctuation;
+         }
+         : include "expression" ;
+         : pattern {
+            regex       \= (,)
+            styles []    = .punctuation;
+         }
+      }
+      : inline_push {
+         regex         \= (\<)
+         styles []      = .punctuation;
+         : pop {
+            regex      \= (\>)
+            styles []   = .punctuation;
+         }
+         : include "identifier";
+         : pattern {
+            regex       \= (,)
+            styles []    = .punctuation;
+         }
+      }
+      : include "multi_line_comment" ;
+      : pattern {
+         regex          \= (//.*)
+         styles []       = .comment;
+      }
+
+      : pattern {
+         regex          \= ([^\s])
+         styles []       = .illegal;
+      }
+   }
+
+   expression : context {
+      : include "numeric";
+      : include "identifier";
+   }
+
+   keyword : context {
+      : pattern {
+         regex    \= $${__KEYWORDS}
+         styles [] = .keyword;
+      }
+   }
+
+   builtins : context {
+      : pattern {
+         regex \= $${__BUILTINS}
+         styles [] = .builtin;
+      }
+   }
+
+   numeric : context {
+      : pattern {
+         regex          \= (\b\d+)
+         styles []       = .numeric;
+      }
+   }
+
+   identifier : context {
+      : include "builtins";
+      : pattern {
+         regex          \= ([a-zA-Z]([a-zA-Z0-9]*))
+         styles []       = .identifier;
+      }
+   }
+
+   multi_line_comment : context {
+      description        = multiline
+      : inline_push {
+         regex          \= (/\*)
+         styles []       = .comment;
+         default_style   = .comment
+         : pop {
+            regex       \= (\*/)
+            styles []    = .comment;
+         }
+      }
+   }
+}
