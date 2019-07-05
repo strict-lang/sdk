@@ -25,7 +25,7 @@
         'include' : '#loops'
       }
       {
-        'match' : '\\b(do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield)(\\s|\\Z)'
+        'match' : '\\b(do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield|isnt|not)(\\s|\\Z)'
         'name' : 'keyword.strict'
       }
       {
@@ -407,7 +407,7 @@
   'operator' : {
     'patterns' : [
       {
-        'match' : '([\\x{002b}\\x{007c}\\-\\x{0028}\\x{0029}\\x{003c}\\x{003e}\\[\\]\\x{0025}\\x{002a}\\x{002c}])'
+        'match' : '([\\x{002b}\\x{007c}\\-\\x{0028}\\x{0029}\\x{003c}\\x{003e}\\[\\]\\x{0021}\\x{003d}\\x{0025}\\x{002a}\\x{002c}]+)'
         'name' : 'punctuation.strict'
       }
     ]

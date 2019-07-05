@@ -4,13 +4,13 @@
 <!-- Generated via Iro -->
 <dict>
   <key>fileTypes</key>
-  <array>
+  <array> 
     <string>strict</string>
    </array>
   <key>name</key>
   <string>strict</string>
   <key>patterns</key>
-  <array>
+  <array> 
     <dict>
       <key>include</key>
       <string>#main</string>
@@ -25,7 +25,7 @@
     <key>main</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>include</key>
           <string>#method</string>
@@ -44,7 +44,7 @@
         </dict>
         <dict>
           <key>match</key>
-          <string>\b(do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield)(\s|\Z)</string>
+          <string>\b(do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield|isnt|not)(\s|\Z)</string>
           <key>name</key>
           <string>keyword.strict</string>
         </dict>
@@ -72,7 +72,7 @@
             </dict>
           </dict>
           <key>patterns</key>
-          <array>
+          <array> 
             <dict>
               <key>include</key>
               <string>#main__1</string>
@@ -101,7 +101,7 @@
             </dict>
           </dict>
           <key>patterns</key>
-          <array>
+          <array> 
             <dict>
               <key>include</key>
               <string>#main__2</string>
@@ -130,7 +130,7 @@
             </dict>
           </dict>
           <key>patterns</key>
-          <array>
+          <array> 
             <dict>
               <key>include</key>
               <string>#main__3</string>
@@ -168,7 +168,7 @@
     <key>assignment</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>match</key>
           <string>([a-zA-Z]+[a-zA-Z0-9_]*)(\s*)(\=)</string>
@@ -196,7 +196,7 @@
     <key>expression</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>include</key>
           <string>#numeric</string>
@@ -214,7 +214,7 @@
     <key>identifier</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>match</key>
           <string>([a-zA-Z]([a-zA-Z0-9]*))</string>
@@ -226,7 +226,7 @@
     <key>loops</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>begin</key>
           <string>(for)(\s+)([a-zA-Z]+[a-zA-Z0-9_]*)(\s+)(from)(\s+)</string>
@@ -264,7 +264,7 @@
             </dict>
           </dict>
           <key>patterns</key>
-          <array>
+          <array> 
             <dict>
               <key>include</key>
               <string>#loops__1</string>
@@ -318,7 +318,7 @@
             </dict>
           </dict>
           <key>patterns</key>
-          <array>
+          <array> 
             <dict>
               <key>include</key>
               <string>#loops__2</string>
@@ -340,7 +340,7 @@
     <key>loops__1</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>include</key>
           <string>#main</string>
@@ -350,7 +350,7 @@
     <key>loops__2</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>include</key>
           <string>#main</string>
@@ -360,7 +360,7 @@
     <key>main__1</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>match</key>
           <string>(\\(?:\\|&quot;))</string>
@@ -378,7 +378,7 @@
     <key>main__2</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>include</key>
           <string>#expression</string>
@@ -394,7 +394,7 @@
     <key>main__3</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>include</key>
           <string>#identifier</string>
@@ -410,7 +410,7 @@
     <key>method</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>begin</key>
           <string>(method)(\s+)([\w\x{003c}\x{003e}]+)(\s+)([a-zA-Z]+[a-zA-Z0-9_]*)(\s*)(\()</string>
@@ -453,7 +453,7 @@
             </dict>
           </dict>
           <key>patterns</key>
-          <array>
+          <array> 
             <dict>
               <key>include</key>
               <string>#method__1</string>
@@ -475,7 +475,7 @@
     <key>method__1</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>match</key>
           <string>(\,)</string>
@@ -515,7 +515,7 @@
     <key>method_call</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>begin</key>
           <string>([a-zA-Z]+[a-zA-Z0-9_]*)(\s*)(\()</string>
@@ -538,7 +538,7 @@
             </dict>
           </dict>
           <key>patterns</key>
-          <array>
+          <array> 
             <dict>
               <key>include</key>
               <string>#method_call__1</string>
@@ -560,7 +560,7 @@
     <key>method_call__1</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>include</key>
           <string>#main</string>
@@ -576,7 +576,7 @@
     <key>multi_line_comment</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>begin</key>
           <string>(/\*)</string>
@@ -606,13 +606,13 @@
     <key>multi_line_comment__1</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
        </array>
     </dict>
     <key>numeric</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>match</key>
           <string>(\b\d+)</string>
@@ -624,10 +624,10 @@
     <key>operator</key>
     <dict>
       <key>patterns</key>
-      <array>
+      <array> 
         <dict>
           <key>match</key>
-          <string>([\x{002b}\x{007c}\-\x{0028}\x{0029}\x{003c}\x{003e}\[\]\x{0025}\x{002a}\x{002c}])</string>
+          <string>([\x{002b}\x{007c}\-\x{0028}\x{0029}\x{003c}\x{003e}\[\]\x{0021}\x{003d}\x{0025}\x{002a}\x{002c}]+)</string>
           <key>name</key>
           <string>punctuation.strict</string>
         </dict>
@@ -636,3 +636,4 @@
   </dict>
 </dict>
 </plist>
+
