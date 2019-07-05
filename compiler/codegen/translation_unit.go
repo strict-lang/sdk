@@ -24,8 +24,11 @@ func (generator *CodeGenerator) generateBuiltins() {
 	generator.Emit(`
 /* BUILTINS: this will be moved to a separate library soon. */
 
-static int toInt(double number) {
-  return (int) number;
+static int inputNumber(const char *message) {
+  puts(message);
+  int value;
+  scanf("%d", &value);
+  return value;
 }
 `)
 }

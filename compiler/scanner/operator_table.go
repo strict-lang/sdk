@@ -40,12 +40,10 @@ var operatorTable = OperatorTable{
 	'>': {
 		singleChar: token.GreaterOperator,
 		'=':        token.GreaterEqualsOperator,
-		// '>':        token.ShiftRightOperator,
 	},
 	'<': {
 		singleChar: token.SmallerOperator,
 		'=':        token.SmallerEqualsOperator,
-		// '<':        token.ShiftLeftOperator,
 	},
 	'%': singleOperatorOption(token.ModOperator),
 	';': singleOperatorOption(token.SemicolonOperator),

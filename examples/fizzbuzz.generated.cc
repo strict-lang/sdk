@@ -15,20 +15,19 @@ static int inputNumber(const char *message) {
 
 /* GENERATED CODE */
 
-std::vector<int> divisibleNumbers(int limit) {
+std::vector<int> range(int begin, int end) {
 	std::vector<int> $yield;
 
-	for (auto index = 0; index < limit; index++) {
-		if (index % 3 == 0 || index % 5 == 0) {
-			$yield.push_back(index);
-		}
+	for (auto num = begin; num < end; num++) {
+		$yield.push_back(num);
 	}
 	return $yield;
 }
 
 int main(int argc, char **argv) {
-	auto numbers = divisibleNumbers(100);
-	for (auto element : numbers) {
-		printf("%d", toInt(element));
+	for (auto num : range(1, 21)) {
+		if (num % 3 == 0 && num % 5 == 0) {
+			puts("FizzBuzz");
+		}
 	}
 }
