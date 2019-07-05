@@ -27,8 +27,24 @@
       <key>patterns</key>
       <array>
         <dict>
+          <key>include</key>
+          <string>#method</string>
+        </dict>
+        <dict>
+          <key>include</key>
+          <string>#method_call</string>
+        </dict>
+        <dict>
+          <key>include</key>
+          <string>#assignment</string>
+        </dict>
+        <dict>
+          <key>include</key>
+          <string>#loops</string>
+        </dict>
+        <dict>
           <key>match</key>
-          <string>\b(method|and|or|in|is|from|to|type|do|for|if|else|yield)(\s|\Z)</string>
+          <string>\b(do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield)(\s|\Z)</string>
           <key>name</key>
           <string>keyword.strict</string>
         </dict>
@@ -41,14 +57,18 @@
           <string>#identifier</string>
         </dict>
         <dict>
+          <key>include</key>
+          <string>#operator</string>
+        </dict>
+        <dict>
           <key>begin</key>
-          <string>(\{)</string>
+          <string>(&quot;)</string>
           <key>beginCaptures</key>
           <dict>
             <key>1</key>
             <dict>
               <key>name</key>
-              <string>punctuation.strict</string>
+              <string>string.strict</string>
             </dict>
           </dict>
           <key>patterns</key>
@@ -59,43 +79,13 @@
             </dict>
            </array>
           <key>end</key>
-          <string>(\})</string>
-          <key>endCaptures</key>
-          <dict>
-            <key>1</key>
-            <dict>
-              <key>name</key>
-              <string>punctuation.strict</string>
-            </dict>
-          </dict>
-        </dict>
-        <dict>
-          <key>match</key>
-          <string>(;)</string>
-          <key>name</key>
-          <string>punctuation.strict</string>
-        </dict>
-        <dict>
-          <key>begin</key>
-          <string>(\&quot;)</string>
-          <key>beginCaptures</key>
-          <dict>
-            <key>1</key>
-            <dict>
-              <key>name</key>
-              <string>punctuation.strict</string>
-            </dict>
-          </dict>
-          <key>contentName</key>
-          <string>text.strict</string>
-          <key>end</key>
           <string>(\&quot;)</string>
           <key>endCaptures</key>
           <dict>
             <key>1</key>
             <dict>
               <key>name</key>
-              <string>punctuation.strict</string>
+              <string>string.strict</string>
             </dict>
           </dict>
         </dict>
@@ -114,7 +104,7 @@
           <array>
             <dict>
               <key>include</key>
-              <string>#main__3</string>
+              <string>#main__2</string>
             </dict>
            </array>
           <key>end</key>
@@ -143,7 +133,7 @@
           <array>
             <dict>
               <key>include</key>
-              <string>#main__4</string>
+              <string>#main__3</string>
             </dict>
            </array>
           <key>end</key>
@@ -175,15 +165,31 @@
         </dict>
        </array>
     </dict>
-    <key>builtins</key>
+    <key>assignment</key>
     <dict>
       <key>patterns</key>
       <array>
         <dict>
           <key>match</key>
-          <string>(number|text|list)</string>
-          <key>name</key>
-          <string>builtin.strict</string>
+          <string>([a-zA-Z]+[a-zA-Z0-9_]*)(\s*)(\=)</string>
+          <key>captures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>variable.strict</string>
+            </dict>
+            <key>2</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+          </dict>
         </dict>
        </array>
     </dict>
@@ -199,6 +205,10 @@
           <key>include</key>
           <string>#identifier</string>
         </dict>
+        <dict>
+          <key>include</key>
+          <string>#operator</string>
+        </dict>
        </array>
     </dict>
     <key>identifier</key>
@@ -206,18 +216,128 @@
       <key>patterns</key>
       <array>
         <dict>
-          <key>include</key>
-          <string>#builtins</string>
-        </dict>
-        <dict>
           <key>match</key>
           <string>([a-zA-Z]([a-zA-Z0-9]*))</string>
           <key>name</key>
-          <string>identifier.strict</string>
+          <string>entity.name.strict</string>
         </dict>
        </array>
     </dict>
-    <key>main__1</key>
+    <key>loops</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>begin</key>
+          <string>(for)(\s+)([a-zA-Z]+[a-zA-Z0-9_]*)(\s+)(from)(\s+)</string>
+          <key>beginCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.strict</string>
+            </dict>
+            <key>2</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>variable.strict</string>
+            </dict>
+            <key>4</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+            <key>5</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.strict</string>
+            </dict>
+            <key>6</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+          </dict>
+          <key>patterns</key>
+          <array>
+            <dict>
+              <key>include</key>
+              <string>#loops__1</string>
+            </dict>
+           </array>
+          <key>end</key>
+          <string>(do)</string>
+          <key>endCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.strict</string>
+            </dict>
+          </dict>
+        </dict>
+        <dict>
+          <key>begin</key>
+          <string>(for)(\s+)([a-zA-Z]+[a-zA-Z0-9_]*)(\s+)(in)(\s+)</string>
+          <key>beginCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.strict</string>
+            </dict>
+            <key>2</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>variable.strict</string>
+            </dict>
+            <key>4</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+            <key>5</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.strict</string>
+            </dict>
+            <key>6</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+          </dict>
+          <key>patterns</key>
+          <array>
+            <dict>
+              <key>include</key>
+              <string>#loops__2</string>
+            </dict>
+           </array>
+          <key>end</key>
+          <string>(do)</string>
+          <key>endCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.strict</string>
+            </dict>
+          </dict>
+        </dict>
+       </array>
+    </dict>
+    <key>loops__1</key>
     <dict>
       <key>patterns</key>
       <array>
@@ -227,13 +347,35 @@
         </dict>
        </array>
     </dict>
-    <key>main__2</key>
+    <key>loops__2</key>
     <dict>
       <key>patterns</key>
       <array>
+        <dict>
+          <key>include</key>
+          <string>#main</string>
+        </dict>
        </array>
     </dict>
-    <key>main__3</key>
+    <key>main__1</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>match</key>
+          <string>(\\(?:\\|&quot;))</string>
+          <key>name</key>
+          <string>string.strict</string>
+        </dict>
+        <dict>
+          <key>match</key>
+          <string>([^\x{0022}\x{005c}]+)</string>
+          <key>name</key>
+          <string>string.strict</string>
+        </dict>
+       </array>
+    </dict>
+    <key>main__2</key>
     <dict>
       <key>patterns</key>
       <array>
@@ -249,13 +391,179 @@
         </dict>
        </array>
     </dict>
-    <key>main__4</key>
+    <key>main__3</key>
     <dict>
       <key>patterns</key>
       <array>
         <dict>
           <key>include</key>
           <string>#identifier</string>
+        </dict>
+        <dict>
+          <key>match</key>
+          <string>(,)</string>
+          <key>name</key>
+          <string>punctuation.strict</string>
+        </dict>
+       </array>
+    </dict>
+    <key>method</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>begin</key>
+          <string>(method)(\s+)([\w\x{003c}\x{003e}]+)(\s+)([a-zA-Z]+[a-zA-Z0-9_]*)(\s*)(\()</string>
+          <key>beginCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.strict</string>
+            </dict>
+            <key>2</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>entity.name.type.strict</string>
+            </dict>
+            <key>4</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+            <key>5</key>
+            <dict>
+              <key>name</key>
+              <string>entity.name.function.strict</string>
+            </dict>
+            <key>6</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+            <key>7</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+          </dict>
+          <key>patterns</key>
+          <array>
+            <dict>
+              <key>include</key>
+              <string>#method__1</string>
+            </dict>
+           </array>
+          <key>end</key>
+          <string>(\))</string>
+          <key>endCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+          </dict>
+        </dict>
+       </array>
+    </dict>
+    <key>method__1</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>match</key>
+          <string>(\,)</string>
+          <key>name</key>
+          <string>punctuation.strict</string>
+        </dict>
+        <dict>
+          <key>match</key>
+          <string>([\w\x{003c}\x{003e}]+)(\s+)(\w+)</string>
+          <key>captures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>entity.name.type.strict</string>
+            </dict>
+            <key>2</key>
+            <dict>
+              <key>name</key>
+              <string>whitespace.strict</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>variable.parameter.strict</string>
+            </dict>
+          </dict>
+        </dict>
+        <dict>
+          <key>match</key>
+          <string>([\w\x{003c}\x{003e}]+)</string>
+          <key>name</key>
+          <string>variable.parameter.strict</string>
+        </dict>
+       </array>
+    </dict>
+    <key>method_call</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>begin</key>
+          <string>([a-zA-Z]+[a-zA-Z0-9_]*)(\s*)(\()</string>
+          <key>beginCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>entity.name.function.strict</string>
+            </dict>
+            <key>2</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+          </dict>
+          <key>patterns</key>
+          <array>
+            <dict>
+              <key>include</key>
+              <string>#method_call__1</string>
+            </dict>
+           </array>
+          <key>end</key>
+          <string>(\))</string>
+          <key>endCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+          </dict>
+        </dict>
+       </array>
+    </dict>
+    <key>method_call__1</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>include</key>
+          <string>#main</string>
         </dict>
         <dict>
           <key>match</key>
@@ -310,6 +618,18 @@
           <string>(\b\d+)</string>
           <key>name</key>
           <string>constant.numeric.strict</string>
+        </dict>
+       </array>
+    </dict>
+    <key>operator</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>match</key>
+          <string>([\x{002b}\x{007c}\-\x{0028}\x{0029}\x{003c}\x{003e}\[\]\x{0025}\x{002a}\x{002c}])</string>
+          <key>name</key>
+          <string>punctuation.strict</string>
         </dict>
        </array>
     </dict>

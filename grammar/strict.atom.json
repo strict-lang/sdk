@@ -13,7 +13,19 @@
   'main' : {
     'patterns' : [
       {
-        'match' : '\\b(method|and|or|in|is|from|to|type|do|for|if|else|yield)(\\s|\\Z)'
+        'include' : '#method'
+      }
+      {
+        'include' : '#method_call'
+      }
+      {
+        'include' : '#assignment'
+      }
+      {
+        'include' : '#loops'
+      }
+      {
+        'match' : '\\b(do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield)(\\s|\\Z)'
         'name' : 'keyword.strict'
       }
       {
@@ -23,10 +35,13 @@
         'include' : '#identifier'
       }
       {
-        'begin' : '(\\{)'
+        'include' : '#operator'
+      }
+      {
+        'begin' : '(")'
         'beginCaptures' : {
           '1' : {
-            'name' : 'punctuation.strict'
+            'name' : 'string.strict'
           }
         }
         'patterns' : [
@@ -34,29 +49,10 @@
             'include' : '#main__1'
           }
         ]
-        'end' : '(\\})'
-        'endCaptures' : {
-          '1' : {
-            'name' : 'punctuation.strict'
-          }
-        }
-      }
-      {
-        'match' : '(;)'
-        'name' : 'punctuation.strict'
-      }
-      {
-        'begin' : '(\\")'
-        'beginCaptures' : {
-          '1' : {
-            'name' : 'punctuation.strict'
-          }
-        }
-        'contentName' : 'text.strict'
         'end' : '(\\")'
         'endCaptures' : {
           '1' : {
-            'name' : 'punctuation.strict'
+            'name' : 'string.strict'
           }
         }
       }
@@ -69,7 +65,7 @@
         }
         'patterns' : [
           {
-            'include' : '#main__3'
+            'include' : '#main__2'
           }
         ]
         'end' : '(\\))'
@@ -88,7 +84,7 @@
         }
         'patterns' : [
           {
-            'include' : '#main__4'
+            'include' : '#main__3'
           }
         ]
         'end' : '(\\>)'
@@ -111,11 +107,21 @@
       }
     ]
   }
-  'builtins' : {
+  'assignment' : {
     'patterns' : [
       {
-        'match' : '(number|text|list)'
-        'name' : 'builtin.strict'
+        'match' : '([a-zA-Z]+[a-zA-Z0-9_]*)(\\s*)(\\=)'
+        'captures' : {
+          '1' : {
+            'name' : 'variable.strict'
+          }
+          '2' : {
+            'name' : 'whitespace.strict'
+          }
+          '3' : {
+            'name' : 'punctuation.strict'
+          }
+        }
       }
     ]
   }
@@ -127,31 +133,118 @@
       {
         'include' : '#identifier'
       }
+      {
+        'include' : '#operator'
+      }
     ]
   }
   'identifier' : {
     'patterns' : [
       {
-        'include' : '#builtins'
-      }
-      {
         'match' : '([a-zA-Z]([a-zA-Z0-9]*))'
-        'name' : 'identifier.strict'
+        'name' : 'entity.name.strict'
       }
     ]
   }
-  'main__1' : {
+  'loops' : {
+    'patterns' : [
+      {
+        'begin' : '(for)(\\s+)([a-zA-Z]+[a-zA-Z0-9_]*)(\\s+)(from)(\\s+)'
+        'beginCaptures' : {
+          '1' : {
+            'name' : 'keyword.strict'
+          }
+          '2' : {
+            'name' : 'whitespace.strict'
+          }
+          '3' : {
+            'name' : 'variable.strict'
+          }
+          '4' : {
+            'name' : 'whitespace.strict'
+          }
+          '5' : {
+            'name' : 'keyword.strict'
+          }
+          '6' : {
+            'name' : 'whitespace.strict'
+          }
+        }
+        'patterns' : [
+          {
+            'include' : '#loops__1'
+          }
+        ]
+        'end' : '(do)'
+        'endCaptures' : {
+          '1' : {
+            'name' : 'keyword.strict'
+          }
+        }
+      }
+      {
+        'begin' : '(for)(\\s+)([a-zA-Z]+[a-zA-Z0-9_]*)(\\s+)(in)(\\s+)'
+        'beginCaptures' : {
+          '1' : {
+            'name' : 'keyword.strict'
+          }
+          '2' : {
+            'name' : 'whitespace.strict'
+          }
+          '3' : {
+            'name' : 'variable.strict'
+          }
+          '4' : {
+            'name' : 'whitespace.strict'
+          }
+          '5' : {
+            'name' : 'keyword.strict'
+          }
+          '6' : {
+            'name' : 'whitespace.strict'
+          }
+        }
+        'patterns' : [
+          {
+            'include' : '#loops__2'
+          }
+        ]
+        'end' : '(do)'
+        'endCaptures' : {
+          '1' : {
+            'name' : 'keyword.strict'
+          }
+        }
+      }
+    ]
+  }
+  'loops__1' : {
     'patterns' : [
       {
         'include' : '#main'
       }
     ]
   }
-  'main__2' : {
+  'loops__2' : {
     'patterns' : [
+      {
+        'include' : '#main'
+      }
     ]
   }
-  'main__3' : {
+  'main__1' : {
+    'patterns' : [
+      {
+        'match' : '(\\\\(?:\\\\|"))'
+        'name' : 'string.strict'
+      }
+      {
+        'match' : '([^\\x{0022}\\x{005c}]+)'
+        'name' : 'string.strict'
+      }
+    ]
+  }
+  'main__2' : {
     'patterns' : [
       {
         'include' : '#expression'
@@ -162,10 +255,117 @@
       }
     ]
   }
-  'main__4' : {
+  'main__3' : {
     'patterns' : [
       {
         'include' : '#identifier'
+      }
+      {
+        'match' : '(,)'
+        'name' : 'punctuation.strict'
+      }
+    ]
+  }
+  'method' : {
+    'patterns' : [
+      {
+        'begin' : '(method)(\\s+)([\\w\\x{003c}\\x{003e}]+)(\\s+)([a-zA-Z]+[a-zA-Z0-9_]*)(\\s*)(\\()'
+        'beginCaptures' : {
+          '1' : {
+            'name' : 'keyword.strict'
+          }
+          '2' : {
+            'name' : 'whitespace.strict'
+          }
+          '3' : {
+            'name' : 'entity.name.type.strict'
+          }
+          '4' : {
+            'name' : 'whitespace.strict'
+          }
+          '5' : {
+            'name' : 'entity.name.function.strict'
+          }
+          '6' : {
+            'name' : 'whitespace.strict'
+          }
+          '7' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+        'patterns' : [
+          {
+            'include' : '#method__1'
+          }
+        ]
+        'end' : '(\\))'
+        'endCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+      }
+    ]
+  }
+  'method__1' : {
+    'patterns' : [
+      {
+        'match' : '(\\,)'
+        'name' : 'punctuation.strict'
+      }
+      {
+        'match' : '([\\w\\x{003c}\\x{003e}]+)(\\s+)(\\w+)'
+        'captures' : {
+          '1' : {
+            'name' : 'entity.name.type.strict'
+          }
+          '2' : {
+            'name' : 'whitespace.strict'
+          }
+          '3' : {
+            'name' : 'variable.parameter.strict'
+          }
+        }
+      }
+      {
+        'match' : '([\\w\\x{003c}\\x{003e}]+)'
+        'name' : 'variable.parameter.strict'
+      }
+    ]
+  }
+  'method_call' : {
+    'patterns' : [
+      {
+        'begin' : '([a-zA-Z]+[a-zA-Z0-9_]*)(\\s*)(\\()'
+        'beginCaptures' : {
+          '1' : {
+            'name' : 'entity.name.function.strict'
+          }
+          '2' : {
+            'name' : 'punctuation.strict'
+          }
+          '3' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+        'patterns' : [
+          {
+            'include' : '#method_call__1'
+          }
+        ]
+        'end' : '(\\))'
+        'endCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+      }
+    ]
+  }
+  'method_call__1' : {
+    'patterns' : [
+      {
+        'include' : '#main'
       }
       {
         'match' : '(,)'
@@ -201,6 +401,14 @@
       {
         'match' : '(\\b\\d+)'
         'name' : 'constant.numeric.strict'
+      }
+    ]
+  }
+  'operator' : {
+    'patterns' : [
+      {
+        'match' : '([\\x{002b}\\x{007c}\\-\\x{0028}\\x{0029}\\x{003c}\\x{003e}\\[\\]\\x{0025}\\x{002a}\\x{002c}])'
+        'name' : 'punctuation.strict'
       }
     ]
   }
