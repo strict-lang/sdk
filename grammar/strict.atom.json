@@ -1,0 +1,208 @@
+'fileTypes' : [
+  'strict'
+]
+'name' : 'strict'
+'patterns' : [
+  {
+    'include' : '#main'
+  }
+]
+'scopeName' : 'source.strict'
+'uuid' : ''
+'repository' : {
+  'main' : {
+    'patterns' : [
+      {
+        'match' : '\\b(method|and|or|in|is|from|to|type|do|for|if|else|yield)(\\s|\\Z)'
+        'name' : 'keyword.strict'
+      }
+      {
+        'include' : '#numeric'
+      }
+      {
+        'include' : '#identifier'
+      }
+      {
+        'begin' : '(\\{)'
+        'beginCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+        'patterns' : [
+          {
+            'include' : '#main__1'
+          }
+        ]
+        'end' : '(\\})'
+        'endCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+      }
+      {
+        'match' : '(;)'
+        'name' : 'punctuation.strict'
+      }
+      {
+        'begin' : '(\\")'
+        'beginCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+        'contentName' : 'text.strict'
+        'end' : '(\\")'
+        'endCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+      }
+      {
+        'begin' : '(\\()'
+        'beginCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+        'patterns' : [
+          {
+            'include' : '#main__3'
+          }
+        ]
+        'end' : '(\\))'
+        'endCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+      }
+      {
+        'begin' : '(\\<)'
+        'beginCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+        'patterns' : [
+          {
+            'include' : '#main__4'
+          }
+        ]
+        'end' : '(\\>)'
+        'endCaptures' : {
+          '1' : {
+            'name' : 'punctuation.strict'
+          }
+        }
+      }
+      {
+        'include' : '#multi_line_comment'
+      }
+      {
+        'match' : '(//.*)'
+        'name' : 'comment.strict'
+      }
+      {
+        'match' : '([^\\s])'
+        'name' : 'invalid.strict'
+      }
+    ]
+  }
+  'builtins' : {
+    'patterns' : [
+      {
+        'match' : '(number|text|list)'
+        'name' : 'builtin.strict'
+      }
+    ]
+  }
+  'expression' : {
+    'patterns' : [
+      {
+        'include' : '#numeric'
+      }
+      {
+        'include' : '#identifier'
+      }
+    ]
+  }
+  'identifier' : {
+    'patterns' : [
+      {
+        'include' : '#builtins'
+      }
+      {
+        'match' : '([a-zA-Z]([a-zA-Z0-9]*))'
+        'name' : 'identifier.strict'
+      }
+    ]
+  }
+  'main__1' : {
+    'patterns' : [
+      {
+        'include' : '#main'
+      }
+    ]
+  }
+  'main__2' : {
+    'patterns' : [
+    ]
+  }
+  'main__3' : {
+    'patterns' : [
+      {
+        'include' : '#expression'
+      }
+      {
+        'match' : '(,)'
+        'name' : 'punctuation.strict'
+      }
+    ]
+  }
+  'main__4' : {
+    'patterns' : [
+      {
+        'include' : '#identifier'
+      }
+      {
+        'match' : '(,)'
+        'name' : 'punctuation.strict'
+      }
+    ]
+  }
+  'multi_line_comment' : {
+    'patterns' : [
+      {
+        'begin' : '(/\\*)'
+        'beginCaptures' : {
+          '1' : {
+            'name' : 'comment.strict'
+          }
+        }
+        'contentName' : 'comment.strict'
+        'end' : '(\\*/)'
+        'endCaptures' : {
+          '1' : {
+            'name' : 'comment.strict'
+          }
+        }
+      }
+    ]
+  }
+  'multi_line_comment__1' : {
+    'patterns' : [
+    ]
+  }
+  'numeric' : {
+    'patterns' : [
+      {
+        'match' : '(\\b\\d+)'
+        'name' : 'constant.numeric.strict'
+      }
+    ]
+  }
+}
+
