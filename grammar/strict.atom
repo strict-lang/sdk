@@ -25,7 +25,7 @@
         'include' : '#loops'
       }
       {
-        'match' : '\\b(do|method|and|or|in|is|from|to|type|for|if|else|yield)(\\s|\\Z)'
+        'match' : '\\b(do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield)(\\s|\\Z)'
         'name' : 'keyword.strict'
       }
       {
@@ -41,7 +41,7 @@
         'begin' : '(")'
         'beginCaptures' : {
           '1' : {
-            'name' : 'text.strict'
+            'name' : 'string.strict'
           }
         }
         'patterns' : [
@@ -52,7 +52,7 @@
         'end' : '(\\")'
         'endCaptures' : {
           '1' : {
-            'name' : 'text.strict'
+            'name' : 'string.strict'
           }
         }
       }
@@ -125,14 +125,6 @@
       }
     ]
   }
-  'builtins' : {
-    'patterns' : [
-      {
-        'match' : '(logf|log)'
-        'name' : 'entity.name.other.strict'
-      }
-    ]
-  }
   'expression' : {
     'patterns' : [
       {
@@ -148,9 +140,6 @@
   }
   'identifier' : {
     'patterns' : [
-      {
-        'include' : '#builtins'
-      }
       {
         'match' : '([a-zA-Z]([a-zA-Z0-9]*))'
         'name' : 'entity.name.strict'
@@ -247,11 +236,11 @@
     'patterns' : [
       {
         'match' : '(\\\\(?:\\\\|"))'
-        'name' : 'text.strict'
+        'name' : 'string.strict'
       }
       {
         'match' : '([^\\x{0022}\\x{005c}]+)'
-        'name' : 'text.strict'
+        'name' : 'string.strict'
       }
     ]
   }
@@ -424,3 +413,4 @@
     ]
   }
 }
+

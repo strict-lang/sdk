@@ -1,97 +1,108 @@
 name                   = strict
 file_extensions []     = strict;
-__KEYWORDS    \= \b(method|and|or|in|is|from|to|type|do|for|if|else|yield)(\s|\Z)
-__BUILTINS    \= (number|text|list)
+
+__KEYWORDS    \= \b(do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield)(\s|\Z)
+__OPERATORS   \= ([+|\-()<>\[\]%*,])
+__IDENTIFIER  \= ([a-zA-Z]+[a-zA-Z0-9_]*)
+__TYPE_NAME   \= ([\w<>]+)
 
 styles [] {
+   .whitespace : style {
+      color = #000
+      ace_scope = whitespace
+      textmate_scope = whitespace
+      pygments_scope = Name
+   }
 
    .comment : style {
       color                 = #111
-      italic                = true
-      ace_scope             = comment
       textmate_scope        = comment
-      pygments_scope        = Comment
    }
 
    .keyword : style {
       color     = red
-      ace_scope             = keyword
       textmate_scope        = keyword
-      pygments_scope        = Keyword
    }
 
    .identifier : style {
       color     = black
-      ace_scope             = identifier
-      textmate_scope        = identifier
-      pygments_scope        = Name
+      textmate_scope        = entity.name
    }
 
-   .builtin : style {
-      color     = pink
-      ace_scope             = builtin
-      textmate_scope        = builtin
-      pygments_scope        = Name.Builtin
+   .variable : style {
+      color     = white
+      textmate_scope        = variable
+   }
+
+   .function_name : style {
+      color = pink
+      textmate_scope = entity.name.function
+   }
+
+   .function_parameter : style {
+      color     = black
+      textmate_scope        = variable.parameter
+   }
+
+   .function_call : style {
+      color = pink
+      textmate_scope = entity.name.function
+   }
+
+   .type : style {
+      color = green
+      textmate_scope = entity.name.type
    }
 
    .numeric : style {
       color                 = blue
-      ace_scope             = constant.numeric
       textmate_scope        = constant.numeric
-      pygments_scope        = Number
    }
 
    .punctuation : style {
       color     = orange
-      ace_scope             = punctuation
       textmate_scope        = punctuation
-      pygments_scope        = Punctuation
    }
 
    .text : style {
       color                 = blue
-      ace_scope             = text
-      textmate_scope        = text
-      pygments_scope        = String
+      textmate_scope        = string
    }
 
    .illegal : style {
       color                 = white
       background_color      = red
-      ace_scope             = invalid
       textmate_scope        = invalid
-      pygments_scope        = Generic.Error
    }
 }
 
 contexts [] {
    main : context {
+      : include "method";
+      : include "method_call";
+      : include "assignment";
+      : include "loops";
       : pattern {
          regex          \= $${__KEYWORDS}
          styles []       = .keyword;
       }
       : include "numeric";
       : include "identifier";
+      : include "operator";
       : inline_push {
-         regex          \= (\{)
-         styles []       = .punctuation;
+         regex         \= (")
+         styles []      = .text;
          : pop {
-            regex       \= (\})
-            styles []    = .punctuation;
+            regex \= (\")
+            styles [] = .text;
          }
-         : include "main" ;
-      }
-      : pattern {
-         regex          \= (;)
-         styles []       = .punctuation;
-      }
-      : inline_push {
-         regex          \= (\")
-         styles []       = .punctuation;
-         default_style   = .text
-         : pop {
-            regex       \= (\")
-            styles []    = .punctuation;
+         : pattern {
+            regex      \= (\\(?:\\|"))
+            styles [] = .text;
+         }
+         : pattern {
+            regex      \= ([^"\\]+)
+            styles [] = .text;
          }
       }
       : inline_push {
@@ -125,29 +136,96 @@ contexts [] {
          regex          \= (//.*)
          styles []       = .comment;
       }
-
       : pattern {
          regex          \= ([^\s])
          styles []       = .illegal;
       }
    }
 
+   assignment : context {
+      : pattern {
+         regex \= $${__IDENTIFIER}(\s*)(\=)
+         styles [] = .variable, .whitespace, .punctuation;
+      }
+   }
+
+   loops: context {
+      : inline_push {
+         regex \=(for)(\s+)$${__IDENTIFIER}(\s+)(from)(\s+)
+         styles [] = .keyword, .whitespace, .variable, .whitespace, .keyword, .whitespace;
+         : pop {
+            regex \= (do)
+            styles [] = .keyword;
+         }
+         : include "main";
+      }
+      : inline_push {
+         regex \=(for)(\s+)$${__IDENTIFIER}(\s+)(in)(\s+)
+         styles [] = .keyword, .whitespace, .variable, .whitespace, .keyword, .whitespace;
+         : pop {
+            regex \= (do)
+            styles [] = .keyword;
+         }
+         : include "main";
+      }
+   }
+
+   method_call: context {
+      : inline_push {
+         regex          \= $${__IDENTIFIER}(\s*)(\()
+         styles []       = .function_call, .punctuation, .punctuation;
+         : pop {
+            regex       \= (\))
+            styles []    = .punctuation;
+         }
+         : include "main" ;
+         : pattern {
+            regex       \= (,)
+            styles []    = .punctuation;
+         }
+      }
+   }
+
+   method : context {
+      : inline_push {
+         regex \= (method)(\s+)$${__TYPE_NAME}(\s+)$${__IDENTIFIER}(\s*)(\()
+         styles [] = .keyword, .whitespace, .type, .whitespace, .function_name, .whitespace, .punctuation;
+         : pop {
+            regex \= (\))
+            styles [] = .punctuation;
+         }
+         : pattern {
+            regex \= (\,)
+            styles [] = .punctuation;
+         }
+         : pattern {
+            regex \= $${__TYPE_NAME}(\s+)(\w+)
+            styles [] = .type, .whitespace, .function_parameter;
+         }
+         : pattern {
+            regex \= $${__TYPE_NAME}
+            styles [] = .function_parameter;
+         }
+      }
+   }
+
+   operator : context {
+      : pattern {
+         regex  \= $${__OPERATORS}
+         styles [] = .punctuation;
+      }
+   }
+
    expression : context {
       : include "numeric";
       : include "identifier";
+      : include "operator";
    }
 
    keyword : context {
       : pattern {
          regex    \= $${__KEYWORDS}
          styles [] = .keyword;
-      }
-   }
-
-   builtins : context {
-      : pattern {
-         regex \= $${__BUILTINS}
-         styles [] = .builtin;
       }
    }
 
@@ -159,7 +237,6 @@ contexts [] {
    }
 
    identifier : context {
-      : include "builtins";
       : pattern {
          regex          \= ([a-zA-Z]([a-zA-Z0-9]*))
          styles []       = .identifier;
@@ -179,3 +256,4 @@ contexts [] {
       }
    }
 }
+
