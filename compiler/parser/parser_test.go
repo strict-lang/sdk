@@ -4,13 +4,12 @@ import (
 	"testing"
 
 	"github.com/BenjaminNitschke/Strict/compiler/ast"
-	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
 	"github.com/BenjaminNitschke/Strict/compiler/scanner"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 )
 
 func NewTestParser(tokens token.Reader) *Parser {
-	return NewParser("test", tokens, diagnostic.NewRecorder())
+	return NewDefaultFactory().WithTokenReader(tokens).NewParser()
 }
 
 func TestParseTopLevelStatements(test *testing.T) {

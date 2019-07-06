@@ -41,13 +41,13 @@ var keywordNameTable = map[Keyword]string{
 	DoKeyword:     "do",
 	AndKeyword:    "and",
 	OrKeyword:     "or",
-	IsNotKeyword:    "isnt",
+	IsNotKeyword:  "isnt",
 }
 
 var operatorKeywords = map[Keyword]Operator{
-	OrKeyword:  OrOperator,
-	AndKeyword: AndOperator,
-	IsKeyword: EqualsOperator,
+	OrKeyword:    OrOperator,
+	AndKeyword:   AndOperator,
+	IsKeyword:    EqualsOperator,
 	IsNotKeyword: NotEqualsOperator,
 }
 

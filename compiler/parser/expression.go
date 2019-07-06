@@ -112,7 +112,7 @@ func (parser *Parser) parseBinaryExpression(requiredPrecedence token.Precedence)
 			return leftHandSide, err
 		}
 		leftHandSide = &ast.BinaryExpression{
-			Operator: token.OperatorValue(operator),
+			Operator:     token.OperatorValue(operator),
 			LeftOperand:  leftHandSide,
 			RightOperand: rightHandSide,
 		}

@@ -299,7 +299,7 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 }
 
 // ParseStatementBlock parses a block of statements.
-func (parser *Parser) ParseStatementBlock() (*ast.BlockStatement, error){
+func (parser *Parser) ParseStatementBlock() (*ast.BlockStatement, error) {
 	indent := parser.peek().Indent()
 	if indent < parser.block.Indent {
 		return nil, &InvalidIndentationError{

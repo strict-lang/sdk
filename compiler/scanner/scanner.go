@@ -177,3 +177,7 @@ func (scanner *Scanner) nextNonEndOfFile() token.Token {
 	}
 	return scanner.createInvalidToken()
 }
+
+func (scanner *Scanner) CreateLinemap() *linemap.Linemap{
+	return scanner.linemap.NewLinemap()
+}

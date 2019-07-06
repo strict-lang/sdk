@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/BenjaminNitschke/Strict/compiler/codegen"
 	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
-	"github.com/BenjaminNitschke/Strict/compiler/parser"
+	parsers "github.com/BenjaminNitschke/Strict/compiler/parser"
 	"github.com/BenjaminNitschke/Strict/compiler/scanner"
 	"github.com/BenjaminNitschke/Strict/compiler/source"
 	"github.com/urfave/cli"
@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	ErrNoSuchFile = errors.New("no file with the passed name was found")
+	ErrNoSuchFile         = errors.New("no file with the passed name was found")
 	ErrCompilationFailure = errors.New("compilation failure")
 )
 
@@ -55,8 +55,15 @@ func compileFileToDirectory(filename string, file *os.File, targetDirectory stri
 	log.Println("starting to parse the file")
 	reader := source.NewStreamReader(bufio.NewReader(file))
 	tokenSource := scanner.NewDiagnosticScanner(reader, recorder)
-	unit, err := parser.Parse(unitName, tokenSource, recorder)
 
+	parser := parsers.Factory{
+		TokenReader: tokenSource,
+		Linemap: tokenSource.CreateLinemap(),
+		UnitName: unitName,
+		Recorder: recorder,
+	}.NewParser()
+
+	unit, err := parser.ParseTranslationUnit()
 	if err != nil {
 		log.Fatalf("failed to compile file: %s", err.Error())
 		return ErrCompilationFailure

@@ -22,7 +22,7 @@ func TestParser_ParseTypeName(test *testing.T) {
 			test.Errorf("unexpected error while parsing %s: %s", entry, err)
 			continue
 		}
-		if name.FullName() != strings.ReplaceAll(entry, " ","") {
+		if name.FullName() != strings.Replace(entry, " ", "", 10) {
 			test.Errorf("unexpected name %s, expected %s", name.FullName(), entry)
 		}
 	}

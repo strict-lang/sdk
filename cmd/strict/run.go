@@ -70,5 +70,5 @@ func runExecutableWithRetry(path string) error {
 
 // runExecutable executes the file at the path and returns the optional error.
 func runExecutable(path string) error {
-	return exec.Command(fmt.Sprintf("./%s",path)).Run()
+	return exec.Command(fmt.Sprintf("./%s", path)).Run()
 }

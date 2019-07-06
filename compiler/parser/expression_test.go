@@ -27,7 +27,7 @@ func TestParseBinaryExpression(test *testing.T) {
 }
 
 func testParsingBinaryExpression(test *testing.T, entry string) {
-	parser := createParser(entry)
+	parser := NewTestParser(scanner.NewStringScanner(entry))
 	defer parser.recorder.PrintAllEntries(diagnostic.NewTestPrinter(test))
 	expression, err := parser.ParseExpression()
 	if err != nil {
@@ -35,8 +35,4 @@ func testParsingBinaryExpression(test *testing.T, entry string) {
 		return
 	}
 	ast.Print(expression)
-}
-
-func createParser(input string) *Parser {
-	return NewParser("test", scanner.NewStringScanner(input), diagnostic.NewRecorder())
 }
