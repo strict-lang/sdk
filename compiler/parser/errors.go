@@ -16,9 +16,9 @@ type UnexpectedTokenError struct {
 
 func (err *UnexpectedTokenError) Error() string {
 	if err.Expected != "" {
-		return fmt.Sprintf("expected %s but got %s", err.Expected, err.Token)
+		return fmt.Sprintf("expected %s but got {%s}", err.Expected, err.Token)
 	}
-	return fmt.Sprintf("unexpected token: %s", err.Token)
+	return fmt.Sprintf("unexpected token: {%s}", err.Token)
 }
 
 // InvalidIndentationError indicates that the indentation of a token
@@ -31,8 +31,8 @@ type InvalidIndentationError struct {
 
 func (err *InvalidIndentationError) Error() string {
 	return fmt.Sprintf(
-		"token %s has an invalid indentation level, expected %s",
-		err.Token, err.Expected)
+		"token {%s} has an invalid indentation level of %d, expected %s",
+		err.Token, err.Token.Indent(), err.Expected)
 }
 
 // InvalidStatementError indicates that the statement in the line is invalid

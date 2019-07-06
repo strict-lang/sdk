@@ -1,13 +1,21 @@
 package linemap
 
-import "github.com/BenjaminNitschke/Strict/compiler/source"
+import (
+	"github.com/BenjaminNitschke/Strict/compiler/source"
+	"log"
+)
 
 type Linemap struct {
 	nodes []*Node
 }
 
 func (lines *Linemap) centerNode() *Node {
-	return lines.nodes[len(lines.nodes)/2]
+	nodeCount := len(lines.nodes)
+	if nodeCount == 0 {
+		log.Println("linemap can not find center node: nodes are empty")
+		return &Node{}
+	}
+	return lines.nodes[nodeCount/2]
 }
 
 func (lines *Linemap) LineAtOffset(offset source.Offset) source.LineIndex {

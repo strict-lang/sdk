@@ -14,14 +14,21 @@ func NewTestParser(tokens token.Reader) *Parser {
 
 func TestParseTopLevelStatements(test *testing.T) {
 	const entry = `
-method list<number> divisibleNumbers(number limit)
-  for index from 0 to limit do
-		if index % 3 is 0 or index % 5 is 0
-			yield index
+method list<number> range(number begin, number end)
+  for num from begin to end do
+    yield num
 
-numbers = divisibleNumbers(10)
-for element in numbers do
-  logFormatted("%d", toInt(element))
+for num in range(1, 21) do
+  if num % 3 is 0 and num % 5 is 0
+    log("FizzBuzz")
+  else 
+		if num % 3 is 0
+    	log("Fizz")
+  	else 
+			if num % 5 is 0
+    		log("Buzz")
+			else
+    		logf("%d", num)
 `
 	parser := NewTestParser(scanner.NewStringScanner(entry))
 	nodes := parser.parseTopLevelNodes()

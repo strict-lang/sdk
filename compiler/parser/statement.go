@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/BenjaminNitschke/Strict/compiler/ast"
 	"github.com/BenjaminNitschke/Strict/compiler/token"
 )
@@ -15,6 +16,10 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 		return parser.createInvalidStatement(err)
 	}
 	// parser.skipEndOfStatement()
+	// TODO(merlinosayimwen) Figure out why this would cause bugs and also, whether
+	//  it is required in certain situations. I currently think that it is required
+	//  when the statements expression is not just an operand. Quick fix would be to
+	//  add a keyword after the if statements (like for loops have it).
 	body, err := parser.ParseStatementBlock()
 	if err != nil {
 		return parser.createInvalidStatement(err)
@@ -25,8 +30,8 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 			Body:      body,
 		}
 	}
-	parser.skipEndOfStatement()
-	elseBody, err := parser.ParseStatementBlock()
+	parser.advance()
+	elseBody, err := parser.parseElseIfOrBlock()
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
@@ -35,6 +40,14 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 		Body:      body,
 		Else:      elseBody,
 	}
+}
+
+func (parser *Parser) parseElseIfOrBlock() (ast.Node, error) {
+	if token.HasKeywordValue(parser.token(), token.IfKeyword) {
+		return parser.ParseIfStatement(), nil
+	}
+	parser.skipEndOfStatement()
+	return parser.ParseStatementBlock()
 }
 
 // ParseForStatement parses a loop statement, which starts with the
@@ -238,6 +251,7 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 		parser.skipEndOfStatement()
 		return &ast.DecrementStatement{Operand: leftHandSide}, nil
 	}
+	parser.advance()
 	return &ast.ExpressionStatement{
 		Expression: leftHandSide,
 	}, nil
@@ -281,7 +295,7 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 		if current.Indent() > expectedIndent {
 			invalid := parser.createInvalidStatement(&InvalidIndentationError{
 				Token:    current,
-				Expected: string(expectedIndent),
+				Expected: fmt.Sprintf("indent level of %d", expectedIndent),
 			})
 			statements = append(statements, invalid)
 			break
@@ -300,10 +314,10 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 
 // ParseStatementBlock parses a block of statements.
 func (parser *Parser) ParseStatementBlock() (*ast.BlockStatement, error) {
-	indent := parser.peek().Indent()
+	indent := parser.token().Indent()
 	if indent < parser.block.Indent {
 		return nil, &InvalidIndentationError{
-			Token:    parser.peek(),
+			Token:    parser.token(),
 			Expected: "indent bigger than 0",
 		}
 	}

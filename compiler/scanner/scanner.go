@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	TabIndent        token.Indent = 2
+	TabIndent        token.Indent = 4
 	WhitespaceIndent token.Indent = 1
 )
 
@@ -123,6 +123,7 @@ func (scanner *Scanner) createInvalidToken() token.Token {
 func (scanner *Scanner) incrementLineIndex() (token.Token, bool) {
 	scanner.indent = 0
 	scanner.updateIndent = true
+	scanner.linemap.Append(scanner.offset())
 	scanner.reader.resetInternalIndex()
 	scanner.lineIndex++
 	if !scanner.shouldInsertEndOfStatement() || scanner.emptyLine {

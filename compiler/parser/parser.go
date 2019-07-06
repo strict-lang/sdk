@@ -49,14 +49,16 @@ func (parser *Parser) openBlock(indent token.Indent) {
 }
 
 func (parser *Parser) reportError(err error) {
+	offset := parser.token().Position().Begin
+	position := parser.linemap.PositionAtOffset(offset)
 	parser.recorder.Record(diagnostic.Entry{
 		Kind:     &diagnostic.Error,
 		Stage:    &diagnostic.SyntacticalAnalysis,
-		Source:   parser.tokenReader.Peek().Value(),
+		Source:   parser.token().Value(),
 		Message:  err.Error(),
 		Position: diagnostic.Position{
-			// TODO(merlinosayimwen): Use linemap to get line information of
-			// 	the token and create a diagnostic.Position from it.
+			LineIndex: position.Line.Index,
+			Column: position.Column,
 		},
 	})
 }

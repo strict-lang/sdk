@@ -28,6 +28,12 @@ int main(int argc, char **argv) {
 	for (auto num : range(1, 21)) {
 		if (num % 3 == 0 && num % 5 == 0) {
 			puts("FizzBuzz");
+		} else if (num % 3 == 0) {
+			puts("Fizz");
+		} else if (num % 5 == 0) {
+			puts("Buzz");
+		} else {
+			printf("%d", num);
 		}
 	}
 }
