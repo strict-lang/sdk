@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"github.com/BenjaminNitschke/Strict/compiler/ast"
 	"github.com/BenjaminNitschke/Strict/compiler/codegen"
 	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
 	parsers "github.com/BenjaminNitschke/Strict/compiler/parser"
@@ -41,39 +42,49 @@ func compileToDirectory(filename string, targetDirectory string) error {
 		return ErrNoSuchFile
 	}
 	defer file.Close()
-	return compileFileToDirectory(filename, file, targetDirectory)
-}
-
-func compileFileToDirectory(filename string, file *os.File, targetDirectory string) error {
 	unitName, err := ParseUnitName(filename)
 	if err != nil {
 		return err
 	}
+	return compileFileToDirectory(unitName, file, targetDirectory)
+}
+
+func compileFileToDirectory(unitName string, file *os.File, targetDirectory string) error {
 	recorder := diagnostic.NewRecorder()
 	defer recorder.PrintAllEntries(diagnostic.NewFmtPrinter())
-
-	log.Println("starting to parse the file")
 	reader := source.NewStreamReader(bufio.NewReader(file))
-	tokenSource := scanner.NewDiagnosticScanner(reader, recorder)
-
-	parser := parsers.Factory{
-		TokenReader: tokenSource,
-		Linemap: tokenSource.CreateLinemap(),
-		UnitName: unitName,
-		Recorder: recorder,
-	}.NewParser()
-
-	unit, err := parser.ParseTranslationUnit()
+	log.Println("starting to parse the file")
+	unit, err := parseFile(unitName, recorder, reader)
 	if err != nil {
-		log.Fatalf("failed to compile file: %s", err.Error())
-		return ErrCompilationFailure
+		return reportFailedCompilation(err)
 	}
-	targetFileName := codegen.FilenameByUnitName(unitName)
-	err = generateCodeToFile(codegen.NewCodeGenerator(unit), targetFileName, targetDirectory)
+	return generateTranslationUnit(unit, targetDirectory)
+}
+
+func parseFile(unitName string, recorder *diagnostic.Recorder, reader source.Reader) (*ast.TranslationUnit, error) {
+	tokenSource := scanner.NewDiagnosticScanner(reader, recorder)
+	factory := &parsers.Factory{
+		TokenReader: tokenSource,
+		Linemap:     tokenSource.CreateLinemap(),
+		UnitName:    unitName,
+		Recorder:    recorder,
+	}
+	parser := factory.NewParser()
+	return parser.ParseTranslationUnit()
+}
+
+func generateTranslationUnit(unit *ast.TranslationUnit, targetDirectory string) error {
+	targetFileName := codegen.FilenameByUnitName(unit.Name())
+	err := generateCodeToFile(codegen.NewCodeGenerator(unit), targetFileName, targetDirectory)
 	if err != nil {
 		return err
 	}
 	return generateExecutable(targetFileName, targetDirectory)
+}
+
+func reportFailedCompilation(err error) error {
+	log.Fatalf("failed to compile file: %s", err.Error())
+	return ErrCompilationFailure
 }
 
 func generateExecutable(filename, directory string) error {
