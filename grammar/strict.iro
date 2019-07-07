@@ -56,7 +56,7 @@ styles [] {
 
    .FunctionCall : style {
       color = yellow
-      textmate_scope = meta.function-call
+      textmate_scope = entity.name.function
    }
 
    .NumberLiteral : style {
@@ -140,7 +140,10 @@ contexts [] {
          regex \= (method)(\s+)$${__TYPE_NAME}
          styles [] = .Keyword, .None, .NameOfType;
       }
-
+      : pattern {
+         regex \= (method)(\s+)$${__TYPE_NAME}(\s+)$${__IDENTIFIER}
+         styles [] = .Keyword, .None, .NameOfType, .None, .NameOfFunction;
+      }
    }
 
    Statements : context {
