@@ -1,258 +1,305 @@
 name                   = strict
 file_extensions []     = strict;
 
-__KEYWORDS    \= \b(do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield|isnt|not)(\s|\Z)
-__OPERATORS   \= ([+|\-()<>\[\]!=%*,]+)
+__KEYWORDS    \= \b(create|try|do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield|isnt|not)(\s|\Z)
+__OPERATORS   \= ([.+|\-()<>\[\]!=%*,]+)
 __IDENTIFIER  \= ([a-zA-Z]+[a-zA-Z0-9_]*)
 __TYPE_NAME   \= ([\w<>]+)
+__BUILTIN \= (true|false|absent)
 
 styles [] {
-   .whitespace : style {
+   .None : style {
       color = #000
-      ace_scope = whitespace
-      textmate_scope = whitespace
-      pygments_scope = Name
+      textmate_scope = none
    }
 
-   .comment : style {
-      color                 = #111
-      textmate_scope        = comment
+   .Comment : style {
+      color = #111
+      textmate_scope = comment
    }
 
-   .keyword : style {
-      color     = red
-      textmate_scope        = keyword
+   .Keyword : style {
+      color = red
+      textmate_scope = keyword
    }
 
-   .identifier : style {
-      color     = black
-      textmate_scope        = entity.name
+   .Builtin : style {
+      color = blue
+      textmate_scope = constant
    }
 
-   .variable : style {
-      color     = white
-      textmate_scope        = variable
+   .Identifier : style {
+      color = white
+      textmate_scope = entity.name
    }
 
-   .function_name : style {
-      color = pink
-      textmate_scope = entity.name.function
-   }
 
-   .function_parameter : style {
-      color     = black
-      textmate_scope        = variable.parameter
-   }
-
-   .function_call : style {
-      color = pink
-      textmate_scope = entity.name.function
-   }
-
-   .type : style {
+   .NameOfType : style {
       color = green
       textmate_scope = entity.name.type
    }
 
-   .numeric : style {
-      color                 = blue
-      textmate_scope        = constant.numeric
+   .NameOfVariable : style {
+      color = white
+      textmate_scope = variable
    }
 
-   .punctuation : style {
-      color     = orange
-      textmate_scope        = punctuation
+   .NameOfFunction : style {
+      color = pink
+      textmate_scope = entity.name.function
    }
 
-   .text : style {
-      color                 = blue
-      textmate_scope        = string
+   .NameOfParameter : style {
+      color = white
+      textmate_scope = variable.parameter
    }
 
-   .illegal : style {
-      color                 = white
-      background_color      = red
-      textmate_scope        = invalid
+   .FunctionCall : style {
+      color = yellow
+      textmate_scope = meta.function-call
+   }
+
+   .NumberLiteral : style {
+      color = blue
+      textmate_scope = constant.numeric
+   }
+
+   .Punctuation : style {
+      color = orange
+      textmate_scope = punctuation
+   }
+
+   .Operator : style {
+      color = orange
+      textmate_scope = punctuation
+   }
+
+   .TextLiteral : style {
+      color = blue
+      textmate_scope = string
+   }
+
+   .Illegal : style {
+      color = white
+      background_color = red
+      textmate_scope = invalid
    }
 }
 
 contexts [] {
-   main : context {
-      : include "method";
-      : include "method_call";
-      : include "assignment";
-      : include "loops";
-      : pattern {
-         regex          \= $${__KEYWORDS}
-         styles []       = .keyword;
-      }
-      : include "numeric";
-      : include "identifier";
-      : include "operator";
-      : inline_push {
-         regex         \= (")
-         styles []      = .text;
-         : pop {
-            regex \= (\")
-            styles [] = .text;
-         }
-         : pattern {
-            regex      \= (\\(?:\\|"))
-            styles [] = .text;
-         }
-         : pattern {
-            regex      \= ([^"\\]+)
-            styles [] = .text;
-         }
-      }
-      : inline_push {
-         regex          \= (\()
-         styles []       = .punctuation;
-         : pop {
-            regex       \= (\))
-            styles []    = .punctuation;
-         }
-         : include "expression" ;
-         : pattern {
-            regex       \= (,)
-            styles []    = .punctuation;
-         }
-      }
-      : inline_push {
-         regex         \= (\<)
-         styles []      = .punctuation;
-         : pop {
-            regex      \= (\>)
-            styles []   = .punctuation;
-         }
-         : include "identifier";
-         : pattern {
-            regex       \= (,)
-            styles []    = .punctuation;
-         }
-      }
-      : include "multi_line_comment" ;
-      : pattern {
-         regex          \= (//.*)
-         styles []       = .comment;
-      }
-      : pattern {
-         regex          \= ([^\s])
-         styles []       = .illegal;
-      }
+   TopLevelDeclarations : context {
+      : include "MethodDeclaration";
+      : include "Throws";
    }
 
-   assignment : context {
-      : pattern {
-         regex \= $${__IDENTIFIER}(\s*)(\=)
-         styles [] = .variable, .whitespace, .punctuation;
-      }
+   Code : context {
+      : include "Statements";
+      : include "Expressions";
    }
 
-   loops: context {
-      : inline_push {
-         regex \=(for)(\s+)$${__IDENTIFIER}(\s+)(from)(\s+)
-         styles [] = .keyword, .whitespace, .variable, .whitespace, .keyword, .whitespace;
-         : pop {
-            regex \= (do)
-            styles [] = .keyword;
-         }
-         : include "main";
-      }
-      : inline_push {
-         regex \=(for)(\s+)$${__IDENTIFIER}(\s+)(in)(\s+)
-         styles [] = .keyword, .whitespace, .variable, .whitespace, .keyword, .whitespace;
-         : pop {
-            regex \= (do)
-            styles [] = .keyword;
-         }
-         : include "main";
-      }
-   }
 
-   method_call: context {
+   Throws : context {
       : inline_push {
-         regex          \= $${__IDENTIFIER}(\s*)(\()
-         styles []       = .function_call, .punctuation, .punctuation;
-         : pop {
-            regex       \= (\))
-            styles []    = .punctuation;
-         }
-         : include "main" ;
-         : pattern {
-            regex       \= (,)
-            styles []    = .punctuation;
-         }
-      }
-   }
-
-   method : context {
-      : inline_push {
-         regex \= (method)(\s+)$${__TYPE_NAME}(\s+)$${__IDENTIFIER}(\s*)(\()
-         styles [] = .keyword, .whitespace, .type, .whitespace, .function_name, .whitespace, .punctuation;
-         : pop {
-            regex \= (\))
-            styles [] = .punctuation;
-         }
-         : pattern {
-            regex \= (\,)
-            styles [] = .punctuation;
-         }
-         : pattern {
-            regex \= $${__TYPE_NAME}(\s+)(\w+)
-            styles [] = .type, .whitespace, .function_parameter;
+         regex \= (throws)(\s+)
+         styles [] = .Keyword, .None;
+         : eol_pop {
          }
          : pattern {
             regex \= $${__TYPE_NAME}
-            styles [] = .function_parameter;
+            styles [] = .NameOfType;
+         }
+         : pattern {
+            regex \= (\,)
+            styles [] = .None;
          }
       }
    }
 
-   operator : context {
+   MethodDeclaration : context {
+      : inline_push {
+         regex \= (method)(\s+)$${__TYPE_NAME}(\s+)$${__IDENTIFIER}(\s*)(\()
+         styles [] = .Keyword, .None, .NameOfType, .None, .NameOfFunction, .None, .Punctuation;
+         : pop {
+            regex \= (\))
+            styles [] = .Punctuation;
+         }
+         : pattern {
+            regex \= (\,)
+            styles [] = .Punctuation;
+         }
+         : pattern {
+            regex \= $${__TYPE_NAME}(\s+)(\w+)
+            styles [] = .NameOfType, .None, .NameOfParameter;
+         }
+         : pattern {
+            regex \= $${__TYPE_NAME}
+            styles [] = .NameOfParameter;
+         }
+      }
+      : pattern {
+         regex \= (method)(\s+)$${__TYPE_NAME}
+         styles [] = .Keyword, .None, .NameOfType;
+      }
+
+   }
+
+   Statements : context {
+      : include "Loops";
+   }
+
+   Loops : context {
+      : include "ForEachLoop";
+      : include "FromToLoop";
+   }
+
+   ForEachLoop : context {
+      : inline_push {
+         regex \=(for)(\s+)$${__IDENTIFIER}(\s+)(in)(\s+)
+         styles [] = .Keyword, .None, .NameOfVariable, .None, .Keyword, .None;
+         : pop {
+            regex \= (do)
+            styles [] = .Keyword;
+         }
+         : include "Code";
+      }
+   }
+
+   FromToLoop : context {
+      : inline_push {
+         regex \=(for)(\s+)$${__IDENTIFIER}(\s+)(from)(\s+)
+         styles [] = .Keyword, .None, .NameOfVariable, .None, .Keyword, .None;
+         : pop {
+            regex \= (do)
+            styles [] = .Keyword;
+         }
+         : include "Code";
+      }
+   }
+
+   Expressions : context {
+      : include "Keyword";
+      : include "ExpressionList";
+      : include "Operator";
+      : include "MethodCall";
+      : include "Assignment";
+      : include "Identifier";
+      : include "NumberLiteral";
+      : include "TextLiteral";
+   }
+
+   ExpressionList : context {
+      : inline_push {
+         regex \= (\()
+         styles [] = .Punctuation;
+         : pop {
+            regex \= (\))
+            styles [] = .Punctuation;
+         }
+         : include "ExpressionList" ;
+         : pattern {
+            regex \= (,)
+            styles [] = .Punctuation;
+         }
+      }
+   }
+
+   Keyword : context {
+     : pattern {
+         regex \= $${__KEYWORDS}
+         styles [] = .Keyword;
+      }
+   }
+
+   Operator : context {
       : pattern {
          regex  \= $${__OPERATORS}
-         styles [] = .punctuation;
+         styles [] = .Operator;
       }
    }
 
-   expression : context {
-      : include "numeric";
-      : include "identifier";
-      : include "operator";
-   }
-
-   keyword : context {
+   Assignment : context {
       : pattern {
-         regex    \= $${__KEYWORDS}
-         styles [] = .keyword;
+         regex \= $${__IDENTIFIER}(\s*)(\=)
+         styles [] = .NameOfVariable, .None, .Punctuation;
       }
    }
 
-   numeric : context {
+   MethodCall : context {
+      : inline_push {
+         regex \= $${__IDENTIFIER}(\s*)(\()
+         styles [] = .FunctionCall, .Punctuation, .Punctuation;
+         : pop {
+            regex \= (\))
+            styles [] = .Punctuation;
+         }
+         : include "main" ;
+         : pattern {
+            regex \= (,)
+            styles [] = .Punctuation;
+         }
+      }
+   }
+
+   Identifier : context {
       : pattern {
-         regex          \= (\b\d+)
-         styles []       = .numeric;
+         regex \= $${__BUILTIN}
+         styles [] = .Builtin;
       }
-   }
-
-   identifier : context {
       : pattern {
-         regex          \= ([a-zA-Z]([a-zA-Z0-9]*))
-         styles []       = .identifier;
+         regex \= ([a-zA-Z]([a-zA-Z0-9]*))
+         styles [] = .Identifier;
       }
    }
 
-   multi_line_comment : context {
-      description        = multiline
+   NumberLiteral : context {
+      : pattern {
+         regex \= (\b\d+)
+         styles [] = .NumberLiteral;
+      }
+   }
+
+   TextLiteral : context {
+      : inline_push {
+         regex \= (")
+         styles [] = .TextLiteral;
+         : pop {
+            regex \= (\")
+            styles [] = .TextLiteral;
+         }
+         : pattern {
+            regex \= (\\(?:\\|"))
+            styles [] = .TextLiteral;
+         }
+         : pattern {
+            regex \= ([^"\\]+)
+            styles [] = .TextLiteral;
+         }
+      }
+   }
+
+   Comment : context {
+      : pattern {
+         regex          \= (//.*)
+         styles []       = .Comment;
+      }
       : inline_push {
          regex          \= (/\*)
-         styles []       = .comment;
-         default_style   = .comment
+         styles []       = .Comment;
+         default_style   = .Comment
          : pop {
             regex       \= (\*/)
-            styles []    = .comment;
+            styles []    = .Comment;
          }
+      }
+   }
+
+   main : context {
+      : include "TopLevelDeclarations";
+      : include "Code";
+
+      : pattern {
+         regex          \= ([^\s])
+         styles []       = .Illegal;
       }
    }
 }
