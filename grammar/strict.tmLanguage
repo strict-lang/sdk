@@ -343,7 +343,7 @@
       <array>
         <dict>
           <key>match</key>
-          <string>\b(create|try|do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield|isnt|not)(\s|\Z)</string>
+          <string>\b(create|throw|continue|break|try|do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield|isnt|not)(\s|\Z)</string>
           <key>name</key>
           <string>keyword.strict</string>
         </dict>

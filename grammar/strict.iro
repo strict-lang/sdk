@@ -1,7 +1,7 @@
 name                   = strict
 file_extensions []     = strict;
 
-__KEYWORDS    \= \b(create|try|do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield|isnt|not)(\s|\Z)
+__KEYWORDS    \= \b(create|throw|continue|break|try|do|method|and|or|in|is|from|downto|return|to|type|for|if|else|yield|isnt|not)(\s|\Z)
 __OPERATORS   \= ([.+|\-()<>\[\]!=%*,]+)
 __IDENTIFIER  \= ([a-zA-Z]+[a-zA-Z0-9_]*)
 __TYPE_NAME   \= ([\w<>]+)
