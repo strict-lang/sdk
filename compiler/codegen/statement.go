@@ -4,12 +4,12 @@ import "github.com/BenjaminNitschke/Strict/compiler/ast"
 
 func (generator *CodeGenerator) GenerateConditionalStatement(statement *ast.ConditionalStatement) {
 	generator.Emit("if (")
-	statement.Condition.Accept(generator.generators)
+	generator.EmitNode(statement.Condition)
 	generator.Emit(") ")
-	statement.Body.Accept(generator.generators)
+	generator.EmitNode(statement.Body)
 	if statement.Else != nil {
 		generator.Emit(" else ")
-		statement.Else.Accept(generator.generators)
+		generator.EmitNode(statement.Else)
 	}
 }
 
@@ -23,7 +23,7 @@ func (generator *CodeGenerator) GenerateYieldStatement(statement *ast.YieldState
 	generator.method.addEpilogueGenerator(yieldGeneratorName, generator.returnYieldList)
 
 	generator.Emitf("%s.push_back(", yieldListName)
-	statement.Value.Accept(generator.generators)
+	generator.EmitNode(statement.Value)
 	generator.Emitf(");")
 }
 
@@ -44,20 +44,20 @@ func (generator *CodeGenerator) returnYieldList() {
 
 func (generator *CodeGenerator) GenerateFromToLoopStatement(statement *ast.FromToLoopStatement) {
 	generator.Emitf("for (auto %s = ", statement.Field.Value)
-	statement.From.Accept(generator.generators)
+	generator.EmitNode(statement.From)
 	generator.Emitf("; %s < ", statement.Field.Value)
-	statement.To.Accept(generator.generators)
+	generator.EmitNode(statement.To)
 	generator.Emitf("; %s++) ", statement.Field.Value)
 
-	statement.Body.Accept(generator.generators)
+	generator.EmitNode(statement.Body)
 }
 
 func (generator *CodeGenerator) GenerateForEachLoopStatement(statement *ast.ForeachLoopStatement) {
 	generator.Emitf("for (auto %s : ", statement.Field.Value)
-	statement.Target.Accept(generator.generators)
+	generator.EmitNode(statement.Target)
 	generator.Emit(") ")
 
-	statement.Body.Accept(generator.generators)
+	generator.EmitNode(statement.Body)
 }
 
 func (generator *CodeGenerator) GenerateReturnStatement(statement *ast.ReturnStatement) {
@@ -66,14 +66,14 @@ func (generator *CodeGenerator) GenerateReturnStatement(statement *ast.ReturnSta
 		return
 	}
 	generator.Emit("return ")
-	statement.Value.Accept(generator.generators)
+	generator.EmitNode(statement.Value)
 	generator.Emit(";")
 }
 
 func (generator *CodeGenerator) GenerateAssignStatement(statement *ast.AssignStatement) {
 	generator.Emit("auto ")
-	statement.Target.Accept(generator.generators)
+	generator.EmitNode(statement.Target)
 	generator.Emitf(" = ")
-	statement.Value.Accept(generator.generators)
+	generator.EmitNode(statement.Value)
 	generator.Emit(";")
 }

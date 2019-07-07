@@ -86,8 +86,25 @@ func (parser *Parser) parseOperationOnOperand(operand ast.Node) (done bool, node
 	case token.OperatorValue(next) == token.LeftParenOperator:
 		call, err := parser.ParseMethodCall(operand)
 		return false, call, err
+	case token.OperatorValue(next) == token.DotOperator:
+		selector, err := parser.parseSelection(operand)
+		return false, selector, err
 	}
 	return true, operand, nil
+}
+
+func (parser *Parser) parseSelection(operand ast.Node) (ast.Node, error) {
+	if err := parser.skipOperator(token.DotOperator); err != nil {
+		return nil, err
+	}
+	field, err := parser.ParseOperand()
+	if err != nil {
+		return nil, err
+	}
+	return &ast.SelectorExpression{
+		Target: operand,
+		Selection: field,
+	}, nil
 }
 
 // ParseBinaryExpression parses a binary expression. Binary expressions are

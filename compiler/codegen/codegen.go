@@ -12,7 +12,7 @@ type CodeGenerator struct {
 	output     *strings.Builder
 	buffer     *strings.Builder
 	method     *MethodGeneration
-	generators *ast.Visitor
+	visitor *ast.Visitor
 	indent     int8
 }
 
@@ -23,7 +23,7 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	codeGenerator := &CodeGenerator{
 		unit:       unit,
 		output:     &strings.Builder{},
-		generators: generators,
+		visitor: generators,
 	}
 	codeGenerator.buffer = codeGenerator.output
 	generators.VisitMethod = codeGenerator.GenerateMethod
@@ -75,7 +75,11 @@ func (generator *CodeGenerator) Spaces() {
 	}
 }
 
+func (generator *CodeGenerator) EmitNode(node ast.Node) {
+	node.Accept(generator.visitor)
+}
+
 func (generator *CodeGenerator) Generate() string {
-	generator.unit.Accept(generator.generators)
+	generator.EmitNode(generator.unit)
 	return generator.String()
 }

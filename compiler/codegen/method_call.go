@@ -16,13 +16,13 @@ func (generator *CodeGenerator) GenerateMethodCall(call *ast.MethodCall) {
 			Value: lookupMethodName(identifier.Value),
 		}
 	}
-	call.Method.Accept(generator.generators)
+	generator.EmitNode(call.Method)
 	generator.Emit("(")
 	for index, argument := range call.Arguments {
 		if index != 0 {
 			generator.Emit(", ")
 		}
-		argument.Accept(generator.generators)
+		generator.EmitNode(argument)
 	}
 	generator.Emit(")")
 }

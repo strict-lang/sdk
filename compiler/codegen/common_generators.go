@@ -15,7 +15,7 @@ func (generator *CodeGenerator) GenerateNumberLiteral(literal *ast.NumberLiteral
 }
 
 func (generator *CodeGenerator) GenerateExpressionStatement(statement *ast.ExpressionStatement) {
-	statement.Expression.Accept(generator.generators)
+	generator.EmitNode(statement.Expression)
 	generator.Emit(";")
 }
 
@@ -27,7 +27,7 @@ func (generator *CodeGenerator) GenerateBlockStatement(block *ast.BlockStatement
 			generator.Emit("\n")
 		}
 		generator.Spaces()
-		child.Accept(generator.generators)
+		generator.EmitNode(child)
 	}
 	generator.leaveBlock()
 	generator.Emit("\n")

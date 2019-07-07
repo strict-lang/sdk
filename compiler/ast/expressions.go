@@ -36,3 +36,12 @@ type BinaryExpression struct {
 func (binary *BinaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitBinaryExpression(binary)
 }
+
+type SelectorExpression struct {
+	Target Node
+	Selection Node
+}
+
+func (selector *SelectorExpression) Accept(visitor *Visitor) {
+	visitor.VisitSelectorExpression(selector)
+}

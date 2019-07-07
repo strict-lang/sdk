@@ -45,8 +45,6 @@ func TestIndentation(test *testing.T) {
 		"  a + b":                2,
 		"  b is not true":        2,
 		"  b   is   not  true  ": 2,
-		"\t\tc is a":             4,
-		"\t return a":            3,
 	}
 	for entry, indent := range entries {
 		scanner := NewStringScanner(entry)

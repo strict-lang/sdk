@@ -13,7 +13,7 @@ func (generator *CodeGenerator) GenerateTranslationUnit(unit *ast.TranslationUni
 	generator.Emit("\n/* GENERATED CODE */\n\n")
 	methods, others := splitTopLevelNodes(unit)
 	for _, method := range methods {
-		method.Accept(generator.generators)
+		generator.EmitNode(method)
 	}
 	generator.GenerateMainMethod(others)
 
@@ -49,5 +49,5 @@ func (generator *CodeGenerator) GenerateMainMethod(nodes []ast.Node) {
 	block := &ast.BlockStatement{
 		Children: nodes,
 	}
-	block.Accept(generator.generators)
+	generator.EmitNode(block)
 }

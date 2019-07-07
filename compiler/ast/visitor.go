@@ -25,6 +25,7 @@ type Visitor struct {
 	VisitTranslationUnit      func(*TranslationUnit)
 	VisitInvalidStatement     func(*InvalidStatement)
 	VisitBinaryExpression     func(*BinaryExpression)
+	VisitSelectorExpression  	func(*SelectorExpression)
 	VisitIncrementStatement   func(*IncrementStatement)
 	VisitDecrementStatement   func(*DecrementStatement)
 	VisitFromToLoopStatement  func(*FromToLoopStatement)
@@ -52,6 +53,7 @@ func NewEmptyVisitor() *Visitor {
 		VisitBinaryExpression:     func(*BinaryExpression) {},
 		VisitAssignStatement:      func(*AssignStatement) {},
 		VisitInvalidStatement:     func(*InvalidStatement) {},
+		VisitSelectorExpression:   func(*SelectorExpression) {},
 		VisitIncrementStatement:   func(*IncrementStatement) {},
 		VisitDecrementStatement:   func(*DecrementStatement) {},
 		VisitFromToLoopStatement:  func(*FromToLoopStatement) {},

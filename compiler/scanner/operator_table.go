@@ -55,6 +55,7 @@ var operatorTable = OperatorTable{
 	'[': singleOperatorOption(token.LeftBracketOperator),
 	']': singleOperatorOption(token.RightBracketOperator),
 	',': singleOperatorOption(token.CommaOperator),
+	'.': singleOperatorOption(token.DotOperator),
 }
 
 // endOfStatementDisablingOperators are operators that disable the scanners 'insertEos' flag.

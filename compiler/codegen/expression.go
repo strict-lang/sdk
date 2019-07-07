@@ -5,13 +5,19 @@ import (
 )
 
 func (generator *CodeGenerator) GenerateBinaryExpression(binary *ast.BinaryExpression) {
-	binary.LeftOperand.Accept(generator.generators)
+	generator.EmitNode(binary.LeftOperand)
 	generator.Emitf(" %s ", binary.Operator.String())
-	binary.RightOperand.Accept(generator.generators)
+	generator.EmitNode(binary.RightOperand)
 }
 
 func (generator *CodeGenerator) GenerateUnaryExpression(unary *ast.UnaryExpression) {
 	generator.Emitf("(%s", unary.Operator)
-	unary.Operand.Accept(generator.generators)
+	generator.EmitNode(unary.Operand)
 	generator.Emit(")")
+}
+
+func (generator *CodeGenerator) GenerateSelectorExpression(selector *ast.SelectorExpression) {
+	generator.EmitNode(selector.Target)
+	generator.Emit(".")
+	generator.EmitNode(selector.Selection)
 }

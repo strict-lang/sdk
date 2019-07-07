@@ -82,11 +82,11 @@ func (generation *MethodGeneration) generateBody() string {
 	// faulty code, if a prologue or epilogue is generated.
 	if block, ok := generation.declaration.Body.(*ast.BlockStatement); ok {
 		for _, child := range block.Children {
-			child.Accept(generation.generator.generators)
+			generation.generator.EmitNode(child)
 		}
 		return generation.buffer.String()
 	}
-	generation.declaration.Body.Accept(generation.generator.generators)
+	generation.generator.EmitNode(generation.declaration.Body)
 	return generation.buffer.String()
 }
 
