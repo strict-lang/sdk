@@ -137,13 +137,14 @@ contexts [] {
          }
       }
       : pattern {
-         regex \= (method)(\s+)$${__TYPE_NAME}
-         styles [] = .Keyword, .None, .NameOfType;
-      }
-      : pattern {
          regex \= (method)(\s+)$${__TYPE_NAME}(\s+)$${__IDENTIFIER}
          styles [] = .Keyword, .None, .NameOfType, .None, .NameOfFunction;
       }
+      : pattern {
+         regex \= (method)(\s+)$${__TYPE_NAME}
+         styles [] = .Keyword, .None, .NameOfType;
+      }
+
    }
 
    Statements : context {

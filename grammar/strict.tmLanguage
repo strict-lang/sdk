@@ -489,28 +489,6 @@
         </dict>
         <dict>
           <key>match</key>
-          <string>(method)(\s+)([\w\x{003c}\x{003e}]+)</string>
-          <key>captures</key>
-          <dict>
-            <key>1</key>
-            <dict>
-              <key>name</key>
-              <string>keyword.strict</string>
-            </dict>
-            <key>2</key>
-            <dict>
-              <key>name</key>
-              <string>none.strict</string>
-            </dict>
-            <key>3</key>
-            <dict>
-              <key>name</key>
-              <string>entity.name.type.strict</string>
-            </dict>
-          </dict>
-        </dict>
-        <dict>
-          <key>match</key>
           <string>(method)(\s+)([\w\x{003c}\x{003e}]+)(\s+)([a-zA-Z]+[a-zA-Z0-9_]*)</string>
           <key>captures</key>
           <dict>
@@ -538,6 +516,28 @@
             <dict>
               <key>name</key>
               <string>entity.name.function.strict</string>
+            </dict>
+          </dict>
+        </dict>
+        <dict>
+          <key>match</key>
+          <string>(method)(\s+)([\w\x{003c}\x{003e}]+)</string>
+          <key>captures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.strict</string>
+            </dict>
+            <key>2</key>
+            <dict>
+              <key>name</key>
+              <string>none.strict</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>entity.name.type.strict</string>
             </dict>
           </dict>
         </dict>
