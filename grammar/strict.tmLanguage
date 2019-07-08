@@ -76,6 +76,10 @@
       <array>
         <dict>
           <key>include</key>
+          <string>#Comment</string>
+        </dict>
+        <dict>
+          <key>include</key>
           <string>#Statements</string>
         </dict>
         <dict>
@@ -84,10 +88,139 @@
         </dict>
        </array>
     </dict>
+    <key>Comment</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>match</key>
+          <string>(//.*)</string>
+          <key>name</key>
+          <string>comment.strict</string>
+        </dict>
+        <dict>
+          <key>begin</key>
+          <string>(/\*)</string>
+          <key>beginCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>comment.strict</string>
+            </dict>
+          </dict>
+          <key>contentName</key>
+          <string>comment.strict</string>
+          <key>end</key>
+          <string>(\*/)</string>
+          <key>endCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>comment.strict</string>
+            </dict>
+          </dict>
+        </dict>
+       </array>
+    </dict>
     <key>Comment__1</key>
     <dict>
       <key>patterns</key>
       <array>
+       </array>
+    </dict>
+    <key>CreateExpression</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>begin</key>
+          <string>(create)(\s+)([a-zA-Z]+[a-zA-Z0-9_]*)(\s*)(\()</string>
+          <key>beginCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>keyword.strict</string>
+            </dict>
+            <key>2</key>
+            <dict>
+              <key>name</key>
+              <string>none.strict</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>entity.name.type.strict</string>
+            </dict>
+            <key>4</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+            <key>5</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+          </dict>
+          <key>patterns</key>
+          <array>
+            <dict>
+              <key>include</key>
+              <string>#CreateExpression__1</string>
+            </dict>
+           </array>
+          <key>end</key>
+          <string>(\))</string>
+          <key>endCaptures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+          </dict>
+        </dict>
+       </array>
+    </dict>
+    <key>CreateExpression__1</key>
+    <dict>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>match</key>
+          <string>([a-zA-Z]+[a-zA-Z0-9_]*)(\s*)(\:)</string>
+          <key>captures</key>
+          <dict>
+            <key>1</key>
+            <dict>
+              <key>name</key>
+              <string>entity.other.attribute-name.strict</string>
+            </dict>
+            <key>2</key>
+            <dict>
+              <key>name</key>
+              <string>none.strict</string>
+            </dict>
+            <key>3</key>
+            <dict>
+              <key>name</key>
+              <string>punctuation.strict</string>
+            </dict>
+          </dict>
+        </dict>
+        <dict>
+          <key>include</key>
+          <string>#main</string>
+        </dict>
+        <dict>
+          <key>match</key>
+          <string>(,)</string>
+          <key>name</key>
+          <string>punctuation.strict</string>
+        </dict>
        </array>
     </dict>
     <key>ExpressionList</key>
@@ -145,6 +278,10 @@
     <dict>
       <key>patterns</key>
       <array>
+        <dict>
+          <key>include</key>
+          <string>#CreateExpression</string>
+        </dict>
         <dict>
           <key>include</key>
           <string>#Keyword</string>
@@ -333,7 +470,7 @@
           <key>match</key>
           <string>([a-zA-Z]([a-zA-Z0-9]*))</string>
           <key>name</key>
-          <string>entity.name.strict</string>
+          <string>variable.strict</string>
         </dict>
        </array>
     </dict>
@@ -603,7 +740,7 @@
           <key>match</key>
           <string>([.\x{002b}\x{007c}\-\x{0028}\x{0029}\x{003c}\x{003e}\[\]\x{0021}\x{003d}\x{0025}\x{002a}\x{002c}]+)</string>
           <key>name</key>
-          <string>punctuation.strict</string>
+          <string>keyword.operator.strict</string>
         </dict>
        </array>
     </dict>
@@ -732,6 +869,10 @@
     <dict>
       <key>patterns</key>
       <array>
+        <dict>
+          <key>include</key>
+          <string>#Comment</string>
+        </dict>
         <dict>
           <key>include</key>
           <string>#MethodDeclaration</string>

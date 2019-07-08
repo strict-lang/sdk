@@ -30,7 +30,7 @@ styles [] {
 
    .Identifier : style {
       color = white
-      textmate_scope = entity.name
+      textmate_scope = variable
    }
 
 
@@ -54,6 +54,11 @@ styles [] {
       textmate_scope = variable.parameter
    }
 
+   .NameOfAttribute : style {
+      color = brown
+      textmate_scope = entity.other.attribute-name
+   }
+
    .FunctionCall : style {
       color = yellow
       textmate_scope = entity.name.function
@@ -71,7 +76,7 @@ styles [] {
 
    .Operator : style {
       color = orange
-      textmate_scope = punctuation
+      textmate_scope = keyword.operator
    }
 
    .TextLiteral : style {
@@ -88,11 +93,13 @@ styles [] {
 
 contexts [] {
    TopLevelDeclarations : context {
+      : include "Comment";
       : include "MethodDeclaration";
       : include "Throws";
    }
 
    Code : context {
+      : include "Comment";
       : include "Statements";
       : include "Expressions";
    }
@@ -181,6 +188,7 @@ contexts [] {
    }
 
    Expressions : context {
+      : include "CreateExpression";
       : include "Keyword";
       : include "ExpressionList";
       : include "Operator";
@@ -243,6 +251,27 @@ contexts [] {
          }
       }
    }
+
+   CreateExpression : context {
+      : inline_push {
+         regex \= (create)(\s+)$${__IDENTIFIER}(\s*)(\()
+         styles [] = .Keyword, .None, .NameOfType, .Punctuation, .Punctuation;
+         : pop {
+            regex \= (\))
+            styles [] = .Punctuation;
+         }
+         : pattern {
+            regex \= $${__IDENTIFIER}(\s*)(\:)
+            styles [] = .NameOfAttribute, .None, .Punctuation;
+         }
+         : include "main" ;
+         : pattern {
+            regex \= (,)
+            styles [] = .Punctuation;
+         }
+      }
+   }
+
 
    Identifier : context {
       : pattern {
