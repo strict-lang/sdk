@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/token"
+	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
 type Identifier struct {

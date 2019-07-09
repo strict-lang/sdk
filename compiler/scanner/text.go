@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"errors"
-	"github.com/BenjaminNitschke/Strict/compiler/token"
+	"gitlab.com/strict-lang/sdk/compiler/token"
 	"strings"
 )
 

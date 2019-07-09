@@ -8,9 +8,9 @@ package parser
 
 import (
 	"errors"
-	"github.com/BenjaminNitschke/Strict/compiler/token"
+	"gitlab.com/strict-lang/sdk/compiler/token"
 
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/ast"
 )
 
 var (

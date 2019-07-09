@@ -2,7 +2,7 @@ package linemap
 
 import (
 	"fmt"
-	"github.com/BenjaminNitschke/Strict/compiler/source"
+	"gitlab.com/strict-lang/sdk/compiler/source"
 	"strings"
 )
 

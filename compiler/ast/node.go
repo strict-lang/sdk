@@ -1,8 +1,8 @@
 package ast
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/scope"
-	"github.com/BenjaminNitschke/Strict/compiler/source"
+	"gitlab.com/strict-lang/sdk/compiler/scope"
+	"gitlab.com/strict-lang/sdk/compiler/source"
 )
 
 // Node is implemented by every node of the ast.

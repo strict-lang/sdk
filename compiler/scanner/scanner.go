@@ -1,10 +1,10 @@
 package scanner
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/diagnostic"
-	"github.com/BenjaminNitschke/Strict/compiler/source"
-	"github.com/BenjaminNitschke/Strict/compiler/source/linemap"
-	"github.com/BenjaminNitschke/Strict/compiler/token"
+	"gitlab.com/strict-lang/sdk/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/compiler/source"
+	"gitlab.com/strict-lang/sdk/compiler/source/linemap"
+	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
 const (

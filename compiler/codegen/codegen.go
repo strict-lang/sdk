@@ -2,7 +2,7 @@ package codegen
 
 import (
 	"fmt"
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/ast"
 	"strings"
 )
 

@@ -2,9 +2,9 @@ package codegen
 
 import (
 	"fmt"
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
-	"github.com/BenjaminNitschke/Strict/compiler/scope"
-	"github.com/BenjaminNitschke/Strict/compiler/token"
+	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/scope"
+	"gitlab.com/strict-lang/sdk/compiler/token"
 	"testing"
 )
 

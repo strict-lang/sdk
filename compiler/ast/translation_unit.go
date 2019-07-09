@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/scope"
+	"gitlab.com/strict-lang/sdk/compiler/scope"
 )
 
 // TranslationUnit represents a unit of translation, a file containing strict

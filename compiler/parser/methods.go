@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
-	"github.com/BenjaminNitschke/Strict/compiler/token"
+	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
 // ParseMethodDeclaration parses a method declaration.

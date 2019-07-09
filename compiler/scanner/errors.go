@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"fmt"
-	"github.com/BenjaminNitschke/Strict/compiler/source"
+	"gitlab.com/strict-lang/sdk/compiler/source"
 )
 
 type UnexpectedCharError struct {

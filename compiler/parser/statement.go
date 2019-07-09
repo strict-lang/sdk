@@ -2,8 +2,8 @@ package parser
 
 import (
 	"fmt"
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
-	"github.com/BenjaminNitschke/Strict/compiler/token"
+	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
 // ParseIfStatement parses a conditional statement and it's optional else-clause.

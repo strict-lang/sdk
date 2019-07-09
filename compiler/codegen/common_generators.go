@@ -1,6 +1,6 @@
 package codegen
 
-import "github.com/BenjaminNitschke/Strict/compiler/ast"
+import "gitlab.com/strict-lang/sdk/compiler/ast"
 
 func (generator *CodeGenerator) GenerateIdentifier(identifier *ast.Identifier) {
 	generator.Emit(identifier.Value)

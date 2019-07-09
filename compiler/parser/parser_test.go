@@ -3,9 +3,9 @@ package parser
 import (
 	"testing"
 
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
-	"github.com/BenjaminNitschke/Strict/compiler/scanner"
-	"github.com/BenjaminNitschke/Strict/compiler/token"
+	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/scanner"
+	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
 func NewTestParser(tokens token.Reader) *Parser {

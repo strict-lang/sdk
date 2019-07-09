@@ -1,6 +1,6 @@
 package scanner
 
-import "github.com/BenjaminNitschke/Strict/compiler/source"
+import "gitlab.com/strict-lang/sdk/compiler/source"
 
 var escapedCharacters = map[rune]rune{
 	't':  '\t',

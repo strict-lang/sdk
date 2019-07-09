@@ -1,7 +1,7 @@
 package token
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/source"
+	"gitlab.com/strict-lang/sdk/compiler/source"
 	"testing"
 )
 

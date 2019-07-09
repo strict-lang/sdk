@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/scanner"
+	"gitlab.com/strict-lang/sdk/compiler/scanner"
 	"strings"
 	"testing"
 )

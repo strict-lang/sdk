@@ -1,7 +1,7 @@
 package codegen
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/ast"
 	"strings"
 )
 

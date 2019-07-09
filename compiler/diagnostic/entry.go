@@ -1,7 +1,7 @@
 package diagnostic
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/source"
+	"gitlab.com/strict-lang/sdk/compiler/source"
 )
 
 type Entry struct {

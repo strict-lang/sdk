@@ -1,6 +1,6 @@
 package scanner
 
-import "github.com/BenjaminNitschke/Strict/compiler/token"
+import "gitlab.com/strict-lang/sdk/compiler/token"
 
 var operatorTable = OperatorTable{
 	'+': {

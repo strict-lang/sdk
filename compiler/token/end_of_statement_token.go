@@ -1,6 +1,6 @@
 package token
 
-import "github.com/BenjaminNitschke/Strict/compiler/source"
+import "gitlab.com/strict-lang/sdk/compiler/source"
 
 const (
 	EndOfStatementTokenName  = "EndOfStatement"

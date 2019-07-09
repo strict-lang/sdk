@@ -1,8 +1,8 @@
 package scanner
 
 import (
-	"github.com/BenjaminNitschke/Strict/compiler/source"
-	"github.com/BenjaminNitschke/Strict/compiler/token"
+	"gitlab.com/strict-lang/sdk/compiler/source"
+	"gitlab.com/strict-lang/sdk/compiler/token"
 	"strings"
 )
 
