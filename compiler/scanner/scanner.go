@@ -153,15 +153,12 @@ func (scanner *Scanner) next() token.Token {
 }
 
 func (scanner *Scanner) reportError(err error) {
-	scanner.recorder.Record(diagnostic.Entry{
+	scanner.recorder.Record(diagnostic.RecordedEntry{
 		Kind:    &diagnostic.Error,
 		Stage:   &diagnostic.LexicalAnalysis,
 		Source:  scanner.reader.String(),
 		Message: err.Error(),
-		Position: diagnostic.Position{
-			Column:    scanner.reader.internalIndex,
-			LineIndex: scanner.lineIndex,
-		},
+		Offset: scanner.offset(),
 	})
 }
 

@@ -2,7 +2,6 @@ package parser
 
 import (
 	"gitlab.com/strict-lang/sdk/compiler/ast"
-	"gitlab.com/strict-lang/sdk/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/compiler/scanner"
 	"testing"
 )
@@ -28,7 +27,6 @@ func TestParseBinaryExpression(test *testing.T) {
 
 func testParsingBinaryExpression(test *testing.T, entry string) {
 	parser := NewTestParser(scanner.NewStringScanner(entry))
-	defer parser.recorder.PrintAllEntries(diagnostic.NewTestPrinter(test))
 	expression, err := parser.ParseExpression()
 	if err != nil {
 		test.Errorf("unexpected error while parsing (%s): %s", entry, err.Error())

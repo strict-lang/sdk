@@ -2,60 +2,76 @@ package linemap
 
 import (
 	"gitlab.com/strict-lang/sdk/compiler/source"
-	"log"
 )
 
 type Linemap struct {
-	nodes []*Node
+	lines        []lineEntry
+	offsetToLine []source.Offset
+	recentOffset source.Offset
+	recentLine 	source.LineIndex
 }
 
-func (lines *Linemap) centerNode() *Node {
-	nodeCount := len(lines.nodes)
-	if nodeCount == 0 {
-		log.Println("linemap can not find center node: nodes are empty")
-		return &Node{}
-	}
-	return lines.nodes[nodeCount/2]
+type lineEntry struct {
+	length source.Offset
+	index  source.LineIndex
+	offset source.Offset
 }
 
 func (lines *Linemap) LineAtOffset(offset source.Offset) source.LineIndex {
-	center := lines.centerNode()
-	node, ok := center.FindNode(offset)
-	if !ok {
-		return 0
+	if offset == lines.recentOffset {
+		return lines.recentLine
 	}
-	return node.line.Index
+	line := lines.resolveLineAtOffset(offset)
+	lines.recentLine = line
+	lines.recentOffset = offset
+	return line
+}
+
+func (lines *Linemap) resolveLineAtOffset(offset source.Offset) source.LineIndex {
+	firstIndex := 0
+	lastIndex := len(lines.offsetToLine) - 1
+	for firstIndex <= lastIndex {
+		middleIndex := (firstIndex + lastIndex) >> 1
+		lineIndexAtMiddle := lines.offsetToLine[middleIndex]
+
+		if lineIndexAtMiddle < offset {
+			firstIndex = middleIndex + 1
+		} else if lineIndexAtMiddle > offset {
+			lastIndex = middleIndex - 1
+		} else {
+			return source.LineIndex(middleIndex + 1)
+		}
+	}
+	return source.LineIndex(0)
 }
 
 func (lines *Linemap) OffsetAtLine(index source.LineIndex) source.Offset {
-	if index < 0 || len(lines.nodes) > int(index) {
-		return lines.nodes[index].line.Offset
+	lineCount := len(lines.lines)
+	if index < 0 || int(index) >= lineCount {
+		return source.Offset(0)
 	}
-	return 0
+	return source.Offset(lines.lines[index].offset)
 }
 
 func (lines *Linemap) PositionAtOffset(offset source.Offset) source.Position {
-	center := lines.centerNode()
-	node, ok := center.FindNode(offset)
-	if !ok {
-		return source.Position{Offset: offset}
-	}
-	line := node.line
+	lineIndex := lines.LineAtOffset(offset)
+	line := lines.LineAtIndex(lineIndex)
 	return source.Position{
 		Offset: offset,
-		Line:   line,
 		Column: offset - line.Offset,
+		Line: line,
 	}
 }
 
-func (lines *Linemap) PositionAtLine(index source.LineIndex) source.Position {
-	if index < 0 || len(lines.nodes) > int(index) {
-		line := lines.nodes[index].line
-		return source.Position{
-			Offset: line.Offset,
-			Line:   line,
-			Column: 0,
-		}
+func (lines *Linemap) LineAtIndex(lineIndex source.LineIndex) source.Line {
+	lineCount := len(lines.lines)
+	if lineIndex < 0 || int(lineIndex) >= lineCount {
+		return source.Line{}
 	}
-	return source.Position{}
+	entry := lines.lines[lineIndex]
+	return source.Line{
+		Offset: entry.offset,
+		Index: entry.index,
+		Length: entry.length,
+	}
 }

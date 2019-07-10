@@ -4,7 +4,6 @@ import (
 	"gitlab.com/strict-lang/sdk/compiler/ast"
 	"gitlab.com/strict-lang/sdk/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/compiler/scope"
-	"gitlab.com/strict-lang/sdk/compiler/source/linemap"
 	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
@@ -13,7 +12,6 @@ type Parser struct {
 	tokenReader token.Reader
 	rootScope   *scope.Scope
 	recorder    *diagnostic.Recorder
-	linemap     *linemap.Linemap
 	block       *Block
 	unitName    string
 	// expressionDepth is the amount of parentheses encountered at the
@@ -50,16 +48,12 @@ func (parser *Parser) openBlock(indent token.Indent) {
 
 func (parser *Parser) reportError(err error) {
 	offset := parser.token().Position().Begin
-	position := parser.linemap.PositionAtOffset(offset)
-	parser.recorder.Record(diagnostic.Entry{
+	parser.recorder.Record(diagnostic.RecordedEntry{
 		Kind:     &diagnostic.Error,
 		Stage:    &diagnostic.SyntacticalAnalysis,
 		Source:   parser.token().Value(),
 		Message:  err.Error(),
-		Position: diagnostic.Position{
-			LineIndex: position.Line.Index,
-			Column: position.Column,
-		},
+		Offset: offset,
 	})
 }
 

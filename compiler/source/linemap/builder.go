@@ -1,49 +1,46 @@
 package linemap
 
 import (
+	"fmt"
+	pretty "github.com/tonnerre/golang-pretty"
 	"gitlab.com/strict-lang/sdk/compiler/source"
 )
 
 type Builder struct {
-	nodes  []*Node
-	last   *Node
-	index  source.LineIndex
-}
-
-func (builder *Builder) offsetOrLength(offset source.Offset) source.Offset {
-	builder.index++
-	if builder.last != nil {
-		return offset - builder.last.line.Offset
-	} else {
-		return offset
-	}
+	index source.LineIndex
+	offset source.Offset
+	lines *[]lineEntry
+	offsets *[]source.Offset
 }
 
 func (builder *Builder) Append(offset source.Offset) {
-	length := builder.offsetOrLength(offset)
-	node := &Node{
-		line: source.Line{
-			Offset: offset,
-			Index:  builder.index,
-			Length: length,
-		},
-		last: builder.last,
+	length := offset - builder.offset
+	entry := lineEntry{
+		offset: offset,
+		index:  builder.index,
+		length: length,
 	}
-	if builder.last != nil {
-		builder.last.next = node
-	}
-	builder.last = node
-	builder.nodes = append(builder.nodes, node)
-
+	fmt.Println(entry)
+	builder.offset += offset
+	builder.index++
+	*builder.lines = append(*builder.lines, entry)
+	*builder.offsets = append(*builder.offsets, offset)
 	// TODO(Merlinosayimwen): Add one for linebreak?
 }
 
 func (builder *Builder) NewLinemap() *Linemap {
+	pretty.Println(builder.lines)
+	pretty.Println(builder.offsets)
 	return &Linemap{
-		nodes: builder.nodes,
+		lines: *builder.lines,
+		offsetToLine: *builder.offsets,
 	}
 }
 
 func NewBuilder() *Builder {
-	return &Builder{}
+	return &Builder{
+		index: 1,
+		lines: &[]lineEntry{},
+		offsets: &[]source.Offset{},
+	}
 }
