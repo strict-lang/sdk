@@ -93,3 +93,8 @@ func KeywordValue(token Token) Keyword {
 	}
 	return keyword.Keyword
 }
+
+func KeywordValueOfOperator(operator Operator) (Keyword, bool) {
+	keyword, ok := operatorKeywordsReversed[operator]
+	return keyword, ok
+}

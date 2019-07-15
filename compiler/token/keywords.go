@@ -51,12 +51,18 @@ var operatorKeywords = map[Keyword]Operator{
 	IsNotKeyword: NotEqualsOperator,
 }
 
+var operatorKeywordsReversed map[Operator]Keyword
+
 var keywordNameLookupTable map[string]Keyword
 
 func init() {
 	keywordNameLookupTable = make(map[string]Keyword)
 	for keyword, name := range keywordNameTable {
 		keywordNameLookupTable[name] = keyword
+	}
+	operatorKeywordsReversed = make(map[Operator] Keyword)
+	for keyword, operator := range operatorKeywords {
+		operatorKeywordsReversed[operator] = keyword
 	}
 }
 
