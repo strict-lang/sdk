@@ -67,7 +67,7 @@ var operatorNames = map[Operator]string{
 	GreaterOperator:       ">",
 	GreaterEqualsOperator: ">=",
 	NegateOperator:        "!",
-	AssignOperator:        "==",
+	AssignOperator:        "=",
 	AddAssignOperator:     "+=",
 	SubAssignOperator:     "-=",
 	MulAssignOperator:     "*=",

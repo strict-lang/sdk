@@ -17,7 +17,7 @@ func formatCode(context *cli.Context) error {
 	}
 	filename := context.Args()[0]
 	targetFilename := findFormattingTargetFile(filename, context)
-	if err := compileToDirectory(filename, targetFilename); err != nil {
+	if err := formatToTargetFile(filename, targetFilename); err != nil {
 		return err
 	}
 	log.Printf("formatted %s\n", filename)

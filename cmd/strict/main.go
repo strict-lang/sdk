@@ -45,12 +45,12 @@ func main() {
 			ArgsUsage: "format <path> -o -t=target.strict",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name: "target, t",
+					Name: "target",
 					Usage: "The target file",
 					Value: "",
 				},
 				cli.BoolFlag{
-					Name: "override, o",
+					Name: "override",
 					Usage: "Sets whether file is overridden",
 				},
 			},
