@@ -1,6 +1,7 @@
 package format
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/compiler/ast"
 	"unicode/utf8"
 )
@@ -40,6 +41,10 @@ func (printer *PrettyPrinter) Print() {
 func (printer *PrettyPrinter) append(text string) {
 	printer.writer.Write(text)
 	printer.lineLength+=utf8.RuneCount([]byte(text))
+}
+
+func (printer *PrettyPrinter) appendFormatted(text string, arguments ...interface{}) {
+	printer.append(fmt.Sprintf(text, arguments...))
 }
 
 func (printer *PrettyPrinter) appendRune(value rune) {
@@ -91,4 +96,7 @@ func (printer *PrettyPrinter) registerAstVisitors() {
 	printer.astVisitor.VisitReturnStatement = printer.printReturnStatement
 	printer.astVisitor.VisitYieldStatement = printer.printYieldStatement
 	printer.astVisitor.VisitTranslationUnit = printer.printTranslationUnit
+	printer.astVisitor.VisitForeachLoopStatement = printer.printForeachLoopStatement
+	printer.astVisitor.VisitFromToLoopStatement = printer.printFromToLoopStatement
+	printer.astVisitor.VisitMethod = printer.printMethod
 }

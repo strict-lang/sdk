@@ -8,11 +8,14 @@ import (
 
 func TestPrettyPrinting(test *testing.T) {
 	const source = `
-if max(max(1, 2), min(rotate(1), 2)) > 10 do
-  print(getSystemOutputStream(), messages.forKey("test.message", getSystemLanguage()))
-  return 3213213
-else 
-	print("NO")
+method list<number> rangeTo(number number)
+	for num from 1 to number do
+		yield num
+
+numbers = rangeTo(100)
+for num in numbers do
+	if num % 5 is 0 or num % 3 is 0 do
+		logf("%d ", num)
 `
 	unit, err := parser.
 		NewDefaultFactory().
