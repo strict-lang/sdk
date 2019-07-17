@@ -38,6 +38,24 @@ func main() {
 			},
 		},
 		{
+			Name: "format",
+			Aliases: []string{"f"},
+			Usage: "format a strict file",
+			Action: formatCode,
+			ArgsUsage: "format <path> -o -t=target.strict",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name: "target, t",
+					Usage: "The target file",
+					Value: "",
+				},
+				cli.BoolFlag{
+					Name: "override, o",
+					Usage: "Sets whether file is overridden",
+				},
+			},
+		},
+		{
 			Name:      "run",
 			Aliases:   []string{"r"},
 			Usage:     "run a strict program",
