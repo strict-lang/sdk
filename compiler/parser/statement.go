@@ -15,11 +15,10 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
-	// parser.skipEndOfStatement()
-	// TODO(merlinosayimwen) Figure out why this would cause bugs and also, whether
-	//  it is required in certain situations. I currently think that it is required
-	//  when the statements expression is not just an operand. Quick fix would be to
-	//  add a keyword after the if statements (like for loops have it).
+	if err := parser.skipKeyword(token.DoKeyword); err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	parser.skipEndOfStatement()
 	body, err := parser.ParseStatementBlock()
 	if err != nil {
 		return parser.createInvalidStatement(err)

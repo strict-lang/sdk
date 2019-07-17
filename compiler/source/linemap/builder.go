@@ -1,8 +1,6 @@
 package linemap
 
 import (
-	"fmt"
-	pretty "github.com/tonnerre/golang-pretty"
 	"gitlab.com/strict-lang/sdk/compiler/source"
 )
 
@@ -20,7 +18,6 @@ func (builder *Builder) Append(offset source.Offset) {
 		index:  builder.index,
 		length: length,
 	}
-	fmt.Println(entry)
 	builder.offset += offset
 	builder.index++
 	*builder.lines = append(*builder.lines, entry)
@@ -29,8 +26,6 @@ func (builder *Builder) Append(offset source.Offset) {
 }
 
 func (builder *Builder) NewLinemap() *Linemap {
-	pretty.Println(builder.lines)
-	pretty.Println(builder.offsets)
 	return &Linemap{
 		lines: *builder.lines,
 		offsetToLine: *builder.offsets,

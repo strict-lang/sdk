@@ -1,6 +1,9 @@
 package format
 
-import "gitlab.com/strict-lang/sdk/compiler/ast"
+import (
+	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"unicode/utf8"
+)
 
 type PrettyPrinter struct {
 	format     Format
@@ -36,10 +39,12 @@ func (printer *PrettyPrinter) Print() {
 
 func (printer *PrettyPrinter) append(text string) {
 	printer.writer.Write(text)
+	printer.lineLength+=utf8.RuneCount([]byte(text))
 }
 
 func (printer *PrettyPrinter) appendRune(value rune) {
 	printer.writer.WriteRune(value)
+	printer.lineLength++
 }
 
 func (printer *PrettyPrinter) appendIndent() {
@@ -65,6 +70,25 @@ func (printer *PrettyPrinter) setWriter(writer Writer) {
 func (printer *PrettyPrinter) printNode(node ast.Node) {
 	node.Accept(printer.astVisitor)
 }
-func (printer *PrettyPrinter) registerAstVisitors() {
 
+func (printer *PrettyPrinter) printTranslationUnit(unit *ast.TranslationUnit) {
+	for _, child := range unit.Children {
+		printer.printNode(child)
+	}
+}
+
+func (printer *PrettyPrinter) registerAstVisitors() {
+	printer.astVisitor.VisitMethodCall = printer.printMethodCall
+	printer.astVisitor.VisitIdentifier = printer.printIdentifier
+	printer.astVisitor.VisitNumberLiteral = printer.printNumberLiteral
+	printer.astVisitor.VisitStringLiteral = printer.printStringLiteral
+	printer.astVisitor.VisitConditionalStatement = printer.printConditionalStatement
+	printer.astVisitor.VisitBlockStatement = printer.printBlockStatement
+	printer.astVisitor.VisitExpressionStatement = printer.printExpressionStatement
+	printer.astVisitor.VisitSelectorExpression = printer.printSelectorExpression
+	printer.astVisitor.VisitUnaryExpression = printer.printUnaryExpression
+	printer.astVisitor.VisitBinaryExpression = printer.printBinaryExpression
+	printer.astVisitor.VisitReturnStatement = printer.printReturnStatement
+	printer.astVisitor.VisitYieldStatement = printer.printYieldStatement
+	printer.astVisitor.VisitTranslationUnit = printer.printTranslationUnit
 }

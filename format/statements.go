@@ -48,7 +48,9 @@ func (printer *PrettyPrinter) printElse(statement *ast.ConditionalStatement) {
 func (printer *PrettyPrinter) printIfHeader(statement *ast.ConditionalStatement) {
 	printer.append(token.IfKeyword.String())
 	printer.appendRune(' ')
-	printer.printNode(statement)
+	printer.printNode(statement.Condition)
+	printer.appendRune(' ')
+	printer.append(token.DoKeyword.String())
 	printer.appendLineBreak()
 }
 

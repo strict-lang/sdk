@@ -52,7 +52,9 @@ func (printer *PrettyPrinter) printMethodCall(call *ast.MethodCall) {
 
 func (printer *PrettyPrinter) writeArguments(call *ast.MethodCall) {
 	arguments, combinedLength := printer.recordAllArguments(call)
-	if combinedLength + printer.lineLength > printer.format.LineLengthLimit {
+	lengthOfSpaces := len(arguments) * 2 // Most arguments have the ', ' chars.
+	totalLineLength := combinedLength + printer.lineLength + lengthOfSpaces
+	if totalLineLength >= printer.format.LineLengthLimit {
 		printer.writeLongArgumentList(arguments)
 	} else {
 		printer.writeShortArgumentList(arguments)
@@ -60,6 +62,8 @@ func (printer *PrettyPrinter) writeArguments(call *ast.MethodCall) {
 }
 
 func (printer *PrettyPrinter) writeLongArgumentList(arguments []string) {
+	printer.appendLineBreak()
+	printer.appendIndent()
 	for index, argument := range arguments {
 		if index != 0 {
 			printer.appendRune(',')
@@ -81,6 +85,7 @@ func (printer *PrettyPrinter) writeShortArgumentList(arguments []string) {
 		}
 		printer.append(argument)
 	}
+	printer.indent.CloseContinuous()
 	printer.appendRune(')')
 }
 
@@ -102,4 +107,11 @@ func (printer *PrettyPrinter) recordArgument(node ast.Node) string {
 
 	printer.printNode(node)
 	return buffer.String()
+}
+
+
+func (printer *PrettyPrinter) printSelectorExpression(selector *ast.SelectorExpression) {
+	printer.printNode(selector.Target)
+	printer.appendRune('.')
+	printer.printNode(selector.Selection)
 }
