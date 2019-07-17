@@ -83,20 +83,21 @@ func (printer *PrettyPrinter) printTranslationUnit(unit *ast.TranslationUnit) {
 }
 
 func (printer *PrettyPrinter) registerAstVisitors() {
+	printer.astVisitor.VisitMethod = printer.printMethod
 	printer.astVisitor.VisitMethodCall = printer.printMethodCall
 	printer.astVisitor.VisitIdentifier = printer.printIdentifier
 	printer.astVisitor.VisitNumberLiteral = printer.printNumberLiteral
 	printer.astVisitor.VisitStringLiteral = printer.printStringLiteral
-	printer.astVisitor.VisitConditionalStatement = printer.printConditionalStatement
 	printer.astVisitor.VisitBlockStatement = printer.printBlockStatement
-	printer.astVisitor.VisitExpressionStatement = printer.printExpressionStatement
-	printer.astVisitor.VisitSelectorExpression = printer.printSelectorExpression
-	printer.astVisitor.VisitUnaryExpression = printer.printUnaryExpression
-	printer.astVisitor.VisitBinaryExpression = printer.printBinaryExpression
-	printer.astVisitor.VisitReturnStatement = printer.printReturnStatement
 	printer.astVisitor.VisitYieldStatement = printer.printYieldStatement
 	printer.astVisitor.VisitTranslationUnit = printer.printTranslationUnit
-	printer.astVisitor.VisitForeachLoopStatement = printer.printForeachLoopStatement
+	printer.astVisitor.VisitUnaryExpression = printer.printUnaryExpression
+	printer.astVisitor.VisitReturnStatement = printer.printReturnStatement
+	printer.astVisitor.VisitAssignStatement = printer.printAssignStatement
+	printer.astVisitor.VisitBinaryExpression = printer.printBinaryExpression
+	printer.astVisitor.VisitSelectorExpression = printer.printSelectorExpression
 	printer.astVisitor.VisitFromToLoopStatement = printer.printFromToLoopStatement
-	printer.astVisitor.VisitMethod = printer.printMethod
+	printer.astVisitor.VisitExpressionStatement = printer.printExpressionStatement
+	printer.astVisitor.VisitConditionalStatement = printer.printConditionalStatement
+	printer.astVisitor.VisitForeachLoopStatement = printer.printForeachLoopStatement
 }

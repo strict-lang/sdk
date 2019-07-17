@@ -10,7 +10,6 @@ func (printer *PrettyPrinter) printMethod(method *ast.Method) {
 	printer.appendLineBreak()
 	printer.indent.Open()
 	defer printer.indent.Close()
-	printer.appendIndent()
 	printer.printNode(method.Body)
 }
 
@@ -20,7 +19,7 @@ func (printer *PrettyPrinter) writeMethodParameters(method *ast.Method) {
 	lengthOfSpaces := len(parameters) * 2
 	totalLineLength := combinedLength + printer.lineLength + lengthOfSpaces
 	if totalLineLength >= printer.format.LineLengthLimit {
-		printer.writeShortParameterList(parameters)
+		printer.writeLongParameterList(parameters)
 	} else {
 		printer.writeShortParameterList(parameters)
 	}
