@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	ErrSymbolExists = errors.New("symbol already exists")
-	ErrNoSuchSymbol = errors.New("symbol does not exist")
+	ErrSymbolExists = errors.New("constantpool already exists")
+	ErrNoSuchSymbol = errors.New("constantpool does not exist")
 )
 
 type Scoped interface {
