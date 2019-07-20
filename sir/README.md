@@ -57,7 +57,7 @@ that represents compiled Strict code. It is low level compared to Strict, but st
 
 ## Operation List
 ___
-###`add<>`
+###add<>
 Adds two numbers.
 #### Format
 `$2 = add<int>($0, $1)`
@@ -67,19 +67,19 @@ Any number type
 Adds two values of the same type.
 ___
 
-###`sub<>`
-###`mul<>`
-###`mod<>`
-###`div<>`
-###`cmp<>`
-###`cmp_eq<>`
-###`cmp_ne<>`
-###`cmp_lt<>`
-###`cmp_le<>`
-###`cmp_gt<>`
-###`cmp_ge<>`
-###`call<>`
-###`cast<>`
-###`len`
-###`throw`
+###sub<>
+###mul<>
+###mod<>
+###div<>
+###cmp<>
+###cmp_eq<>
+###cmp_ne<>
+###cmp_lt<>
+###cmp_le<>
+###cmp_gt<>
+###cmp_ge<>
+###call<>
+###cast<>
+###len
+###throw
 

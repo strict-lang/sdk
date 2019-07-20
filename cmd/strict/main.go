@@ -1,71 +1,22 @@
 package main
 
 import (
-	"github.com/urfave/cli"
-	"log"
+	"github.com/spf13/cobra"
 	"os"
 )
 
-const (
-	StatusInvalidArguments = 80
-	StatusFileNotFound     = 81
-	StatusInvalidFile      = 82
-	StatusBuildFailed      = 83
-	StatusNoPermission     = 84
-)
+var baseCommand = &cobra.Command{
+	Use: "strict",
+	Short: "Strict provides a CLI for the strict development kit",
+	Long: ``,
+}
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "strict"
-	app.HelpName = "strict"
-	app.Usage = "strict's build tool"
-	app.Description = `The strict cli-tool helps developers to build and execute strict programs`
-	app.Version = "0.2.1"
-
-	app.Commands = []cli.Command{
-		{
-			Name:      "compile",
-			Aliases:   []string{"c"},
-			Usage:     "compile a strict file",
-			Action:    compile,
-			ArgsUsage: "compile <path>",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "dir, d",
-					Usage: "the target directory",
-					Value: "",
-				},
-			},
-		},
-		{
-			Name: "format",
-			Aliases: []string{"f"},
-			Usage: "format a strict file",
-			Action: formatCode,
-			ArgsUsage: "format <path> -o -t=target.strict",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name: "target",
-					Usage: "The target file",
-					Value: "",
-				},
-				cli.BoolFlag{
-					Name: "override",
-					Usage: "Sets whether file is overridden",
-				},
-			},
-		},
-		{
-			Name:      "run",
-			Aliases:   []string{"r"},
-			Usage:     "run a strict program",
-			Action:    run,
-			ArgsUsage: "run <path>",
-		},
+	if err := baseCommand.Execute(); err != nil {
+		os.Exit(-1)
 	}
+}
 
-	err := app.Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
-	}
+func init() {
+	baseCommand.AddCommand(buildCommand)
 }

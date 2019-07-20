@@ -12,7 +12,7 @@ var (
 	ErrInvalidFileName = errors.New("invalid filename")
 	// ExecutableNameFormat is the format used to generate the name of an
 	// executable file. The single argument is the name of the unit.
-	ExecutableNameFormat = fmt.Sprintf("%s")
+	ExecutableNameFormat = "%s"
 	// SourceFilePattern is the regexp pattern used to parse the unit-name
 	// from a filename. It can also be used to check whether a filename is valid.
 	SourceFilePattern = regexp.MustCompile(`(?P<Unit>[\w_-]+).strict`)

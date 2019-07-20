@@ -12,15 +12,9 @@ func createFilepath(filename, directory string) string {
 	return fmt.Sprintf("%s/%s", directory, filename)
 }
 
-func createNewFile(filename, directory string) (*os.File, error) {
-	filepath := createFilepath(filename, directory)
+func createNewFile(filepath string) (*os.File, error) {
 	if err := deleteIfExists(filepath); err != nil {
 		return nil, err
-	}
-	if directory != "" {
-		if err := createDirectoryIfNotExists(directory); err != nil {
-			return nil, err
-		}
 	}
 	return os.Create(filepath)
 }
