@@ -66,7 +66,6 @@ func (parser *Parser) ParseOperation() (ast.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO(merlinosayimwen): Add field selector
 	for {
 		done, node, err := parser.parseOperationOnOperand(operand)
 		if err != nil {

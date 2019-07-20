@@ -20,9 +20,9 @@ type UnexpectedTokenError struct {
 
 func (err *UnexpectedTokenError) Error() string {
 	if err.Expected != "" {
-		return fmt.Sprintf("expected %s but got: '%s'", err.Expected, err.Token.Value())
+		return fmt.Sprintf("expected %s but got: '%s'", err.Expected, err.Token)
 	}
-	return fmt.Sprintf("unexpected token: '%s'", err.Token.Value())
+	return fmt.Sprintf("unexpected token: '%s'", err.Token)
 }
 
 // InvalidIndentationError indicates that the indentation of a token
