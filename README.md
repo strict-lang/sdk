@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/assets/strict_logo.png" width="360"></p>
 
-# The Strict Programming Language
+# Strict Development Kit
 
 ###  Strict Is
 - A computer language to be written by a computer programs (and humans) intelligently (not really calling this AI)
@@ -55,19 +55,11 @@ When building from source you will first need some prerequisites:
   - Golang (https://golang.org/doc/install)
   - Make (https://www.gnu.org/software/make/)
 
-Once all of the prerequisites are installed, head to the `$GOPATH/src` directory. 
-If the `$GOPATH/src/github.com` directory does not exist, create it. Create another 
-directory called `BenjaminNitschke` in the `$GOPATH/src/github.com` directory. Your
-path should now be `$GOPATH/src/github.com/BenjaminNitschke`. 
-
-Now clone the git repository by
-executing `git clone git@github.com:BenjaminNitschke/Strict.git`.
- 
-Finally, head to the `$GOPATH/github.com/BenjaminNitschke/Strict` folder and
-run `make deps` and then `make`.
-
-In order to execute code that has been compiled with the *StrictToCpp* Compiler,
-you also have to build and install `libstrict`. This is done by running
-`sudo make install`.
+Once you have all prerequisites, execute following commands in your shell:
+```
+git clone git@gitlab.com:strict-lang/sdk.git $GOPATH/gitlab.com/strict-lang/sdk
+make deps
+sudo make install
+```
 
 Congrats, you just cloned and built the Strict SDK.
