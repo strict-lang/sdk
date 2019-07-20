@@ -1,9 +1,13 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compiler/source"
 	"gitlab.com/strict-lang/sdk/compiler/token"
+)
+
+var (
+	InvalidStatementError = errors.New("invalid statement")
 )
 
 // UnexpectedTokenError indicates that the parser expected a certain kind of token, but
@@ -16,9 +20,9 @@ type UnexpectedTokenError struct {
 
 func (err *UnexpectedTokenError) Error() string {
 	if err.Expected != "" {
-		return fmt.Sprintf("expected %s but got {%s}", err.Expected, err.Token)
+		return fmt.Sprintf("expected %s but got: '%s'", err.Expected, err.Token.Value())
 	}
-	return fmt.Sprintf("unexpected token: {%s}", err.Token)
+	return fmt.Sprintf("unexpected token: '%s'", err.Token.Value())
 }
 
 // InvalidIndentationError indicates that the indentation of a token
@@ -31,17 +35,6 @@ type InvalidIndentationError struct {
 
 func (err *InvalidIndentationError) Error() string {
 	return fmt.Sprintf(
-		"token {%s} has an invalid indentation level of %d, expected %s",
-		err.Token, err.Token.Indent(), err.Expected)
-}
-
-// InvalidStatementError indicates that the statement in the line is invalid
-// and could not be parsed.
-type InvalidStatementError struct {
-	LineIndex source.LineIndex
-}
-
-func (err *InvalidStatementError) Error() string {
-	return fmt.Sprintf(
-		"invalid statement in line %d", err.LineIndex)
+		"invalid indent of %d, expected %s",
+		err.Token.Indent(), err.Expected)
 }

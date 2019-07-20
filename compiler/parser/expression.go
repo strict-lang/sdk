@@ -116,7 +116,7 @@ func (parser *Parser) parseBinaryExpression(requiredPrecedence token.Precedence)
 	leftHandSide, err := parser.ParseUnaryExpression()
 	if err != nil {
 		return nil, err
-	}
+}
 	for {
 		operator := parser.token()
 		precedence := token.PrecedenceOfAny(operator)
@@ -199,7 +199,7 @@ func (parser *Parser) parseArgumentList() ([]ast.Node, error) {
 		}
 		return arguments, &UnexpectedTokenError{
 			Token:    current,
-			Expected: "',' or ')'",
+			Expected: "end of method",
 		}
 	}
 }
