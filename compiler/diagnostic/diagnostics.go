@@ -1,7 +1,7 @@
 package diagnostic
 
 type Diagnostics struct {
-	entries map[string] []Entry
+	entries map[string][]Entry
 }
 
 func (diagnostics *Diagnostics) PrintEntries(printer Printer) {
@@ -12,6 +12,3 @@ func (diagnostics *Diagnostics) PrintEntries(printer Printer) {
 		printer.PrintLine("")
 	}
 }
-
-
-

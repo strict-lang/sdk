@@ -60,7 +60,7 @@ func init() {
 	for keyword, name := range keywordNameTable {
 		keywordNameLookupTable[name] = keyword
 	}
-	operatorKeywordsReversed = make(map[Operator] Keyword)
+	operatorKeywordsReversed = make(map[Operator]Keyword)
 	for keyword, operator := range operatorKeywords {
 		operatorKeywordsReversed[operator] = keyword
 	}

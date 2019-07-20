@@ -8,7 +8,7 @@ type Linemap struct {
 	lines        []lineEntry
 	offsetToLine []source.Offset
 	recentOffset source.Offset
-	recentLine 	source.LineIndex
+	recentLine   source.LineIndex
 }
 
 type lineEntry struct {
@@ -59,7 +59,7 @@ func (lines *Linemap) PositionAtOffset(offset source.Offset) source.Position {
 	return source.Position{
 		Offset: offset,
 		Column: offset - line.Offset,
-		Line: line,
+		Line:   line,
 	}
 }
 
@@ -71,7 +71,7 @@ func (lines *Linemap) LineAtIndex(lineIndex source.LineIndex) source.Line {
 	entry := lines.lines[lineIndex]
 	return source.Line{
 		Offset: entry.offset,
-		Index: entry.index,
+		Index:  entry.index,
 		Length: entry.length,
 	}
 }

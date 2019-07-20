@@ -1,7 +1,7 @@
 package format
 
 type Indent struct {
-	Level 		 int
+	Level      int
 	Continuous bool
 }
 
@@ -27,7 +27,7 @@ type IndentWriter interface {
 	Write(indent Indent, writer Writer)
 }
 
-type TabIndentWriter struct {}
+type TabIndentWriter struct{}
 
 func (TabIndentWriter) Write(indent Indent, writer Writer) {
 	writeRepeatedRune('\t', indent.Level, writer)
@@ -43,7 +43,7 @@ func (spaceWriter SimpleSpaceIndentWriter) Write(indent Indent, writer Writer) {
 }
 
 type ComplexSpaceIndentWriter struct {
-	SpacesPerLevel  int
+	SpacesPerLevel   int
 	ContinuousIndent int
 }
 
@@ -54,7 +54,7 @@ func (complexWriter ComplexSpaceIndentWriter) Write(indent Indent, writer Writer
 
 func (complexWriter ComplexSpaceIndentWriter) spacesForIndent(indent Indent) int {
 	if indent.Continuous {
-		return (indent.Level - 1) * complexWriter.SpacesPerLevel + complexWriter.ContinuousIndent
+		return (indent.Level-1)*complexWriter.SpacesPerLevel + complexWriter.ContinuousIndent
 	}
 	return indent.Level * complexWriter.SpacesPerLevel
 }

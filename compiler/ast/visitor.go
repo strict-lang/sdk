@@ -25,7 +25,7 @@ type Visitor struct {
 	VisitTranslationUnit      func(*TranslationUnit)
 	VisitInvalidStatement     func(*InvalidStatement)
 	VisitBinaryExpression     func(*BinaryExpression)
-	VisitSelectorExpression  	func(*SelectorExpression)
+	VisitSelectorExpression   func(*SelectorExpression)
 	VisitIncrementStatement   func(*IncrementStatement)
 	VisitDecrementStatement   func(*DecrementStatement)
 	VisitFromToLoopStatement  func(*FromToLoopStatement)

@@ -85,7 +85,7 @@ var operatorNames = map[Operator]string{
 	RightBracketOperator:  "[",
 	SemicolonOperator:     ";",
 	CommaOperator:         ",",
-	DotOperator:					 ".",
+	DotOperator:           ".",
 }
 
 type Precedence int8

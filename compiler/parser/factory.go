@@ -8,8 +8,8 @@ import (
 
 type Factory struct {
 	TokenReader token.Reader
-	UnitName string
-	Recorder *diagnostic.Recorder
+	UnitName    string
+	Recorder    *diagnostic.Recorder
 }
 
 func NewDefaultFactory() *Factory {
@@ -28,7 +28,6 @@ func (factory *Factory) WithRecorder(recorder *diagnostic.Recorder) *Factory {
 	factory.Recorder = recorder
 	return factory
 }
-
 
 // NewParser creates a parser instance that parses the tokens of the given
 // token.Reader and uses the 'unit' as its ast-root node. Errors while parsing

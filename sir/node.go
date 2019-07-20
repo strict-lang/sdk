@@ -11,7 +11,7 @@ type Node interface {
 }
 
 type Unit struct {
-	Module 			 *Module
+	Module       *Module
 	ConstantPool *constantpool.Pool
 }
 
@@ -58,7 +58,7 @@ func (module *Module) AcceptAll(visitor *Visitor) {
 type MethodDeclaration struct {
 	TypedDeclaration
 	Parameters []*MethodParameter
-	CodeBlock *CodeBlock
+	CodeBlock  *CodeBlock
 }
 
 func (method *MethodDeclaration) Accept(visitor *Visitor) {

@@ -7,15 +7,15 @@ import (
 )
 
 var buildCommand = &cobra.Command{
-	Use: "build [-t target] [-c] [compile flags] [file]",
+	Use:   "build [-t target] [-c] [compile flags] [file]",
 	Short: "Builds a strict module",
-	Long: `Build compiles a file to a specified output file.`,
-	Run: RunCompile,
+	Long:  `Build compiles a file to a specified output file.`,
+	Run:   RunCompile,
 }
 
 var (
-	buildTargetFile	string
-	compileToCpp bool
+	buildTargetFile string
+	compileToCpp    bool
 )
 
 func init() {
@@ -60,5 +60,3 @@ func targetFile(unitName string) (*os.File, error) {
 	name := GeneratedFileName(unitName)
 	return os.Open(name)
 }
-
-

@@ -11,14 +11,14 @@ import (
 
 var standardFormat = format.Format{
 	TabWidth:        2,
-		ImproveBranches: true,
-		IndentWriter:    format.TabIndentWriter{},
-		LineLengthLimit: 100,
-		EndOfLine:       format.UnixEndOfLine,
-	}
+	ImproveBranches: true,
+	IndentWriter:    format.TabIndentWriter{},
+	LineLengthLimit: 100,
+	EndOfLine:       format.UnixEndOfLine,
+}
 
 var formatCommand = &cobra.Command{
-	Use: "format [-f format] [-o override] [-c] [file]",
+	Use:   "format [-f format] [-o override] [-c] [file]",
 	Short: "Formats a source file",
 	Long: `Format rewrites a strict source file according to the
 standard strict-formatting guidelines.`,
@@ -26,7 +26,7 @@ standard strict-formatting guidelines.`,
 }
 
 var (
-	formatTargetFile	string
+	formatTargetFile   string
 	overrideSourceFile bool
 )
 
@@ -79,14 +79,14 @@ func formattingTargetFile(sourceFile *os.File) (*os.File, error) {
 func formatUnitToFile(unit *ast.TranslationUnit, file *os.File) (err error) {
 	buffer := format.NewStringWriter()
 	formatUnit(unit, buffer)
-	_, err =  file.WriteString(buffer.String())
+	_, err = file.WriteString(buffer.String())
 	return
 }
 
 func formatUnit(unit *ast.TranslationUnit, writer format.Writer) {
 	factory := &format.PrettyPrinterFactory{
 		Format: standardFormat,
-		Unit: unit,
+		Unit:   unit,
 		Writer: writer,
 	}
 	factory.NewPrettyPrinter().Print()

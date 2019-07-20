@@ -109,7 +109,6 @@ func (printer *PrettyPrinter) recordArgument(node ast.Node) string {
 	return buffer.String()
 }
 
-
 func (printer *PrettyPrinter) printSelectorExpression(selector *ast.SelectorExpression) {
 	printer.printNode(selector.Target)
 	printer.appendRune('.')

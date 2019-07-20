@@ -158,7 +158,7 @@ func (scanner *Scanner) reportError(err error) {
 		Stage:   &diagnostic.LexicalAnalysis,
 		Source:  scanner.reader.String(),
 		Message: err.Error(),
-		Offset: scanner.offset(),
+		Offset:  scanner.offset(),
 	})
 }
 
@@ -176,6 +176,6 @@ func (scanner *Scanner) nextNonEndOfFile() token.Token {
 	return scanner.createInvalidToken()
 }
 
-func (scanner *Scanner) CreateLinemap() *linemap.Linemap{
+func (scanner *Scanner) CreateLinemap() *linemap.Linemap {
 	return scanner.linemap.NewLinemap()
 }

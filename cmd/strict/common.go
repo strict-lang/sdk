@@ -26,7 +26,7 @@ func findSourceFileInArguments(command *cobra.Command, arguments []string) (*os.
 		return nil, false
 	}
 	filePath := arguments[0]
-	file, err := os.OpenFile(fmt.Sprintf("./%s", filePath), os.O_RDWR, 0)
+	file, err := os.Open(fmt.Sprintf("./%s", filePath))
 	if err != nil {
 		command.PrintErrf("Failed to open file %s: %s", filePath, err.Error())
 		return nil, false

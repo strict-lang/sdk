@@ -8,6 +8,10 @@ import (
 
 var (
 	InvalidStatementError = errors.New("invalid statement")
+	// ErrInvalidExpression is returned from a function that fails to parse
+	// an expression. Functions returning this should report more verbose
+	// error messages to the diagnostics.Recorder.
+	ErrInvalidExpression = errors.New("invalid expression")
 )
 
 // UnexpectedTokenError indicates that the parser expected a certain kind of token, but

@@ -8,7 +8,6 @@ type cobraDiagnosticPrinter struct {
 	command *cobra.Command
 }
 
-
 func (printer *cobraDiagnosticPrinter) Print(message string) {
 	printer.command.Print(message)
 }

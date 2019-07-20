@@ -38,7 +38,7 @@ func (binary *BinaryExpression) Accept(visitor *Visitor) {
 }
 
 type SelectorExpression struct {
-	Target Node
+	Target    Node
 	Selection Node
 }
 

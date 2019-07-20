@@ -1,3 +1,3 @@
 package sir
 
-type CodeBlock struct {}
+type CodeBlock struct{}

@@ -30,16 +30,16 @@ for num in numbers do
 
 	output := NewStringWriter()
 	factory := &PrettyPrinterFactory{
-		Unit: unit,
+		Unit:   unit,
 		Writer: output,
 		Format: Format{
-			TabWidth: 2,
+			TabWidth:        2,
 			ImproveBranches: true,
 			IndentWriter: &SimpleSpaceIndentWriter{
 				SpacesPerLevel: 2,
 			},
 			LineLengthLimit: 80,
-			EndOfLine: "\n",
+			EndOfLine:       "\n",
 		},
 	}
 	factory.NewPrettyPrinter().Print()

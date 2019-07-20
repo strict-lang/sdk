@@ -49,11 +49,11 @@ func (parser *Parser) openBlock(indent token.Indent) {
 func (parser *Parser) reportError(err error) {
 	offset := parser.token().Position().Begin
 	parser.recorder.Record(diagnostic.RecordedEntry{
-		Kind:     &diagnostic.Error,
-		Stage:    &diagnostic.SyntacticalAnalysis,
-		Source:   parser.token().Value(),
-		Message:  err.Error(),
-		Offset: offset,
+		Kind:    &diagnostic.Error,
+		Stage:   &diagnostic.SyntacticalAnalysis,
+		Source:  parser.token().Value(),
+		Message: err.Error(),
+		Offset:  offset,
 	})
 }
 

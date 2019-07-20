@@ -5,9 +5,9 @@ import (
 )
 
 type Builder struct {
-	index source.LineIndex
-	offset source.Offset
-	lines *[]lineEntry
+	index   source.LineIndex
+	offset  source.Offset
+	lines   *[]lineEntry
 	offsets *[]source.Offset
 }
 
@@ -27,15 +27,15 @@ func (builder *Builder) Append(offset source.Offset) {
 
 func (builder *Builder) NewLinemap() *Linemap {
 	return &Linemap{
-		lines: *builder.lines,
+		lines:        *builder.lines,
 		offsetToLine: *builder.offsets,
 	}
 }
 
 func NewBuilder() *Builder {
 	return &Builder{
-		index: 1,
-		lines: &[]lineEntry{},
+		index:   1,
+		lines:   &[]lineEntry{},
 		offsets: &[]source.Offset{},
 	}
 }

@@ -7,17 +7,8 @@
 package parser
 
 import (
-	"errors"
-	"gitlab.com/strict-lang/sdk/compiler/token"
-
 	"gitlab.com/strict-lang/sdk/compiler/ast"
-)
-
-var (
-	// ErrInvalidExpression is returned from a function that fails to parse
-	// an expression. Functions returning this should report more verbose
-	// error messages to the diagnostics.Recorder.
-	ErrInvalidExpression = errors.New("could not parse invalid expression")
+	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
 func (parser *Parser) ParseExpression() (ast.Node, error) {
@@ -101,7 +92,7 @@ func (parser *Parser) parseSelection(operand ast.Node) (ast.Node, error) {
 		return nil, err
 	}
 	return &ast.SelectorExpression{
-		Target: operand,
+		Target:    operand,
 		Selection: field,
 	}, nil
 }
@@ -115,7 +106,7 @@ func (parser *Parser) parseBinaryExpression(requiredPrecedence token.Precedence)
 	leftHandSide, err := parser.ParseUnaryExpression()
 	if err != nil {
 		return nil, err
-}
+	}
 	for {
 		operator := parser.token()
 		precedence := token.PrecedenceOfAny(operator)

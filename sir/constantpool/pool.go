@@ -1,4 +1,4 @@
 package constantpool
 
 type Reference int
-type Pool struct {}
+type Pool struct{}

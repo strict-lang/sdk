@@ -14,16 +14,16 @@ type Compilation struct {
 }
 
 type CompilationResult struct {
-	UnitName  string
-	Generated []byte
+	UnitName    string
+	Generated   []byte
 	Diagnostics *diagnostic.Diagnostics
-	Error error
+	Error       error
 }
 
 type ParseResult struct {
-	Unit *ast.TranslationUnit
+	Unit        *ast.TranslationUnit
 	Diagnostics *diagnostic.Diagnostics
-	Error error
+	Error       error
 }
 
 func (compilation *Compilation) Parse() ParseResult {
@@ -38,9 +38,9 @@ func (compilation *Compilation) Parse() ParseResult {
 	offsetConverter := tokenReader.CreateLinemap().PositionAtOffset
 	diagnostics := recorder.CreateDiagnostics(offsetConverter)
 	return ParseResult{
-		Unit: unit,
+		Unit:        unit,
 		Diagnostics: diagnostics,
-		Error: err,
+		Error:       err,
 	}
 }
 
@@ -48,18 +48,18 @@ func (compilation *Compilation) Run() CompilationResult {
 	parseResult := compilation.Parse()
 	if parseResult.Error != nil {
 		return CompilationResult{
-			Generated: []byte{},
+			Generated:   []byte{},
 			Diagnostics: parseResult.Diagnostics,
-			Error: parseResult.Error,
-			UnitName: "undefined",
+			Error:       parseResult.Error,
+			UnitName:    "undefined",
 		}
 	}
 	generated := codegen.NewCodeGenerator(parseResult.Unit).Generate()
 	return CompilationResult{
-		Generated: []byte(generated),
+		Generated:   []byte(generated),
 		Diagnostics: parseResult.Diagnostics,
-		Error: nil,
-		UnitName: parseResult.Unit.Name(),
+		Error:       nil,
+		UnitName:    parseResult.Unit.Name(),
 	}
 }
 

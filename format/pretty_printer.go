@@ -13,7 +13,7 @@ type PrettyPrinter struct {
 	unit       *ast.TranslationUnit
 	lineLength int
 	astVisitor *ast.Visitor
-	sawReturn bool
+	sawReturn  bool
 }
 
 type PrettyPrinterFactory struct {
@@ -40,7 +40,7 @@ func (printer *PrettyPrinter) Print() {
 
 func (printer *PrettyPrinter) append(text string) {
 	printer.writer.Write(text)
-	printer.lineLength+=utf8.RuneCount([]byte(text))
+	printer.lineLength += utf8.RuneCount([]byte(text))
 }
 
 func (printer *PrettyPrinter) appendFormatted(text string, arguments ...interface{}) {
