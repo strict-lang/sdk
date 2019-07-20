@@ -72,7 +72,7 @@ func (printer *PrettyPrinter) recordParameter(parameter ast.Parameter) string {
 		printer.append(parameter.Type.FullName())
 	} else {
 		printer.appendFormatted("%s %s",
-			parameter.Name.Value, parameter.Type.FullName())
+			parameter.Type.FullName(), parameter.Name.Value)
 	}
 	return buffer.String()
 }

@@ -59,7 +59,7 @@ func (parser *Parser) parseParameterList() ([]ast.Parameter, error) {
 			parser.advance()
 			return parameters, &UnexpectedTokenError{
 				Token:    next,
-				Expected: ", or )",
+				Expected: "end of method parameter list",
 			}
 		}
 	}
