@@ -7,7 +7,7 @@ import (
 
 var baseCommand = &cobra.Command{
 	Use: "strict",
-	Short: "Strict provides a CLI for the strict development kit",
+	Short: "Strict is a CLI for the strict development kit",
 	Long: ``,
 }
 
@@ -19,4 +19,5 @@ func main() {
 
 func init() {
 	baseCommand.AddCommand(buildCommand)
+	baseCommand.AddCommand(formatCommand)
 }

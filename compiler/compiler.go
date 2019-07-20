@@ -14,6 +14,7 @@ type Compilation struct {
 }
 
 type CompilationResult struct {
+	UnitName  string
 	Generated []byte
 	Diagnostics *diagnostic.Diagnostics
 	Error error
@@ -50,6 +51,7 @@ func (compilation *Compilation) Run() CompilationResult {
 			Generated: []byte{},
 			Diagnostics: parseResult.Diagnostics,
 			Error: parseResult.Error,
+			UnitName: "undefined",
 		}
 	}
 	generated := codegen.NewCodeGenerator(parseResult.Unit).Generate()
@@ -57,6 +59,7 @@ func (compilation *Compilation) Run() CompilationResult {
 		Generated: []byte(generated),
 		Diagnostics: parseResult.Diagnostics,
 		Error: nil,
+		UnitName: parseResult.Unit.Name(),
 	}
 }
 
