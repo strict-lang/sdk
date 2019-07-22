@@ -49,8 +49,11 @@ func RunCompile(command *cobra.Command, arguments []string) {
 
 func writeGeneratedSources(compilation compiler.CompilationResult) (err error) {
 	file, err := targetFile(compilation.UnitName)
+	if err != nil {
+		return
+	}
 	_, err = file.Write(compilation.Generated)
-	return nil
+	return
 }
 
 func targetFile(unitName string) (*os.File, error) {

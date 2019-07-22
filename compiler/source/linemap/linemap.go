@@ -6,7 +6,7 @@ import (
 
 type Linemap struct {
 	lines        []lineEntry
-	offsetToLine []source.Offset
+	lineOffsets []source.Offset
 	recentOffset source.Offset
 	recentLine   source.LineIndex
 }
@@ -29,20 +29,20 @@ func (lines *Linemap) LineAtOffset(offset source.Offset) source.LineIndex {
 
 func (lines *Linemap) resolveLineAtOffset(offset source.Offset) source.LineIndex {
 	firstIndex := 0
-	lastIndex := len(lines.offsetToLine) - 1
+	lastIndex := len(lines.lineOffsets) - 1
 	for firstIndex <= lastIndex {
 		middleIndex := (firstIndex + lastIndex) >> 1
-		lineIndexAtMiddle := lines.offsetToLine[middleIndex]
+		middleOffset := lines.lineOffsets[middleIndex]
 
-		if lineIndexAtMiddle < offset {
+		if middleOffset < offset {
 			firstIndex = middleIndex + 1
-		} else if lineIndexAtMiddle > offset {
+		} else if middleOffset > offset {
 			lastIndex = middleIndex - 1
 		} else {
 			return source.LineIndex(middleIndex + 1)
 		}
 	}
-	return source.LineIndex(0)
+	return source.LineIndex(lastIndex) + 1
 }
 
 func (lines *Linemap) OffsetAtLine(index source.LineIndex) source.Offset {
@@ -74,4 +74,8 @@ func (lines *Linemap) LineAtIndex(lineIndex source.LineIndex) source.Line {
 		Index:  entry.index,
 		Length: entry.length,
 	}
+}
+
+func (lines *Linemap) LineCount() int {
+	return len(lines.lines)
 }

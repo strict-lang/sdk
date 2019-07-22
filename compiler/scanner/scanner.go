@@ -45,6 +45,9 @@ type Scanner struct {
 	// emptyLine records whether the currently scanned line is empty. If it is, the scanner
 	// will not insert an EndOfStatement token even if 'insertEos' is set to true.
 	emptyLine bool
+	// lineBeginOffset is the offset to the lines begin. It is updated each
+	// time a new line is added to the linemap.
+	lineBeginOffset source.Offset
 }
 
 func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Recorder) *Scanner {
@@ -123,9 +126,12 @@ func (scanner *Scanner) createInvalidToken() token.Token {
 func (scanner *Scanner) incrementLineIndex() (token.Token, bool) {
 	scanner.indent = 0
 	scanner.updateIndent = true
-	scanner.linemap.Append(scanner.offset())
+	length := scanner.offset() - scanner.lineBeginOffset
+	scanner.linemap.Append(scanner.lineBeginOffset, length)
 	scanner.reader.resetInternalIndex()
 	scanner.lineIndex++
+	// TODO: Add 1 to skip newline?
+	scanner.lineBeginOffset = scanner.offset()
 	if !scanner.shouldInsertEndOfStatement() || scanner.emptyLine {
 		return nil, false
 	}

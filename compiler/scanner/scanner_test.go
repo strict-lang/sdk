@@ -1,7 +1,11 @@
 package scanner
 
 import (
+	"fmt"
+	pretty "github.com/tonnerre/golang-pretty"
+	"gitlab.com/strict-lang/sdk/compiler/source"
 	"gitlab.com/strict-lang/sdk/compiler/token"
+	"strings"
 	"testing"
 )
 
@@ -141,4 +145,38 @@ func assertEndOfFile(test *testing.T, got token.Token) {
 	if !token.IsEndOfFileToken(got) {
 		test.Errorf("unexpected token %s, expected %s", got, token.EndOfFileTokenName)
 	}
+}
+
+func TestLinemapCreation(test *testing.T) {
+	entryLineLengths := []int {
+		10, 1, 20, 2, 30, 4, 0, 50,
+	}
+	entry := createTextWithLineLengths(entryLineLengths)
+	scanner := NewStringScanner(entry)
+	ScanAllTokens(scanner)
+	linemap := scanner.CreateLinemap()
+	fmt.Println(linemap.LineCount())
+	pretty.Print(linemap)
+	for index := 0; index < linemap.LineCount(); index++ {
+		offset := sumToIndex(entryLineLengths, index)
+		pretty.Print(linemap.PositionAtOffset(source.Offset(offset)))
+	}
+}
+
+func sumToIndex(array []int, target int) (sum int) {
+	for index := 0; index < target; index++ {
+		sum += array[index]
+	}
+	return
+}
+
+func createTextWithLineLengths(lengths []int) string {
+	var builder strings.Builder
+	for _, line := range lengths {
+		for count := 0; count < line; count++ {
+			builder.WriteRune(' ')
+		}
+		builder.WriteRune('\n')
+	}
+	return builder.String()
 }
