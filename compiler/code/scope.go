@@ -1,4 +1,4 @@
-package scope
+package code
 
 import (
 	"errors"
@@ -10,8 +10,20 @@ var (
 	ErrNoSuchSymbol = errors.New("constantpool does not exist")
 )
 
+type AttributeKind int
+
+const (
+	ScopedTypeAttribute AttributeKind = iota
+	ScopedFieldAttribute
+	ScopedMethodAttribute
+)
+type Attribute struct {
+	Kind AttributeKind
+}
+
 type Scoped interface {
 	Scope() *Scope
+	Attribute() Attribute
 }
 
 type Scope struct {
@@ -22,7 +34,7 @@ type Scope struct {
 	symbols    map[string]Scoped
 }
 
-func NewRoot() *Scope {
+func NewRootScope() *Scope {
 	return &Scope{
 		parent:     nil,
 		name:       "@",

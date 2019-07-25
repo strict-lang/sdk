@@ -1,4 +1,4 @@
-package scope
+package code
 
 import (
 	"testing"
@@ -13,7 +13,7 @@ func (dummy Dummy) Scope() *Scope {
 }
 
 func TestParentModifiesChild(test *testing.T) {
-	scope := NewRoot()
+	scope := NewRootScope()
 	child := scope.NewChild()
 
 	err := scope.PutSymbol("a", Dummy{scope: scope})
@@ -23,17 +23,17 @@ func TestParentModifiesChild(test *testing.T) {
 }
 
 func TestChildDoesNotModifyParent(test *testing.T) {
-	scope := NewRoot()
+	scope := NewRootScope()
 	child := scope.NewChild()
 
-	err := child.PutSymbol("a", Dummy{scope: child})
+	err := scope.PutSymbol("a", Dummy{scope: child})
 	expectNoError(test, err)
 	expectSymbol(test, child, "a")
 	expectNoSymbol(test, scope, "a")
 }
 
 func TestChildScopeCreation(test *testing.T) {
-	scope := NewRoot()
+	scope := NewRootScope()
 	err := scope.PutSymbol("a", Dummy{scope: scope})
 	expectNoError(test, err)
 
@@ -47,10 +47,10 @@ func TestChildScopeCreation(test *testing.T) {
 }
 
 func expectName(test *testing.T, scope *Scope, name string) {
-	if name == name {
+	if scope.name == name {
 		return
 	}
-	test.Errorf("expected name to be %s but got %s", name, name)
+	test.Errorf("expected name to be %s but got %s", name, scope.name)
 }
 
 func expectSymbol(test *testing.T, scope *Scope, key string) {

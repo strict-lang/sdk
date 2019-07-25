@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"gitlab.com/strict-lang/sdk/compiler/scope"
+	"gitlab.com/strict-lang/sdk/compiler/code"
 )
 
 // TranslationUnit represents a unit of translation, a file containing strict
@@ -9,15 +9,15 @@ import (
 // of the actual ast. This node however, is the real unit of the ast.
 type TranslationUnit struct {
 	name     string
-	scope    *scope.Scope
+	scope    *code.Scope
 	Children []Node
 }
 
 func NewEmptyTranslationUnit(name string) *TranslationUnit {
-	return NewTranslationUnit(name, scope.NewRoot(), []Node{})
+	return NewTranslationUnit(name, code.NewRootScope(), []Node{})
 }
 
-func NewTranslationUnit(name string, rootScope *scope.Scope, children []Node) *TranslationUnit {
+func NewTranslationUnit(name string, rootScope *code.Scope, children []Node) *TranslationUnit {
 	childScope := rootScope.NewNamedChild(name)
 	return &TranslationUnit{
 		name:     name,
@@ -30,7 +30,7 @@ func (unit *TranslationUnit) Name() string {
 	return unit.name
 }
 
-func (unit *TranslationUnit) Scope() *scope.Scope {
+func (unit *TranslationUnit) Scope() *code.Scope {
 	return unit.scope
 }
 

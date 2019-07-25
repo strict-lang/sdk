@@ -1,8 +1,8 @@
 package parser
 
 import (
+	"gitlab.com/strict-lang/sdk/compiler/code"
 	"gitlab.com/strict-lang/sdk/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/compiler/scope"
 	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
@@ -34,7 +34,7 @@ func (factory *Factory) WithRecorder(recorder *diagnostic.Recorder) *Factory {
 // are recorded by the 'recorder'.
 func (factory *Factory) NewParser() *Parser {
 	parser := &Parser{
-		rootScope:   scope.NewRoot(),
+		rootScope:   code.NewRootScope(),
 		tokenReader: factory.TokenReader,
 		recorder:    factory.Recorder,
 		unitName:    factory.UnitName,

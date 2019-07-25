@@ -2,15 +2,15 @@ package parser
 
 import (
 	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/code"
 	"gitlab.com/strict-lang/sdk/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/compiler/scope"
 	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
 // Parser parses an AST from a stream of tokens.
 type Parser struct {
 	tokenReader token.Reader
-	rootScope   *scope.Scope
+	rootScope   *code.Scope
 	recorder    *diagnostic.Recorder
 	block       *Block
 	unitName    string
@@ -24,7 +24,7 @@ type Parser struct {
 // It helps the parser to scan code blocks and know where a block ends.
 type Block struct {
 	Indent token.Indent
-	Scope  *scope.Scope
+	Scope  *code.Scope
 	Parent *Block
 }
 
@@ -32,7 +32,7 @@ type Block struct {
 // creates a new scope for that block that is a child-scope of the parsers
 // last block. Only statements with the blocks indent may go into the block.
 func (parser *Parser) openBlock(indent token.Indent) {
-	var blockScope *scope.Scope
+	var blockScope *code.Scope
 	if parser.block == nil {
 		blockScope = parser.rootScope.NewChild()
 	} else {

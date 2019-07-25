@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"gitlab.com/strict-lang/sdk/compiler/scope"
+	"gitlab.com/strict-lang/sdk/compiler/code"
 	"gitlab.com/strict-lang/sdk/compiler/source"
 )
 
@@ -29,7 +29,7 @@ type Typed interface {
 // and may also only see other nodes within that scope.
 type Scoped interface {
 	// Scope returns a pointer to the nodes scope.
-	Scope() *scope.Scope
+	Scope() *code.Scope
 }
 
 // Position is the position of a node in the source code. It may span

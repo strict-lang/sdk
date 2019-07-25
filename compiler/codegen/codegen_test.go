@@ -3,7 +3,7 @@ package codegen
 import (
 	"fmt"
 	"gitlab.com/strict-lang/sdk/compiler/ast"
-	"gitlab.com/strict-lang/sdk/compiler/scope"
+	"gitlab.com/strict-lang/sdk/compiler/code"
 	"gitlab.com/strict-lang/sdk/compiler/token"
 	"testing"
 )
@@ -76,7 +76,7 @@ func TestCodeGeneration(test *testing.T) {
 		},
 	}
 
-	unit := ast.NewTranslationUnit("test", scope.NewRoot(), []ast.Node{&method, &call})
+	unit := ast.NewTranslationUnit("test", code.NewRootScope(), []ast.Node{&method, &call})
 	generator := NewCodeGenerator(unit)
 	test.Log(generator.Generate())
 	// TODO(merlinosayimwen): Validate output
