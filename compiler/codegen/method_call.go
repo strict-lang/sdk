@@ -8,12 +8,36 @@ var builtinMethods = map[string]string{
 	"log":         "puts",
 	"logf":        "printf",
 	"inputNumber": "strict::InputNumber",
+	"input": "strict::Input",
+	"asString": "c_str",
+}
+
+func findMethodName(node ast.Node) (name string, ok bool){
+	if identifier, isIdentifier := node.(*ast.Identifier); isIdentifier {
+		name, ok = identifier.Value, true
+		return
+	}
+	if selection, isSelection := node.(*ast.SelectorExpression); isSelection {
+		last, ok := findLastSelection(selection)
+		if !ok {
+			return "", false
+		}
+		return findMethodName(last)
+	}
+	return "", false
+}
+
+func findLastSelection(expression *ast.SelectorExpression) (node ast.Node, ok bool) {
+	if next, ok := expression.Selection.(*ast.SelectorExpression); ok {
+		return findLastSelection(next)
+	}
+	return expression.Selection, false
 }
 
 func (generator *CodeGenerator) GenerateMethodCall(call *ast.MethodCall) {
-	if identifier, ok := call.Method.(*ast.Identifier); ok {
+	if identifier, ok := findMethodName(call.Method); ok {
 		call.Method = &ast.Identifier{
-			Value: lookupMethodName(identifier.Value),
+			Value: lookupMethodName(identifier),
 		}
 	}
 	generator.EmitNode(call.Method)

@@ -6,6 +6,12 @@ func (generator *CodeGenerator) GenerateIdentifier(identifier *ast.Identifier) {
 	generator.Emit(identifier.Value)
 }
 
+func (generator *CodeGenerator) GenerateSelectExpression(access *ast.SelectorExpression) {
+	generator.EmitNode(access.Target)
+	generator.Emit(".")
+	generator.EmitNode(access.Selection)
+}
+
 func (generator *CodeGenerator) GenerateStringLiteral(literal *ast.StringLiteral) {
 	generator.Emitf(`"%s"`, literal.Value)
 }

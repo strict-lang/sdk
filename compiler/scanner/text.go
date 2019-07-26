@@ -28,11 +28,13 @@ func (scanner *Scanner) gatherStringLiteral() (string, error) {
 			return "", ErrStringContainsLineFeed
 		}
 		if next == '\\' {
-			escaped, ok := findEscapedCharacter(scanner.reader.Pull())
+			_, ok := findEscapedCharacter(scanner.reader.Pull())
 			if !ok {
 				return "", ErrInvalidEscapedChar
 			}
-			builder.WriteRune(rune(escaped))
+			// TODO: Change this after codegen emits something else
+			builder.WriteRune('\\')
+			builder.WriteRune(rune(scanner.reader.Last()))
 			continue
 		}
 		builder.WriteRune(rune(next))

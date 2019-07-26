@@ -38,6 +38,7 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	generators.VisitAssignStatement = codeGenerator.GenerateAssignStatement
 	generators.VisitUnaryExpression = codeGenerator.GenerateUnaryExpression
 	generators.VisitBinaryExpression = codeGenerator.GenerateBinaryExpression
+	generators.VisitSelectorExpression = codeGenerator.GenerateSelectExpression
 	generators.VisitExpressionStatement = codeGenerator.GenerateExpressionStatement
 	generators.VisitFromToLoopStatement = codeGenerator.GenerateFromToLoopStatement
 	generators.VisitConditionalStatement = codeGenerator.GenerateConditionalStatement

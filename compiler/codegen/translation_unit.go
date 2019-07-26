@@ -23,13 +23,23 @@ func (generator *CodeGenerator) GenerateTranslationUnit(unit *ast.TranslationUni
 func (generator *CodeGenerator) generateBuiltins() {
 	generator.Emit(`
 /* BUILTINS: this will be moved to a separate library soon. */
+namespace strict {
 
-static int inputNumber(const char *message) {
+static int InputNumber(const char *message) {
   puts(message);
   int value;
   scanf("%d", &value);
   return value;
 }
+
+static std::string Input(const char *message) {
+	puts(message);
+	std::string input;
+	std::getline(std::cin, input);
+	return input;
+}
+
+} // namespace strict
 `)
 }
 
