@@ -17,7 +17,7 @@ Once you have all prerequisites, execute following commands in your shell:
 ```
 git clone git@gitlab.com:strict-lang/sdk.git $GOPATH/gitlab.com/strict-lang/sdk
 make deps
-sudo make install
+sudo make
 ```
 
 Congrats, you just cloned and built the Strict SDK.
