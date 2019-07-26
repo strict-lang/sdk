@@ -17,13 +17,9 @@ const (
 	ScopedFieldAttribute
 	ScopedMethodAttribute
 )
-type Attribute struct {
-	Kind AttributeKind
-}
 
 type Scoped interface {
 	Scope() *Scope
-	Attribute() Attribute
 }
 
 type Scope struct {

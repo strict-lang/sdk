@@ -19,6 +19,11 @@ func NewDefaultFactory() *Factory {
 	}
 }
 
+func (factory *Factory) WithUnitName(name string) *Factory {
+	factory.UnitName = name
+	return factory
+}
+
 func (factory *Factory) WithTokenReader(reader token.Reader) *Factory {
 	factory.TokenReader = reader
 	return factory

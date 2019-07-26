@@ -22,7 +22,7 @@ func TestGatheringValidNumber(test *testing.T) {
 		scanner := NewStringScanner(entry)
 		scanned := scanner.Pull()
 		if !token.IsLiteralToken(scanned) {
-			test.Errorf("unexpected token %s, exptected literal", scanned)
+			test.Errorf("unexpected token %s, exptected literal %s", scanned, entry)
 			continue
 		}
 		if scanned.Value() != entry {

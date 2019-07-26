@@ -46,17 +46,20 @@ func (scanner *Scanner) gatherNumber() (string, error) {
 	switch scanner.reader.Pull() {
 	case '0':
 		builder.WriteRune('0')
-		switch scanner.reader.Pull() {
+		switch scanner.reader.Peek() {
 		case 'x', 'X':
 			builder.WriteRune('x')
+			scanner.reader.Pull()
 			scanner.reader.Pull()
 			return scanner.gatherNumberWithRadix(&builder, Hexadecimal)
 		case 'b', 'B':
 			builder.WriteRune('b')
 			scanner.reader.Pull()
+			scanner.reader.Pull()
 			return scanner.gatherNumberWithRadix(&builder, Binary)
 		case '.':
 			builder.WriteRune('.')
+			scanner.reader.Pull()
 			scanner.reader.Pull()
 			err := scanner.gatherFloatingPointNumber(&builder)
 			return builder.String(), err

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"gitlab.com/strict-lang/sdk/compiler"
 	"os"
@@ -32,7 +33,12 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		return
 	}
 	defer file.Close()
-	compilation := compiler.CompileFile(file)
+	unitName, err := ParseUnitName(file.Name())
+	if err != nil {
+		command.Printf("Invalid filename: %s\n", file.Name())
+		return
+	}
+	compilation := compiler.CompileFile(unitName, file)
 	if compilation.Error != nil {
 		command.PrintErrf("Failed to compile the file: %s\n", compilation.Error)
 		return
@@ -41,10 +47,10 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		command: command,
 	})
 	if err := writeGeneratedSources(compilation); err != nil {
-		command.PrintErrf("Failed to write generated code; %s", err.Error())
+		command.PrintErrf("Failed to write generated code; %s\n", err.Error())
 		return
 	}
-	command.Println("Successfully compiled the file")
+	command.Printf("Successfully compiled %s!\n", unitName)
 }
 
 func writeGeneratedSources(compilation compiler.CompilationResult) (err error) {
@@ -58,8 +64,8 @@ func writeGeneratedSources(compilation compiler.CompilationResult) (err error) {
 
 func targetFile(unitName string) (*os.File, error) {
 	if buildTargetFile != "" {
-		return os.Open(buildTargetFile)
+		return createNewFile(fmt.Sprintf("./%s", buildTargetFile))
 	}
 	name := GeneratedFileName(unitName)
-	return os.Open(name)
+	return createNewFile(fmt.Sprintf("./%s",name))
 }

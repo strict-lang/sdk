@@ -48,7 +48,7 @@ func RunFormat(command *cobra.Command, arguments []string) {
 }
 
 func formatFile(command *cobra.Command, sourceFile *os.File) {
-	parseResult := compiler.ParseFile(sourceFile)
+	parseResult := compiler.ParseFile("formatted", sourceFile)
 	parseResult.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command})
 	if parseResult.Error != nil {
 		return

@@ -11,6 +11,7 @@ import (
 
 type Compilation struct {
 	Source Source
+	Name string
 }
 
 type CompilationResult struct {
@@ -32,7 +33,8 @@ func (compilation *Compilation) Parse() ParseResult {
 	tokenReader := scanner.NewScanner(sourceReader)
 	parserFactory := parser.NewDefaultFactory().
 		WithTokenReader(tokenReader).
-		WithRecorder(recorder)
+		WithRecorder(recorder).
+		WithUnitName(compilation.Name)
 
 	unit, err := parserFactory.NewParser().ParseTranslationUnit()
 	offsetConverter := tokenReader.CreateLinemap().PositionAtOffset
@@ -51,7 +53,7 @@ func (compilation *Compilation) Run() CompilationResult {
 			Generated:   []byte{},
 			Diagnostics: parseResult.Diagnostics,
 			Error:       parseResult.Error,
-			UnitName:    "undefined",
+			UnitName:    compilation.Name,
 		}
 	}
 	generated := codegen.NewCodeGenerator(parseResult.Unit).Generate()
@@ -63,23 +65,26 @@ func (compilation *Compilation) Run() CompilationResult {
 	}
 }
 
-func CompileFile(file *os.File) CompilationResult {
+func CompileFile(name string, file *os.File) CompilationResult {
 	compilation := &Compilation{
 		Source: &FileSource{File: file},
+		Name: name,
 	}
 	return compilation.Run()
 }
 
-func ParseFile(file *os.File) ParseResult {
+func ParseFile(name string, file *os.File) ParseResult {
 	compilation := &Compilation{
 		Source: &FileSource{File: file},
+		Name: name,
 	}
 	return compilation.Parse()
 }
 
-func CompileString(value string) CompilationResult {
+func CompileString(name string, value string) CompilationResult {
 	compilation := &Compilation{
 		Source: &InMemorySource{Source: value},
+		Name: name,
 	}
 	return compilation.Run()
 }

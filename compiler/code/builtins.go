@@ -53,7 +53,6 @@ func (builtins *BuiltinRegistration) register() {
 }
 
 func (builtins *BuiltinRegistration) registerType(builtinType *Type) {
-	builtins.scope.
 }
 
 func (builtins *BuiltinRegistration) registerMethod(method *TypedMethod) {}
