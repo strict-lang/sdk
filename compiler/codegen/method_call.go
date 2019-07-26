@@ -12,34 +12,40 @@ var builtinMethods = map[string]string{
 	"asString": "c_str",
 }
 
-func findMethodName(node ast.Node) (name string, ok bool){
+type identifierVisitor func(identifier *ast.Identifier)
+
+func visitMethodName(node ast.Node, visitor identifierVisitor) bool {
 	if identifier, isIdentifier := node.(*ast.Identifier); isIdentifier {
-		name, ok = identifier.Value, true
-		return
+		visitor(identifier)
+		return true
 	}
 	if selection, isSelection := node.(*ast.SelectorExpression); isSelection {
 		last, ok := findLastSelection(selection)
 		if !ok {
-			return "", false
+			return false
 		}
-		return findMethodName(last)
+		return visitMethodName(last, visitor)
 	}
-	return "", false
+	return false
 }
 
 func findLastSelection(expression *ast.SelectorExpression) (node ast.Node, ok bool) {
 	if next, ok := expression.Selection.(*ast.SelectorExpression); ok {
 		return findLastSelection(next)
 	}
-	return expression.Selection, false
+	return expression.Selection, true
+}
+
+func renameBuiltinMethodName(identifier *ast.Identifier) {
+	identifier.Value = lookupMethodName(identifier.Value)
+}
+
+func renameBuiltinMethodNameForCall(node ast.Node) {
+	visitMethodName(node, renameBuiltinMethodName)
 }
 
 func (generator *CodeGenerator) GenerateMethodCall(call *ast.MethodCall) {
-	if identifier, ok := findMethodName(call.Method); ok {
-		call.Method = &ast.Identifier{
-			Value: lookupMethodName(identifier),
-		}
-	}
+	renameBuiltinMethodNameForCall(call.Method)
 	generator.EmitNode(call.Method)
 	generator.Emit("(")
 	for index, argument := range call.Arguments {
