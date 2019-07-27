@@ -5,27 +5,13 @@
 Strict is a statically typed multi-paradigm programming language that is
 compiled to SIR.
 
-### Building from source
+### Installing
 
-When building from source you will first need some prerequisites:
- 
-  - Git (https://git-scm.com/) 
-  - Golang (https://golang.org/doc/install)
-  - Make (https://www.gnu.org/software/make/)
+Pick the install guide that matches your operating system:
+- [Windows Install Guide](/docs/install_windows.md)
+- [Linux Install Guide](/docs/install_linux.md)
 
-Once you have all prerequisites, execute following commands in your shell:
-
-Linux/Unix: [install_nix.sh](/docs/install_linux.md)
-```
-git clone git@gitlab.com:strict-lang/sdk.git $GOPATH/gitlab.com/strict-lang/sdk
-cd $GOPATH/gitlab.com/strict-lang/sdk
-make deps
-sudo make
-```
-
-Congrats! You just cloned and built the Strict SDK.
-
-### Compiling and Running your first Strict proram
+### Compiling and Running your first Strict program
 
 Prerequisites:
   - Working C++ Compiler
