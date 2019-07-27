@@ -15,6 +15,7 @@ When building from source you will first need some prerequisites:
 
 Once you have all prerequisites, execute following commands in your shell:
 
+Linux/Unix: [install_nix.sh](/docs/install_linux.md)
 ```
 git clone git@gitlab.com:strict-lang/sdk.git $GOPATH/gitlab.com/strict-lang/sdk
 cd $GOPATH/gitlab.com/strict-lang/sdk

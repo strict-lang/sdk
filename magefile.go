@@ -14,7 +14,7 @@ const BinaryName = "strict"
 
 func Build() error {
 	mg.Deps(InstallDeps)
-	cmd := exec.Command("go", "build", "-o", BinaryName, "./cmd/strict")
+	cmd := exec.Command("go", "build", "-o", pathToBinary(), "./cmd/strict")
 	return cmd.Run()
 }
 
