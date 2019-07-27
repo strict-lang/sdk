@@ -4,59 +4,52 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
-
+	"runtime"
 	"github.com/magefile/mage/mg"
+	"github.com/magefile/mage/sh"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 const BinaryName = "strict"
 
-func Build() error {
-	mg.Deps(InstallDeps)
-	cmd := exec.Command("go", "build", "-o", pathToBinary(), "./cmd/strict")
-	return cmd.Run()
+func binaryName() string {
+	if runtime.GOOS == "windows" {
+		return BinaryName + ".exe"
+	}
+	return BinaryName
 }
 
 func Install() error {
-	mg.Deps(Build)
-	command := exec.Command("go", "install", ".cmd/strict")
-	return command.Run()
-}
-
-func InstallDeps() error {
-	cmd := exec.Command("glide")
-	return cmd.Run()
-}
-
-func Clean() (err error) {
-	if err = runGoClean(); err != nil {
-		return
+	bin, err := findGoBin()
+	if err != nil {
+		return err
 	}
-	if err = deleteDirectory(pathToBinary()); err != nil {
-		return
+	err = os.Mkdir(bin, 0700)
+	if err == nil {
+		path := filepath.Join(bin, binaryName())
+		return sh.RunV(mg.GoCmd(), "build", "-o", path, "./cmd/strict")
+	}
+	if !os.IsExist(err) {
+		return fmt.Errorf("failed to create %q: %v", bin, err)
 	}
 	return nil
 }
 
-func deleteDirectory(path string) error {
-	command := exec.Command("rm", "-rf", path)
-	return command.Run()
+func InstallDeps() error {
+	return sh.RunV("glide", "install")
 }
 
-func runGoClean() error {
-	command := exec.Command("go", "clean")
-	return command.Run()
-}
-
-func pathToBinary() string {
-	goBin := os.Getenv("GOBIN")
-	if goBin == "" {
-		goPath := os.Getenv("GOPATH")
-		if goPath == "" {
-			mg.Fatal(1, "GOPATH or GOBIN not set")
-			panic("no GOPATH or GOBIN set")
-		}
+func findGoBin() (string, error) {
+  goBin, err := sh.Output(mg.GoCmd(), "env", "GOBIN")
+  if err != nil && goBin != "" {
+		return goBin, err
 	}
-	return fmt.Sprintf("%s/%s", goBin, BinaryName)
+  goPath, err := sh.Output(mg.GoCmd(), "env", "GOPATH")
+  if err != nil {
+  	return "", fmt.Errorf("failed to read GOPATH: %v", err)
+	}
+  paths := strings.Split(goPath, string([]rune{os.PathListSeparator}))
+  return filepath.Join(paths[0], "bin"), nil
 }
