@@ -14,13 +14,14 @@ https://github.com/Masterminds/glide/releases?ts=2
 
 ```
 go get -u -d github.com/magefile/mage
-cd $GOPATH/src/github.com/magefile/mage
+cd %GOPATH%/src/github.com/magefile/mage
 go run bootstrap.go
 ```
 ## Installing the SDK
 ```
-git clone git@gitlab.com:strict-lang/sdk.git $GOPATH/src/gitlab.com/strict-lang/sdk
-cd $GOPATH/gitlab.com/strict-lang/sdk
+<<<<<<< docs/install_windows.md
+git clone https://gitlab.com/strict-lang/sdk.git %GOPATH%/src/gitlab.com/strict-lang/sdk
+cd %GOPATH%/src/gitlab.com/strict-lang/sdk
 mage install
 ```
 
