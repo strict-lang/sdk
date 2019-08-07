@@ -27,4 +27,4 @@ go build -o %GOPATH%/bin/strict.exe ./cmd/strict
 
 ## Test strict
 Now you should have strict.exe in c:\go\bin
-- Type "strict -v" to see your strict version
+- Type "strict help" to see your strict help (and later version)
