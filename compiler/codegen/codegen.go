@@ -9,11 +9,12 @@ import (
 // CodeGenerator generates C code from an ast.
 type CodeGenerator struct {
 	unit    *ast.TranslationUnit
-	output  *strings.Builder
+	output *strings.Builder
 	buffer  *strings.Builder
 	method  *MethodGeneration
 	visitor *ast.Visitor
 	indent  int8
+	importModules map[string] string
 }
 
 // NewCodeGenerator constructs a CodeGenerator that generates C code from
@@ -22,7 +23,7 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	generators := ast.NewEmptyVisitor()
 	codeGenerator := &CodeGenerator{
 		unit:    unit,
-		output:  &strings.Builder{},
+		output: &strings.Builder{},
 		visitor: generators,
 	}
 	codeGenerator.buffer = codeGenerator.output
@@ -37,6 +38,7 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	generators.VisitTranslationUnit = codeGenerator.GenerateTranslationUnit
 	generators.VisitAssignStatement = codeGenerator.GenerateAssignStatement
 	generators.VisitUnaryExpression = codeGenerator.GenerateUnaryExpression
+	generators.VisitImportStatement = codeGenerator.GenerateImportStatement
 	generators.VisitBinaryExpression = codeGenerator.GenerateBinaryExpression
 	generators.VisitSelectorExpression = codeGenerator.GenerateSelectExpression
 	generators.VisitExpressionStatement = codeGenerator.GenerateExpressionStatement

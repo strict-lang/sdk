@@ -17,7 +17,19 @@ func (generator *CodeGenerator) GenerateUnaryExpression(unary *ast.UnaryExpressi
 }
 
 func (generator *CodeGenerator) GenerateSelectorExpression(selector *ast.SelectorExpression) {
+	if id, ok := selector.Target.(*ast.Identifier); ok {
+		if _, moduleExists := generator.importModules[id.Value]; moduleExists {
+			generator.generateNamespaceSelector(selector)
+			return
+		}
+	}
 	generator.EmitNode(selector.Target)
 	generator.Emit(".")
+	generator.EmitNode(selector.Selection)
+}
+
+func (generator *CodeGenerator) generateNamespaceSelector(selector *ast.SelectorExpression) {
+	generator.EmitNode(selector.Target)
+	generator.Emit("::")
 	generator.EmitNode(selector.Selection)
 }

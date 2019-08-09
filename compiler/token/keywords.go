@@ -17,10 +17,12 @@ const (
 	ElseKeyword
 	YieldKeyword
 	ReturnKeyword
+	ImportKeyword
 	FromKeyword
 	ToKeyword
 	DoKeyword
 	OrKeyword
+	AsKeyword
 	IsNotKeyword
 	AndKeyword
 	ForKeyword
@@ -29,10 +31,12 @@ const (
 var keywordNameTable = map[Keyword]string{
 	MethodKeyword: "method",
 	ReturnKeyword: "return",
+	ImportKeyword: "import",
 	TypeKeyword:   "type",
 	IsKeyword:     "is",
 	InKeyword:     "in",
 	IfKeyword:     "if",
+	AsKeyword:     "as",
 	ElseKeyword:   "else",
 	ForKeyword:    "for",
 	FromKeyword:   "from",

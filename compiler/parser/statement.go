@@ -185,6 +185,45 @@ func (parser *Parser) parseNestedMethod() ast.Node {
 	return method
 }
 
+func (parser *Parser) ParseImportStatement() ast.Node {
+	if err := parser.skipKeyword(token.ImportKeyword); err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	parser.advance()
+	path := parser.token()
+	if !token.IsStringLiteralToken(path) {
+		return parser.createInvalidStatement(&UnexpectedTokenError{
+			Expected: "Path",
+			Token: path,
+		})
+	}
+	if !token.HasKeywordValue(parser.peek(), token.AsKeyword) {
+		return &ast.ImportStatement{
+			Path: path.Value(),
+		}
+	}
+	parser.advance()
+	alias, err := parser.parseImportAlias()
+	if err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	return &ast.ImportStatement{
+		Path: path.Value(),
+		Alias: ast.NewIdentifier(alias),
+	}
+}
+
+func (parser *Parser) parseImportAlias() (string, error) {
+	alias := parser.token()
+	if !token.IsIdentifierToken(alias) {
+		return "", &UnexpectedTokenError{
+			Expected: "Identifier",
+			Token: alias,
+		}
+	}
+	return alias.Value(), nil
+}
+
 // keywordStatementParser returns a function that parses statements based on a passed
 // keyword. Most of the keywords start a statement. The returned bool is true, if a
 // function has been found.

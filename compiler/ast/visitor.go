@@ -20,6 +20,7 @@ type Visitor struct {
 	VisitYieldStatement       func(*YieldStatement)
 	VisitBlockStatement       func(*BlockStatement)
 	VisitUnaryExpression      func(*UnaryExpression)
+	VisitImportStatement      func(*ImportStatement)
 	VisitAssignStatement      func(*AssignStatement)
 	VisitReturnStatement      func(*ReturnStatement)
 	VisitTranslationUnit      func(*TranslationUnit)
@@ -48,6 +49,7 @@ func NewEmptyVisitor() *Visitor {
 		VisitBlockStatement:       func(*BlockStatement) {},
 		VisitUnaryExpression:      func(*UnaryExpression) {},
 		VisitEmptyStatement:       func(*EmptyStatement) {},
+		VisitImportStatement:      func(*ImportStatement) {},
 		VisitReturnStatement:      func(*ReturnStatement) {},
 		VisitTranslationUnit:      func(*TranslationUnit) {},
 		VisitBinaryExpression:     func(*BinaryExpression) {},

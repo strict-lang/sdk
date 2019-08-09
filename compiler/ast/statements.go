@@ -122,3 +122,12 @@ type AssignStatement struct {
 func (statement *AssignStatement) Accept(visitor *Visitor) {
 	visitor.VisitAssignStatement(statement)
 }
+
+type ImportStatement struct {
+	Path string
+	Alias Identifier
+}
+
+func (statement *ImportStatement) Accept(visitor *Visitor) {
+	visitor.VisitImportStatement(statement)
+}
