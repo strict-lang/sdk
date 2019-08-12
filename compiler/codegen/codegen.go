@@ -45,6 +45,7 @@ func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
 	generators.VisitFromToLoopStatement = codeGenerator.GenerateFromToLoopStatement
 	generators.VisitConditionalStatement = codeGenerator.GenerateConditionalStatement
 	generators.VisitForeachLoopStatement = codeGenerator.GenerateForEachLoopStatement
+	generators.VisitSharedVariableDeclaration = codeGenerator.GenerateSharedVariableDeclaration
 	return codeGenerator
 }
 

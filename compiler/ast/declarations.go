@@ -40,3 +40,15 @@ type Parameter struct {
 func (parameter *Parameter) Accept(visitor *Visitor) {
 	visitor.VisitParameter(parameter)
 }
+
+type SharedVariableDeclaration struct {
+	Type TypeName
+	Name Identifier
+	InitialValue Node
+}
+
+func (declaration *SharedVariableDeclaration) Accept(visitor *Visitor) {
+	visitor.VisitSharedVariableDeclaration(declaration)
+}
+
+

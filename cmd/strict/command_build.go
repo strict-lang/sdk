@@ -8,7 +8,7 @@ import (
 )
 
 var buildCommand = &cobra.Command{
-	Use:   "build [-t target] [-c] [compile flags] [file]",
+	Use:   "build [-t target] [-p platform] [-c] [compile flags] [file]",
 	Short: "Builds a strict module",
 	Long:  `Build compiles a file to a specified output file.`,
 	Run:   RunCompile,
@@ -16,6 +16,7 @@ var buildCommand = &cobra.Command{
 
 var (
 	buildTargetFile string
+	targetPlatform  string
 	compileToCpp    bool
 )
 
@@ -23,6 +24,8 @@ func init() {
 	buildCommand.Flags().
 		StringVarP(&buildTargetFile, "target", "t", "", "path to the output file")
 
+	buildCommand.Flags().
+		StringVarP(&targetPlatform, "platform", "p", "cross", "name of the target platform")
 	expectNoError(buildCommand.MarkFlagFilename("target", "strict"))
 	buildCommand.Flags().BoolVar(&compileToCpp, "c", false, "compile the generated cpp code")
 }

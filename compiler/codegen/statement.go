@@ -77,3 +77,13 @@ func (generator *CodeGenerator) GenerateAssignStatement(statement *ast.AssignSta
 	generator.EmitNode(statement.Value)
 	generator.Emit(";")
 }
+
+func (generator *CodeGenerator) GenerateSharedVariableDeclaration(statement *ast.SharedVariableDeclaration) {
+	generator.Emitf("static %s %s", statement.Type.FullName(), statement.Name.Value)
+	if statement.InitialValue == nil {
+		return
+	}
+	generator.Emit(" = ")
+	generator.EmitNode(statement.InitialValue)
+	generator.Emit(";\n")
+}

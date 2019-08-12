@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"gitlab.com/strict-lang/sdk/compiler/ast"
 	"gitlab.com/strict-lang/sdk/compiler/token"
@@ -224,6 +225,44 @@ func (parser *Parser) parseImportAlias() (string, error) {
 	return alias.Value(), nil
 }
 
+func (parser *Parser) ParseSharedVariableDeclaration() ast.Node {
+	if err := parser.skipKeyword(token.SharedKeyword); err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	parser.advance()
+	typeName, err := parser.ParseTypeName()
+	if err != nil {
+		return parser.createInvalidStatement(err)
+	}
+	parser.advance()
+	if !token.IsIdentifierToken(parser.token()) {
+		return parser.createInvalidStatement(&UnexpectedTokenError{
+			Expected: "identifier",
+			Token: parser.token(),
+		})
+	}
+	variableName := parser.token().Value()
+	assignedValue, err := parser.parseOptionalAssignValue()
+	if err != errNoAssign {
+		return parser.createInvalidStatement(err)
+	}
+	return &ast.SharedVariableDeclaration{
+		Type: typeName,
+		Name: ast.NewIdentifier(variableName),
+		InitialValue: assignedValue,
+	}
+}
+
+var errNoAssign = errors.New("no assign")
+
+func (parser *Parser) parseOptionalAssignValue() (ast.Node, error) {
+	if !parser.isLookingAtOperator(token.AssignOperator) {
+		return nil, errNoAssign
+	}
+	parser.advance()
+	return parser.ParseExpression()
+}
+
 // keywordStatementParser returns a function that parses statements based on a passed
 // keyword. Most of the keywords start a statement. The returned bool is true, if a
 // function has been found.
@@ -239,6 +278,10 @@ func (parser *Parser) keywordStatementParser(keyword token.Keyword) (func() ast.
 		return parser.ParseYieldStatement, true
 	case token.ReturnKeyword:
 		return parser.ParseReturnStatement, true
+	case token.ImportKeyword:
+		return parser.ParseImportStatement, true
+	case token.SharedKeyword:
+		return parser.ParseSharedVariableDeclaration, true
 	}
 	return nil, false
 }

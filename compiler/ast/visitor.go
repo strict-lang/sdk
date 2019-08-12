@@ -33,6 +33,7 @@ type Visitor struct {
 	VisitExpressionStatement  func(*ExpressionStatement)
 	VisitForeachLoopStatement func(*ForeachLoopStatement)
 	VisitConditionalStatement func(*ConditionalStatement)
+	VisitSharedVariableDeclaration func(*SharedVariableDeclaration)
 }
 
 func NewEmptyVisitor() *Visitor {
@@ -62,5 +63,6 @@ func NewEmptyVisitor() *Visitor {
 		VisitExpressionStatement:  func(*ExpressionStatement) {},
 		VisitForeachLoopStatement: func(*ForeachLoopStatement) {},
 		VisitConditionalStatement: func(*ConditionalStatement) {},
+		VisitSharedVariableDeclaration: func(*SharedVariableDeclaration) {},
 	}
 }
