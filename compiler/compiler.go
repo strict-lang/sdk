@@ -12,11 +12,13 @@ import (
 type Compilation struct {
 	Source Source
 	Name string
+	TargetArduino bool
 }
 
 type CompilationResult struct {
 	UnitName    string
 	Generated   []byte
+	GeneratedFileName string
 	Diagnostics *diagnostic.Diagnostics
 	Error       error
 }
@@ -56,9 +58,11 @@ func (compilation *Compilation) Run() CompilationResult {
 			UnitName:    compilation.Name,
 		}
 	}
-	generated := codegen.NewCodeGenerator(parseResult.Unit).Generate()
+	settings := codegen.Settings{IsTargetingArduino: compilation.TargetArduino}
+	generator := codegen.NewCodeGenerator(settings, parseResult.Unit)
 	return CompilationResult{
-		Generated:   []byte(generated),
+		Generated:   []byte(generator.Generate()),
+		GeneratedFileName: generator.Filename(),
 		Diagnostics: parseResult.Diagnostics,
 		Error:       nil,
 		UnitName:    parseResult.Unit.Name(),

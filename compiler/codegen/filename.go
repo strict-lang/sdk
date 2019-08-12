@@ -8,14 +8,18 @@ import (
 
 var (
 	FileNameFormat     = "%s.generated.cc"
-	FileNameRegexp     = regexp.MustCompile(`(?P<Unit>\w+)\.generated\.cc`)
+	ArduinoFileNameFormat = "%s.ino"
+	FileNameRegexp     = regexp.MustCompile(`(?P<Unit>\w+)\.generated\.(ino|cc)`)
 	ErrInvalidFilename = errors.New("invalid filename format")
 )
 
 // FilenameByUnitName returns the name of a file that belongs to the passed
 // translation unit.
-func FilenameByUnitName(unitName string) string {
-	return fmt.Sprintf(FileNameFormat, unitName)
+func (generator *CodeGenerator) Filename() string {
+	if generator.settings.IsTargetingArduino {
+		return fmt.Sprintf(ArduinoFileNameFormat, generator.unit.Name())
+	}
+	return fmt.Sprintf(FileNameFormat, generator.unit.Name())
 }
 
 func UnitNameByFilename(filename string) (string, error) {

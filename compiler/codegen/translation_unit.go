@@ -40,7 +40,11 @@ func splitTopLevelNodes(unit *ast.TranslationUnit) (methods []ast.Node, others [
 }
 
 func (generator *CodeGenerator) GenerateMainMethod(nodes []ast.Node) {
-	generator.Emit("int main(int argc, char **argv) ")
+	if generator.settings.IsTargetingArduino {
+		generator.Emit("void setup() ")
+	} else {
+		generator.Emit("int main(int argc, char **argv) ")
+	}
 	block := &ast.BlockStatement{
 		Children: nodes,
 	}

@@ -15,16 +15,18 @@ type CodeGenerator struct {
 	visitor *ast.Visitor
 	indent  int8
 	importModules map[string] string
+	settings Settings
 }
 
 // NewCodeGenerator constructs a CodeGenerator that generates C code from
 // the nodes in the passed translation-unit.
-func NewCodeGenerator(unit *ast.TranslationUnit) *CodeGenerator {
+func NewCodeGenerator(settings Settings, unit *ast.TranslationUnit) *CodeGenerator {
 	generators := ast.NewEmptyVisitor()
 	codeGenerator := &CodeGenerator{
 		unit:    unit,
 		output: &strings.Builder{},
 		visitor: generators,
+		settings: settings,
 	}
 	codeGenerator.buffer = codeGenerator.output
 	generators.VisitMethod = codeGenerator.GenerateMethod

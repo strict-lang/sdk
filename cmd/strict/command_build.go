@@ -8,7 +8,7 @@ import (
 )
 
 var buildCommand = &cobra.Command{
-	Use:   "build [-t target] [-p platform] [-c] [compile flags] [file]",
+	Use:   "build [-t target] [-a arduino] [-c] [compile flags] [file]",
 	Short: "Builds a strict module",
 	Long:  `Build compiles a file to a specified output file.`,
 	Run:   RunCompile,
@@ -16,7 +16,7 @@ var buildCommand = &cobra.Command{
 
 var (
 	buildTargetFile string
-	targetPlatform  string
+	targetArduino   bool
 	compileToCpp    bool
 )
 
@@ -24,9 +24,8 @@ func init() {
 	buildCommand.Flags().
 		StringVarP(&buildTargetFile, "target", "t", "", "path to the output file")
 
-	buildCommand.Flags().
-		StringVarP(&targetPlatform, "platform", "p", "cross", "name of the target platform")
 	expectNoError(buildCommand.MarkFlagFilename("target", "strict"))
+	buildCommand.Flags().BoolVarP(&compileToCpp, "arduino","a", false, "generate arduino code")
 	buildCommand.Flags().BoolVar(&compileToCpp, "c", false, "compile the generated cpp code")
 }
 
@@ -41,15 +40,18 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		command.Printf("Invalid filename: %s\n", file.Name())
 		return
 	}
-	compilation := compiler.CompileFile(unitName, file)
-	if compilation.Error != nil {
-		command.PrintErrf("Failed to compile the file: %s\n", compilation.Error)
+	compilation := &compiler.Compilation{
+		Name: unitName,
+		Source: &compiler.FileSource{File: file},
+		TargetArduino: targetArduino,
+	}
+	result := compilation.Run()
+	if result.Error != nil {
+		command.PrintErrf("Failed to compile the file: %s\n", result.Error)
 		return
 	}
-	compilation.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{
-		command: command,
-	})
-	if err := writeGeneratedSources(compilation); err != nil {
+	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command,})
+	if err := writeGeneratedSources(result); err != nil {
 		command.PrintErrf("Failed to write generated code; %s\n", err.Error())
 		return
 	}
@@ -57,7 +59,7 @@ func RunCompile(command *cobra.Command, arguments []string) {
 }
 
 func writeGeneratedSources(compilation compiler.CompilationResult) (err error) {
-	file, err := targetFile(compilation.UnitName)
+	file, err := targetFile(compilation.GeneratedFileName)
 	if err != nil {
 		return
 	}
@@ -65,10 +67,9 @@ func writeGeneratedSources(compilation compiler.CompilationResult) (err error) {
 	return
 }
 
-func targetFile(unitName string) (*os.File, error) {
+func targetFile(name string) (*os.File, error) {
 	if buildTargetFile != "" {
 		return createNewFile(fmt.Sprintf("./%s", buildTargetFile))
 	}
-	name := GeneratedFileName(unitName)
 	return createNewFile(fmt.Sprintf("./%s",name))
 }
