@@ -6,15 +6,33 @@ import (
 
 func (generator *CodeGenerator) GenerateTranslationUnit(unit *ast.TranslationUnit) {
 	methods, nonMethods := splitTopLevelNodes(unit)
-	sharedVariableDeclarations, others := splitSharedVariableDeclarations(nonMethods)
-	for _, declaration := range sharedVariableDeclarations {
-		generator.EmitNode(declaration)
-	}
-	for _, method := range methods {
-		generator.EmitNode(method)
-	}
+	importStatements, nonImports := splitImportStatements(nonMethods)
+	sharedVariableDeclarations, others := splitSharedVariableDeclarations(nonImports)
+	generator.generateAll(importStatements)
+	generator.Emit("\n\n")
+	generator.generateAll(sharedVariableDeclarations)
+	generator.Emit("\n\n")
+	generator.generateAll(methods)
+	generator.Emit("\n\n")
 	generator.GenerateMainMethod(others)
 	generator.Emit("\n")
+}
+
+func (generator *CodeGenerator) generateAll(nodes []ast.Node) {
+	for _, node := range nodes {
+		generator.EmitNode(node)
+	}
+}
+
+func splitImportStatements(nodes []ast.Node) (importStatements []ast.Node, others []ast.Node) {
+	for _, node := range nodes {
+		if _, ok := node.(*ast.ImportStatement); ok {
+			importStatements = append(importStatements, node)
+		} else {
+			others = append(others, node)
+		}
+	}
+	return
 }
 
 func splitSharedVariableDeclarations(nodes []ast.Node) (declarations []ast.Node, others []ast.Node) {

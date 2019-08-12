@@ -27,6 +27,7 @@ func NewCodeGenerator(settings Settings, unit *ast.TranslationUnit) *CodeGenerat
 		output: &strings.Builder{},
 		visitor: generators,
 		settings: settings,
+		importModules: map[string] string{},
 	}
 	codeGenerator.buffer = codeGenerator.output
 	generators.VisitMethod = codeGenerator.GenerateMethod
@@ -42,7 +43,7 @@ func NewCodeGenerator(settings Settings, unit *ast.TranslationUnit) *CodeGenerat
 	generators.VisitUnaryExpression = codeGenerator.GenerateUnaryExpression
 	generators.VisitImportStatement = codeGenerator.GenerateImportStatement
 	generators.VisitBinaryExpression = codeGenerator.GenerateBinaryExpression
-	generators.VisitSelectorExpression = codeGenerator.GenerateSelectExpression
+	generators.VisitSelectorExpression = codeGenerator.GenerateSelectorExpression
 	generators.VisitExpressionStatement = codeGenerator.GenerateExpressionStatement
 	generators.VisitFromToLoopStatement = codeGenerator.GenerateFromToLoopStatement
 	generators.VisitConditionalStatement = codeGenerator.GenerateConditionalStatement

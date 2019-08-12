@@ -43,7 +43,7 @@ func (parameter *Parameter) Accept(visitor *Visitor) {
 
 type SharedVariableDeclaration struct {
 	Type TypeName
-	Name Identifier
+	Name *Identifier
 	InitialValue Node
 }
 

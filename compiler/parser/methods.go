@@ -10,7 +10,7 @@ func (parser *Parser) ParseMethodDeclaration() (*ast.Method, error) {
 	if err := parser.skipKeyword(token.MethodKeyword); err != nil {
 		return nil, err
 	}
-	returnTypeName, err := parser.ParseTypeName()
+	returnTypeName, err := parser.parseOptionalReturnTypeName()
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +34,13 @@ func (parser *Parser) ParseMethodDeclaration() (*ast.Method, error) {
 		Parameters: parameters,
 		Body:       body,
 	}, nil
+}
+
+func (parser *Parser) parseOptionalReturnTypeName() (ast.TypeName, error){
+	if parser.isLookingAtOperator(token.LeftParenOperator) {
+		return ast.ConcreteTypeName{Name: "void"}, nil
+	}
+	return parser.ParseTypeName()
 }
 
 func (parser *Parser) parseParameterList() ([]ast.Parameter, error) {

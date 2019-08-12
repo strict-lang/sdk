@@ -11,18 +11,24 @@ func (generator *CodeGenerator) GenerateImportStatement(statement *ast.ImportSta
 }
 
 func findModuleName(statement *ast.ImportStatement) string {
-	if statement.Alias.Value == "" {
+	if statement.Alias == nil || statement.Alias.Value == "" {
 		return moduleNameByPath(statement.Path)
 	}
 	return statement.Alias.Value
 }
 
 func moduleNameByPath(path string) string {
+	var begin = 0
 	if strings.Contains(path, "/") {
-		return path
+		begin = strings.LastIndex(path, "/") + 1
 	}
-	lastIndex := strings.LastIndex(path, "/")
-	return path[lastIndex:len(path) - 1]
+	var end int
+	if strings.HasSuffix(path, ".h") {
+		end = len(path) - 2
+	} else {
+		end = len(path)
+	}
+	return path[begin:end]
 }
 
 func (generator *CodeGenerator) importModule(name, path string) {
@@ -31,5 +37,5 @@ func (generator *CodeGenerator) importModule(name, path string) {
 }
 
 func (generator *CodeGenerator) includeIntoNamespace(name, path string) {
-	generator.Emitf("namespace %s {\n#include \"%s\"\n}")
+	generator.Emitf("namespace %s {\n#include <%s>\n}", name, path)
 }

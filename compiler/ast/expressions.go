@@ -8,8 +8,8 @@ type Identifier struct {
 	Value string
 }
 
-func NewIdentifier(value string) Identifier {
-	return Identifier{Value: value}
+func NewIdentifier(value string) *Identifier {
+	return &Identifier{Value: value}
 }
 
 func (identifier *Identifier) Accept(visitor *Visitor) {

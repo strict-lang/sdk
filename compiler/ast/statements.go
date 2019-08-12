@@ -125,7 +125,7 @@ func (statement *AssignStatement) Accept(visitor *Visitor) {
 
 type ImportStatement struct {
 	Path string
-	Alias Identifier
+	Alias *Identifier
 }
 
 func (statement *ImportStatement) Accept(visitor *Visitor) {

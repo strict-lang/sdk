@@ -190,7 +190,6 @@ func (parser *Parser) ParseImportStatement() ast.Node {
 	if err := parser.skipKeyword(token.ImportKeyword); err != nil {
 		return parser.createInvalidStatement(err)
 	}
-	parser.advance()
 	path := parser.token()
 	if !token.IsStringLiteralToken(path) {
 		return parser.createInvalidStatement(&UnexpectedTokenError{
@@ -198,7 +197,9 @@ func (parser *Parser) ParseImportStatement() ast.Node {
 			Token: path,
 		})
 	}
-	if !token.HasKeywordValue(parser.peek(), token.AsKeyword) {
+	parser.advance()
+	if !token.HasKeywordValue(parser.token(), token.AsKeyword) {
+		parser.skipEndOfStatement()
 		return &ast.ImportStatement{
 			Path: path.Value(),
 		}
@@ -208,6 +209,7 @@ func (parser *Parser) ParseImportStatement() ast.Node {
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
+	parser.skipEndOfStatement()
 	return &ast.ImportStatement{
 		Path: path.Value(),
 		Alias: ast.NewIdentifier(alias),
@@ -222,6 +224,7 @@ func (parser *Parser) parseImportAlias() (string, error) {
 			Token: alias,
 		}
 	}
+	parser.advance()
 	return alias.Value(), nil
 }
 
@@ -229,12 +232,10 @@ func (parser *Parser) ParseSharedVariableDeclaration() ast.Node {
 	if err := parser.skipKeyword(token.SharedKeyword); err != nil {
 		return parser.createInvalidStatement(err)
 	}
-	parser.advance()
 	typeName, err := parser.ParseTypeName()
 	if err != nil {
 		return parser.createInvalidStatement(err)
 	}
-	parser.advance()
 	if !token.IsIdentifierToken(parser.token()) {
 		return parser.createInvalidStatement(&UnexpectedTokenError{
 			Expected: "identifier",
@@ -242,10 +243,12 @@ func (parser *Parser) ParseSharedVariableDeclaration() ast.Node {
 		})
 	}
 	variableName := parser.token().Value()
+	parser.advance()
 	assignedValue, err := parser.parseOptionalAssignValue()
-	if err != errNoAssign {
+	if err != nil && err != errNoAssign {
 		return parser.createInvalidStatement(err)
 	}
+	parser.skipEndOfStatement()
 	return &ast.SharedVariableDeclaration{
 		Type: typeName,
 		Name: ast.NewIdentifier(variableName),
@@ -256,7 +259,7 @@ func (parser *Parser) ParseSharedVariableDeclaration() ast.Node {
 var errNoAssign = errors.New("no assign")
 
 func (parser *Parser) parseOptionalAssignValue() (ast.Node, error) {
-	if !parser.isLookingAtOperator(token.AssignOperator) {
+	if !token.HasOperatorValue(parser.token(), token.AssignOperator) {
 		return nil, errNoAssign
 	}
 	parser.advance()
