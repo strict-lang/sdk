@@ -25,7 +25,7 @@ func init() {
 		StringVarP(&buildTargetFile, "target", "t", "", "path to the output file")
 
 	expectNoError(buildCommand.MarkFlagFilename("target", "strict"))
-	buildCommand.Flags().BoolVarP(&compileToCpp, "arduino","a", false, "generate arduino code")
+	buildCommand.Flags().BoolVarP(&targetArduino, "arduino", "a", false, "generate arduino code")
 	buildCommand.Flags().BoolVar(&compileToCpp, "c", false, "compile the generated cpp code")
 }
 
@@ -41,8 +41,8 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		return
 	}
 	compilation := &compiler.Compilation{
-		Name: unitName,
-		Source: &compiler.FileSource{File: file},
+		Name:          unitName,
+		Source:        &compiler.FileSource{File: file},
 		TargetArduino: targetArduino,
 	}
 	result := compilation.Run()
@@ -50,7 +50,7 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		command.PrintErrf("Failed to compile the file: %s\n", result.Error)
 		return
 	}
-	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command,})
+	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command})
 	if err := writeGeneratedSources(result); err != nil {
 		command.PrintErrf("Failed to write generated code; %s\n", err.Error())
 		return
@@ -71,5 +71,5 @@ func targetFile(name string) (*os.File, error) {
 	if buildTargetFile != "" {
 		return createNewFile(fmt.Sprintf("./%s", buildTargetFile))
 	}
-	return createNewFile(fmt.Sprintf("./%s",name))
+	return createNewFile(fmt.Sprintf("./%s", name))
 }
