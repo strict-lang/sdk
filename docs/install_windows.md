@@ -21,8 +21,8 @@ go run bootstrap.go
 ```
 git clone https://gitlab.com/strict-lang/sdk.git %GOPATH%/src/gitlab.com/strict-lang/sdk
 cd %GOPATH%/src/gitlab.com/strict-lang/sdk
-- currently broken, waiting for fix from Merlin: mage install 
-go build -o %GOPATH%/bin/strict.exe ./cmd/strict
+mage install 
+-- if you have problem with the above line, build manually: go build -o %GOPATH%/bin/strict.exe ./cmd/strict
 ```
 
 ## Test strict
