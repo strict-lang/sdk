@@ -37,5 +37,5 @@ func (generator *CodeGenerator) importModule(name, path string) {
 }
 
 func (generator *CodeGenerator) includeIntoNamespace(name, path string) {
-	generator.Emitf("namespace %s {\n#include <%s>\n}", name, path)
+	generator.Emitf("namespace %s {\n  #include <%s>\n}\n", name, path)
 }

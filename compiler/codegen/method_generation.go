@@ -42,17 +42,17 @@ func (generation *MethodGeneration) Complete() {
 	methodBody := generation.generateBody()
 	prologue := generation.generatePrologue()
 	epilogue := generation.generateEpilogue()
-	generator.leaveBlock()
 
 	generator.buffer = generator.output
 	generator.Emit(declaration)
 	generator.Emit(" {\n")
+	generator.Spaces()
 	generator.Emit(prologue)
 	generator.Emit(methodBody)
 	generator.Emit(epilogue)
-	generator.Emit("\n")
+	generator.leaveBlock()
 	generator.Spaces()
-	generator.Emit("}\n\n")
+	generator.Emit("}\n")
 }
 
 func (generation *MethodGeneration) generateDeclaration() string {
@@ -95,8 +95,10 @@ func (generation *MethodGeneration) generatePrologue() string {
 	for _, prologueGenerator := range generation.prologueGenerators {
 		prologueGenerator()
 	}
-	generation.generator.Emit("\n")
-	generation.generator.Spaces()
+	if len(generation.prologueGenerators) > 0 {
+		generation.generator.Emit("\n")
+		generation.generator.Spaces()
+	}
 	return generation.buffer.String()
 }
 

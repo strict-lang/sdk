@@ -17,11 +17,15 @@ func (generator *CodeGenerator) GenerateNumberLiteral(literal *ast.NumberLiteral
 func (generator *CodeGenerator) GenerateExpressionStatement(statement *ast.ExpressionStatement) {
 	generator.EmitNode(statement.Expression)
 	generator.Emit(";")
+	generator.writeEndOfStatement()
 }
 
 func (generator *CodeGenerator) GenerateBlockStatement(block *ast.BlockStatement) {
 	generator.Emit("{\n")
 	generator.enterBlock()
+	shouldAppendEndOfLineAtBegin := generator.appendNewLineAfterStatement
+	generator.appendNewLineAfterStatement = false
+
 	for index, child := range block.Children {
 		if index != 0 {
 			generator.Emit("\n")
@@ -29,6 +33,7 @@ func (generator *CodeGenerator) GenerateBlockStatement(block *ast.BlockStatement
 		generator.Spaces()
 		generator.EmitNode(child)
 	}
+	generator.appendNewLineAfterStatement = shouldAppendEndOfLineAtBegin
 	generator.leaveBlock()
 	generator.Emit("\n")
 	generator.Spaces()

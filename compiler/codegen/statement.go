@@ -7,6 +7,7 @@ func (generator *CodeGenerator) GenerateConditionalStatement(statement *ast.Cond
 	generator.EmitNode(statement.Condition)
 	generator.Emit(") ")
 	generator.EmitNode(statement.Body)
+	defer generator.writeEndOfStatement()
 	if statement.Else != nil {
 		generator.Emit(" else ")
 		generator.EmitNode(statement.Else)
@@ -40,6 +41,7 @@ func (generator *CodeGenerator) returnYieldList() {
 	generator.Emit("\n")
 	generator.Spaces()
 	generator.Emitf("return %s;", yieldListName)
+	generator.writeEndOfStatement()
 }
 
 func (generator *CodeGenerator) GenerateFromToLoopStatement(statement *ast.FromToLoopStatement) {
@@ -50,6 +52,7 @@ func (generator *CodeGenerator) GenerateFromToLoopStatement(statement *ast.FromT
 	generator.Emitf("; %s++) ", statement.Field.Value)
 
 	generator.EmitNode(statement.Body)
+	generator.writeEndOfStatement()
 }
 
 func (generator *CodeGenerator) GenerateForEachLoopStatement(statement *ast.ForeachLoopStatement) {
@@ -58,6 +61,7 @@ func (generator *CodeGenerator) GenerateForEachLoopStatement(statement *ast.Fore
 	generator.Emit(") ")
 
 	generator.EmitNode(statement.Body)
+	generator.writeEndOfStatement()
 }
 
 func (generator *CodeGenerator) GenerateReturnStatement(statement *ast.ReturnStatement) {
@@ -68,6 +72,7 @@ func (generator *CodeGenerator) GenerateReturnStatement(statement *ast.ReturnSta
 	generator.Emit("return ")
 	generator.EmitNode(statement.Value)
 	generator.Emit(";")
+	generator.writeEndOfStatement()
 }
 
 func (generator *CodeGenerator) GenerateAssignStatement(statement *ast.AssignStatement) {
@@ -76,6 +81,7 @@ func (generator *CodeGenerator) GenerateAssignStatement(statement *ast.AssignSta
 	generator.Emitf(" = ")
 	generator.EmitNode(statement.Value)
 	generator.Emit(";")
+	generator.writeEndOfStatement()
 }
 
 func (generator *CodeGenerator) GenerateSharedVariableDeclaration(statement *ast.SharedVariableDeclaration) {
@@ -86,4 +92,5 @@ func (generator *CodeGenerator) GenerateSharedVariableDeclaration(statement *ast
 	generator.Emit(" = ")
 	generator.EmitNode(statement.InitialValue)
 	generator.Emit(";\n")
+	generator.writeEndOfStatement()
 }

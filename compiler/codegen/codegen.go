@@ -14,6 +14,7 @@ type CodeGenerator struct {
 	method  *MethodGeneration
 	visitor *ast.Visitor
 	indent  int8
+	appendNewLineAfterStatement bool
 	importModules map[string] string
 	settings Settings
 }
@@ -28,6 +29,7 @@ func NewCodeGenerator(settings Settings, unit *ast.TranslationUnit) *CodeGenerat
 		visitor: generators,
 		settings: settings,
 		importModules: map[string] string{},
+		appendNewLineAfterStatement: true,
 	}
 	codeGenerator.buffer = codeGenerator.output
 	generators.VisitMethod = codeGenerator.GenerateMethod
@@ -76,9 +78,15 @@ func (generator *CodeGenerator) leaveBlock() {
 	}
 }
 
+func (generator *CodeGenerator) writeEndOfStatement() {
+	if generator.appendNewLineAfterStatement {
+		generator.Emit("\n")
+	}
+}
+
 func (generator *CodeGenerator) Spaces() {
 	for index := int8(0); index < generator.indent; index++ {
-		generator.Emit("\t")
+		generator.Emit("  ")
 	}
 }
 

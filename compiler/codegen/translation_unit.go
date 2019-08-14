@@ -8,14 +8,18 @@ func (generator *CodeGenerator) GenerateTranslationUnit(unit *ast.TranslationUni
 	methods, nonMethods := splitTopLevelNodes(unit)
 	importStatements, nonImports := splitImportStatements(nonMethods)
 	sharedVariableDeclarations, others := splitSharedVariableDeclarations(nonImports)
-	generator.generateAll(importStatements)
-	generator.Emit("\n\n")
-	generator.generateAll(sharedVariableDeclarations)
-	generator.Emit("\n\n")
-	generator.generateAll(methods)
-	generator.Emit("\n\n")
+	generator.generateSection(importStatements)
+	generator.generateSection(sharedVariableDeclarations)
+	generator.generateSection(methods)
 	generator.GenerateMainMethod(others)
 	generator.Emit("\n")
+}
+
+func (generator *CodeGenerator) generateSection(nodes []ast.Node) {
+	generator.generateAll(nodes)
+	if len(nodes) > 0 {
+		generator.Emit("\n")
+	}
 }
 
 func (generator *CodeGenerator) generateAll(nodes []ast.Node) {
