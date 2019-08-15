@@ -8,8 +8,6 @@ package ast
 // to implement every method. Instead one can create a default-visitor, which
 // only has noop-methods, and then set the visit-methods that should be custom.
 type Visitor struct {
-	VisitType                 func(*Type)
-
 	VisitParameter            func(*Parameter)
 	VisitMethodCall           func(*MethodCall)
 	VisitIdentifier           func(*Identifier)
@@ -55,11 +53,10 @@ func NewEmptyVisitor() *Visitor {
 		VisitSelectorExpression:   func(*SelectorExpression) {},
 		VisitIncrementStatement:   func(*IncrementStatement) {},
 		VisitDecrementStatement:   func(*DecrementStatement) {},
-		VisitMethodDeclaration:               func(*MethodDeclaration) {},
+		VisitMethodDeclaration:    func(*MethodDeclaration) {},
 		VisitRangedLoopStatement:  func(*RangedLoopStatement) {},
 		VisitExpressionStatement:  func(*ExpressionStatement) {},
 		VisitForEachLoopStatement: func(*ForEachLoopStatement) {},
 		VisitConditionalStatement: func(*ConditionalStatement) {},
-		VisitSharedVariableDeclaration: func(*SharedVariableDeclaration) {},
 	}
 }
