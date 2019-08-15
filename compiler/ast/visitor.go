@@ -9,8 +9,7 @@ package ast
 // only has noop-methods, and then set the visit-methods that should be custom.
 type Visitor struct {
 	VisitType                 func(*Type)
-	VisitMember               func(*Member)
-	VisitMethod               func(*Method)
+
 	VisitParameter            func(*Parameter)
 	VisitMethodCall           func(*MethodCall)
 	VisitIdentifier           func(*Identifier)
@@ -26,21 +25,18 @@ type Visitor struct {
 	VisitTranslationUnit      func(*TranslationUnit)
 	VisitInvalidStatement     func(*InvalidStatement)
 	VisitBinaryExpression     func(*BinaryExpression)
+	VisitMethodDeclaration    func(*MethodDeclaration)
 	VisitSelectorExpression   func(*SelectorExpression)
 	VisitIncrementStatement   func(*IncrementStatement)
 	VisitDecrementStatement   func(*DecrementStatement)
-	VisitFromToLoopStatement  func(*FromToLoopStatement)
+	VisitRangedLoopStatement  func(*RangedLoopStatement)
 	VisitExpressionStatement  func(*ExpressionStatement)
-	VisitForeachLoopStatement func(*ForeachLoopStatement)
+	VisitForEachLoopStatement func(*ForEachLoopStatement)
 	VisitConditionalStatement func(*ConditionalStatement)
-	VisitSharedVariableDeclaration func(*SharedVariableDeclaration)
 }
 
 func NewEmptyVisitor() *Visitor {
 	return &Visitor{
-		VisitType:                 func(*Type) {},
-		VisitMember:               func(*Member) {},
-		VisitMethod:               func(*Method) {},
 		VisitParameter:            func(*Parameter) {},
 		VisitMethodCall:           func(*MethodCall) {},
 		VisitIdentifier:           func(*Identifier) {},
@@ -59,9 +55,10 @@ func NewEmptyVisitor() *Visitor {
 		VisitSelectorExpression:   func(*SelectorExpression) {},
 		VisitIncrementStatement:   func(*IncrementStatement) {},
 		VisitDecrementStatement:   func(*DecrementStatement) {},
-		VisitFromToLoopStatement:  func(*FromToLoopStatement) {},
+		VisitMethodDeclaration:               func(*MethodDeclaration) {},
+		VisitRangedLoopStatement:  func(*RangedLoopStatement) {},
 		VisitExpressionStatement:  func(*ExpressionStatement) {},
-		VisitForeachLoopStatement: func(*ForeachLoopStatement) {},
+		VisitForEachLoopStatement: func(*ForEachLoopStatement) {},
 		VisitConditionalStatement: func(*ConditionalStatement) {},
 		VisitSharedVariableDeclaration: func(*SharedVariableDeclaration) {},
 	}

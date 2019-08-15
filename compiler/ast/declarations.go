@@ -1,54 +1,48 @@
 package ast
 
-// Type represents the type of a member and expressions.
-type Type struct {
-	Name    *Identifier
-	Members []*Member
-}
-
-func (typeNode *Type) Accept(visitor *Visitor) {
-	visitor.VisitType(typeNode)
-}
-
-// Member is a typed field of a class. It represents methods and
-// attributes. The type of a method member is its return-type.
-type Member struct {
-	Name Identifier
-	Type TypeName
-}
-
-func (member *Member) Accept(visitor *Visitor) {
-	visitor.VisitMember(member)
-}
-
-type Method struct {
+type ParameterList []*Parameter
+type MethodDeclaration struct {
 	Name       Identifier
 	Type       TypeName
-	Parameters []Parameter
+	Parameters ParameterList
 	Body       Node
+	NodePosition Position
 }
 
-func (method *Method) Accept(visitor *Visitor) {
+func (method *MethodDeclaration) Accept(visitor *Visitor) {
 	visitor.VisitMethod(method)
+}
+
+func (method *MethodDeclaration) AcceptAll(visitor *Visitor) {
+	visitor.VisitMethod(method)
+	for _, parameter := range method.Parameters {
+		parameter.AcceptAll(visitor)
+	}
+	method.Body.AcceptAll(visitor)
+}
+
+func (method *MethodDeclaration) Position() Position {
+	return method.Position()
 }
 
 type Parameter struct {
 	Type TypeName
 	Name Identifier
+	NodePosition Position
+}
+
+func (parameter Parameter) IsNamedAfterType() bool {
+	return parameter.Type.NonGenericName() == parameter.Name.Value
 }
 
 func (parameter *Parameter) Accept(visitor *Visitor) {
 	visitor.VisitParameter(parameter)
 }
 
-type SharedVariableDeclaration struct {
-	Type TypeName
-	Name *Identifier
-	InitialValue Node
+func (parameter *Parameter) AcceptAll(visitor *Visitor) {
+	visitor.VisitParameter(parameter)
 }
 
-func (declaration *SharedVariableDeclaration) Accept(visitor *Visitor) {
-	visitor.VisitSharedVariableDeclaration(declaration)
+func (parameter *Parameter) Position() Position {
+	return parameter.NodePosition
 }
-
-

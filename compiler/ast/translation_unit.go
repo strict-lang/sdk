@@ -11,6 +11,7 @@ type TranslationUnit struct {
 	name     string
 	scope    *code.Scope
 	Children []Node
+	NodePosition Position
 }
 
 func NewEmptyTranslationUnit(name string) *TranslationUnit {
@@ -38,6 +39,23 @@ func (unit *TranslationUnit) Accept(visitor *Visitor) {
 	visitor.VisitTranslationUnit(unit)
 }
 
+func (unit *TranslationUnit) AcceptAll(visitor *Visitor) {
+	visitor.VisitTranslationUnit(unit)
+	for _, topLevelNode := range unit.Children {
+		topLevelNode.AcceptAll(visitor)
+	}
+}
+
 func (unit *TranslationUnit) AppendChild(node Node) {
 	unit.Children = append(unit.Children, node)
+}
+
+func (unit *TranslationUnit) ToTypeName() TypeName {
+	return ConcreteTypeName{
+		Name: unit.name,
+	}
+}
+
+func (unit *TranslationUnit) Position() Position {
+	return unit.NodePosition
 }

@@ -7,22 +7,18 @@ import (
 
 // Node is implemented by every node of the ast.
 type Node interface {
-	// Accept invokes the visitor on all of the nodes children.
+	Positioned
+
+	// Lets the visitor visit this node.
 	Accept(visitor *Visitor)
+	// Lets the visitor visit this node and its children.
+	AcceptAll(visitor *Visitor)
 }
 
 // Named is implemented by all nodes that have a name.
 type Named interface {
 	// Name returns the nodes name.
 	Name() string
-}
-
-// Typed is implemented by all nodes that have a time which is known during
-// compilation. While the returned pointer may never be nil, it can point to
-// the UnknownType value, indicating that the type is now known.
-type Typed interface {
-	// Type returns a pointer to the nodes type.
-	Type() *Type
 }
 
 // Scoped is implemented by all nodes that are only visibile in a certain scope

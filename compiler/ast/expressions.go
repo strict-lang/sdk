@@ -6,14 +6,19 @@ import (
 
 type Identifier struct {
 	Value string
-}
-
-func NewIdentifier(value string) *Identifier {
-	return &Identifier{Value: value}
+	NodePosition Position
 }
 
 func (identifier *Identifier) Accept(visitor *Visitor) {
 	visitor.VisitIdentifier(identifier)
+}
+
+func (identifier *Identifier) AcceptAll(visitor *Visitor) {
+	visitor.VisitIdentifier(identifier)
+}
+
+func (identifier *Identifier) Position() Position {
+	return identifier.Position()
 }
 
 // UnaryExpression is an operation on a single operand.

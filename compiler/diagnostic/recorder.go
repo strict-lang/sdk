@@ -5,14 +5,18 @@ import "gitlab.com/strict-lang/sdk/compiler/source"
 type RecordedEntry struct {
 	Kind     *Kind
 	Stage    *Stage
-	Source   string
 	Message  string
 	UnitName string
-	Offset   source.Offset
+	Position RecordedPosition
 }
 
 type Recorder struct {
 	entries *[]RecordedEntry
+}
+
+type RecordedPosition interface {
+	Begin() source.Offset
+	End() source.Offset
 }
 
 func NewRecorder() *Recorder {
@@ -30,7 +34,7 @@ type OffsetToPositionConverter func(source.Offset) source.Position
 func (recorder *Recorder) CreateDiagnostics(converter OffsetToPositionConverter) *Diagnostics {
 	mappedEntries := make(map[string][]Entry)
 	for _, recorded := range *recorder.entries {
-		position := converter(recorded.Offset)
+		position := converter(recorded.Position.Begin())
 		entry := Entry{
 			Position: Position{
 				LineIndex: position.Line.Index,
@@ -38,7 +42,6 @@ func (recorder *Recorder) CreateDiagnostics(converter OffsetToPositionConverter)
 			},
 			UnitName: recorded.UnitName,
 			Kind:     recorded.Kind,
-			Source:   recorded.Source,
 			Message:  recorded.Message,
 			Stage:    recorded.Stage,
 		}
