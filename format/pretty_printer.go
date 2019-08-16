@@ -79,7 +79,7 @@ func (printer *PrettyPrinter) printNode(node ast.Node) {
 func (printer *PrettyPrinter) printTranslationUnit(unit *ast.TranslationUnit) {
 	for _, child := range unit.Children {
 		printer.printNode(child)
-		if _, ok := child.(*ast.Method); !ok {
+		if _, ok := child.(*ast.MethodDeclaration); !ok {
 			// TODO(MerlinOsayimwen): Find better way to filter declarations.
 			printer.appendLineBreak()
 		}
@@ -87,7 +87,7 @@ func (printer *PrettyPrinter) printTranslationUnit(unit *ast.TranslationUnit) {
 }
 
 func (printer *PrettyPrinter) registerAstVisitors() {
-	printer.astVisitor.VisitMethod = printer.printMethod
+	printer.astVisitor.VisitMethodDeclaration = printer.printMethod
 	printer.astVisitor.VisitMethodCall = printer.printMethodCall
 	printer.astVisitor.VisitIdentifier = printer.printIdentifier
 	printer.astVisitor.VisitNumberLiteral = printer.printNumberLiteral
@@ -100,8 +100,8 @@ func (printer *PrettyPrinter) registerAstVisitors() {
 	printer.astVisitor.VisitAssignStatement = printer.printAssignStatement
 	printer.astVisitor.VisitBinaryExpression = printer.printBinaryExpression
 	printer.astVisitor.VisitSelectorExpression = printer.printSelectorExpression
-	printer.astVisitor.VisitFromToLoopStatement = printer.printFromToLoopStatement
+	printer.astVisitor.VisitRangedLoopStatement = printer.printRangedLoopStatement
 	printer.astVisitor.VisitExpressionStatement = printer.printExpressionStatement
 	printer.astVisitor.VisitConditionalStatement = printer.printConditionalStatement
-	printer.astVisitor.VisitForeachLoopStatement = printer.printForeachLoopStatement
+	printer.astVisitor.VisitForEachLoopStatement = printer.printForEachLoopStatement
 }

@@ -6,11 +6,11 @@ func (generator *CodeGenerator) GenerateConditionalStatement(statement *ast.Cond
 	generator.Emit("if (")
 	generator.EmitNode(statement.Condition)
 	generator.Emit(") ")
-	generator.EmitNode(statement.Body)
+	generator.EmitNode(statement.Consequence)
 	defer generator.writeEndOfStatement()
-	if statement.Else != nil {
+	if statement.Alternative != nil {
 		generator.Emit(" else ")
-		generator.EmitNode(statement.Else)
+		generator.EmitNode(statement.Alternative)
 	}
 }
 
@@ -44,20 +44,20 @@ func (generator *CodeGenerator) returnYieldList() {
 	generator.writeEndOfStatement()
 }
 
-func (generator *CodeGenerator) GenerateFromToLoopStatement(statement *ast.FromToLoopStatement) {
-	generator.Emitf("for (auto %s = ", statement.Field.Value)
-	generator.EmitNode(statement.From)
-	generator.Emitf("; %s < ", statement.Field.Value)
-	generator.EmitNode(statement.To)
-	generator.Emitf("; %s++) ", statement.Field.Value)
+func (generator *CodeGenerator) GenerateRangedLoopStatement(statement *ast.RangedLoopStatement) {
+	generator.Emitf("for (auto %s = ", statement.ValueField.Value)
+	generator.EmitNode(statement.InitialValue)
+	generator.Emitf("; %s < ", statement.ValueField.Value)
+	generator.EmitNode(statement.EndValue)
+	generator.Emitf("; %s++) ", statement.ValueField.Value)
 
 	generator.EmitNode(statement.Body)
 	generator.writeEndOfStatement()
 }
 
-func (generator *CodeGenerator) GenerateForEachLoopStatement(statement *ast.ForeachLoopStatement) {
+func (generator *CodeGenerator) GenerateForEachLoopStatement(statement *ast.ForEachLoopStatement) {
 	generator.Emitf("for (auto %s : ", statement.Field.Value)
-	generator.EmitNode(statement.Target)
+	generator.EmitNode(statement.Enumeration)
 	generator.Emit(") ")
 
 	generator.EmitNode(statement.Body)
@@ -81,16 +81,5 @@ func (generator *CodeGenerator) GenerateAssignStatement(statement *ast.AssignSta
 	generator.Emitf(" = ")
 	generator.EmitNode(statement.Value)
 	generator.Emit(";")
-	generator.writeEndOfStatement()
-}
-
-func (generator *CodeGenerator) GenerateSharedVariableDeclaration(statement *ast.SharedVariableDeclaration) {
-	generator.Emitf("static %s %s", statement.Type.FullName(), statement.Name.Value)
-	if statement.InitialValue == nil {
-		return
-	}
-	generator.Emit(" = ")
-	generator.EmitNode(statement.InitialValue)
-	generator.Emit(";\n")
 	generator.writeEndOfStatement()
 }

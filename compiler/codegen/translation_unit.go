@@ -5,13 +5,11 @@ import (
 )
 
 func (generator *CodeGenerator) GenerateTranslationUnit(unit *ast.TranslationUnit) {
-	methods, nonMethods := splitTopLevelNodes(unit)
-	importStatements, nonImports := splitImportStatements(nonMethods)
-	sharedVariableDeclarations, others := splitSharedVariableDeclarations(nonImports)
+	importStatements, nonImports := splitImportStatements(unit.Children)
+	methods, nonMethods := splitMethodDeclarations(nonImports)
 	generator.generateSection(importStatements)
-	generator.generateSection(sharedVariableDeclarations)
 	generator.generateSection(methods)
-	generator.GenerateMainMethod(others)
+	generator.GenerateMainMethod(nonMethods)
 	generator.Emit("\n")
 }
 
@@ -39,26 +37,15 @@ func splitImportStatements(nodes []ast.Node) (importStatements []ast.Node, other
 	return
 }
 
-func splitSharedVariableDeclarations(nodes []ast.Node) (declarations []ast.Node, others []ast.Node) {
+func splitMethodDeclarations(nodes []ast.Node) (declarations []ast.Node, others []ast.Node) {
 	for _, node := range nodes {
-		if _, ok := node.(*ast.SharedVariableDeclaration); ok {
+		if _, ok := node.(*ast.MethodDeclaration); ok {
 			declarations = append(declarations, node)
 		} else {
 			others = append(others, node)
 		}
 	}
-	return declarations, others
-}
-
-func splitTopLevelNodes(unit *ast.TranslationUnit) (methods []ast.Node, others []ast.Node) {
-	for _, node := range unit.Children {
-		if _, ok := node.(*ast.Method); ok {
-			methods = append(methods, node)
-		} else {
-			others = append(others, node)
-		}
-	}
-	return methods, others
+	return
 }
 
 func (generator *CodeGenerator) GenerateMainMethod(nodes []ast.Node) {

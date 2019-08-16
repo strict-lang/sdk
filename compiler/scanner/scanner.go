@@ -162,9 +162,7 @@ func (scanner *Scanner) reportError(err error) {
 	scanner.recorder.Record(diagnostic.RecordedEntry{
 		Kind:    &diagnostic.Error,
 		Stage:   &diagnostic.LexicalAnalysis,
-		Source:  scanner.reader.String(),
 		Message: err.Error(),
-		Offset:  scanner.offset(),
 	})
 }
 

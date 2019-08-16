@@ -9,14 +9,14 @@ type MethodGeneration struct {
 	generator          *CodeGenerator
 	prologueGenerators map[string]PrologueGenerator
 	epilogueGenerators map[string]EpilogueGenerator
-	declaration        ast.Method
+	declaration        ast.MethodDeclaration
 	buffer             *strings.Builder
 }
 
 type PrologueGenerator func()
 type EpilogueGenerator func()
 
-func (generator *CodeGenerator) NewMethodGeneration(method ast.Method) *MethodGeneration {
+func (generator *CodeGenerator) NewMethodGeneration(method ast.MethodDeclaration) *MethodGeneration {
 	return &MethodGeneration{
 		generator:          generator,
 		declaration:        method,
@@ -26,7 +26,7 @@ func (generator *CodeGenerator) NewMethodGeneration(method ast.Method) *MethodGe
 	}
 }
 
-func (generator *CodeGenerator) GenerateMethod(method *ast.Method) {
+func (generator *CodeGenerator) GenerateMethod(method *ast.MethodDeclaration) {
 	methodGenerator := generator.NewMethodGeneration(*method)
 	generator.method = methodGenerator
 	methodGenerator.Complete()

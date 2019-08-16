@@ -2,7 +2,7 @@ package ast
 
 type ParameterList []*Parameter
 type MethodDeclaration struct {
-	Name       Identifier
+	Name       *Identifier
 	Type       TypeName
 	Parameters ParameterList
 	Body       Node
@@ -10,11 +10,11 @@ type MethodDeclaration struct {
 }
 
 func (method *MethodDeclaration) Accept(visitor *Visitor) {
-	visitor.VisitMethod(method)
+	visitor.VisitMethodDeclaration(method)
 }
 
 func (method *MethodDeclaration) AcceptAll(visitor *Visitor) {
-	visitor.VisitMethod(method)
+	visitor.VisitMethodDeclaration(method)
 	for _, parameter := range method.Parameters {
 		parameter.AcceptAll(visitor)
 	}

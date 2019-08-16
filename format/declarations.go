@@ -2,7 +2,7 @@ package format
 
 import "gitlab.com/strict-lang/sdk/compiler/ast"
 
-func (printer *PrettyPrinter) printMethod(method *ast.Method) {
+func (printer *PrettyPrinter) printMethod(method *ast.MethodDeclaration) {
 	printer.appendFormatted(
 		"method %s %s(", method.Type.FullName(), method.Name.Value)
 
@@ -13,7 +13,7 @@ func (printer *PrettyPrinter) printMethod(method *ast.Method) {
 	printer.printNode(method.Body)
 }
 
-func (printer *PrettyPrinter) writeMethodParameters(method *ast.Method) {
+func (printer *PrettyPrinter) writeMethodParameters(method *ast.MethodDeclaration) {
 	printer.indent.OpenContinuous()
 	parameters, combinedLength := printer.recordAllParameters(method)
 	lengthOfSpaces := len(parameters) * 2
@@ -54,7 +54,7 @@ func (printer *PrettyPrinter) writeShortParameterList(parameters []string) {
 }
 
 func (printer *PrettyPrinter) recordAllParameters(
-	call *ast.Method) (parameters []string, combinedLength int) {
+	call *ast.MethodDeclaration) (parameters []string, combinedLength int) {
 
 	for _, parameter := range call.Parameters {
 		recorded := printer.recordParameter(parameter)
@@ -64,11 +64,11 @@ func (printer *PrettyPrinter) recordAllParameters(
 	return
 }
 
-func (printer *PrettyPrinter) recordParameter(parameter ast.Parameter) string {
+func (printer *PrettyPrinter) recordParameter(parameter *ast.Parameter) string {
 	buffer := NewStringWriter()
 	oldWriter := printer.swapWriter(buffer)
 	defer printer.setWriter(oldWriter)
-	if isTypeNamedParameter(parameter) {
+	if parameter.IsNamedAfterType() {
 		printer.append(parameter.Type.FullName())
 	} else {
 		printer.appendFormatted("%s %s",
@@ -77,6 +77,3 @@ func (printer *PrettyPrinter) recordParameter(parameter ast.Parameter) string {
 	return buffer.String()
 }
 
-func isTypeNamedParameter(parameter ast.Parameter) bool {
-	return parameter.Name.Value == parameter.Type.NonGenericName()
-}

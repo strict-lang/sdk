@@ -4,41 +4,45 @@ import (
 	"errors"
 	"fmt"
 	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/source"
 	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
 // ParseIfStatement parses a conditional statement and it's optional else-clause.
 func (parser *Parser) ParseIfStatement() ast.Node {
+	beginOffset := parser.offset()
 	if err := parser.skipKeyword(token.IfKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	condition, err := parser.ParseExpression()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	if err := parser.skipKeyword(token.DoKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	parser.skipEndOfStatement()
 	body, err := parser.ParseStatementBlock()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	if !token.HasKeywordValue(parser.token(), token.ElseKeyword) {
 		return &ast.ConditionalStatement{
 			Condition: condition,
-			Body:      body,
+			Consequence:      body,
+			NodePosition: parser.createPosition(beginOffset),
 		}
 	}
 	parser.advance()
 	elseBody, err := parser.parseElseIfOrBlock()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	return &ast.ConditionalStatement{
 		Condition: condition,
-		Body:      body,
-		Else:      elseBody,
+		Consequence:      body,
+		Alternative:      elseBody,
+		NodePosition: parser.createPosition(beginOffset),
 	}
 }
 
@@ -54,47 +58,49 @@ func (parser *Parser) parseElseIfOrBlock() (ast.Node, error) {
 // ForKeyword. The statement may either be a FromToLoopStatement or
 // a ForEachLoopStatement.
 func (parser *Parser) ParseForStatement() ast.Node {
+	beginOffset := parser.offset()
 	if err := parser.skipKeyword(token.ForKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	initializerBeginToken := parser.token()
 	if token.IsIdentifierToken(initializerBeginToken) {
 		if token.HasKeywordValue(parser.peek(), token.FromKeyword) {
-			return parser.completeFromToStatement()
+			return parser.completeFromToStatement(beginOffset)
 		}
 	}
-	return parser.completeForEachStatement()
+	return parser.completeForEachStatement(beginOffset)
 }
 
 // completeForEachStatement is called by the ParseForStatement method
 // after it checked for a foreach statement. At this point the last token
 // is an identifier that is the name of the foreach loops element field.
 // This method completes the loops parsing.
-func (parser *Parser) completeForEachStatement() ast.Node {
+func (parser *Parser) completeForEachStatement(beginOffset source.Offset) ast.Node {
 	field, err := parser.expectAnyIdentifier()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	parser.advance()
 	if err := parser.skipKeyword(token.InKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	value, err := parser.ParseExpression()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	if err := parser.skipKeyword(token.DoKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	parser.skipEndOfStatement()
 	body, err := parser.ParseStatementBlock()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
-	return &ast.ForeachLoopStatement{
+	return &ast.ForEachLoopStatement{
 		Field:  field,
-		Target: value,
+		Enumeration: value,
 		Body:   body,
+		NodePosition: parser.createPosition(beginOffset),
 	}
 }
 
@@ -102,39 +108,40 @@ func (parser *Parser) completeForEachStatement() ast.Node {
 // after it peeked the 'from' keyword. At this point, the last token
 // is an identifier that is the name of the loops counter field. This
 // method completes the loops parsing.
-func (parser *Parser) completeFromToStatement() ast.Node {
+func (parser *Parser) completeFromToStatement(beginOffset source.Offset) ast.Node {
 	field, err := parser.expectAnyIdentifier()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	parser.advance()
 	if err := parser.skipKeyword(token.FromKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	from, err := parser.ParseExpression()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	if err := parser.skipKeyword(token.ToKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	to, err := parser.ParseExpression()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	if err := parser.skipKeyword(token.DoKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	parser.skipEndOfStatement()
 	body, err := parser.ParseStatementBlock()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
-	return &ast.FromToLoopStatement{
-		Field: field,
-		From:  from,
-		To:    to,
+	return &ast.RangedLoopStatement{
+		ValueField: field,
+		InitialValue:  from,
+		EndValue:    to,
 		Body:  body,
+		NodePosition: parser.createPosition(beginOffset),
 	}
 }
 
@@ -142,16 +149,18 @@ func (parser *Parser) completeFromToStatement() ast.Node {
 // element to an implicitly created list, which is returned by the method.
 // Any kind of expression can be yielded.
 func (parser *Parser) ParseYieldStatement() ast.Node {
+	beginOffset := parser.offset()
 	if err := parser.skipKeyword(token.YieldKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	rightHandSide, err := parser.ParseExpression()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	parser.skipEndOfStatement()
 	return &ast.YieldStatement{
 		Value: rightHandSide,
+		NodePosition: parser.createPosition(beginOffset),
 	}
 }
 
@@ -161,38 +170,44 @@ func (parser *Parser) ParseYieldStatement() ast.Node {
 // instructions to be ignored. The ReturnStatement is always the last statement
 // within a StatementSequence / Branch.
 func (parser *Parser) ParseReturnStatement() ast.Node {
+	beginOffset := parser.offset()
 	if err := parser.skipKeyword(token.ReturnKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	if token.IsEndOfStatementToken(parser.token()) {
 		parser.advance()
-		return &ast.ReturnStatement{}
+		return &ast.ReturnStatement{
+			NodePosition: parser.createPosition(beginOffset),
+		}
 	}
 	rightHandSide, err := parser.ParseExpression()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	parser.skipEndOfStatement()
 	return &ast.ReturnStatement{
 		Value: rightHandSide,
+		NodePosition: parser.createPosition(beginOffset),
 	}
 }
 
-func (parser *Parser) parseNestedMethod() ast.Node {
+func (parser *Parser) parseNestedMethodDeclaration() ast.Node {
+	beginPosition := parser.offset()
 	method, err := parser.ParseMethodDeclaration()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginPosition, err)
 	}
 	return method
 }
 
 func (parser *Parser) ParseImportStatement() ast.Node {
+	beginOffset := parser.offset()
 	if err := parser.skipKeyword(token.ImportKeyword); err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	path := parser.token()
 	if !token.IsStringLiteralToken(path) {
-		return parser.createInvalidStatement(&UnexpectedTokenError{
+		return parser.createInvalidStatement(beginOffset, &UnexpectedTokenError{
 			Expected: "Path",
 			Token: path,
 		})
@@ -202,17 +217,27 @@ func (parser *Parser) ParseImportStatement() ast.Node {
 		parser.skipEndOfStatement()
 		return &ast.ImportStatement{
 			Path: path.Value(),
+			NodePosition: parser.createPosition(beginOffset),
 		}
 	}
 	parser.advance()
+	aliasOffset := parser.offset()
 	alias, err := parser.parseImportAlias()
 	if err != nil {
-		return parser.createInvalidStatement(err)
+		return parser.createInvalidStatement(beginOffset, err)
 	}
+	aliasEnd := parser.offset()
 	parser.skipEndOfStatement()
 	return &ast.ImportStatement{
 		Path: path.Value(),
-		Alias: ast.NewIdentifier(alias),
+		Alias: &ast.Identifier{
+			Value: alias,
+			NodePosition: &offsetPosition{
+				begin: aliasOffset,
+				end: aliasEnd,
+			},
+		},
+		NodePosition: parser.createPosition(beginOffset),
 	}
 }
 
@@ -226,34 +251,6 @@ func (parser *Parser) parseImportAlias() (string, error) {
 	}
 	parser.advance()
 	return alias.Value(), nil
-}
-
-func (parser *Parser) ParseSharedVariableDeclaration() ast.Node {
-	if err := parser.skipKeyword(token.SharedKeyword); err != nil {
-		return parser.createInvalidStatement(err)
-	}
-	typeName, err := parser.ParseTypeName()
-	if err != nil {
-		return parser.createInvalidStatement(err)
-	}
-	if !token.IsIdentifierToken(parser.token()) {
-		return parser.createInvalidStatement(&UnexpectedTokenError{
-			Expected: "identifier",
-			Token: parser.token(),
-		})
-	}
-	variableName := parser.token().Value()
-	parser.advance()
-	assignedValue, err := parser.parseOptionalAssignValue()
-	if err != nil && err != errNoAssign {
-		return parser.createInvalidStatement(err)
-	}
-	parser.skipEndOfStatement()
-	return &ast.SharedVariableDeclaration{
-		Type: typeName,
-		Name: ast.NewIdentifier(variableName),
-		InitialValue: assignedValue,
-	}
 }
 
 var errNoAssign = errors.New("no assign")
@@ -271,20 +268,12 @@ func (parser *Parser) parseOptionalAssignValue() (ast.Node, error) {
 // function has been found.
 func (parser *Parser) keywordStatementParser(keyword token.Keyword) (func() ast.Node, bool) {
 	switch keyword {
-	case token.MethodKeyword:
-		return parser.parseNestedMethod, true
-	case token.IfKeyword:
-		return parser.ParseIfStatement, true
-	case token.ForKeyword:
-		return parser.ParseForStatement, true
-	case token.YieldKeyword:
-		return parser.ParseYieldStatement, true
-	case token.ReturnKeyword:
-		return parser.ParseReturnStatement, true
-	case token.ImportKeyword:
-		return parser.ParseImportStatement, true
-	case token.SharedKeyword:
-		return parser.ParseSharedVariableDeclaration, true
+	case token.IfKeyword:     return parser.ParseIfStatement, true
+	case token.ForKeyword:    return parser.ParseForStatement, true
+	case token.YieldKeyword:  return parser.ParseYieldStatement, true
+	case token.ReturnKeyword: return parser.ParseReturnStatement, true
+	case token.ImportKeyword: return parser.ParseImportStatement, true
+	case token.MethodKeyword: return parser.parseNestedMethodDeclaration, true
 	}
 	return nil, false
 }
@@ -345,6 +334,7 @@ func (parser *Parser) ParseInstructionStatement() (ast.Node, error) {
 // conditionals or loops, therefor this function may end up scanning multiple statements
 // and call itself.
 func (parser *Parser) ParseStatement() ast.Node {
+	beginOffset := parser.offset()
 	switch current := parser.token(); {
 	case token.IsKeywordToken(current):
 		return parser.ParseKeywordStatement(token.KeywordValue(current))
@@ -355,13 +345,11 @@ func (parser *Parser) ParseStatement() ast.Node {
 	case token.IsLiteralToken(current):
 		statement, err := parser.ParseInstructionStatement()
 		if err != nil {
-			return parser.createInvalidStatement(err)
+			return parser.createInvalidStatement(beginOffset, err)
 		}
-		// if !token.IsEndOfStatementToken(parser.token()) {
-		// }
 		return statement
 	default:
-		return &ast.InvalidStatement{}
+		return parser.createInvalidStatement(beginOffset, ErrInvalidExpression)
 	}
 }
 
@@ -377,7 +365,8 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 			break
 		}
 		if current.Indent() > expectedIndent {
-			invalid := parser.createInvalidStatement(&InvalidIndentationError{
+			beginOffset := parser.offset() - 1
+			invalid := parser.createInvalidStatement(beginOffset, &InvalidIndentationError{
 				Token:    current,
 				Expected: fmt.Sprintf("indent level of %d", expectedIndent),
 			})
@@ -398,6 +387,7 @@ func (parser *Parser) ParseStatementSequence() []ast.Node {
 
 // ParseStatementBlock parses a block of statements.
 func (parser *Parser) ParseStatementBlock() (*ast.BlockStatement, error) {
+	beginOffset := parser.offset()
 	indent := parser.token().Indent()
 	if indent < parser.block.Indent {
 		return nil, &InvalidIndentationError{
@@ -410,5 +400,6 @@ func (parser *Parser) ParseStatementBlock() (*ast.BlockStatement, error) {
 	parser.closeBlock()
 	return &ast.BlockStatement{
 		Children: statements,
+		NodePosition: parser.createPosition(beginOffset),
 	}, nil
 }

@@ -2,11 +2,13 @@ package parser
 
 import (
 	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/source"
 	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
 // ParseMethodDeclaration parses a method declaration.
-func (parser *Parser) ParseMethodDeclaration() (*ast.Method, error) {
+func (parser *Parser) ParseMethodDeclaration() (*ast.MethodDeclaration, error) {
+	beginOffset := parser.offset()
 	if err := parser.skipKeyword(token.MethodKeyword); err != nil {
 		return nil, err
 	}
@@ -28,11 +30,12 @@ func (parser *Parser) ParseMethodDeclaration() (*ast.Method, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ast.Method{
+	return &ast.MethodDeclaration{
 		Type:       returnTypeName,
 		Name:       methodName,
-		Parameters: parameters,
 		Body:       body,
+		Parameters: parameters,
+		NodePosition: parser.createPosition(beginOffset),
 	}, nil
 }
 
@@ -43,11 +46,10 @@ func (parser *Parser) parseOptionalReturnTypeName() (ast.TypeName, error){
 	return parser.ParseTypeName()
 }
 
-func (parser *Parser) parseParameterList() ([]ast.Parameter, error) {
+func (parser *Parser) parseParameterList() (parameters ast.ParameterList, err error) {
 	if err := parser.skipOperator(token.LeftParenOperator); err != nil {
 		return nil, err
 	}
-	var parameters []ast.Parameter
 	for {
 		if token.OperatorValue(parser.token()) == token.RightParenOperator {
 			parser.advance()
@@ -73,26 +75,29 @@ func (parser *Parser) parseParameterList() ([]ast.Parameter, error) {
 	return parameters, nil
 }
 
-func (parser *Parser) parseParameter() (ast.Parameter, error) {
+func (parser *Parser) parseParameter() (*ast.Parameter, error) {
+	beginOffset := parser.offset()
 	typeName, err := parser.ParseTypeName()
 	if err != nil {
-		return ast.Parameter{}, err
+		return nil, err
 	}
 	if next := parser.token(); token.IsIdentifierToken(next) {
 		parser.advance()
-		return ast.Parameter{
+		return &ast.Parameter{
 			Name: ast.Identifier{Value: next.Value()},
 			Type: typeName,
+			NodePosition: parser.createPosition(beginOffset),
 		}, nil
 	}
-	return typeNamedParameter(typeName), nil
+	return parser.createTypeNamedParameter(beginOffset, typeName), nil
 }
 
-func typeNamedParameter(typeName ast.TypeName) ast.Parameter {
-	return ast.Parameter{
+func (parser *Parser) createTypeNamedParameter(beginOffset source.Offset, typeName ast.TypeName) *ast.Parameter {
+	return &ast.Parameter{
 		Type: typeName,
 		Name: ast.Identifier{
 			Value: typeName.NonGenericName(),
 		},
+		NodePosition: parser.createPosition(beginOffset),
 	}
 }

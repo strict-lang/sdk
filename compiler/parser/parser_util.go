@@ -2,6 +2,7 @@ package parser
 
 import (
 	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compiler/source"
 	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
@@ -49,16 +50,17 @@ func (parser *Parser) expectKeyword(expected token.Keyword) error {
 	return nil
 }
 
-func (parser *Parser) expectAnyIdentifier() (ast.Identifier, error) {
+func (parser *Parser) expectAnyIdentifier() (*ast.Identifier, error) {
 	current := parser.token()
 	if !token.IsIdentifierToken(current) {
-		return ast.Identifier{}, &UnexpectedTokenError{
-			Token:    parser.token(),
+		return nil, &UnexpectedTokenError{
+			Token:    current,
 			Expected: "any identifier",
 		}
 	}
-	return ast.Identifier{
+	return &ast.Identifier{
 		Value: current.Value(),
+		NodePosition: parser.createTokenPosition(),
 	}, nil
 }
 
@@ -70,9 +72,11 @@ func (parser *Parser) isLookingAtOperator(operator token.Operator) bool {
 	return token.HasOperatorValue(parser.peek(), operator)
 }
 
-func (parser *Parser) createInvalidStatement(err error) ast.Node {
+func (parser *Parser) createInvalidStatement(beginOffset source.Offset, err error) ast.Node {
 	parser.reportError(err)
-	return &ast.InvalidStatement{}
+	return &ast.InvalidStatement{
+		NodePosition: parser.createPosition(beginOffset),
+	}
 }
 
 // skipEndOfStatement skips the next token if it is an EndOfStatement token.

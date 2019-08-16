@@ -1,4 +1,4 @@
-package code
+package scope
 
 import (
 	"errors"

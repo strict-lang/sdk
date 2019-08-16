@@ -32,7 +32,7 @@ func NewCodeGenerator(settings Settings, unit *ast.TranslationUnit) *CodeGenerat
 		appendNewLineAfterStatement: true,
 	}
 	codeGenerator.buffer = codeGenerator.output
-	generators.VisitMethod = codeGenerator.GenerateMethod
+	generators.VisitMethodDeclaration = codeGenerator.GenerateMethod
 	generators.VisitIdentifier = codeGenerator.GenerateIdentifier
 	generators.VisitMethodCall = codeGenerator.GenerateMethodCall
 	generators.VisitStringLiteral = codeGenerator.GenerateStringLiteral
@@ -47,10 +47,9 @@ func NewCodeGenerator(settings Settings, unit *ast.TranslationUnit) *CodeGenerat
 	generators.VisitBinaryExpression = codeGenerator.GenerateBinaryExpression
 	generators.VisitSelectorExpression = codeGenerator.GenerateSelectorExpression
 	generators.VisitExpressionStatement = codeGenerator.GenerateExpressionStatement
-	generators.VisitFromToLoopStatement = codeGenerator.GenerateFromToLoopStatement
+	generators.VisitRangedLoopStatement = codeGenerator.GenerateRangedLoopStatement
 	generators.VisitConditionalStatement = codeGenerator.GenerateConditionalStatement
-	generators.VisitForeachLoopStatement = codeGenerator.GenerateForEachLoopStatement
-	generators.VisitSharedVariableDeclaration = codeGenerator.GenerateSharedVariableDeclaration
+	generators.VisitForEachLoopStatement = codeGenerator.GenerateForEachLoopStatement
 	return codeGenerator
 }
 

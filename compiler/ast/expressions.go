@@ -25,10 +25,20 @@ func (identifier *Identifier) Position() Position {
 type UnaryExpression struct {
 	Operator token.Operator
 	Operand  Node
+	NodePosition Position
 }
 
 func (unary *UnaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitUnaryExpression(unary)
+}
+
+func (unary *UnaryExpression) AcceptAll(visitor *Visitor) {
+	visitor.VisitUnaryExpression(unary)
+	unary.Operand.AcceptAll(visitor)
+}
+
+func (unary *UnaryExpression) Position() Position {
+	return unary.Position()
 }
 
 // BinaryExpression is an operation on two operands.
@@ -36,17 +46,39 @@ type BinaryExpression struct {
 	LeftOperand  Node
 	RightOperand Node
 	Operator     token.Operator
+	NodePosition Position
 }
 
 func (binary *BinaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitBinaryExpression(binary)
 }
 
+func (binary *BinaryExpression) AcceptAll(visitor *Visitor) {
+	visitor.VisitBinaryExpression(binary)
+	binary.LeftOperand.AcceptAll(visitor)
+	binary.RightOperand.AcceptAll(visitor)
+}
+
+func (binary *BinaryExpression) Position() Position {
+	return binary.NodePosition
+}
+
 type SelectorExpression struct {
 	Target    Node
 	Selection Node
+	NodePosition Position
 }
 
 func (selector *SelectorExpression) Accept(visitor *Visitor) {
 	visitor.VisitSelectorExpression(selector)
+}
+
+func (selector *SelectorExpression) AcceptAll(visitor *Visitor) {
+	visitor.VisitSelectorExpression(selector)
+	selector.Target.AcceptAll(visitor)
+	selector.Selection.AcceptAll(visitor)
+}
+
+func (selector *SelectorExpression) Position() Position {
+	return selector.NodePosition
 }

@@ -29,6 +29,7 @@ type MethodCall struct {
 	// An array of expression nodes that are the arguments passed to
 	// the method. The arguments types are checked during type checking.
 	Arguments []Node
+	NodePosition Position
 }
 
 func (call *MethodCall) Accept(visitor *Visitor) {
@@ -43,8 +44,13 @@ func (call *MethodCall) AcceptAll(visitor *Visitor) {
 	}
 }
 
+func (call *MethodCall) Position() Position {
+	return call.Position()
+}
+
 type BlockStatement struct {
 	Children []Node
+	NodePosition Position
 }
 
 func (block *BlockStatement) Accept(visitor *Visitor) {
@@ -56,6 +62,10 @@ func (block *BlockStatement) AcceptAll(visitor *Visitor) {
 	for _, statement := range block.Children {
 		statement.AcceptAll(visitor)
 	}
+}
+
+func (block *BlockStatement) Position() Position {
+	return block.NodePosition
 }
 
 type ConditionalStatement struct {

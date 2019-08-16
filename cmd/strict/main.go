@@ -21,4 +21,5 @@ func init() {
 	baseCommand.AddCommand(buildCommand)
 	baseCommand.AddCommand(formatCommand)
 	baseCommand.AddCommand(versionCommand)
+	baseCommand.AddCommand(astCommand)
 }

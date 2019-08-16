@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"gitlab.com/strict-lang/sdk/compiler/code"
 	"gitlab.com/strict-lang/sdk/compiler/source"
 )
 
@@ -19,13 +18,6 @@ type Node interface {
 type Named interface {
 	// Name returns the nodes name.
 	Name() string
-}
-
-// Scoped is implemented by all nodes that are only visibile in a certain scope
-// and may also only see other nodes within that scope.
-type Scoped interface {
-	// Scope returns a pointer to the nodes scope.
-	Scope() *code.Scope
 }
 
 // Position is the position of a node in the source code. It may span

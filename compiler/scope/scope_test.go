@@ -1,4 +1,4 @@
-package code
+package scope
 
 import (
 	"testing"
@@ -14,9 +14,9 @@ func (dummy Dummy) Scope() *Scope {
 
 func TestParentModifiesChild(test *testing.T) {
 	scope := NewRootScope()
-	child := scope.NewChild()
+	child := NewChild()
 
-	err := scope.PutSymbol("a", Dummy{scope: scope})
+	err := PutSymbol("a", Dummy{scope: scope})
 	expectNoError(test, err)
 	expectSymbol(test, scope, "a")
 	expectSymbol(test, child, "a")
@@ -24,9 +24,9 @@ func TestParentModifiesChild(test *testing.T) {
 
 func TestChildDoesNotModifyParent(test *testing.T) {
 	scope := NewRootScope()
-	child := scope.NewChild()
+	child := NewChild()
 
-	err := child.PutSymbol("a", Dummy{scope: child})
+	err := PutSymbol("a", Dummy{scope: child})
 	expectNoError(test, err)
 	expectSymbol(test, child, "a")
 	expectNoSymbol(test, scope, "a")
@@ -34,37 +34,37 @@ func TestChildDoesNotModifyParent(test *testing.T) {
 
 func TestChildScopeCreation(test *testing.T) {
 	scope := NewRootScope()
-	err := scope.PutSymbol("a", Dummy{scope: scope})
+	err := PutSymbol("a", Dummy{scope: scope})
 	expectNoError(test, err)
 
-	child := scope.NewChild()
+	child := NewChild()
 	expectName(test, child, "@child-1")
 	expectSymbol(test, child, "a")
 
-	namedChild := scope.NewNamedChild("test")
+	namedChild := NewNamedChild("test")
 	expectName(test, namedChild, "@test")
 	expectSymbol(test, namedChild, "a")
 }
 
 func expectName(test *testing.T, scope *Scope, name string) {
-	if scope.name == name {
+	if name == name {
 		return
 	}
-	test.Errorf("expected name to be %s but got %s", name, scope.name)
+	test.Errorf("expected name to be %s but got %s", name, name)
 }
 
 func expectSymbol(test *testing.T, scope *Scope, key string) {
-	if scope.ContainsSymbol(key) {
+	if ContainsSymbol(key) {
 		return
 	}
-	test.Errorf("expected to find %s in scope %s", key, scope.name)
+	test.Errorf("expected to find %s in scope %s", key, name)
 }
 
 func expectNoSymbol(test *testing.T, scope *Scope, key string) {
-	if !scope.ContainsSymbol(key) {
+	if !ContainsSymbol(key) {
 		return
 	}
-	test.Errorf("expected not to find %s in scope %s", key, scope.name)
+	test.Errorf("expected not to find %s in scope %s", key, name)
 }
 
 func expectNoError(test *testing.T, err error) {

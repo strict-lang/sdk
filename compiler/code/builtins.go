@@ -1,7 +1,9 @@
 package code
 
+import "gitlab.com/strict-lang/sdk/compiler/scope"
+
 type BuiltinRegistration struct {
-	scope *Scope
+	scope *scope.Scope
 }
 
 // AnyType and VoidType are not created using the TypeBuilder since they are
