@@ -8,8 +8,8 @@ var builtinMethods = map[string]string{
 	"log":         "puts",
 	"logf":        "printf",
 	"inputNumber": "strict::InputNumber",
-	"input": "strict::Input",
-	"asString": "c_str",
+	"input":       "strict::Input",
+	"asString":    "c_str",
 }
 
 type identifierVisitor func(identifier *ast.Identifier)

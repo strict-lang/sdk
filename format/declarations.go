@@ -76,4 +76,3 @@ func (printer *PrettyPrinter) recordParameter(parameter *ast.Parameter) string {
 	}
 	return buffer.String()
 }
-

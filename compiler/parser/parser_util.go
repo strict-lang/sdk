@@ -59,7 +59,7 @@ func (parser *Parser) expectAnyIdentifier() (*ast.Identifier, error) {
 		}
 	}
 	return &ast.Identifier{
-		Value: current.Value(),
+		Value:        current.Value(),
 		NodePosition: parser.createTokenPosition(),
 	}, nil
 }

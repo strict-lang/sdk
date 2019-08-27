@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	MessageInvalidModuleImport = "The imported modules name needs to be UpperCamelCase"
-	MessageInvalidUnitName = "The units name has to be lowerCamelCase"
+	MessageInvalidModuleImport    = "The imported modules name needs to be UpperCamelCase"
+	MessageInvalidUnitName        = "The units name has to be lowerCamelCase"
 	MessageInvalidDeclarationName = "Declared identifiers must be named lowerCamelCase"
-	MessageImplicitParameterName = "Parameters need explicit names if their type occurs more" +
+	MessageImplicitParameterName  = "Parameters need explicit names if their type occurs more" +
 		"than once in the parameter list"
 )
 
@@ -18,14 +18,14 @@ const (
 // names of identifiers. Names may also influence the semantics.
 type NamingChecker struct {
 	recorder *diagnostic.Recorder
-	unit *ast.TranslationUnit
-	visitor *ast.Visitor
+	unit     *ast.TranslationUnit
+	visitor  *ast.Visitor
 }
 
 func NewNamingChecker(recorder *diagnostic.Recorder, unit *ast.TranslationUnit) *NamingChecker {
 	checker := &NamingChecker{
 		recorder: recorder,
-		unit: unit,
+		unit:     unit,
 	}
 	checker.visitor = ast.NewEmptyVisitor()
 	checker.visitor.VisitParameter = checker.CheckParameterNaming
@@ -47,9 +47,9 @@ func (checker *NamingChecker) reportInvalidNode(node ast.Node, message string) {
 	checker.recorder.Record(diagnostic.RecordedEntry{
 		Position: node.Position(),
 		UnitName: checker.unit.Name(),
-		Kind: &diagnostic.Error,
-		Stage: &diagnostic.SemanticAnalysis,
-		Message: message,
+		Kind:     &diagnostic.Error,
+		Stage:    &diagnostic.SemanticAnalysis,
+		Message:  message,
 	})
 }
 
@@ -108,7 +108,7 @@ func (checker *NamingChecker) CheckMethodNamingAndImplicitParameters(method *ast
 }
 
 func (checker *NamingChecker) ensureExplicitParameterNamingOnDuplicateTypes(parameters ast.ParameterList) {
-	parameterTypeNames := map[string] bool{}
+	parameterTypeNames := map[string]bool{}
 	for _, parameter := range parameters {
 		if parameterTypeNames[parameter.Type.NonGenericName()] {
 			checker.reportInvalidNode(parameter, MessageImplicitParameterName)

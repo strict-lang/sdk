@@ -9,7 +9,7 @@ type TypeName interface {
 }
 
 type ConcreteTypeName struct {
-	Name string
+	Name         string
 	NodePosition Position
 }
 
@@ -37,7 +37,7 @@ type GenericTypeName struct {
 	Name string
 	// TODO(merlinosayimwen) Change this to a slice to support
 	//  types like maps and tuples.
-	Generic TypeName
+	Generic      TypeName
 	NodePosition Position
 }
 

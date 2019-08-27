@@ -25,10 +25,10 @@ type MethodCall struct {
 	// Method is the called method. It can be any kind of expression
 	// with the value of a method. Common nodes are identifiers and
 	// field selectors.
-	Method    Node
+	Method Node
 	// An array of expression nodes that are the arguments passed to
 	// the method. The arguments types are checked during type checking.
-	Arguments []Node
+	Arguments    []Node
 	NodePosition Position
 }
 
@@ -49,7 +49,7 @@ func (call *MethodCall) Position() Position {
 }
 
 type BlockStatement struct {
-	Children []Node
+	Children     []Node
 	NodePosition Position
 }
 
@@ -69,9 +69,9 @@ func (block *BlockStatement) Position() Position {
 }
 
 type ConditionalStatement struct {
-	Condition Node
-	Alternative Node
-	Consequence Node
+	Condition    Node
+	Alternative  Node
+	Consequence  Node
 	NodePosition Position
 }
 
@@ -109,7 +109,7 @@ type RangedLoopStatement struct {
 	EndValue Node
 	// Body of the loop that is executed each time after the value field
 	// is updated. May contain break and continue statements.
-	Body  Node
+	Body Node
 }
 
 func (loop *RangedLoopStatement) Accept(visitor *Visitor) {
@@ -157,7 +157,7 @@ func (loop *ForEachLoopStatement) Position() Position {
 }
 
 type IncrementStatement struct {
-	Operand Node
+	Operand      Node
 	NodePosition Position
 }
 
@@ -175,7 +175,7 @@ func (increment *IncrementStatement) Position() Position {
 }
 
 type DecrementStatement struct {
-	Operand Node
+	Operand      Node
 	NodePosition Position
 }
 
@@ -264,9 +264,9 @@ func (statement *EmptyStatement) Position() Position {
 }
 
 type AssignStatement struct {
-	Target   Node
-	Value    Node
-	Operator token.Operator
+	Target       Node
+	Value        Node
+	Operator     token.Operator
 	NodePosition Position
 }
 
@@ -285,8 +285,8 @@ func (statement *AssignStatement) Position() Position {
 }
 
 type ImportStatement struct {
-	Path string
-	Alias *Identifier
+	Path         string
+	Alias        *Identifier
 	NodePosition Position
 }
 
@@ -324,7 +324,7 @@ func (statement *ImportStatement) Position() Position {
 
 type AssertStatement struct {
 	NodePosition Position
-	Expression Node
+	Expression   Node
 }
 
 func (assert *AssertStatement) Accept(visitor *Visitor) {
@@ -342,8 +342,8 @@ func (assert *AssertStatement) Position() Position {
 
 type TestStatement struct {
 	NodePosition Position
-	Statements Node
-	MethodName string
+	Statements   Node
+	MethodName   string
 }
 
 func (test *TestStatement) Accept(visitor *Visitor) {

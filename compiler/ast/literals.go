@@ -1,7 +1,7 @@
 package ast
 
 type StringLiteral struct {
-	Value string
+	Value        string
 	NodePosition Position
 }
 
@@ -18,7 +18,7 @@ func (literal *StringLiteral) Position() Position {
 }
 
 type NumberLiteral struct {
-	Value string
+	Value        string
 	NodePosition Position
 }
 

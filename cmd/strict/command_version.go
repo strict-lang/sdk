@@ -10,7 +10,7 @@ const Version = "0.1.3"
 var versionCommand = &cobra.Command{
 	Use:   "version",
 	Short: "Prints the installed SDKs version",
-	Run: PrintVersion,
+	Run:   PrintVersion,
 }
 
 func PrintVersion(command *cobra.Command, arguments []string) {

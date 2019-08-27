@@ -10,17 +10,17 @@ import (
 )
 
 type Compilation struct {
-	Source Source
-	Name string
+	Source        Source
+	Name          string
 	TargetArduino bool
 }
 
 type CompilationResult struct {
-	UnitName    string
-	Generated   []byte
+	UnitName          string
+	Generated         []byte
 	GeneratedFileName string
-	Diagnostics *diagnostic.Diagnostics
-	Error       error
+	Diagnostics       *diagnostic.Diagnostics
+	Error             error
 }
 
 type ParseResult struct {
@@ -61,18 +61,18 @@ func (compilation *Compilation) Run() CompilationResult {
 	settings := codegen.Settings{IsTargetingArduino: compilation.TargetArduino}
 	generator := codegen.NewCodeGenerator(settings, parseResult.Unit)
 	return CompilationResult{
-		Generated:   []byte(generator.Generate()),
+		Generated:         []byte(generator.Generate()),
 		GeneratedFileName: generator.Filename(),
-		Diagnostics: parseResult.Diagnostics,
-		Error:       nil,
-		UnitName:    parseResult.Unit.Name(),
+		Diagnostics:       parseResult.Diagnostics,
+		Error:             nil,
+		UnitName:          parseResult.Unit.Name(),
 	}
 }
 
 func CompileFile(name string, file *os.File) CompilationResult {
 	compilation := &Compilation{
 		Source: &FileSource{File: file},
-		Name: name,
+		Name:   name,
 	}
 	return compilation.Run()
 }
@@ -80,7 +80,7 @@ func CompileFile(name string, file *os.File) CompilationResult {
 func ParseFile(name string, file *os.File) ParseResult {
 	compilation := &Compilation{
 		Source: &FileSource{File: file},
-		Name: name,
+		Name:   name,
 	}
 	return compilation.Parse()
 }
@@ -88,7 +88,7 @@ func ParseFile(name string, file *os.File) ParseResult {
 func CompileString(name string, value string) CompilationResult {
 	compilation := &Compilation{
 		Source: &InMemorySource{Source: value},
-		Name: name,
+		Name:   name,
 	}
 	return compilation.Run()
 }

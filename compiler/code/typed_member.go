@@ -12,4 +12,3 @@ type TypedMethodParameter struct {
 	Name string
 	Type *Type
 }
-

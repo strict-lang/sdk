@@ -1,5 +1,5 @@
 package codegen
 
-type FileWriter struct {}
+type FileWriter struct{}
 
 func (writer *FileWriter) Write(text string) {}

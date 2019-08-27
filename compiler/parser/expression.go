@@ -17,9 +17,12 @@ func (parser *Parser) ParseExpression() (ast.Node, error) {
 
 func (parser *Parser) ParseOperand() (ast.Node, error) {
 	switch last := parser.token(); {
-	case token.IsIdentifierToken(last): return parser.parseIdentifier()
-	case token.IsStringLiteralToken(last): return parser.parseStringLiteral()
-	case token.IsNumberLiteralToken(last): return parser.parseNumberLiteral()
+	case token.IsIdentifierToken(last):
+		return parser.parseIdentifier()
+	case token.IsStringLiteralToken(last):
+		return parser.parseStringLiteral()
+	case token.IsNumberLiteralToken(last):
+		return parser.parseNumberLiteral()
 	case token.OperatorValue(last) == token.LeftParenOperator:
 		return parser.completeLeftParenExpression()
 	}
@@ -29,7 +32,7 @@ func (parser *Parser) ParseOperand() (ast.Node, error) {
 func (parser *Parser) parseIdentifier() (*ast.Identifier, error) {
 	defer parser.advance()
 	return &ast.Identifier{
-		Value: parser.token().Value(),
+		Value:        parser.token().Value(),
 		NodePosition: parser.createTokenPosition(),
 	}, nil
 }
@@ -37,7 +40,7 @@ func (parser *Parser) parseIdentifier() (*ast.Identifier, error) {
 func (parser *Parser) parseStringLiteral() (*ast.StringLiteral, error) {
 	defer parser.advance()
 	return &ast.StringLiteral{
-		Value: parser.token().Value(),
+		Value:        parser.token().Value(),
 		NodePosition: parser.createTokenPosition(),
 	}, nil
 }
@@ -45,7 +48,7 @@ func (parser *Parser) parseStringLiteral() (*ast.StringLiteral, error) {
 func (parser *Parser) parseNumberLiteral() (*ast.NumberLiteral, error) {
 	defer parser.advance()
 	return &ast.NumberLiteral{
-		Value: parser.token().Value(),
+		Value:        parser.token().Value(),
 		NodePosition: parser.createTokenPosition(),
 	}, nil
 }
@@ -111,8 +114,8 @@ func (parser *Parser) parseSelection(operand ast.Node) (ast.Node, error) {
 		return nil, err
 	}
 	return &ast.SelectorExpression{
-		Target:    operand,
-		Selection: field,
+		Target:       operand,
+		Selection:    field,
 		NodePosition: parser.createPosition(beginOffset),
 	}, nil
 }
@@ -167,7 +170,7 @@ func (parser *Parser) parseCreateExpression() (ast.Node, error) {
 	}
 	return &ast.CreateExpression{
 		NodePosition: parser.createPosition(beginOffset),
-		Constructor: constructor,
+		Constructor:  constructor,
 	}, nil
 }
 
@@ -194,8 +197,8 @@ func (parser *Parser) ParseUnaryExpression() (ast.Node, error) {
 		return nil, err
 	}
 	return &ast.UnaryExpression{
-		Operator: operator,
-		Operand:  operand,
+		Operator:     operator,
+		Operand:      operand,
 		NodePosition: parser.createPosition(beginOffset),
 	}, nil
 }
@@ -211,8 +214,8 @@ func (parser *Parser) parseMethodCallOnNode(method ast.Node) (*ast.MethodCall, e
 		return &ast.MethodCall{}, err
 	}
 	return &ast.MethodCall{
-		Arguments: arguments,
-		Method:    method,
+		Arguments:    arguments,
+		Method:       method,
 		NodePosition: parser.createPosition(beginOffset),
 	}, nil
 }

@@ -25,13 +25,13 @@ func (builder *Builder) Append(offset, length source.Offset) {
 
 func (builder *Builder) NewLinemap() *Linemap {
 	return &Linemap{
-		lines:        builder.lines,
+		lines:       builder.lines,
 		lineOffsets: builder.offsets,
 	}
 }
 
 func NewBuilder() *Builder {
 	return &Builder{
-		index:   1,
+		index: 1,
 	}
 }

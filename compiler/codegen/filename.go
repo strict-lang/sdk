@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	FileNameFormat     = "%s.generated.cc"
+	FileNameFormat        = "%s.generated.cc"
 	ArduinoFileNameFormat = "%s.ino"
-	FileNameRegexp     = regexp.MustCompile(`(?P<Unit>\w+)\.generated\.(ino|cc)`)
-	ErrInvalidFilename = errors.New("invalid filename format")
+	FileNameRegexp        = regexp.MustCompile(`(?P<Unit>\w+)\.generated\.(ino|cc)`)
+	ErrInvalidFilename    = errors.New("invalid filename format")
 )
 
 // FilenameByUnitName returns the name of a file that belongs to the passed

@@ -8,15 +8,15 @@ import (
 
 // CodeGenerator generates C code from an ast.
 type CodeGenerator struct {
-	unit    *ast.TranslationUnit
-	output *strings.Builder
-	buffer  *strings.Builder
-	method  *MethodGeneration
-	visitor *ast.Visitor
-	indent  int8
+	unit                        *ast.TranslationUnit
+	output                      *strings.Builder
+	buffer                      *strings.Builder
+	method                      *MethodGeneration
+	visitor                     *ast.Visitor
+	indent                      int8
 	appendNewLineAfterStatement bool
-	importModules map[string] string
-	settings Settings
+	importModules               map[string]string
+	settings                    Settings
 }
 
 // NewCodeGenerator constructs a CodeGenerator that generates C code from
@@ -24,11 +24,11 @@ type CodeGenerator struct {
 func NewCodeGenerator(settings Settings, unit *ast.TranslationUnit) *CodeGenerator {
 	generators := ast.NewEmptyVisitor()
 	codeGenerator := &CodeGenerator{
-		unit:    unit,
-		output: &strings.Builder{},
-		visitor: generators,
-		settings: settings,
-		importModules: map[string] string{},
+		unit:                        unit,
+		output:                      &strings.Builder{},
+		visitor:                     generators,
+		settings:                    settings,
+		importModules:               map[string]string{},
 		appendNewLineAfterStatement: true,
 	}
 	codeGenerator.buffer = codeGenerator.output

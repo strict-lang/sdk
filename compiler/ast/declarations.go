@@ -2,10 +2,10 @@ package ast
 
 type ParameterList []*Parameter
 type MethodDeclaration struct {
-	Name       *Identifier
-	Type       TypeName
-	Parameters ParameterList
-	Body       Node
+	Name         *Identifier
+	Type         TypeName
+	Parameters   ParameterList
+	Body         Node
 	NodePosition Position
 }
 
@@ -26,8 +26,8 @@ func (method *MethodDeclaration) Position() Position {
 }
 
 type Parameter struct {
-	Type TypeName
-	Name *Identifier
+	Type         TypeName
+	Name         *Identifier
 	NodePosition Position
 }
 
@@ -48,8 +48,8 @@ func (parameter *Parameter) Position() Position {
 }
 
 type FieldDeclaration struct {
-	Name *Identifier
-	TypeName TypeName
+	Name         *Identifier
+	TypeName     TypeName
 	NodePosition Position
 }
 

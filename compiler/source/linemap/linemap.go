@@ -6,7 +6,7 @@ import (
 
 type Linemap struct {
 	lines        []lineEntry
-	lineOffsets []source.Offset
+	lineOffsets  []source.Offset
 	recentOffset source.Offset
 	recentLine   source.LineIndex
 }

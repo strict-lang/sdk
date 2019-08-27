@@ -11,17 +11,17 @@ type BuiltinRegistration struct {
 // like implicit conversion checks.
 var (
 	AnyType = Type{
-		Name: "any",
+		Name:       "any",
 		Descriptor: typeDescriptorAny,
 	}
 
 	VoidType = Type{
-		Name: "void",
+		Name:       "void",
 		Descriptor: typeDescriptorVoid,
 	}
 
 	BoolType = TypeBuilder{
-		Name: "bool",
+		Name:       "bool",
 		Descriptor: typeDescriptorBool,
 	}.Create()
 

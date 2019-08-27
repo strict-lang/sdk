@@ -83,7 +83,7 @@ func (parser *Parser) offset() source.Offset {
 
 type offsetPosition struct {
 	begin source.Offset
-	end source.Offset
+	end   source.Offset
 }
 
 func (position offsetPosition) Begin() source.Offset {

@@ -5,7 +5,7 @@ import (
 )
 
 type Identifier struct {
-	Value string
+	Value        string
 	NodePosition Position
 }
 
@@ -23,8 +23,8 @@ func (identifier *Identifier) Position() Position {
 
 // UnaryExpression is an operation on a single operand.
 type UnaryExpression struct {
-	Operator token.Operator
-	Operand  Node
+	Operator     token.Operator
+	Operand      Node
 	NodePosition Position
 }
 
@@ -64,8 +64,8 @@ func (binary *BinaryExpression) Position() Position {
 }
 
 type SelectorExpression struct {
-	Target    Node
-	Selection Node
+	Target       Node
+	Selection    Node
 	NodePosition Position
 }
 
@@ -85,7 +85,7 @@ func (selector *SelectorExpression) Position() Position {
 
 type CreateExpression struct {
 	NodePosition Position
-	Constructor *MethodCall
+	Constructor  *MethodCall
 }
 
 func (create *CreateExpression) Accept(visitor *Visitor) {

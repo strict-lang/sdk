@@ -8,9 +8,9 @@ import (
 // source code. It can have multiple children, which are seen as the roots
 // of the actual ast. This node however, is the real unit of the ast.
 type TranslationUnit struct {
-	name     string
-	scope    *scope.Scope
-	Children []Node
+	name         string
+	scope        *scope.Scope
+	Children     []Node
 	NodePosition Position
 }
 

@@ -28,8 +28,8 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 	}
 	if !token.HasKeywordValue(parser.token(), token.ElseKeyword) {
 		return &ast.ConditionalStatement{
-			Condition: condition,
-			Consequence:      body,
+			Condition:    condition,
+			Consequence:  body,
 			NodePosition: parser.createPosition(beginOffset),
 		}
 	}
@@ -39,9 +39,9 @@ func (parser *Parser) ParseIfStatement() ast.Node {
 		return parser.createInvalidStatement(beginOffset, err)
 	}
 	return &ast.ConditionalStatement{
-		Condition: condition,
-		Consequence:      body,
-		Alternative:      elseBody,
+		Condition:    condition,
+		Consequence:  body,
+		Alternative:  elseBody,
 		NodePosition: parser.createPosition(beginOffset),
 	}
 }
@@ -97,9 +97,9 @@ func (parser *Parser) completeForEachStatement(beginOffset source.Offset) ast.No
 		return parser.createInvalidStatement(beginOffset, err)
 	}
 	return &ast.ForEachLoopStatement{
-		Field:  field,
-		Enumeration: value,
-		Body:   body,
+		Field:        field,
+		Enumeration:  value,
+		Body:         body,
 		NodePosition: parser.createPosition(beginOffset),
 	}
 }
@@ -137,10 +137,10 @@ func (parser *Parser) completeFromToStatement(beginOffset source.Offset) ast.Nod
 		return parser.createInvalidStatement(beginOffset, err)
 	}
 	return &ast.RangedLoopStatement{
-		ValueField: field,
-		InitialValue:  from,
-		EndValue:    to,
-		Body:  body,
+		ValueField:   field,
+		InitialValue: from,
+		EndValue:     to,
+		Body:         body,
 		NodePosition: parser.createPosition(beginOffset),
 	}
 }
@@ -159,7 +159,7 @@ func (parser *Parser) ParseYieldStatement() ast.Node {
 	}
 	parser.skipEndOfStatement()
 	return &ast.YieldStatement{
-		Value: rightHandSide,
+		Value:        rightHandSide,
 		NodePosition: parser.createPosition(beginOffset),
 	}
 }
@@ -186,7 +186,7 @@ func (parser *Parser) ParseReturnStatement() ast.Node {
 	}
 	parser.skipEndOfStatement()
 	return &ast.ReturnStatement{
-		Value: rightHandSide,
+		Value:        rightHandSide,
 		NodePosition: parser.createPosition(beginOffset),
 	}
 }
@@ -209,14 +209,14 @@ func (parser *Parser) ParseImportStatement() ast.Node {
 	if !token.IsStringLiteralToken(path) {
 		return parser.createInvalidStatement(beginOffset, &UnexpectedTokenError{
 			Expected: "Path",
-			Token: path,
+			Token:    path,
 		})
 	}
 	parser.advance()
 	if !token.HasKeywordValue(parser.token(), token.AsKeyword) {
 		parser.skipEndOfStatement()
 		return &ast.ImportStatement{
-			Path: path.Value(),
+			Path:         path.Value(),
 			NodePosition: parser.createPosition(beginOffset),
 		}
 	}
@@ -234,7 +234,7 @@ func (parser *Parser) ParseImportStatement() ast.Node {
 			Value: alias,
 			NodePosition: &offsetPosition{
 				begin: aliasOffset,
-				end: aliasEnd,
+				end:   aliasEnd,
 			},
 		},
 		NodePosition: parser.createPosition(beginOffset),
@@ -246,7 +246,7 @@ func (parser *Parser) parseImportAlias() (string, error) {
 	if !token.IsIdentifierToken(alias) {
 		return "", &UnexpectedTokenError{
 			Expected: "Identifier",
-			Token: alias,
+			Token:    alias,
 		}
 	}
 	parser.advance()
@@ -268,13 +268,20 @@ func (parser *Parser) parseOptionalAssignValue() (ast.Node, error) {
 // function has been found.
 func (parser *Parser) keywordStatementParser(keyword token.Keyword) (func() ast.Node, bool) {
 	switch keyword {
-	case token.IfKeyword:     return parser.ParseIfStatement, true
-	case token.ForKeyword:    return parser.ParseForStatement, true
-	case token.YieldKeyword:  return parser.ParseYieldStatement, true
-	case token.ReturnKeyword: return parser.ParseReturnStatement, true
-	case token.ImportKeyword: return parser.ParseImportStatement, true
-	case token.TestKeyword:   return parser.ParseTestStatement, true
-	case token.MethodKeyword: return parser.parseNestedMethodDeclaration, true
+	case token.IfKeyword:
+		return parser.ParseIfStatement, true
+	case token.ForKeyword:
+		return parser.ParseForStatement, true
+	case token.YieldKeyword:
+		return parser.ParseYieldStatement, true
+	case token.ReturnKeyword:
+		return parser.ParseReturnStatement, true
+	case token.ImportKeyword:
+		return parser.ParseImportStatement, true
+	case token.TestKeyword:
+		return parser.ParseTestStatement, true
+	case token.MethodKeyword:
+		return parser.parseNestedMethodDeclaration, true
 	}
 	return nil, false
 }
@@ -300,9 +307,9 @@ func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide
 	}
 	parser.skipEndOfStatement()
 	return &ast.AssignStatement{
-		Target:   leftHandSide,
-		Value:    rightHandSide,
-		Operator: operator,
+		Target:       leftHandSide,
+		Value:        rightHandSide,
+		Operator:     operator,
 		NodePosition: parser.createPosition(beginOffset),
 	}, nil
 }
@@ -319,8 +326,8 @@ func (parser *Parser) ParseTestStatement() (ast.Node, error) {
 	}
 	return &ast.TestStatement{
 		NodePosition: parser.createPosition(beginOffset),
-		MethodName: parser.currentMethodName,
-		Statements: statements,
+		MethodName:   parser.currentMethodName,
+		Statements:   statements,
 	}, nil
 }
 
@@ -335,7 +342,7 @@ func (parser *Parser) ParseAssertStatement() (ast.Node, error) {
 	}
 	return &ast.AssertStatement{
 		NodePosition: parser.createPosition(beginOffset),
-		Expression: expression,
+		Expression:   expression,
 	}, nil
 }
 
@@ -434,7 +441,7 @@ func (parser *Parser) ParseStatementBlock() (*ast.BlockStatement, error) {
 	statements := parser.ParseStatementSequence()
 	parser.closeBlock()
 	return &ast.BlockStatement{
-		Children: statements,
+		Children:     statements,
 		NodePosition: parser.createPosition(beginOffset),
 	}, nil
 }

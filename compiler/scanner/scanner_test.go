@@ -148,7 +148,7 @@ func assertEndOfFile(test *testing.T, got token.Token) {
 }
 
 func TestLinemapCreation(test *testing.T) {
-	entryLineLengths := []int {
+	entryLineLengths := []int{
 		10, 1, 20, 2, 30, 4, 0, 50,
 	}
 	entry := createTextWithLineLengths(entryLineLengths)

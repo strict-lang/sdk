@@ -10,8 +10,8 @@ import (
 var astCommand = &cobra.Command{
 	Use:   "ast [-c] [file]",
 	Short: "Prints the files AST",
-	Long: `Ast parses a file and prints its Abstract Syntax Tree`,
-	Run: RunAst,
+	Long:  `Ast parses a file and prints its Abstract Syntax Tree`,
+	Run:   RunAst,
 }
 
 func RunAst(command *cobra.Command, arguments []string) {
