@@ -8,6 +8,8 @@ import (
 	"gitlab.com/strict-lang/sdk/compiler/token"
 )
 
+const notParsingMethod = ""
+
 // Parser parses an AST from a stream of tokens.
 type Parser struct {
 	tokenReader token.Reader
@@ -19,6 +21,10 @@ type Parser struct {
 	// current time. It is incremented every time the parser looks at a
 	// LeftParenOperator and decremented when it looks at a RightParenOperator.
 	expressionDepth int
+	// name of the method which is currently parsed. It is required by the optional
+	// test statement within a method. The name is set to an empty string after a
+	// method has been parsed.
+	currentMethodName string
 }
 
 // Block represents a nested sequence of statements that has a set indentation level.
@@ -106,4 +112,8 @@ func (parser *Parser) parseTopLevelNodes() []ast.Node {
 func (parser *Parser) ParseTranslationUnit() (*ast.TranslationUnit, error) {
 	topLevelNodes := parser.parseTopLevelNodes()
 	return ast.NewTranslationUnit(parser.unitName, parser.rootScope, topLevelNodes), nil
+}
+
+func (parser *Parser) isParsingMethod() bool {
+	return parser.currentMethodName != notParsingMethod
 }

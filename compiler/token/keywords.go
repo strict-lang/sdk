@@ -26,7 +26,9 @@ const (
 	IsNotKeyword
 	AndKeyword
 	ForKeyword
-	SharedKeyword
+	TestKeyword
+	AssertKeyword
+	CreateKeyword
 )
 
 var keywordNameTable = map[Keyword]string{
@@ -47,7 +49,9 @@ var keywordNameTable = map[Keyword]string{
 	AndKeyword:    "and",
 	OrKeyword:     "or",
 	IsNotKeyword:  "isnt",
-	SharedKeyword: "shared",
+	TestKeyword:   "test",
+	AssertKeyword: "assert",
+	CreateKeyword: "create",
 }
 
 var operatorKeywords = map[Keyword]Operator{

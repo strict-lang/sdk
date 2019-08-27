@@ -11,17 +11,23 @@ type Visitor struct {
 	VisitParameter            func(*Parameter)
 	VisitMethodCall           func(*MethodCall)
 	VisitIdentifier           func(*Identifier)
+	VisitTestStatement        func(*TestStatement)
 	VisitStringLiteral        func(*StringLiteral)
 	VisitNumberLiteral        func(*NumberLiteral)
 	VisitEmptyStatement       func(*EmptyStatement)
 	VisitYieldStatement       func(*YieldStatement)
 	VisitBlockStatement       func(*BlockStatement)
+	VisitAssertStatement      func(*AssertStatement)
 	VisitUnaryExpression      func(*UnaryExpression)
 	VisitImportStatement      func(*ImportStatement)
 	VisitAssignStatement      func(*AssignStatement)
 	VisitReturnStatement      func(*ReturnStatement)
 	VisitTranslationUnit      func(*TranslationUnit)
+	VisitCreateExpression     func(*CreateExpression)
 	VisitInvalidStatement     func(*InvalidStatement)
+	VisitFieldDeclaration     func(*FieldDeclaration)
+	VisitGenericTypeName      func(*GenericTypeName)
+	VisitConcreteTypeName     func(*ConcreteTypeName)
 	VisitBinaryExpression     func(*BinaryExpression)
 	VisitMethodDeclaration    func(*MethodDeclaration)
 	VisitSelectorExpression   func(*SelectorExpression)
@@ -38,11 +44,14 @@ func NewEmptyVisitor() *Visitor {
 		VisitParameter:            func(*Parameter) {},
 		VisitMethodCall:           func(*MethodCall) {},
 		VisitIdentifier:           func(*Identifier) {},
+		VisitTestStatement:        func(*TestStatement) {},
 		VisitStringLiteral:        func(*StringLiteral) {},
 		VisitNumberLiteral:        func(*NumberLiteral) {},
 		VisitYieldStatement:       func(*YieldStatement) {},
 		VisitBlockStatement:       func(*BlockStatement) {},
+		VisitAssertStatement:      func(*AssertStatement) {},
 		VisitUnaryExpression:      func(*UnaryExpression) {},
+		VisitCreateExpression:     func(*CreateExpression) {},
 		VisitEmptyStatement:       func(*EmptyStatement) {},
 		VisitImportStatement:      func(*ImportStatement) {},
 		VisitReturnStatement:      func(*ReturnStatement) {},
@@ -50,10 +59,13 @@ func NewEmptyVisitor() *Visitor {
 		VisitBinaryExpression:     func(*BinaryExpression) {},
 		VisitAssignStatement:      func(*AssignStatement) {},
 		VisitInvalidStatement:     func(*InvalidStatement) {},
+		VisitFieldDeclaration:     func(*FieldDeclaration) {},
 		VisitSelectorExpression:   func(*SelectorExpression) {},
 		VisitIncrementStatement:   func(*IncrementStatement) {},
 		VisitDecrementStatement:   func(*DecrementStatement) {},
 		VisitMethodDeclaration:    func(*MethodDeclaration) {},
+		VisitGenericTypeName:      func(*GenericTypeName) {},
+		VisitConcreteTypeName:     func(*ConcreteTypeName) {},
 		VisitRangedLoopStatement:  func(*RangedLoopStatement) {},
 		VisitExpressionStatement:  func(*ExpressionStatement) {},
 		VisitForEachLoopStatement: func(*ForEachLoopStatement) {},

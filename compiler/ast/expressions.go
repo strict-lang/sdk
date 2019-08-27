@@ -82,3 +82,21 @@ func (selector *SelectorExpression) AcceptAll(visitor *Visitor) {
 func (selector *SelectorExpression) Position() Position {
 	return selector.NodePosition
 }
+
+type CreateExpression struct {
+	NodePosition Position
+	Constructor *MethodCall
+}
+
+func (create *CreateExpression) Accept(visitor *Visitor) {
+	visitor.VisitCreateExpression(create)
+}
+
+func (create *CreateExpression) AcceptAll(visitor *Visitor) {
+	visitor.VisitCreateExpression(create)
+	create.Constructor.AcceptAll(visitor)
+}
+
+func (create *CreateExpression) Position() Position {
+	return create.NodePosition
+}

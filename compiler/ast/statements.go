@@ -321,3 +321,40 @@ func (statement *ImportStatement) AcceptAll(visitor *Visitor) {
 func (statement *ImportStatement) Position() Position {
 	return statement.NodePosition
 }
+
+type AssertStatement struct {
+	NodePosition Position
+	Expression Node
+}
+
+func (assert *AssertStatement) Accept(visitor *Visitor) {
+	visitor.VisitAssertStatement(assert)
+}
+
+func (assert *AssertStatement) AcceptAll(visitor *Visitor) {
+	visitor.VisitAssertStatement(assert)
+	assert.Expression.AcceptAll(visitor)
+}
+
+func (assert *AssertStatement) Position() Position {
+	return assert.NodePosition
+}
+
+type TestStatement struct {
+	NodePosition Position
+	Statements Node
+	MethodName string
+}
+
+func (test *TestStatement) Accept(visitor *Visitor) {
+	visitor.VisitTestStatement(test)
+}
+
+func (test *TestStatement) AcceptAll(visitor *Visitor) {
+	visitor.VisitTestStatement(test)
+	test.Statements.AcceptAll(visitor)
+}
+
+func (test *TestStatement) Position() Position {
+	return test.NodePosition
+}

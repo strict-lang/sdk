@@ -92,7 +92,7 @@ func (parser *Parser) ParseOperation() (ast.Node, error) {
 func (parser *Parser) parseOperationOnOperand(operand ast.Node) (done bool, node ast.Node, err error) {
 	switch next := parser.token(); {
 	case token.OperatorValue(next) == token.LeftParenOperator:
-		call, err := parser.ParseMethodCall(operand)
+		call, err := parser.parseMethodCallOnNode(operand)
 		return false, call, err
 	case token.OperatorValue(next) == token.DotOperator:
 		selector, err := parser.parseSelection(operand)
@@ -148,6 +148,29 @@ func (parser *Parser) parseBinaryExpression(requiredPrecedence token.Precedence)
 	}
 }
 
+func (parser *Parser) parseConstructor() (*ast.MethodCall, error) {
+	typeName, err := parser.ParseTypeName()
+	if err != nil {
+		return nil, err
+	}
+	return parser.parseMethodCallOnNode(typeName)
+}
+
+func (parser *Parser) parseCreateExpression() (ast.Node, error) {
+	beginOffset := parser.offset()
+	if err := parser.skipKeyword(token.CreateKeyword); err != nil {
+		return parser.createInvalidStatement(beginOffset, err), err
+	}
+	constructor, err := parser.parseConstructor()
+	if err != nil {
+		return parser.createInvalidStatement(beginOffset, err), err
+	}
+	return &ast.CreateExpression{
+		NodePosition: parser.createPosition(beginOffset),
+		Constructor: constructor,
+	}, nil
+}
+
 // ParseUnaryExpression parses a unary expression. Unary expressions are
 // operations with only one operand (arity of one). An example of a unary
 // expression is the negation '!(expression)'. The single operand may be
@@ -157,6 +180,9 @@ func (parser *Parser) ParseUnaryExpression() (ast.Node, error) {
 	operatorToken := parser.token()
 	if !token.IsOperatorOrOperatorKeywordToken(operatorToken) {
 		return parser.ParseOperation()
+	}
+	if token.KeywordValue(operatorToken) == token.CreateKeyword {
+		return parser.parseCreateExpression()
 	}
 	operator := token.OperatorValue(operatorToken)
 	if !operator.IsUnaryOperator() {
@@ -175,7 +201,7 @@ func (parser *Parser) ParseUnaryExpression() (ast.Node, error) {
 }
 
 // ParseMethodCall parses the call to a method.
-func (parser *Parser) ParseMethodCall(method ast.Node) (*ast.MethodCall, error) {
+func (parser *Parser) parseMethodCallOnNode(method ast.Node) (*ast.MethodCall, error) {
 	beginOffset := parser.offset()
 	if err := parser.skipOperator(token.LeftParenOperator); err != nil {
 		return &ast.MethodCall{}, err

@@ -273,6 +273,7 @@ func (parser *Parser) keywordStatementParser(keyword token.Keyword) (func() ast.
 	case token.YieldKeyword:  return parser.ParseYieldStatement, true
 	case token.ReturnKeyword: return parser.ParseReturnStatement, true
 	case token.ImportKeyword: return parser.ParseImportStatement, true
+	case token.TestKeyword:   return parser.ParseTestStatement, true
 	case token.MethodKeyword: return parser.parseNestedMethodDeclaration, true
 	}
 	return nil, false
@@ -292,15 +293,49 @@ func (parser *Parser) ParseKeywordStatement(keyword token.Keyword) ast.Node {
 }
 
 func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide ast.Node) (ast.Node, error) {
+	beginOffset := parser.offset()
 	rightHandSide, err := parser.ParseExpression()
 	if err != nil {
-		return &ast.InvalidStatement{}, err
+		return parser.createInvalidStatement(beginOffset, err), err
 	}
 	parser.skipEndOfStatement()
 	return &ast.AssignStatement{
 		Target:   leftHandSide,
 		Value:    rightHandSide,
 		Operator: operator,
+		NodePosition: parser.createPosition(beginOffset),
+	}, nil
+}
+
+func (parser *Parser) ParseTestStatement() (ast.Node, error) {
+	beginOffset := parser.offset()
+	if err := parser.skipKeyword(token.TestKeyword); err != nil {
+		return parser.createInvalidStatement(beginOffset, err), err
+	}
+	parser.skipEndOfStatement()
+	statements, err := parser.ParseStatementBlock()
+	if err != nil {
+		return parser.createInvalidStatement(beginOffset, err), err
+	}
+	return &ast.TestStatement{
+		NodePosition: parser.createPosition(beginOffset),
+		MethodName: parser.currentMethodName,
+		Statements: statements,
+	}, nil
+}
+
+func (parser *Parser) ParseAssertStatement() (ast.Node, error) {
+	beginOffset := parser.offset()
+	if err := parser.skipKeyword(token.AssertKeyword); err != nil {
+		return parser.createInvalidStatement(beginOffset, err), err
+	}
+	expression, err := parser.ParseExpression()
+	if err != nil {
+		return parser.createInvalidStatement(beginOffset, err), err
+	}
+	return &ast.AssertStatement{
+		NodePosition: parser.createPosition(beginOffset),
+		Expression: expression,
 	}, nil
 }
 

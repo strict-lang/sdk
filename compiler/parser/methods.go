@@ -26,7 +26,9 @@ func (parser *Parser) ParseMethodDeclaration() (*ast.MethodDeclaration, error) {
 		return nil, err
 	}
 	parser.skipEndOfStatement()
+	parser.currentMethodName = methodName.Value
 	body, err := parser.ParseStatementBlock()
+	parser.currentMethodName = notParsingMethod
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +43,10 @@ func (parser *Parser) ParseMethodDeclaration() (*ast.MethodDeclaration, error) {
 
 func (parser *Parser) parseOptionalReturnTypeName() (ast.TypeName, error){
 	if parser.isLookingAtOperator(token.LeftParenOperator) {
-		return ast.ConcreteTypeName{Name: "void"}, nil
+		return &ast.ConcreteTypeName{
+			Name: "void",
+			NodePosition: parser.createPosition(parser.offset()),
+}, nil
 	}
 	return parser.ParseTypeName()
 }
@@ -82,9 +87,13 @@ func (parser *Parser) parseParameter() (*ast.Parameter, error) {
 		return nil, err
 	}
 	if next := parser.token(); token.IsIdentifierToken(next) {
+		idNameBegin := parser.offset()
 		parser.advance()
 		return &ast.Parameter{
-			Name: ast.Identifier{Value: next.Value()},
+			Name: &ast.Identifier{
+				Value: next.Value(),
+				NodePosition: parser.createPosition(idNameBegin),
+			},
 			Type: typeName,
 			NodePosition: parser.createPosition(beginOffset),
 		}, nil
@@ -95,7 +104,7 @@ func (parser *Parser) parseParameter() (*ast.Parameter, error) {
 func (parser *Parser) createTypeNamedParameter(beginOffset source.Offset, typeName ast.TypeName) *ast.Parameter {
 	return &ast.Parameter{
 		Type: typeName,
-		Name: ast.Identifier{
+		Name: &ast.Identifier{
 			Value: typeName.NonGenericName(),
 		},
 		NodePosition: parser.createPosition(beginOffset),

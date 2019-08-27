@@ -27,7 +27,7 @@ func (method *MethodDeclaration) Position() Position {
 
 type Parameter struct {
 	Type TypeName
-	Name Identifier
+	Name *Identifier
 	NodePosition Position
 }
 
@@ -45,4 +45,22 @@ func (parameter *Parameter) AcceptAll(visitor *Visitor) {
 
 func (parameter *Parameter) Position() Position {
 	return parameter.NodePosition
+}
+
+type FieldDeclaration struct {
+	Name *Identifier
+	TypeName TypeName
+	NodePosition Position
+}
+
+func (field *FieldDeclaration) Accept(visitor *Visitor) {
+	visitor.VisitFieldDeclaration(field)
+}
+
+func (field *FieldDeclaration) AcceptAll(visitor *Visitor) {
+	visitor.VisitFieldDeclaration(field)
+}
+
+func (field *FieldDeclaration) Position() Position {
+	return field.NodePosition
 }
