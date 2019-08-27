@@ -280,6 +280,8 @@ func (parser *Parser) keywordStatementParser(keyword token.Keyword) (func() ast.
 		return parser.ParseImportStatement, true
 	case token.TestKeyword:
 		return parser.ParseTestStatement, true
+	case token.AssertKeyword:
+		return parser.ParseAssertStatement, true
 	case token.MethodKeyword:
 		return parser.parseNestedMethodDeclaration, true
 	}
@@ -314,36 +316,36 @@ func (parser *Parser) parseAssignStatement(operator token.Operator, leftHandSide
 	}, nil
 }
 
-func (parser *Parser) ParseTestStatement() (ast.Node, error) {
+func (parser *Parser) ParseTestStatement() ast.Node {
 	beginOffset := parser.offset()
 	if err := parser.skipKeyword(token.TestKeyword); err != nil {
-		return parser.createInvalidStatement(beginOffset, err), err
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	parser.skipEndOfStatement()
 	statements, err := parser.ParseStatementBlock()
 	if err != nil {
-		return parser.createInvalidStatement(beginOffset, err), err
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	return &ast.TestStatement{
 		NodePosition: parser.createPosition(beginOffset),
 		MethodName:   parser.currentMethodName,
 		Statements:   statements,
-	}, nil
+	}
 }
 
-func (parser *Parser) ParseAssertStatement() (ast.Node, error) {
+func (parser *Parser) ParseAssertStatement() ast.Node {
 	beginOffset := parser.offset()
 	if err := parser.skipKeyword(token.AssertKeyword); err != nil {
-		return parser.createInvalidStatement(beginOffset, err), err
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	expression, err := parser.ParseExpression()
 	if err != nil {
-		return parser.createInvalidStatement(beginOffset, err), err
+		return parser.createInvalidStatement(beginOffset, err)
 	}
 	return &ast.AssertStatement{
 		NodePosition: parser.createPosition(beginOffset),
 		Expression:   expression,
-	}, nil
+	}
 }
 
 // ParseInstructionStatement parses a statement that is not a structured-control flow
