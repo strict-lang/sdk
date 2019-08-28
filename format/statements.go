@@ -1,7 +1,7 @@
 package format
 
 import (
-	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compilation/ast"
 )
 
 func (printer *PrettyPrinter) printBlockStatement(block *ast.BlockStatement) {

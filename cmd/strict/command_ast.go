@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/compiler"
-	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compilation"
+	"gitlab.com/strict-lang/sdk/compilation/ast"
 	"os"
 )
 
@@ -24,7 +24,7 @@ func RunAst(command *cobra.Command, arguments []string) {
 }
 
 func parseAndPrintAst(command *cobra.Command, sourceFile *os.File) {
-	parseResult := compiler.ParseFile("formatted", sourceFile)
+	parseResult := compilation.ParseFile("formatted", sourceFile)
 	parseResult.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command})
 	if parseResult.Error != nil {
 		return

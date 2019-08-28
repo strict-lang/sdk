@@ -1,6 +1,6 @@
 package format
 
-import "gitlab.com/strict-lang/sdk/compiler/ast"
+import "gitlab.com/strict-lang/sdk/compilation/ast"
 
 func (printer *PrettyPrinter) printMethod(method *ast.MethodDeclaration) {
 	printer.appendFormatted(

@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/compiler"
-	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compilation"
+	"gitlab.com/strict-lang/sdk/compilation/ast"
 	"gitlab.com/strict-lang/sdk/format"
 	"os"
 )
@@ -48,7 +48,7 @@ func RunFormat(command *cobra.Command, arguments []string) {
 }
 
 func formatFile(command *cobra.Command, sourceFile *os.File) {
-	parseResult := compiler.ParseFile("formatted", sourceFile)
+	parseResult := compilation.ParseFile("formatted", sourceFile)
 	parseResult.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command})
 	if parseResult.Error != nil {
 		return

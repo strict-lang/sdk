@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/compiler"
+	"gitlab.com/strict-lang/sdk/compilation"
 	"os"
 )
 
@@ -40,9 +40,9 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		command.Printf("Invalid filename: %s\n", file.Name())
 		return
 	}
-	compilation := &compiler.Compilation{
+	compilation := &compilation.Compilation{
 		Name:          unitName,
-		Source:        &compiler.FileSource{File: file},
+		Source:        &compilation.FileSource{File: file},
 		TargetArduino: targetArduino,
 	}
 	result := compilation.Run()
@@ -58,7 +58,7 @@ func RunCompile(command *cobra.Command, arguments []string) {
 	command.Printf("Successfully compiled %s!\n", unitName)
 }
 
-func writeGeneratedSources(compilation compiler.CompilationResult) (err error) {
+func writeGeneratedSources(compilation compilation.Result) (err error) {
 	file, err := targetFile(compilation.GeneratedFileName)
 	if err != nil {
 		return

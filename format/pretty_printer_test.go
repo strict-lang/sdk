@@ -1,8 +1,8 @@
 package format
 
 import (
-	"gitlab.com/strict-lang/sdk/compiler/parser"
-	"gitlab.com/strict-lang/sdk/compiler/scanner"
+	"gitlab.com/strict-lang/sdk/compilation/parsing"
+	"gitlab.com/strict-lang/sdk/compilation/scanning"
 	"testing"
 )
 
@@ -17,9 +17,9 @@ for num in numbers do
 	if num % 5 is 0 or num % 3 is 0 do
 		logf("%d ", num)
 `
-	unit, err := parser.
+	unit, err := parsing.
 		NewDefaultFactory().
-		WithTokenReader(scanner.NewStringScanner(source)).
+		WithTokenReader(scanning.NewStringScanning(source)).
 		NewParser().
 		ParseTranslationUnit()
 

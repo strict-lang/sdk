@@ -2,7 +2,7 @@ package format
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compiler/ast"
+	"gitlab.com/strict-lang/sdk/compilation/ast"
 	"unicode/utf8"
 )
 

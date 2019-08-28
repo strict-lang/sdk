@@ -1,8 +1,8 @@
 package format
 
 import (
-	"gitlab.com/strict-lang/sdk/compiler/ast"
-	"gitlab.com/strict-lang/sdk/compiler/token"
+	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
 func (printer *PrettyPrinter) printIdentifier(identifier *ast.Identifier) {
