@@ -13,5 +13,5 @@ func (generation *Generation) importModule(name, path string) {
 }
 
 func (generation *Generation) includeIntoNamespace(name, path string) {
-	generation.Emitf("namespace %s {\n  #include <%s>\n}\n", name, path)
+	generation.EmitFormatted("namespace %s {\n  #include <%s>\n}\n", name, path)
 }

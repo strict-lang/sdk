@@ -9,7 +9,7 @@ func (generation *Generation) GenerateIdentifier(identifier *ast.Identifier) {
 }
 
 func (generation *Generation) GenerateStringLiteral(literal *ast.StringLiteral) {
-	generation.Emitf(`"%s"`, literal.Value)
+	generation.EmitFormatted(`"%s"`, literal.Value)
 }
 
 func (generation *Generation) GenerateNumberLiteral(literal *ast.NumberLiteral) {
@@ -18,12 +18,12 @@ func (generation *Generation) GenerateNumberLiteral(literal *ast.NumberLiteral) 
 
 func (generation *Generation) GenerateBinaryExpression(binary *ast.BinaryExpression) {
 	generation.EmitNode(binary.LeftOperand)
-	generation.Emitf(" %s ", binary.Operator.String())
+	generation.EmitFormatted(" %s ", binary.Operator.String())
 	generation.EmitNode(binary.RightOperand)
 }
 
 func (generation *Generation) GenerateUnaryExpression(unary *ast.UnaryExpression) {
-	generation.Emitf("(%s", unary.Operator)
+	generation.EmitFormatted("(%s", unary.Operator)
 	generation.EmitNode(unary.Operand)
 	generation.Emit(")")
 }

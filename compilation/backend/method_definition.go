@@ -5,115 +5,102 @@ import (
 	"strings"
 )
 
-type MethodGeneration struct {
-	generator          *Generation
-	prologueGenerators map[string]PrologueGenerator
-	epilogueGenerators map[string]EpilogueGenerator
-	declaration        ast.MethodDeclaration
-	buffer             *strings.Builder
+type MethodDefinition struct {
+	generation  *Generation
+	declaration *ast.MethodDeclaration
+	buffer      *strings.Builder
+	prologue    map[string]ProloguePart
+	epilogue    map[string]EpiloguePart
 }
 
-type PrologueGenerator func()
-type EpilogueGenerator func()
+type ProloguePart func()
+type EpiloguePart func()
 
-func (generation *Generation) NewMethodGeneration(method ast.MethodDeclaration) *MethodGeneration {
-	return &MethodGeneration{
-		generator:          generation,
-		declaration:        method,
-		buffer:             &strings.Builder{},
-		epilogueGenerators: map[string]EpilogueGenerator{},
-		prologueGenerators: map[string]PrologueGenerator{},
+func (generation *Generation) NewMethodGeneration(method *ast.MethodDeclaration) *MethodDefinition {
+	return &MethodDefinition{
+		generation:  generation,
+		declaration: method,
+		buffer:      &strings.Builder{},
+		epilogue:    map[string]EpiloguePart{},
+		prologue:    map[string]ProloguePart{},
 	}
 }
 
 func (generation *Generation) GenerateMethod(method *ast.MethodDeclaration) {
-	methodGenerator := generation.NewMethodGeneration(*method)
+	methodGenerator := generation.NewMethodGeneration(method)
 	generation.method = methodGenerator
-	methodGenerator.Complete()
+	methodGenerator.Emit()
 	generation.method = nil
 }
 
-func (generation *MethodGeneration) Complete() {
-	generator := generation.generator
-	generator.buffer = generation.buffer
+func (definition *MethodDefinition) Emit() {
+	generator := definition.generation
+	generator.buffer = definition.buffer
 
-	declaration := generation.generateDeclaration()
-	generator.enterBlock()
-	methodBody := generation.generateBody()
-	prologue := generation.generatePrologue()
-	epilogue := generation.generateEpilogue()
+	declaration := definition.generateDeclaration()
+	generator.IncreaseIndent()
+	methodBody := definition.generateBody()
+	prologue := definition.generatePrologue()
+	epilogue := definition.generateEpilogue()
 
 	generator.buffer = generator.output
 	generator.Emit(declaration)
 	generator.Emit(" {\n")
-	generator.Spaces()
+	generator.EmitIndent()
 	generator.Emit(prologue)
 	generator.Emit(methodBody)
 	generator.Emit(epilogue)
-	generator.leaveBlock()
-	generator.Spaces()
+	generator.DecreaseIndent()
+	generator.EmitIndent()
 	generator.Emit("}\n")
 }
 
-func (generation *MethodGeneration) generateDeclaration() string {
-	generation.buffer.Reset()
-	generator := generation.generator
-
-	method := generation.declaration
-	returnTypeName := updateTypeName(method.Type)
-
-	generator.Spaces()
-	generator.Emitf("%s %s(", returnTypeName.FullName(), method.Name.Value)
-	for index, parameter := range method.Parameters {
-		if index != 0 {
-			generator.Emit(", ")
-		}
-		parameterTypeName := updateTypeName(parameter.Type)
-		generator.Emitf("%s %s", parameterTypeName.FullName(), parameter.Name.Value)
-	}
-	generator.Emit(")")
-	return generation.buffer.String()
+func (definition *MethodDefinition) generateDeclaration() string {
+	definition.buffer.Reset()
+	generation := definition.generation
+	generation.EmitMethodDeclaration(definition.declaration)
+	return definition.buffer.String()
 }
 
-func (generation *MethodGeneration) generateBody() string {
-	generation.buffer.Reset()
-	// Do not use the normal BlockStatement visitor for BlockStatement generation in
+func (definition *MethodDefinition) generateBody() string {
+	definition.buffer.Reset()
+	// Do not use the normal BlockStatement visitor for BlockStatement definition in
 	// a method body. It will generate open and close brackets and this will produce
 	// faulty code, if a prologue or epilogue is generated.
-	if block, ok := generation.declaration.Body.(*ast.BlockStatement); ok {
+	if block, ok := definition.declaration.Body.(*ast.BlockStatement); ok {
 		for _, child := range block.Children {
-			generation.generator.EmitNode(child)
+			definition.generation.EmitNode(child)
 		}
-		return generation.buffer.String()
+		return definition.buffer.String()
 	}
-	generation.generator.EmitNode(generation.declaration.Body)
-	return generation.buffer.String()
+	definition.generation.EmitNode(definition.declaration.Body)
+	return definition.buffer.String()
 }
 
-func (generation *MethodGeneration) generatePrologue() string {
-	generation.buffer.Reset()
-	for _, prologueGenerator := range generation.prologueGenerators {
-		prologueGenerator()
+func (definition *MethodDefinition) generatePrologue() string {
+	definition.buffer.Reset()
+	for _, part := range definition.prologue {
+		part()
 	}
-	if len(generation.prologueGenerators) > 0 {
-		generation.generator.Emit("\n")
-		generation.generator.Spaces()
+	if len(definition.prologue) > 0 {
+		definition.generation.Emit("\n")
+		definition.generation.EmitIndent()
 	}
-	return generation.buffer.String()
+	return definition.buffer.String()
 }
 
-func (generation *MethodGeneration) generateEpilogue() string {
-	generation.buffer.Reset()
-	for _, epilogueGenerator := range generation.epilogueGenerators {
-		epilogueGenerator()
+func (definition *MethodDefinition) generateEpilogue() string {
+	definition.buffer.Reset()
+	for _, part := range definition.epilogue {
+		part()
 	}
-	return generation.buffer.String()
+	return definition.buffer.String()
 }
 
-func (generation *MethodGeneration) addEpilogueGenerator(name string, function EpilogueGenerator) {
-	generation.epilogueGenerators[name] = function
+func (definition *MethodDefinition) addToEpilogue(name string, function EpiloguePart) {
+	definition.epilogue[name] = function
 }
 
-func (generation *MethodGeneration) addPrologueGenerator(name string, function PrologueGenerator) {
-	generation.prologueGenerators[name] = function
+func (definition *MethodDefinition) addToPrologue(name string, function ProloguePart) {
+	definition.prologue[name] = function
 }

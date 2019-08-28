@@ -11,12 +11,11 @@ type Generation struct {
 	unit                        *ast.TranslationUnit
 	output                      *strings.Builder
 	buffer                      *strings.Builder
-	method                      *MethodGeneration
+	method                      *MethodDefinition
 	visitor                     *ast.Visitor
 	indent                      int8
 	appendNewLineAfterStatement bool
 	importModules               map[string]string
-	settings                    Settings
 }
 
 type FileNaming interface {
@@ -25,11 +24,10 @@ type FileNaming interface {
 
 // NewCodeGenerator constructs a Generation that generates C code from
 // the nodes in the passed translation-unit.
-func NewCodeGenerator(settings Settings, unit *ast.TranslationUnit) (generator *Generation) {
+func NewCodeGenerator(unit *ast.TranslationUnit) (generator *Generation) {
 	generator = &Generation{
 		unit:                        unit,
 		output:                      &strings.Builder{},
-		settings:                    settings,
 		importModules:               map[string]string{},
 		appendNewLineAfterStatement: true,
 	}
@@ -46,31 +44,31 @@ func (generation *Generation) Emit(code string) {
 	generation.buffer.WriteString(code)
 }
 
-func (generation *Generation) Emitf(code string, arguments ...interface{}) {
+func (generation *Generation) EmitIndent() {
+	for index := int8(0); index < generation.indent; index++ {
+		generation.Emit("  ")
+	}
+}
+
+func (generation *Generation) EmitFormatted(code string, arguments ...interface{}) {
 	formatted := fmt.Sprintf(code, arguments...)
 	generation.buffer.WriteString(formatted)
 }
 
-func (generation *Generation) enterBlock() {
-	generation.indent++
-}
-
-func (generation *Generation) leaveBlock() {
-	generation.indent--
-	if generation.indent < 0 {
-		generation.indent = 0
-	}
-}
-
-func (generation *Generation) writeEndOfStatement() {
+func (generation *Generation) EmitEndOfLine() {
 	if generation.appendNewLineAfterStatement {
 		generation.Emit("\n")
 	}
 }
 
-func (generation *Generation) Spaces() {
-	for index := int8(0); index < generation.indent; index++ {
-		generation.Emit("  ")
+func (generation *Generation) IncreaseIndent() {
+	generation.indent++
+}
+
+func (generation *Generation) DecreaseIndent() {
+	generation.indent--
+	if generation.indent < 0 {
+		generation.indent = 0
 	}
 }
 

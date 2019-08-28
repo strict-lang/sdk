@@ -7,7 +7,7 @@ func (generation *Generation) GenerateConditionalStatement(statement *ast.Condit
 	generation.EmitNode(statement.Condition)
 	generation.Emit(") ")
 	generation.EmitNode(statement.Consequence)
-	defer generation.writeEndOfStatement()
+	defer generation.EmitEndOfLine()
 	if statement.Alternative != nil {
 		generation.Emit(" else ")
 		generation.EmitNode(statement.Alternative)
@@ -20,12 +20,12 @@ const (
 )
 
 func (generation *Generation) GenerateYieldStatement(statement *ast.YieldStatement) {
-	generation.method.addPrologueGenerator(yieldGeneratorName, generation.declareYieldList)
-	generation.method.addEpilogueGenerator(yieldGeneratorName, generation.returnYieldList)
+	generation.method.addToPrologue(yieldGeneratorName, generation.declareYieldList)
+	generation.method.addToEpilogue(yieldGeneratorName, generation.returnYieldList)
 
-	generation.Emitf("%s.push_back(", yieldListName)
+	generation.EmitFormatted("%s.push_back(", yieldListName)
 	generation.EmitNode(statement.Value)
-	generation.Emitf(");")
+	generation.EmitFormatted(");")
 }
 
 func (generation *Generation) declareYieldList() {
@@ -33,35 +33,35 @@ func (generation *Generation) declareYieldList() {
 		panic("Yield statement outside of method")
 	}
 	typeName := updateTypeName(generation.method.declaration.Type)
-	generation.Spaces()
-	generation.Emitf("%s %s;\n", typeName.FullName(), yieldListName)
+	generation.EmitIndent()
+	generation.EmitFormatted("%s %s;\n", typeName.FullName(), yieldListName)
 }
 
 func (generation *Generation) returnYieldList() {
 	generation.Emit("\n")
-	generation.Spaces()
-	generation.Emitf("return %s;", yieldListName)
-	generation.writeEndOfStatement()
+	generation.EmitIndent()
+	generation.EmitFormatted("return %s;", yieldListName)
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateRangedLoopStatement(statement *ast.RangedLoopStatement) {
-	generation.Emitf("for (auto %s = ", statement.ValueField.Value)
+	generation.EmitFormatted("for (auto %s = ", statement.ValueField.Value)
 	generation.EmitNode(statement.InitialValue)
-	generation.Emitf("; %s < ", statement.ValueField.Value)
+	generation.EmitFormatted("; %s < ", statement.ValueField.Value)
 	generation.EmitNode(statement.EndValue)
-	generation.Emitf("; %s++) ", statement.ValueField.Value)
+	generation.EmitFormatted("; %s++) ", statement.ValueField.Value)
 
 	generation.EmitNode(statement.Body)
-	generation.writeEndOfStatement()
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateForEachLoopStatement(statement *ast.ForEachLoopStatement) {
-	generation.Emitf("for (auto %s : ", statement.Field.Value)
+	generation.EmitFormatted("for (auto %s : ", statement.Field.Value)
 	generation.EmitNode(statement.Enumeration)
 	generation.Emit(") ")
 
 	generation.EmitNode(statement.Body)
-	generation.writeEndOfStatement()
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateReturnStatement(statement *ast.ReturnStatement) {
@@ -72,21 +72,21 @@ func (generation *Generation) GenerateReturnStatement(statement *ast.ReturnState
 	generation.Emit("return ")
 	generation.EmitNode(statement.Value)
 	generation.Emit(";")
-	generation.writeEndOfStatement()
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateAssignStatement(statement *ast.AssignStatement) {
 	generation.Emit("auto ")
 	generation.EmitNode(statement.Target)
-	generation.Emitf(" = ")
+	generation.EmitFormatted(" = ")
 	generation.EmitNode(statement.Value)
 	generation.Emit(";")
-	generation.writeEndOfStatement()
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateBlockStatement(block *ast.BlockStatement) {
 	generation.Emit("{\n")
-	generation.enterBlock()
+	generation.IncreaseIndent()
 	shouldAppendEndOfLineAtBegin := generation.appendNewLineAfterStatement
 	generation.appendNewLineAfterStatement = false
 
@@ -94,18 +94,18 @@ func (generation *Generation) GenerateBlockStatement(block *ast.BlockStatement) 
 		if index != 0 {
 			generation.Emit("\n")
 		}
-		generation.Spaces()
+		generation.EmitIndent()
 		generation.EmitNode(child)
 	}
 	generation.appendNewLineAfterStatement = shouldAppendEndOfLineAtBegin
-	generation.leaveBlock()
+	generation.DecreaseIndent()
 	generation.Emit("\n")
-	generation.Spaces()
+	generation.EmitIndent()
 	generation.Emit("}")
 }
 
 func (generation *Generation) GenerateExpressionStatement(statement *ast.ExpressionStatement) {
 	generation.EmitNode(statement.Expression)
 	generation.Emit(";")
-	generation.writeEndOfStatement()
+	generation.EmitEndOfLine()
 }
