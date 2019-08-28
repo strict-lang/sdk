@@ -26,7 +26,7 @@ type Named interface {
 // is done because almost every AST node has a position field and it
 // would have big memory impacts if positions are not small in size.
 // In order to get more information of a nodes position, the Linemap
-// from the linemap package is used. It maps offsets to line data and
+// from the Linemap package is used. It maps offsets to line data and
 // is heavily used in diagnostics. To check whether a node spans
 // multiple lines, you have to look up both its begin and end offset
 // in the Linemap.
@@ -43,7 +43,7 @@ type Position interface {
 }
 
 // Positioned is implemented by all nodes that have a specific position
-// in the source-code, which matters during semantical-analysis.
+// in the source-code, which matters during semantic-analysis.
 type Positioned interface {
 	// Position returns the area of source code that is covered by the node.
 	// The positions of the nodes children should be inside of its position.

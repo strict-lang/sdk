@@ -21,33 +21,6 @@ func (expression *ExpressionStatement) Position() Position {
 	return expression.Expression.Position()
 }
 
-type MethodCall struct {
-	// Method is the called method. It can be any kind of expression
-	// with the value of a method. Common nodes are identifiers and
-	// field selectors.
-	Method Node
-	// An array of expression nodes that are the arguments passed to
-	// the method. The arguments types are checked during type checking.
-	Arguments    []Node
-	NodePosition Position
-}
-
-func (call *MethodCall) Accept(visitor *Visitor) {
-	visitor.VisitMethodCall(call)
-}
-
-func (call *MethodCall) AcceptAll(visitor *Visitor) {
-	visitor.VisitMethodCall(call)
-	call.Method.AcceptAll(visitor)
-	for _, argument := range call.Arguments {
-		argument.AcceptAll(visitor)
-	}
-}
-
-func (call *MethodCall) Position() Position {
-	return call.Position()
-}
-
 type BlockStatement struct {
 	Children     []Node
 	NodePosition Position

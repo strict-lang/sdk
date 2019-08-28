@@ -19,6 +19,10 @@ type CodeGenerator struct {
 	settings                    Settings
 }
 
+type FileNaming interface {
+	FileNameForUnit(unit *ast.TranslationUnit)
+}
+
 // NewCodeGenerator constructs a CodeGenerator that generates C code from
 // the nodes in the passed translation-unit.
 func NewCodeGenerator(settings Settings, unit *ast.TranslationUnit) *CodeGenerator {

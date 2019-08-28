@@ -1,6 +1,7 @@
 package ast
 
 type ParameterList []*Parameter
+
 type MethodDeclaration struct {
 	Name         *Identifier
 	Type         TypeName

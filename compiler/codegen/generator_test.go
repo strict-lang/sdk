@@ -9,15 +9,17 @@ import (
 )
 
 func TestCodeGeneration(test *testing.T) {
-	method := ast.Method{
-		Name: ast.NewIdentifier("commentOnAge"),
-		Type: ast.ConcreteTypeName{
+	method := ast.MethodDeclaration{
+		Name: &ast.Identifier{Value: "commentOnAge"},
+		Type: &ast.ConcreteTypeName{
 			Name: "void",
 		},
-		Parameters: []ast.Parameter{
+		Parameters: []*ast.Parameter{
 			{
-				Name: ast.NewIdentifier("age"),
-				Type: ast.ConcreteTypeName{
+				Name: &ast.Identifier{
+				 	Value: "age",
+				},
+				Type: &ast.ConcreteTypeName{
 					Name: "number",
 				},
 			},
@@ -30,7 +32,7 @@ func TestCodeGeneration(test *testing.T) {
 						RightOperand: &ast.NumberLiteral{Value: "18"},
 						Operator:     token.SmallerOperator,
 					},
-					Body: &ast.BlockStatement{
+					Consequence: &ast.BlockStatement{
 						Children: []ast.Node{
 							&ast.ExpressionStatement{
 								Expression: &ast.MethodCall{
@@ -43,7 +45,7 @@ func TestCodeGeneration(test *testing.T) {
 							},
 						},
 					},
-					Else: &ast.BlockStatement{
+					Alternative: &ast.BlockStatement{
 						Children: []ast.Node{
 							&ast.ExpressionStatement{
 								Expression: &ast.MethodCall{
@@ -77,7 +79,10 @@ func TestCodeGeneration(test *testing.T) {
 	}
 
 	unit := ast.NewTranslationUnit("test", scope.NewRootScope(), []ast.Node{&method, &call})
-	generator := NewCodeGenerator(unit)
+	generator := NewCodeGenerator(Settings{
+		IsTargetingArduino: false,
+	},
+	unit)
 	test.Log(generator.Generate())
 	// TODO(merlinosayimwen): Validate output
 }
