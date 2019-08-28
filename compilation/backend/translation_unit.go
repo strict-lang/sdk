@@ -49,11 +49,7 @@ func splitMethodDeclarations(nodes []ast.Node) (declarations []ast.Node, others 
 }
 
 func (generation *Generation) GenerateMainMethod(nodes []ast.Node) {
-	if generation.settings.IsTargetingArduino {
-		generation.Emit("void setup() ")
-	} else {
-		generation.Emit("int main(int argc, char **argv) ")
-	}
+	generation.Emit("int main(int argc, char **argv) ")
 	block := &ast.BlockStatement{
 		Children: nodes,
 	}

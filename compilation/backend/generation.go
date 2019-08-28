@@ -36,6 +36,10 @@ func NewCodeGenerator(unit *ast.TranslationUnit) (generator *Generation) {
 	return
 }
 
+func (generation *Generation) Filename() string {
+	return fmt.Sprintf("%s.cc", generation.unit.ToTypeName())
+}
+
 func (generation *Generation) String() string {
 	return generation.output.String()
 }

@@ -163,6 +163,7 @@ func (scanning *Scanning) reportError(err error) {
 		Kind:    &diagnostic.Error,
 		Stage:   &diagnostic.LexicalAnalysis,
 		Message: err.Error(),
+		Position: scanning.last.Position(),
 	})
 }
 

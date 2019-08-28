@@ -11,7 +11,7 @@ var (
 type EndOfFileToken struct{}
 
 func (EndOfFileToken) Position() Position {
-	return Position{Begin: 0, End: 0}
+	return Position{BeginOffset: 0, EndOffset: 0}
 }
 
 func (EndOfFileToken) Value() string {

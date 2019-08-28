@@ -73,7 +73,7 @@ func (parsing *Parsing) isLookingAtOperator(operator token.Operator) bool {
 }
 
 func (parsing *Parsing) createInvalidStatement(beginOffset source.Offset, err error) ast.Node {
-	parsing.reportError(err)
+	parsing.reportError(err, parsing.createPosition(beginOffset))
 	return &ast.InvalidStatement{
 		NodePosition: parsing.createPosition(beginOffset),
 	}

@@ -297,7 +297,7 @@ func (parsing *Parsing) ParseKeywordStatement(keyword token.Keyword) ast.Node {
 	parsing.reportError(&UnexpectedTokenError{
 		Token:    parsing.token(),
 		Expected: "statement begin",
-	})
+	}, parsing.createTokenPosition())
 	return &ast.InvalidStatement{}
 }
 

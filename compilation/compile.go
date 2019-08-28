@@ -58,8 +58,7 @@ func (compilation *Compilation) Run() Result {
 			UnitName:    compilation.Name,
 		}
 	}
-	settings := backend.Settings{IsTargetingArduino: compilation.TargetArduino}
-	generator := backend.NewCodeGenerator(settings, parseResult.Unit)
+	generator := backend.NewCodeGenerator(parseResult.Unit)
 	return Result{
 		Generated:         []byte(generator.Generate()),
 		GeneratedFileName: generator.Filename(),

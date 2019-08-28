@@ -52,15 +52,15 @@ func (scanning *Scanning) tryToSkipMultiple(char source.Char, amount int) bool {
 
 func (scanning *Scanning) createPositionToOffset(begin source.Offset) token.Position {
 	return token.Position{
-		Begin: begin,
-		End:   scanning.offset(),
+		BeginOffset: begin,
+		EndOffset:   scanning.offset(),
 	}
 }
 
 func (scanning *Scanning) currentPosition() token.Position {
 	return token.Position{
-		Begin: scanning.reader.internalIndex,
-		End:   scanning.offset(),
+		BeginOffset: scanning.reader.internalIndex,
+		EndOffset:   scanning.offset(),
 	}
 }
 

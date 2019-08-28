@@ -1,6 +1,8 @@
 package diagnostic
 
-import "gitlab.com/strict-lang/sdk/compilation/source"
+import (
+	"gitlab.com/strict-lang/sdk/compilation/source"
+)
 
 type RecordedEntry struct {
 	Kind     *Kind

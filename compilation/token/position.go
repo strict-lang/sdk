@@ -6,17 +6,25 @@ import (
 )
 
 type Position struct {
-	Begin source.Offset
-	End   source.Offset
+	BeginOffset source.Offset
+	EndOffset   source.Offset
+}
+
+func (position Position) Begin() source.Offset {
+	return position.BeginOffset
+}
+
+func (position Position) End() source.Offset {
+	return position.EndOffset
 }
 
 func (position Position) String() string {
-	return fmt.Sprintf("Position{%d..%d}", position.Begin, position.End)
+	return fmt.Sprintf("Position{%d..%d}", position.BeginOffset, position.EndOffset)
 }
 func (position Position) Contains(offset source.Offset) bool {
-	return position.Begin <= offset && offset <= position.End
+	return position.BeginOffset <= offset && offset <= position.EndOffset
 }
 
 func (position Position) ContainsPosition(target Position) bool {
-	return position.Contains(target.Begin) && position.Contains(target.End)
+	return position.Contains(target.BeginOffset) && position.Contains(target.EndOffset)
 }

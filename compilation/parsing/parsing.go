@@ -53,11 +53,12 @@ func (parsing *Parsing) openBlock(indent token.Indent) {
 	parsing.block = block
 }
 
-func (parsing *Parsing) reportError(err error) {
+func (parsing *Parsing) reportError(err error, position ast.Position) {
 	parsing.recorder.Record(diagnostic.RecordedEntry{
 		Kind:    &diagnostic.Error,
 		Stage:   &diagnostic.SyntacticalAnalysis,
 		Message: err.Error(),
+		Position: position,
 	})
 }
 
@@ -78,7 +79,7 @@ func (parsing *Parsing) closeBlock() {
 }
 
 func (parsing *Parsing) offset() source.Offset {
-	return parsing.token().Position().Begin
+	return parsing.token().Position().Begin()
 }
 
 type offsetPosition struct {
@@ -98,7 +99,9 @@ func (parsing *Parsing) createPosition(beginOffset source.Offset) ast.Position {
 	return offsetPosition{begin: beginOffset, end: parsing.offset()}
 }
 
-func (parsing *Parsing) createTokenPosition() ast.Position { return nil }
+func (parsing *Parsing) createTokenPosition() ast.Position {
+	return parsing.token().Position()
+}
 
 func (parsing *Parsing) parseTopLevelNodes() []ast.Node {
 	beginOffset := parsing.offset()
