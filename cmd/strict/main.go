@@ -6,8 +6,8 @@ import (
 )
 
 var baseCommand = &cobra.Command{
-	Use:   "strict",
-	Short: "Strict is a CLI for the strict development kit",
+	Use:   "Strict",
+	Short: "Strict is a CLI for the Strict development kit",
 	Long:  ``,
 }
 

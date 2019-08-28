@@ -1,4 +1,4 @@
-package: gitlab.com/strict-lang/sdk
+package: gitlab.com/Strict-lang/sdk
 import:
 - package: github.com/fatih/color
   version: v1.7.0

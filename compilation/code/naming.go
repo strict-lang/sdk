@@ -14,7 +14,7 @@ const (
 )
 
 // NamingCheck is traversing the ast and ensures that the names of all declared declaration
-// follows the naming rules. As opposed to many languages, strict opposes strong rules on the
+// follows the naming rules. As opposed to many languages, Strict opposes strong rules on the
 // names of identifiers. Names may also influence the semantics.
 type NamingCheck struct {
 	recorder *diagnostic.Recorder
@@ -77,7 +77,7 @@ func (check *NamingCheck) CheckForEachLoopFieldNaming(loop *ast.ForEachLoopState
 }
 
 // CheckTranslationUnitNaming ensures that the translation units name is a valid name for
-// a strict type, it has to be lowerCamelCase.
+// a Strict type, it has to be lowerCamelCase.
 func (check *NamingCheck) CheckTranslationUnitNaming(unit *ast.TranslationUnit) {
 	if !isLowerCamelCase(unit.ToTypeName().NonGenericName()) {
 		check.reportInvalidNode(unit, MessageInvalidUnitName)

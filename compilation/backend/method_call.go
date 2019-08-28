@@ -7,8 +7,8 @@ import (
 var builtinMethods = map[string]string{
 	"log":         "puts",
 	"logf":        "printf",
-	"inputNumber": "strict::InputNumber",
-	"input":       "strict::Input",
+	"inputNumber": "Strict::InputNumber",
+	"input":       "Strict::Input",
 	"asString":    "c_str",
 }
 

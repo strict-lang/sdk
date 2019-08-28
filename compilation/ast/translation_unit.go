@@ -4,7 +4,7 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/scope"
 )
 
-// TranslationUnit represents a unit of translation, a file containing strict
+// TranslationUnit represents a unit of translation, a file containing Strict
 // source code. It can have multiple children, which are seen as the roots
 // of the actual ast. This node however, is the real unit of the ast.
 type TranslationUnit struct {

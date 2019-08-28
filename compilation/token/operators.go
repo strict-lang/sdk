@@ -31,6 +31,7 @@ const (
 	DivAssignOperator
 	assignOperatorEnd
 	ColonOperator
+	ArrowOperator
 	SmallerOperator
 	SmallerEqualsOperator
 	IncrementOperator
@@ -73,6 +74,7 @@ var operatorNames = map[Operator]string{
 	MulAssignOperator:     "*=",
 	DivAssignOperator:     "/=",
 	ColonOperator:         ":",
+	ArrowOperator:         "=>",
 	SmallerOperator:       "<",
 	SmallerEqualsOperator: "<=",
 	IncrementOperator:     "++",

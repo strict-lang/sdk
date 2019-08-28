@@ -12,33 +12,57 @@ func (parsing *Parsing) ParseMethodDeclaration() (*ast.MethodDeclaration, error)
 	if err := parsing.skipKeyword(token.MethodKeyword); err != nil {
 		return nil, err
 	}
-	returnTypeName, err := parsing.parseOptionalReturnTypeName()
+	declaration, err := parsing.parseMethodDeclaration()
 	if err != nil {
 		return nil, err
 	}
-	methodName, err := parsing.expectAnyIdentifier()
-	if err != nil {
-		return nil, err
+	var body ast.Node
+	if token.OperatorValue(parsing.token()) == token.ArrowOperator {
+		body, err = parsing.ParseMethodAssignment()
+	} else {
+		parsing.skipEndOfStatement()
+		body, err = parsing.parseMethodBody(declaration.methodName.Value)
 	}
-	parsing.advance()
-	parameters, err := parsing.parseParameterList()
-	if err != nil {
-		return nil, err
-	}
-	parsing.skipEndOfStatement()
-	parsing.currentMethodName = methodName.Value
-	body, err := parsing.ParseStatementBlock()
-	parsing.currentMethodName = notParsingMethod
 	if err != nil {
 		return nil, err
 	}
 	return &ast.MethodDeclaration{
-		Type:         returnTypeName,
-		Name:         methodName,
+		Type:         declaration.returnTypeName,
+		Name:         declaration.methodName,
 		Body:         body,
-		Parameters:   parameters,
+		Parameters:   declaration.parameters,
 		NodePosition: parsing.createPosition(beginOffset),
 	}, nil
+}
+
+type methodDeclaration struct {
+	returnTypeName ast.TypeName
+	methodName *ast.Identifier
+	parameters ast.ParameterList
+}
+
+func (parsing *Parsing) parseMethodBody(methodName string) (node ast.Node, err error) {
+	parsing.currentMethodName = methodName
+	node, err = parsing.ParseStatementBlock()
+	parsing.currentMethodName = notParsingMethod
+	return
+}
+
+func (parsing *Parsing) parseMethodDeclaration() (declaration methodDeclaration, err error){
+	declaration.returnTypeName, err = parsing.parseOptionalReturnTypeName()
+	if err != nil {
+		return methodDeclaration{}, err
+	}
+	declaration.methodName, err = parsing.expectAnyIdentifier()
+	if err != nil {
+		return methodDeclaration{}, err
+	}
+	parsing.advance()
+	declaration.parameters, err = parsing.parseParameterList()
+	if err != nil {
+		return methodDeclaration{}, err
+	}
+	return
 }
 
 func (parsing *Parsing) parseOptionalReturnTypeName() (ast.TypeName, error) {
@@ -49,6 +73,21 @@ func (parsing *Parsing) parseOptionalReturnTypeName() (ast.TypeName, error) {
 		}, nil
 	}
 	return parsing.ParseTypeName()
+}
+
+func (parsing *Parsing) ParseMethodAssignment() (ast.Node, error) {
+	if err := parsing.skipOperator(token.ArrowOperator); err != nil {
+		return nil, err
+	}
+	beginPosition := parsing.offset()
+	statement := parsing.ParseStatement()
+	if expression, isExpression := statement.(*ast.ExpressionStatement); isExpression {
+		return &ast.ReturnStatement{
+			NodePosition: parsing.createPosition(beginPosition),
+			Value:        expression,
+		}, nil
+	}
+	return statement, nil
 }
 
 func (parsing *Parsing) parseParameterList() (parameters ast.ParameterList, err error) {

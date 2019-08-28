@@ -14,7 +14,7 @@ func NewTestParser(tokens token.Reader) *Parsing {
 
 func TestParseTopLevelStatements(test *testing.T) {
 	const entry = `
-import "stdio.h" as io
+import "stdio.h" as Io
 import "something"
 
 shared int a = 0

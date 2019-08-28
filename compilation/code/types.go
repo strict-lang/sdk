@@ -1,11 +1,11 @@
 package code
 
 const (
-	typeDescriptorAny    = "strict.any"
-	typeDescriptorVoid   = "strict.void"
-	typeDescriptorText   = "strict.text"
-	typeDescriptorBool   = "strict.bool"
-	typeDescriptorNumber = "strict.number"
+	typeDescriptorAny    = "Strict.any"
+	typeDescriptorVoid   = "Strict.void"
+	typeDescriptorText   = "Strict.text"
+	typeDescriptorBool   = "Strict.bool"
+	typeDescriptorNumber = "Strict.number"
 )
 
 type TypeDescriptor string

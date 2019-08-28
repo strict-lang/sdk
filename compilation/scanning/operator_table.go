@@ -24,6 +24,7 @@ var operatorTable = OperatorTable{
 	'=': {
 		singleChar: token.AssignOperator,
 		'=':        token.EqualsOperator,
+		'>':  			token.ArrowOperator,
 	},
 	'!': {
 		singleChar: token.NegateOperator,

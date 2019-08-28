@@ -20,8 +20,8 @@ var standardFormat = format.Format{
 var formatCommand = &cobra.Command{
 	Use:   "format [-f format] [-o override] [-c] [file]",
 	Short: "Formats a source file",
-	Long: `Format rewrites a strict source file according to the
-standard strict-formatting guidelines.`,
+	Long: `Format rewrites a Strict source file according to the
+standard Strict-formatting guidelines.`,
 	Run: RunFormat,
 }
 
@@ -34,7 +34,7 @@ func init() {
 	formatCommand.Flags().
 		StringVarP(&formatTargetFile, "target", "t", "", "path to the output file")
 
-	expectNoError(buildCommand.MarkFlagFilename("target", "strict"))
+	expectNoError(buildCommand.MarkFlagFilename("target", "Strict"))
 	formatCommand.Flags().BoolVarP(&overrideSourceFile, "override", "o", true, "compile the generated cpp code")
 }
 

@@ -9,7 +9,7 @@ import (
 
 var buildCommand = &cobra.Command{
 	Use:   "build [-t target] [-a arduino] [-c] [compile flags] [file]",
-	Short: "Builds a strict module",
+	Short: "Builds a Strict module",
 	Long:  `Build compiles a file to a specified output file.`,
 	Run:   RunCompile,
 }
@@ -24,7 +24,7 @@ func init() {
 	buildCommand.Flags().
 		StringVarP(&buildTargetFile, "target", "t", "", "path to the output file")
 
-	expectNoError(buildCommand.MarkFlagFilename("target", "strict"))
+	expectNoError(buildCommand.MarkFlagFilename("target", "Strict"))
 	buildCommand.Flags().BoolVarP(&targetArduino, "arduino", "a", false, "generate arduino code")
 	buildCommand.Flags().BoolVar(&compileToCpp, "c", false, "compile the generated cpp code")
 }
