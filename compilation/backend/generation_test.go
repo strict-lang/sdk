@@ -79,7 +79,7 @@ func TestCodeGeneration(test *testing.T) {
 	}
 
 	unit := ast.NewTranslationUnit("test", scope.NewRootScope(), []ast.Node{&method, &call})
-	generator := NewCodeGenerator(Settings{
+	generator := NewGeneration(Settings{
 		IsTargetingArduino: false,
 	},
 	unit)

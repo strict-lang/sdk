@@ -58,7 +58,7 @@ func (compilation *Compilation) Run() Result {
 			UnitName:    compilation.Name,
 		}
 	}
-	generator := backend.NewCodeGenerator(parseResult.Unit)
+	generator := backend.NewGeneration(parseResult.Unit)
 	return Result{
 		Generated:         []byte(generator.Generate()),
 		GeneratedFileName: generator.Filename(),

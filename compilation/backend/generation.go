@@ -18,21 +18,31 @@ type Generation struct {
 	importModules               map[string]string
 }
 
+type Extension interface {
+	ModifyVisitor(generation *Generation, visitor *ast.Visitor)
+}
+
 type FileNaming interface {
 	FileNameForUnit(unit *ast.TranslationUnit)
 }
 
-// NewCodeGenerator constructs a Generation that generates C code from
+func NewGenerationWithExtension(unit *ast.TranslationUnit, extension Extension) *Generation {
+	generation := NewGeneration(unit)
+	extension.ModifyVisitor(generation, generation.visitor)
+	return generation
+}
+
+// NewGeneration constructs a Generation that generates C code from
 // the nodes in the passed translation-unit.
-func NewCodeGenerator(unit *ast.TranslationUnit) (generator *Generation) {
-	generator = &Generation{
+func NewGeneration(unit *ast.TranslationUnit) (generation *Generation) {
+	generation = &Generation{
 		unit:                        unit,
 		output:                      &strings.Builder{},
 		importModules:               map[string]string{},
 		appendNewLineAfterStatement: true,
 	}
-	generator.buffer = generator.output
-	generator.visitor = CreateGenericCppVisitor(generator)
+	generation.buffer = generation.output
+	generation.visitor = CreateGenericCppVisitor(generation)
 	return
 }
 
