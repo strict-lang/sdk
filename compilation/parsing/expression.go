@@ -7,6 +7,7 @@
 package parsing
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/compilation/ast"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
@@ -26,7 +27,7 @@ func (parsing *Parsing) ParseOperand() (ast.Node, error) {
 	case token.OperatorValue(last) == token.LeftParenOperator:
 		return parsing.completeLeftParenExpression()
 	}
-	return nil, ErrInvalidExpression
+	return nil, fmt.Errorf("could not parse operand: %s", parsing.token())
 }
 
 func (parsing *Parsing) parseIdentifier() (*ast.Identifier, error) {
@@ -181,11 +182,11 @@ func (parsing *Parsing) parseCreateExpression() (ast.Node, error) {
 func (parsing *Parsing) ParseUnaryExpression() (ast.Node, error) {
 	beginOffset := parsing.offset()
 	operatorToken := parsing.token()
-	if !token.IsOperatorOrOperatorKeywordToken(operatorToken) {
-		return parsing.ParseOperation()
-	}
 	if token.KeywordValue(operatorToken) == token.CreateKeyword {
 		return parsing.parseCreateExpression()
+	}
+	if !token.IsOperatorOrOperatorKeywordToken(operatorToken) {
+		return parsing.ParseOperation()
 	}
 	operator := token.OperatorValue(operatorToken)
 	if !operator.IsUnaryOperator() {

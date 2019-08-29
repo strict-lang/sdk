@@ -296,7 +296,7 @@ func (parsing *Parsing) ParseKeywordStatement(keyword token.Keyword) ast.Node {
 	}
 	parsing.reportError(&UnexpectedTokenError{
 		Token:    parsing.token(),
-		Expected: "statement begin",
+		Expected: "keyword that starts a statement",
 	}, parsing.createTokenPosition())
 	return &ast.InvalidStatement{}
 }
@@ -342,6 +342,7 @@ func (parsing *Parsing) ParseAssertStatement() ast.Node {
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
+	parsing.skipEndOfStatement()
 	return &ast.AssertStatement{
 		NodePosition: parsing.createPosition(beginOffset),
 		Expression:   expression,
@@ -374,14 +375,24 @@ func (parsing *Parsing) ParseInstructionStatement() (ast.Node, error) {
 	}, nil
 }
 
+func isKeywordStatementToken(entry token.Token) bool {
+	return token.IsKeywordToken(entry) && token.KeywordValue(entry) != token.CreateKeyword
+}
+
+func isKeywordExpressionToken(entry token.Token) bool {
+	return token.IsKeywordToken(entry) && token.KeywordValue(entry) == token.CreateKeyword
+}
+
 // ParseStatement parses the next statement from the stream of tokens. Statements include
 // conditionals or loops, therefor this function may end up scanning multiple statements
 // and call itself.
 func (parsing *Parsing) ParseStatement() ast.Node {
 	beginOffset := parsing.offset()
 	switch current := parsing.token(); {
-	case token.IsKeywordToken(current):
+	case isKeywordStatementToken(current):
 		return parsing.ParseKeywordStatement(token.KeywordValue(current))
+	case isKeywordExpressionToken(current):
+		fallthrough
 	case token.IsIdentifierToken(current):
 		fallthrough
 	case token.IsOperatorToken(current):
@@ -393,7 +404,8 @@ func (parsing *Parsing) ParseStatement() ast.Node {
 		}
 		return statement
 	default:
-		return parsing.createInvalidStatement(beginOffset, ErrInvalidExpression)
+		err := fmt.Errorf("expected begin of statement or expression but got: %s", current)
+		return parsing.createInvalidStatement(beginOffset, err)
 	}
 }
 

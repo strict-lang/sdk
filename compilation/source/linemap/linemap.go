@@ -1,6 +1,7 @@
 package linemap
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/compilation/source"
 )
 
@@ -64,7 +65,10 @@ func (lines *LineMap) PositionAtOffset(offset source.Offset) source.Position {
 }
 
 func (lines *LineMap) LineAtIndex(lineIndex source.LineIndex) source.Line {
+	lineIndex -= 1
 	lineCount := len(lines.lines)
+	fmt.Println("lineCount: ", lineCount)
+	fmt.Println("requestIndex: ", lineIndex)
 	if lineIndex < 0 || int(lineIndex) >= lineCount {
 		return source.Line{}
 	}
