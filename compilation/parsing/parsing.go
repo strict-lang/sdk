@@ -99,7 +99,7 @@ func (position offsetPosition) End() source.Offset {
 }
 
 func (parsing *Parsing) createPosition(beginOffset source.Offset) ast.Position {
-	return offsetPosition{begin: beginOffset, end: parsing.offset()}
+	return &offsetPosition{begin: beginOffset, end: parsing.offset()}
 }
 
 func (parsing *Parsing) createTokenPosition() ast.Position {

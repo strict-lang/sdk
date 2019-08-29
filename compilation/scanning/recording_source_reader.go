@@ -27,6 +27,7 @@ func decorateSourceReader(reader source.Reader) *RecordingSourceReader {
 func (reader *RecordingSourceReader) Pull() source.Char {
 	next := reader.delegate.Pull()
 	reader.builder.WriteRune(rune(next))
+	reader.internalIndex++
 	return next
 }
 
@@ -48,6 +49,7 @@ func (reader *RecordingSourceReader) IsExhausted() bool {
 
 func (reader *RecordingSourceReader) Skip(count int) {
 	reader.delegate.Skip(count)
+	reader.internalIndex+=2
 }
 
 func (reader *RecordingSourceReader) Reset() {

@@ -59,7 +59,7 @@ func (scanning *Scanning) createPositionToOffset(begin source.Offset) token.Posi
 
 func (scanning *Scanning) currentPosition() token.Position {
 	return token.Position{
-		BeginOffset: scanning.reader.internalIndex,
+		BeginOffset: scanning.reader.Index(),
 		EndOffset:   scanning.offset(),
 	}
 }
