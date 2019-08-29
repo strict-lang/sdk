@@ -1,7 +1,7 @@
 name                   = strict
 file_extensions []     = strict;
 
-__KEYWORD_CONTROL   \= (continue|break|do|in|from|downto|return|to|for|if|else|yield)
+__KEYWORD_CONTROL   \= (^|\B) (continue|break|do|in|from|downto|return|to|for|if|else|yield)(\S|$)
 
 __KEYWORD_OTHER   \= (import|as|assert|test|create|throw|try|method|is|isnt|not)
 __OPERATORS   \= ([.+|\-()<>\[\]!=%*,]+)
@@ -349,7 +349,7 @@ contexts [] {
          styles [] = .Builtin;
       }
       : pattern {
-         regex \= ([a-zA-Z]([a-zA-Z0-9]*))
+         regex \= ([a-zA-Z][a-zA-Z0-9]*)
          styles [] = .Identifier;
       }
    }
