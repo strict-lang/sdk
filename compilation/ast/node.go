@@ -25,11 +25,11 @@ type Named interface {
 // using two offsets and thus don't give too many information. This
 // is done because almost every AST node has a position field and it
 // would have big memory impacts if positions are not small in size.
-// In order to get more information of a nodes position, the Linemap
-// from the Linemap package is used. It maps offsets to line data and
+// In order to get more information of a nodes position, the LineMap
+// from the LineMap package is used. It maps offsets to line data and
 // is heavily used in diagnostics. To check whether a node spans
 // multiple lines, you have to look up both its begin and end offset
-// in the Linemap.
+// in the LineMap.
 type Position interface {
 	// Begin returns the offset to the nodes begin. If the node is an
 	// expression, it will return the offset to the expressions first
