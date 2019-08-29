@@ -2,6 +2,7 @@ package ast
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"strings"
 )
 
@@ -11,10 +12,11 @@ type Printing struct {
 	buffer  strings.Builder
 	indent  int
 	visitor *Visitor
+	colored bool
 	noNewLineAfterNode int
 }
 
-func Print(node Node) {
+func newPrinting() *Printing {
 	printing := &Printing{}
 	visitor := &Visitor{
 		VisitParameter:            printing.printParameter,
@@ -48,6 +50,12 @@ func Print(node Node) {
 		VisitConditionalStatement: printing.printConditionalStatement,
 	}
 	printing.visitor = visitor
+	printing.colored = true
+	return printing
+}
+
+func Print(node Node) {
+	printing := newPrinting()
 	printing.printNode(node)
 	fmt.Println(printing.buffer.String())
 }
@@ -70,6 +78,12 @@ func (printing *Printing) decreaseIndent() {
 }
 
 func (printing *Printing) printFieldName(name string) {
+	if printing.colored {
+		coloredName := color.CyanString("\"%s\"", name)
+		coloredAssign := color.RedString(" = ")
+		printing.print(coloredName + coloredAssign)
+		return
+	}
 	printing.printFormatted("\"%s\" = ", name)
 }
 
@@ -92,7 +106,11 @@ func (printing *Printing) printIndentedStringField(name string, value string) {
 
 func (printing *Printing) printIndentedListFieldBegin(name string) {
 	printing.printIndentedFieldName(name)
-	printing.printLine(" [")
+	if printing.colored {
+		printing.printLine(color.RedString("["))
+	} else {
+		printing.printLine("[")
+	}
 	printing.increaseIndent()
 	printing.noNewLineAfterNode++
 }
@@ -100,11 +118,21 @@ func (printing *Printing) printIndentedListFieldBegin(name string) {
 func (printing *Printing ) printListFieldEnd() {
 	printing.decreaseIndent()
 	printing.printIndent()
-	printing.printLine("]")
+	if printing.colored {
+		printing.printLine(color.RedString("]"))
+	} else {
+		printing.printLine("]")
+	}
 }
 
 func (printing *Printing) printNodeBegin(name string) {
-	printing.printLine(name + " {")
+	if printing.colored {
+		coloredName := color.GreenString(name)
+		coloredCurly := color.RedString(" {")
+		printing.printLine(coloredName + coloredCurly)
+	} else {
+		printing.printLine(name + " {")
+	}
 	printing.increaseIndent()
 	printing.noNewLineAfterNode--
 }
@@ -112,7 +140,11 @@ func (printing *Printing) printNodeBegin(name string) {
 func (printing *Printing) printNodeEnd() {
 	printing.decreaseIndent()
 	printing.printIndent()
-	printing.print("}")
+	if printing.colored {
+		printing.print(color.RedString("}"))
+	} else {
+		printing.print("}")
+	}
 	if printing.noNewLineAfterNode == 0 {
 		printing.printNewLine()
 	}
@@ -158,7 +190,11 @@ func (printing *Printing) printUnaryExpression(expression *UnaryExpression) {
 }
 
 func (printing *Printing) printExpressionStatement(statement *ExpressionStatement) {
-	printing.print("!")
+	if printing.colored {
+		printing.print(color.RedString("!"))
+	} else {
+		printing.print("!")
+	}
 	printing.printNode(statement.Expression)
 }
 
