@@ -30,7 +30,7 @@ type Scanning struct {
 	lineIndex source.LineIndex
 	// endOfStatementPrevention tells the scanning whether it should insert an EndOfStatement or not.
 	// It will only insert an EndOfStatement token when this field is zero. This is not a boolean,
-	// because preventers can be nested. Common tokens that prevent the scanning from generating
+	// because preventions can be nested. Common tokens that prevent the scanning from generating
 	// an EndOfStatement token are: Parentheses and Brackets
 	endOfStatementPrevention int
 	// indent is the current indentation level. It is updates while scanning and assigned

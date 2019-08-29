@@ -10,7 +10,10 @@ import (
 
 const notParsingMethod = ""
 
-// Parsing parses an AST from a stream of tokens.
+// Parsing represents the process of parsing a stream of tokens and turning them
+// into an abstract syntax tree. This class is not reusable and can only produce
+// one translation unit. It does some scope management but does not do to many
+// checks that could be considered semantic.
 type Parsing struct {
 	tokenReader token.Reader
 	rootScope   *scope.Scope
