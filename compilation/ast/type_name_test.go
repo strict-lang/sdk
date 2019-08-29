@@ -4,9 +4,9 @@ import "testing"
 
 var (
 	_ TypeName = &ConcreteTypeName{}
-	_ Node = &ConcreteTypeName{}
+	_ Node     = &ConcreteTypeName{}
 	_ TypeName = &GenericTypeName{}
-	_ Node = &GenericTypeName{}
+	_ Node     = &GenericTypeName{}
 )
 
 func NewTestConcreteTypeName(name string) *ConcreteTypeName {
@@ -17,7 +17,7 @@ func NewTestConcreteTypeName(name string) *ConcreteTypeName {
 }
 
 func TestConcreteTypeName_FullName(test *testing.T) {
-	entries := []string {
+	entries := []string{
 		"abc", "name", "thisIsTheNameOfAType", "nonGeneric",
 	}
 	for _, entry := range entries {

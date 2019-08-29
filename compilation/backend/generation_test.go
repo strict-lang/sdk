@@ -17,7 +17,7 @@ func TestCodeGeneration(test *testing.T) {
 		Parameters: []*ast.Parameter{
 			{
 				Name: &ast.Identifier{
-				 	Value: "age",
+					Value: "age",
 				},
 				Type: &ast.ConcreteTypeName{
 					Name: "number",

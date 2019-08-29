@@ -5,11 +5,11 @@ import (
 )
 
 type AstCache struct {
-	files map[string] entry
+	files map[string]entry
 }
 
 type entry struct {
-	unit *ast.TranslationUnit
+	unit       *ast.TranslationUnit
 	lastUpdate int64
 }
 

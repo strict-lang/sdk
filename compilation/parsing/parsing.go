@@ -58,9 +58,9 @@ func (parsing *Parsing) openBlock(indent token.Indent) {
 
 func (parsing *Parsing) reportError(err error, position ast.Position) {
 	parsing.recorder.Record(diagnostic.RecordedEntry{
-		Kind:    &diagnostic.Error,
-		Stage:   &diagnostic.SyntacticalAnalysis,
-		Message: err.Error(),
+		Kind:     &diagnostic.Error,
+		Stage:    &diagnostic.SyntacticalAnalysis,
+		Message:  err.Error(),
 		Position: position,
 	})
 }

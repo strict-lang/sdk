@@ -94,5 +94,3 @@ func (generation *Generation) Generate() string {
 	generation.EmitNode(generation.unit)
 	return generation.String()
 }
-
-

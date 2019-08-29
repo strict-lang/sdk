@@ -160,9 +160,9 @@ func (scanning *Scanning) next() token.Token {
 
 func (scanning *Scanning) reportError(err error) {
 	scanning.diagnosticBag.Record(diagnostic.RecordedEntry{
-		Kind:    &diagnostic.Error,
-		Stage:   &diagnostic.LexicalAnalysis,
-		Message: err.Error(),
+		Kind:     &diagnostic.Error,
+		Stage:    &diagnostic.LexicalAnalysis,
+		Message:  err.Error(),
 		Position: scanning.last.Position(),
 	})
 }

@@ -6,7 +6,7 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/backend"
 )
 
-type Extension struct {}
+type Extension struct{}
 
 var _ backend.Extension = &Extension{}
 
@@ -56,9 +56,9 @@ func generateAssertionFailureMessage(expression ast.Node) string {
 
 type TestDefinition struct {
 	testedMethodName string
-	testMethodName string
-	node ast.TestStatement
-	generation *backend.Generation
+	testMethodName   string
+	node             ast.TestStatement
+	generation       *backend.Generation
 }
 
 func NewTestDefinition(node ast.TestStatement, generation *backend.Generation) *TestDefinition {

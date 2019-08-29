@@ -1,3 +1,3 @@
 package arduino
 
-type Generator struct {}
+type Generator struct{}

@@ -1,3 +1,3 @@
 package sourcefile
 
-type Generator struct {}
+type Generator struct{}

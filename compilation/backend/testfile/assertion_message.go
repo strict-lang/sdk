@@ -7,7 +7,7 @@ import (
 )
 
 type assertionMessageComputation struct {
-	buffer strings.Builder
+	buffer  strings.Builder
 	visitor *ast.Visitor
 }
 
@@ -63,13 +63,13 @@ func (computation *assertionMessageComputation) visitNumberLiteral(literal *ast.
 	computation.buffer.WriteString(literal.Value)
 }
 
-var comparisonOperatorErrorMessages = map[token.Operator] string {
-	token.EqualsOperator: "is not equal to",
-	token.NotEqualsOperator: "is equal to",
+var comparisonOperatorErrorMessages = map[token.Operator]string{
+	token.EqualsOperator:        "is not equal to",
+	token.NotEqualsOperator:     "is equal to",
 	token.GreaterEqualsOperator: "is smaller than",
-	token.GreaterOperator: "is not greater than",
+	token.GreaterOperator:       "is not greater than",
 	token.SmallerEqualsOperator: "is greater than",
-	token.SmallerOperator: "is not smaller than",
+	token.SmallerOperator:       "is not smaller than",
 }
 
 func translateComparisonOperatorToErrorMessage(operator token.Operator) string {

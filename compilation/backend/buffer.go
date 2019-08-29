@@ -6,7 +6,7 @@ type OutputStream interface {
 	WriteFormatted(string, ...interface{})
 }
 
-type FormattedOutputStream  interface {
+type FormattedOutputStream interface {
 	OutputStream
 	Indent()
 	IncreaseIndent()

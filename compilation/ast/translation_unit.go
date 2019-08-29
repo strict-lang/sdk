@@ -52,7 +52,7 @@ func (unit *TranslationUnit) AppendChild(node Node) {
 
 func (unit *TranslationUnit) ToTypeName() TypeName {
 	return &ConcreteTypeName{
-		Name: unit.name,
+		Name:         unit.name,
 		NodePosition: unit.NodePosition,
 	}
 }

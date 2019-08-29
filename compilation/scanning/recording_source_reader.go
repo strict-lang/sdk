@@ -49,7 +49,7 @@ func (reader *RecordingSourceReader) IsExhausted() bool {
 
 func (reader *RecordingSourceReader) Skip(count int) {
 	reader.delegate.Skip(count)
-	reader.internalIndex+=2
+	reader.internalIndex += 2
 }
 
 func (reader *RecordingSourceReader) Reset() {

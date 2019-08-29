@@ -6,8 +6,8 @@ import (
 )
 
 type Printing struct {
-	buffer strings.Builder
-	indent int
+	buffer  strings.Builder
+	indent  int
 	visitor *Visitor
 }
 
@@ -108,7 +108,7 @@ func (printing *Printing) printNode(node Node) {
 func (printing *Printing) printBinaryExpression(expression *BinaryExpression) {
 	printing.printLine("BinaryExpression:")
 	printing.increaseIndent()
-	printing.printIndentedStringField("operator",expression.Operator.String())
+	printing.printIndentedStringField("operator", expression.Operator.String())
 	printing.printIndentedNodeField("leftOperand", expression.LeftOperand)
 	printing.printIndentedNodeField("rightOperand", expression.RightOperand)
 	printing.decreaseIndent()

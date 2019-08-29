@@ -1,3 +1,3 @@
 package header
 
-type Generator struct {}
+type Generator struct{}

@@ -37,8 +37,8 @@ func (parsing *Parsing) ParseMethodDeclaration() (*ast.MethodDeclaration, error)
 
 type methodDeclaration struct {
 	returnTypeName ast.TypeName
-	methodName *ast.Identifier
-	parameters ast.ParameterList
+	methodName     *ast.Identifier
+	parameters     ast.ParameterList
 }
 
 func (parsing *Parsing) parseMethodBody(methodName string) (node ast.Node, err error) {
@@ -48,7 +48,7 @@ func (parsing *Parsing) parseMethodBody(methodName string) (node ast.Node, err e
 	return
 }
 
-func (parsing *Parsing) parseMethodDeclaration() (declaration methodDeclaration, err error){
+func (parsing *Parsing) parseMethodDeclaration() (declaration methodDeclaration, err error) {
 	declaration.returnTypeName, err = parsing.parseOptionalReturnTypeName()
 	if err != nil {
 		return methodDeclaration{}, err

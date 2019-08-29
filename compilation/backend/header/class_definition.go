@@ -6,9 +6,9 @@ import (
 )
 
 type ClassDefinition struct {
-	name string
-	Methods []*ast.MethodDeclaration
-	Fields  []*ast.FieldDeclaration
+	name       string
+	Methods    []*ast.MethodDeclaration
+	Fields     []*ast.FieldDeclaration
 	generation *backend.Generation
 }
 
@@ -28,7 +28,6 @@ func (class *ClassDefinition) GenerateCode() {
 func (class *ClassDefinition) writeMethodDeclaration(
 	stream backend.OutputStream,
 	declaration *ast.MethodDeclaration) {
-
 
 }
 

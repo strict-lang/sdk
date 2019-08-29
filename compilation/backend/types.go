@@ -18,15 +18,15 @@ var builtinTypes = map[string]string{
 
 func updateGenericTypeName(name *ast.GenericTypeName) ast.TypeName {
 	return &ast.GenericTypeName{
-		Name:    lookupTypeName(name.Name),
-		Generic: updateTypeName(name.Generic),
+		Name:         lookupTypeName(name.Name),
+		Generic:      updateTypeName(name.Generic),
 		NodePosition: name.NodePosition,
 	}
 }
 
 func updateConcreteTypeName(name *ast.ConcreteTypeName) ast.TypeName {
 	return &ast.ConcreteTypeName{
-		Name: lookupTypeName(name.Name),
+		Name:         lookupTypeName(name.Name),
 		NodePosition: name.NodePosition,
 	}
 }
