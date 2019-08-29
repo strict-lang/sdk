@@ -17,7 +17,7 @@ const notParsingMethod = ""
 type Parsing struct {
 	tokenReader token.Reader
 	rootScope   *scope.Scope
-	recorder    *diagnostic.Recorder
+	recorder    *diagnostic.Bag
 	block       *Block
 	unitName    string
 	// expressionDepth is the amount of parentheses encountered at the

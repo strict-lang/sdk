@@ -30,17 +30,17 @@ type ParseResult struct {
 }
 
 func (compilation *Compilation) Parse() ParseResult {
-	recorder := diagnostic.NewRecorder()
+	diagnosticBag := diagnostic.NewBag()
 	sourceReader := compilation.Source.newSourceReader()
 	tokenReader := scanning.NewScanning(sourceReader)
 	parserFactory := parsing.NewDefaultFactory().
 		WithTokenReader(tokenReader).
-		WithRecorder(recorder).
+		WithRecorder(diagnosticBag).
 		WithUnitName(compilation.Name)
 
 	unit, err := parserFactory.NewParser().ParseTranslationUnit()
 	offsetConverter := tokenReader.NewLineMap().PositionAtOffset
-	diagnostics := recorder.CreateDiagnostics(offsetConverter)
+	diagnostics := diagnosticBag.CreateDiagnostics(offsetConverter)
 	return ParseResult{
 		Unit:        unit,
 		Diagnostics: diagnostics,

@@ -8,8 +8,8 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
-// ParseIfStatement parses a conditional statement and it's optional else-clause.
-func (parsing *Parsing) ParseIfStatement() ast.Node {
+// ParseConditionalStatement parses a conditional statement and it's optional else-clause.
+func (parsing *Parsing) ParseConditionalStatement() ast.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.IfKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -48,7 +48,7 @@ func (parsing *Parsing) ParseIfStatement() ast.Node {
 
 func (parsing *Parsing) parseElseIfOrBlock() (ast.Node, error) {
 	if token.HasKeywordValue(parsing.token(), token.IfKeyword) {
-		return parsing.ParseIfStatement(), nil
+		return parsing.ParseConditionalStatement(), nil
 	}
 	parsing.skipEndOfStatement()
 	return parsing.ParseStatementBlock()
@@ -269,7 +269,7 @@ func (parsing *Parsing) parseOptionalAssignValue() (ast.Node, error) {
 func (parsing *Parsing) keywordStatementParser(keyword token.Keyword) (func() ast.Node, bool) {
 	switch keyword {
 	case token.IfKeyword:
-		return parsing.ParseIfStatement, true
+		return parsing.ParseConditionalStatement, true
 	case token.ForKeyword:
 		return parsing.ParseForStatement, true
 	case token.YieldKeyword:

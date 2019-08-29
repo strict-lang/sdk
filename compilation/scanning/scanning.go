@@ -16,7 +16,7 @@ const (
 type Scanning struct {
 	reader         *RecordingSourceReader
 	lineMapBuilder *linemap.Builder
-	recorder       *diagnostic.Recorder
+	diagnosticBag  *diagnostic.Bag
 	// peeked points to the most recently peeked token.
 	peeked token.Token
 	// last points to the most recently scanned token. It is an InvalidToken if no other
@@ -50,12 +50,12 @@ type Scanning struct {
 	lineBeginOffset source.Offset
 }
 
-func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Recorder) *Scanning {
+func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Bag) *Scanning {
 	beginOfFile := token.NewInvalidToken("BeginOfFile", token.Position{}, token.NoIndent)
 	return &Scanning{
 		reader:         decorateSourceReader(reader),
 		lineMapBuilder: linemap.NewBuilder(),
-		recorder:       recorder,
+		diagnosticBag:  recorder,
 		last:           beginOfFile,
 		peeked:         nil,
 		updateIndent:   true,
@@ -64,7 +64,7 @@ func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Recorder) *
 }
 
 func NewScanning(reader source.Reader) *Scanning {
-	return NewDiagnosticScanner(reader, diagnostic.NewRecorder())
+	return NewDiagnosticScanner(reader, diagnostic.NewBag())
 }
 
 var _ token.Reader = &Scanning{}
@@ -159,7 +159,7 @@ func (scanning *Scanning) next() token.Token {
 }
 
 func (scanning *Scanning) reportError(err error) {
-	scanning.recorder.Record(diagnostic.RecordedEntry{
+	scanning.diagnosticBag.Record(diagnostic.RecordedEntry{
 		Kind:    &diagnostic.Error,
 		Stage:   &diagnostic.LexicalAnalysis,
 		Message: err.Error(),

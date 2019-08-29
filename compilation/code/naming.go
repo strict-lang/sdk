@@ -17,12 +17,12 @@ const (
 // follows the naming rules. As opposed to many languages, Strict opposes strong rules on the
 // names of identifiers. Names may also influence the semantics.
 type NamingCheck struct {
-	recorder *diagnostic.Recorder
+	recorder *diagnostic.Bag
 	unit     *ast.TranslationUnit
 	visitor  *ast.Visitor
 }
 
-func NewNamingChecker(recorder *diagnostic.Recorder, unit *ast.TranslationUnit) *NamingCheck {
+func NewNamingChecker(recorder *diagnostic.Bag, unit *ast.TranslationUnit) *NamingCheck {
 	check := &NamingCheck{
 		recorder: recorder,
 		unit:     unit,

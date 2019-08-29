@@ -10,7 +10,7 @@ var (
 	InvalidStatementError = errors.New("invalid statement")
 	// ErrInvalidExpression is returned from a function that fails to parsing
 	// an expression. Functions returning this should report more verbose
-	// error messages to the diagnostics.Recorder.
+	// error messages to the diagnostics.Bag.
 	ErrInvalidExpression = errors.New("invalid expression")
 )
 

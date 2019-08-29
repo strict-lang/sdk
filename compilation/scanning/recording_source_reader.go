@@ -6,7 +6,7 @@ import (
 )
 
 // RecordingSourceReader decorates a source.Reader with scanning specific logic that
-// helps the scanning to report more verbose errors to the diagnostics.Recorder.
+// helps the scanning to report more verbose errors to the diagnostics.Bag.
 type RecordingSourceReader struct {
 	delegate source.Reader
 	builder  strings.Builder

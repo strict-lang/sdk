@@ -9,13 +9,13 @@ import (
 type Factory struct {
 	TokenReader token.Reader
 	UnitName    string
-	Recorder    *diagnostic.Recorder
+	Bag         *diagnostic.Bag
 }
 
 func NewDefaultFactory() *Factory {
 	return &Factory{
 		UnitName: "undefined",
-		Recorder: diagnostic.NewRecorder(),
+		Bag:      diagnostic.NewBag(),
 	}
 }
 
@@ -29,8 +29,8 @@ func (factory *Factory) WithTokenReader(reader token.Reader) *Factory {
 	return factory
 }
 
-func (factory *Factory) WithRecorder(recorder *diagnostic.Recorder) *Factory {
-	factory.Recorder = recorder
+func (factory *Factory) WithRecorder(recorder *diagnostic.Bag) *Factory {
+	factory.Bag = recorder
 	return factory
 }
 
@@ -41,7 +41,7 @@ func (factory *Factory) NewParser() *Parsing {
 	parser := &Parsing{
 		rootScope:   scope.NewRootScope(),
 		tokenReader: factory.TokenReader,
-		recorder:    factory.Recorder,
+		recorder:    factory.Bag,
 		unitName:    factory.UnitName,
 	}
 	parser.openBlock(token.NoIndent)

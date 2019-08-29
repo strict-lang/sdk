@@ -12,7 +12,7 @@ type RecordedEntry struct {
 	Position RecordedPosition
 }
 
-type Recorder struct {
+type Bag struct {
 	entries *[]RecordedEntry
 }
 
@@ -21,19 +21,19 @@ type RecordedPosition interface {
 	End() source.Offset
 }
 
-func NewRecorder() *Recorder {
-	return &Recorder{
+func NewBag() *Bag {
+	return &Bag{
 		entries: &[]RecordedEntry{},
 	}
 }
 
-func (recorder *Recorder) Record(entry RecordedEntry) {
+func (recorder *Bag) Record(entry RecordedEntry) {
 	*recorder.entries = append(*recorder.entries, entry)
 }
 
-type OffsetToPositionConverter func(source.Offset) source.Position
+type OffsetConversionFunction func(source.Offset) source.Position
 
-func (recorder *Recorder) CreateDiagnostics(converter OffsetToPositionConverter) *Diagnostics {
+func (recorder *Bag) CreateDiagnostics(converter OffsetConversionFunction) *Diagnostics {
 	mappedEntries := make(map[string][]Entry)
 	for _, recorded := range *recorder.entries {
 		position := converter(recorded.Position.Begin())
