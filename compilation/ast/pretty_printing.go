@@ -5,10 +5,13 @@ import (
 	"strings"
 )
 
+const prettyPrintIndent = "  "
+
 type Printing struct {
 	buffer  strings.Builder
 	indent  int
 	visitor *Visitor
+	noNewLineAfterNode int
 }
 
 func Print(node Node) {
@@ -67,7 +70,7 @@ func (printing *Printing) decreaseIndent() {
 }
 
 func (printing *Printing) printFieldName(name string) {
-	printing.printFormatted("%s: ", name)
+	printing.printFormatted("\"%s\" = ", name)
 }
 
 func (printing *Printing) printIndentedFieldName(name string) {
@@ -87,13 +90,32 @@ func (printing *Printing) printIndentedStringField(name string, value string) {
 	printing.printNewLine()
 }
 
-func (printing *Printing) printNodeBegin(name string) {
-	printing.printLine(name + ": ")
+func (printing *Printing) printIndentedListFieldBegin(name string) {
+	printing.printIndentedFieldName(name)
+	printing.printLine(" [")
 	printing.increaseIndent()
+	printing.noNewLineAfterNode++
+}
+
+func (printing *Printing ) printListFieldEnd() {
+	printing.decreaseIndent()
+	printing.printIndent()
+	printing.printLine("]")
+}
+
+func (printing *Printing) printNodeBegin(name string) {
+	printing.printLine(name + " {")
+	printing.increaseIndent()
+	printing.noNewLineAfterNode--
 }
 
 func (printing *Printing) printNodeEnd() {
 	printing.decreaseIndent()
+	printing.printIndent()
+	printing.print("}")
+	if printing.noNewLineAfterNode == 0 {
+		printing.printNewLine()
+	}
 }
 
 func (printing *Printing) printFormatted(message string, arguments ...interface{}) {
@@ -102,7 +124,7 @@ func (printing *Printing) printFormatted(message string, arguments ...interface{
 
 func (printing *Printing) printIndent() {
 	for count := 0; count < printing.indent; count++ {
-		printing.print("\t")
+		printing.print(prettyPrintIndent)
 	}
 }
 
@@ -112,6 +134,12 @@ func (printing *Printing) printNewLine() {
 
 func (printing *Printing) printNode(node Node) {
 	node.Accept(printing.visitor)
+}
+
+func (printing *Printing) printListField(node Node) {
+	printing.printIndent()
+	printing.printNode(node)
+	printing.printNewLine()
 }
 
 func (printing *Printing) printBinaryExpression(expression *BinaryExpression) {
@@ -137,11 +165,11 @@ func (printing *Printing) printExpressionStatement(statement *ExpressionStatemen
 func (printing *Printing) printTranslationUnit(unit *TranslationUnit) {
 	printing.printNodeBegin("TranslationUnit")
 	printing.printIndentedStringField("name", unit.name)
+	printing.printIndentedListFieldBegin("children")
 	for _, node := range unit.Children {
-		printing.printIndent()
-		printing.print("- ")
-		printing.printNode(node)
+		printing.printListField(node)
 	}
+	printing.printListFieldEnd()
 	printing.printNodeEnd()
 }
 
@@ -210,14 +238,11 @@ func (printing *Printing) printMethodDeclaration(method *MethodDeclaration) {
 	printing.printNodeBegin("MethodDeclaration")
 	printing.printIndentedNodeField("name", method.Name)
 	printing.printIndentedNodeField("returnType", method.Type)
-	printing.printFieldName("parameters")
-	printing.printNewLine()
+	printing.printIndentedListFieldBegin("parameters")
 	for _, parameter := range method.Parameters {
-		printing.printIndent()
-		printing.print("- ")
-		printing.printNode(parameter)
-		printing.printNewLine()
+		printing.printListField(parameter)
 	}
+	printing.printListFieldEnd()
 	if method.Body != nil {
 		printing.printIndentedNodeField("body", method.Body)
 	}
@@ -269,14 +294,11 @@ func (printing *Printing) printSelectorExpression(expression *SelectorExpression
 func (printing *Printing) printMethodCall(call *MethodCall) {
 	printing.printNodeBegin("MethodCall")
 	printing.printIndentedNodeField("method", call.Method)
-	printing.printFieldName("parameters")
-	printing.printNewLine()
+	printing.printIndentedListFieldBegin("arguments")
 	for _, argument := range call.Arguments {
-		printing.printIndent()
-		printing.print("- ")
-		printing.printNode(argument)
-		printing.printNewLine()
+		printing.printListField(argument)
 	}
+	printing.printListFieldEnd()
 	printing.printNodeEnd()
 }
 
@@ -304,10 +326,7 @@ func (printing *Printing) printTestStatement(statement *TestStatement) {
 func (printing *Printing) printBlockStatement(statement *BlockStatement) {
 	printing.printNodeBegin("BlockStatement")
 	for _, child := range statement.Children {
-		printing.printIndent()
-		printing.print("- ")
-		printing.printNode(child)
-		printing.printNewLine()
+		printing.printListField(child)
 	}
 	printing.printNodeEnd()
 }
