@@ -49,13 +49,6 @@ func (testFile *TestFile) emitFailedAssertion(statement *ast.AssertStatement) {
 }
 
 func generateAssertionFailureMessage(expression ast.Node) string {
-	switch concrete := expression.(type) {
-	case *ast.BinaryExpression:
-		return generateBinaryExpressionFailureMessage(concrete)
-	}
-}
-
-func generateBinaryExpressionFailureMessage(expression *ast.BinaryExpression) string {
 	assertionMessage := newAssertionMessageComputation()
 	assertionMessage.generateNode(expression)
 	return assertionMessage.String()

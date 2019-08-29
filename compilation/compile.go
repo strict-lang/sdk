@@ -39,7 +39,7 @@ func (compilation *Compilation) Parse() ParseResult {
 		WithUnitName(compilation.Name)
 
 	unit, err := parserFactory.NewParser().ParseTranslationUnit()
-	offsetConverter := tokenReader.CreateLinemap().PositionAtOffset
+	offsetConverter := tokenReader.NewLineMap().PositionAtOffset
 	diagnostics := recorder.CreateDiagnostics(offsetConverter)
 	return ParseResult{
 		Unit:        unit,

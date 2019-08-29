@@ -7,22 +7,22 @@ import (
 )
 
 func TestParser_ParseMethodDeclaration(test *testing.T) {
-	var entries = map[string]ast.Method{
+	var entries = map[string]ast.MethodDeclaration{
 		`
 	method number add(number a, number b)	
 		ret = a + b
 		return ret
 `: {
-			Name: ast.Identifier{Value: "add"},
-			Type: ast.ConcreteTypeName{Name: "number"},
-			Parameters: []ast.Parameter{
+			Name: &ast.Identifier{Value: "add"},
+			Type: &ast.ConcreteTypeName{Name: "number"},
+			Parameters: []*ast.Parameter{
 				{
-					Name: ast.Identifier{Value: "a"},
-					Type: ast.ConcreteTypeName{Name: "number"},
+					Name: &ast.Identifier{Value: "a"},
+					Type: &ast.ConcreteTypeName{Name: "number"},
 				},
 				{
-					Name: ast.Identifier{Value: "b"},
-					Type: ast.ConcreteTypeName{Name: "number"},
+					Name: &ast.Identifier{Value: "b"},
+					Type: &ast.ConcreteTypeName{Name: "number"},
 				},
 			},
 		},
@@ -31,15 +31,15 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 		for index from 0 to number do
 			yield index
 `: {
-			Name: ast.Identifier{Value: "rangeTo"},
-			Type: ast.GenericTypeName{
+			Name: &ast.Identifier{Value: "rangeTo"},
+			Type: &ast.GenericTypeName{
 				Name:    "list",
-				Generic: ast.ConcreteTypeName{Name: "number"},
+				Generic: &ast.ConcreteTypeName{Name: "number"},
 			},
-			Parameters: []ast.Parameter{
+			Parameters: []*ast.Parameter{
 				{
-					Name: ast.Identifier{Value: "number"},
-					Type: ast.ConcreteTypeName{Name: "number"},
+					Name: &ast.Identifier{Value: "number"},
+					Type: &ast.ConcreteTypeName{Name: "number"},
 				},
 			},
 		},
@@ -59,7 +59,7 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 	}
 }
 
-func compareMethods(method ast.Method, expected ast.Method) bool {
+func compareMethods(method ast.MethodDeclaration, expected ast.MethodDeclaration) bool {
 	if method.Name.Value != expected.Name.Value {
 		return false
 	}

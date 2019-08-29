@@ -26,7 +26,7 @@ func TestChildDoesNotModifyParent(test *testing.T) {
 	scope := NewRootScope()
 	child := scope.NewChild()
 
-	err := scope.PutSymbol("a", Dummy{scope: child})
+	err := child.PutSymbol("a", Dummy{scope: child})
 	expectNoError(test, err)
 	expectSymbol(test, child, "a")
 	expectNoSymbol(test, scope, "a")

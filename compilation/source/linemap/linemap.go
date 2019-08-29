@@ -4,7 +4,7 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/source"
 )
 
-type Linemap struct {
+type LineMap struct {
 	lines        []lineEntry
 	lineOffsets  []source.Offset
 	recentOffset source.Offset
@@ -17,7 +17,7 @@ type lineEntry struct {
 	offset source.Offset
 }
 
-func (lines *Linemap) LineAtOffset(offset source.Offset) source.LineIndex {
+func (lines *LineMap) LineAtOffset(offset source.Offset) source.LineIndex {
 	if offset == lines.recentOffset {
 		return lines.recentLine
 	}
@@ -27,7 +27,7 @@ func (lines *Linemap) LineAtOffset(offset source.Offset) source.LineIndex {
 	return line
 }
 
-func (lines *Linemap) resolveLineAtOffset(offset source.Offset) source.LineIndex {
+func (lines *LineMap) resolveLineAtOffset(offset source.Offset) source.LineIndex {
 	firstIndex := 0
 	lastIndex := len(lines.lineOffsets) - 1
 	for firstIndex <= lastIndex {
@@ -45,7 +45,7 @@ func (lines *Linemap) resolveLineAtOffset(offset source.Offset) source.LineIndex
 	return source.LineIndex(lastIndex) + 1
 }
 
-func (lines *Linemap) OffsetAtLine(index source.LineIndex) source.Offset {
+func (lines *LineMap) OffsetAtLine(index source.LineIndex) source.Offset {
 	lineCount := len(lines.lines)
 	if index < 0 || int(index) >= lineCount {
 		return source.Offset(0)
@@ -53,7 +53,7 @@ func (lines *Linemap) OffsetAtLine(index source.LineIndex) source.Offset {
 	return source.Offset(lines.lines[index].offset)
 }
 
-func (lines *Linemap) PositionAtOffset(offset source.Offset) source.Position {
+func (lines *LineMap) PositionAtOffset(offset source.Offset) source.Position {
 	lineIndex := lines.LineAtOffset(offset)
 	line := lines.LineAtIndex(lineIndex)
 	return source.Position{
@@ -63,7 +63,7 @@ func (lines *Linemap) PositionAtOffset(offset source.Offset) source.Position {
 	}
 }
 
-func (lines *Linemap) LineAtIndex(lineIndex source.LineIndex) source.Line {
+func (lines *LineMap) LineAtIndex(lineIndex source.LineIndex) source.Line {
 	lineCount := len(lines.lines)
 	if lineIndex < 0 || int(lineIndex) >= lineCount {
 		return source.Line{}
@@ -76,6 +76,6 @@ func (lines *Linemap) LineAtIndex(lineIndex source.LineIndex) source.Line {
 	}
 }
 
-func (lines *Linemap) LineCount() int {
+func (lines *LineMap) LineCount() int {
 	return len(lines.lines)
 }

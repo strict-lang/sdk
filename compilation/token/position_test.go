@@ -7,9 +7,9 @@ import (
 
 func TestPositionDoesNotContainOutside(test *testing.T) {
 	entries := map[Position]source.Offset{
-		{Begin: 00, End: 10}: 11,
-		{Begin: 11, End: 12}: 10,
-		{Begin: 11, End: 13}: 14,
+		{BeginOffset: 00, EndOffset: 10}: 11,
+		{BeginOffset: 11, EndOffset: 12}: 10,
+		{BeginOffset: 11, EndOffset: 13}: 14,
 	}
 
 	for position, point := range entries {
@@ -22,14 +22,14 @@ func TestPositionDoesNotContainOutside(test *testing.T) {
 
 func TestPositionContains(test *testing.T) {
 	positions := []Position{
-		{Begin: 0, End: 10},
-		{Begin: 10, End: 50},
-		{Begin: 10, End: 11},
-		{Begin: 10, End: 12},
+		{BeginOffset: 0, EndOffset: 10},
+		{BeginOffset: 10, EndOffset: 50},
+		{BeginOffset: 10, EndOffset: 11},
+		{BeginOffset: 10, EndOffset: 12},
 	}
 
 	for _, position := range positions {
-		for point := position.Begin; point < position.End; point++ {
+		for point := position.BeginOffset; point < position.EndOffset; point++ {
 			if position.Contains(point) {
 				continue
 			}
@@ -40,10 +40,10 @@ func TestPositionContains(test *testing.T) {
 
 func TestPositionContainsItself(test *testing.T) {
 	positions := []Position{
-		{Begin: 0, End: 10},
-		{Begin: 10, End: 50},
-		{Begin: 10, End: 11},
-		{Begin: 10, End: 12},
+		{BeginOffset: 0, EndOffset: 10},
+		{BeginOffset: 10, EndOffset: 50},
+		{BeginOffset: 10, EndOffset: 11},
+		{BeginOffset: 10, EndOffset: 12},
 	}
 
 	for _, position := range positions {
@@ -56,8 +56,8 @@ func TestPositionContainsItself(test *testing.T) {
 
 func TestPositionContainsPosition(test *testing.T) {
 	positions := map[Position]Position{
-		{Begin: 0, End: 10}: {Begin: 5, End: 9},
-		{Begin: 0, End: 10}: {Begin: 5, End: 10},
+		{BeginOffset: 0, EndOffset: 10}: {BeginOffset: 5, EndOffset: 9},
+		{BeginOffset: 0, EndOffset: 10}: {BeginOffset: 5, EndOffset: 10},
 	}
 
 	for position, inner := range positions {
@@ -70,9 +70,9 @@ func TestPositionContainsPosition(test *testing.T) {
 
 func TestPositionDoesNotContainOutsidePosition(test *testing.T) {
 	positions := map[Position]Position{
-		{Begin: 0, End: 10}:  {Begin: 5, End: 11},
-		{Begin: 0, End: 10}:  {Begin: 10, End: 12},
-		{Begin: 10, End: 15}: {Begin: 5, End: 10},
+		{BeginOffset: 0, EndOffset: 10}:  {BeginOffset: 5, EndOffset: 11},
+		{BeginOffset: 0, EndOffset: 10}:  {BeginOffset: 10, EndOffset: 12},
+		{BeginOffset: 10, EndOffset: 15}: {BeginOffset: 5, EndOffset: 10},
 	}
 
 	for position, entry := range positions {

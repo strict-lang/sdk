@@ -22,6 +22,8 @@ func TestConcreteTypeName_FullName(test *testing.T) {
 	}
 	for _, entry := range entries {
 		typeName := NewTestConcreteTypeName(entry)
-		if typeName.FullName
+		if typeName.FullName() != entry {
+			test.Errorf("Unexpected full typename: %s, expected %s", typeName.FullName(), entry)
+		}
 	}
 }

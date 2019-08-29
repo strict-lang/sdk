@@ -23,8 +23,8 @@ func (builder *Builder) Append(offset, length source.Offset) {
 	builder.offsets = append(builder.offsets, offset)
 }
 
-func (builder *Builder) NewLinemap() *Linemap {
-	return &Linemap{
+func (builder *Builder) NewLineMap() *LineMap {
+	return &LineMap{
 		lines:       builder.lines,
 		lineOffsets: builder.offsets,
 	}

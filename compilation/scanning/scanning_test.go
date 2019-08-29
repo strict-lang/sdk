@@ -154,7 +154,7 @@ func TestLinemapCreation(test *testing.T) {
 	entry := createTextWithLineLengths(entryLineLengths)
 	scanner := NewStringScanning(entry)
 	ScanAllTokens(scanner)
-	linemap := scanner.CreateLinemap()
+	linemap := scanner.NewLineMap()
 	fmt.Println(linemap.LineCount())
 	pretty.Print(linemap)
 	for index := 0; index < linemap.LineCount(); index++ {

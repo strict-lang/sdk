@@ -14,9 +14,9 @@ const (
 
 // Scanning is a token.Reader that performs lexical analysis on a stream or characters.
 type Scanning struct {
-	reader   *RecordingSourceReader
-	linemap  *linemap.Builder
-	recorder *diagnostic.Recorder
+	reader         *RecordingSourceReader
+	lineMapBuilder *linemap.Builder
+	recorder       *diagnostic.Recorder
 	// peeked points to the most recently peeked token.
 	peeked token.Token
 	// last points to the most recently scanned token. It is an InvalidToken if no other
@@ -46,20 +46,20 @@ type Scanning struct {
 	// will not insert an EndOfStatement token even if 'insertEos' is set to true.
 	emptyLine bool
 	// lineBeginOffset is the offset to the lines begin. It is updated each
-	// time a new line is added to the linemap.
+	// time a new line is added to the lineMapBuilder.
 	lineBeginOffset source.Offset
 }
 
 func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Recorder) *Scanning {
 	beginOfFile := token.NewInvalidToken("BeginOfFile", token.Position{}, token.NoIndent)
 	return &Scanning{
-		reader:       decorateSourceReader(reader),
-		linemap:      linemap.NewBuilder(),
-		recorder:     recorder,
-		last:         beginOfFile,
-		peeked:       nil,
-		updateIndent: true,
-		emptyLine:    true, // The line is empty until a char is hit
+		reader:         decorateSourceReader(reader),
+		lineMapBuilder: linemap.NewBuilder(),
+		recorder:       recorder,
+		last:           beginOfFile,
+		peeked:         nil,
+		updateIndent:   true,
+		emptyLine:      true, // The line is empty until a char is hit
 	}
 }
 
@@ -127,7 +127,7 @@ func (scanning *Scanning) incrementLineIndex() (token.Token, bool) {
 	scanning.indent = 0
 	scanning.updateIndent = true
 	length := scanning.offset() - scanning.lineBeginOffset
-	scanning.linemap.Append(scanning.lineBeginOffset, length)
+	scanning.lineMapBuilder.Append(scanning.lineBeginOffset, length)
 	scanning.reader.resetInternalIndex()
 	scanning.lineIndex++
 	// TODO: Add 1 to skip newline?
@@ -197,6 +197,6 @@ func (scanning *Scanning) nextNonEndOfFile() token.Token {
 	return scanning.createInvalidToken()
 }
 
-func (scanning *Scanning) CreateLinemap() *linemap.Linemap {
-	return scanning.linemap.NewLinemap()
+func (scanning *Scanning) NewLineMap() *linemap.LineMap {
+	return scanning.lineMapBuilder.NewLineMap()
 }
