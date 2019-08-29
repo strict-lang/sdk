@@ -36,7 +36,7 @@ syn keyword strictStatement	false true empty
 syn keyword strictStatement	assert break continue
 syn keyword strictStatement	lambda test  return  yield
 syn keyword strictStatement	method nextgroup=strictFunction skipwhite
-syn keyword strictConditional	else if
+syn keyword strictConditional	else if do
 syn keyword strictRepeat for
 syn keyword strictOperator	and or is isnt
 syn keyword strictException	throw try catch
@@ -66,7 +66,7 @@ syn match   strictEscape	"\%(\\u\x\{4}\|\\U\x\{8}\)" contained
 syn match   strictEscape	"\\N{\a\+\%(\s\a\+\)*}" contained
 syn match   strictEscape	"\\$"
 
-f !exists("strict_no_number_highlight")
+if !exists("strict_no_number_highlight")
   syn match  strictNumber	"\<0[oO]\=\o\+[Ll]\=\>"
   syn match  strictNumber	"\<0[xX]\x\+[Ll]\=\>"
   syn match  strictNumber	"\<0[bB][01]\+[Ll]\=\>"
