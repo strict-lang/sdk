@@ -57,6 +57,7 @@ func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Bag) *Scann
 		lineMapBuilder: linemap.NewBuilder(),
 		diagnosticBag:  recorder,
 		last:           beginOfFile,
+		lineIndex:      1,
 		peeked:         nil,
 		updateIndent:   true,
 		emptyLine:      true, // The line is empty until a char is hit
@@ -130,7 +131,6 @@ func (scanning *Scanning) incrementLineIndex() (token.Token, bool) {
 	scanning.lineMapBuilder.Append(scanning.lineBeginOffset, length)
 	scanning.reader.resetInternalIndex()
 	scanning.lineIndex++
-	// TODO: Add 1 to skip newline?
 	scanning.lineBeginOffset = scanning.offset()
 	if !scanning.shouldInsertEndOfStatement() || scanning.emptyLine {
 		return nil, false

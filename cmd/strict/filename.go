@@ -15,7 +15,7 @@ var (
 	TargetFileFormat = "%s.cc"
 	// SourceFilePattern is the regexp pattern used to parsing the unit-name
 	// from a filename. It can also be used to check whether a filename is valid.
-	SourceFilePattern = regexp.MustCompile(`(?P<Unit>[\w_-]+).Strict`)
+	SourceFilePattern = regexp.MustCompile(`(?P<Unit>[\w_-]+).strict`)
 )
 
 // ParseUnitName parses a unit name from the passed filename. It will

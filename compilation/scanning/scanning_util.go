@@ -68,10 +68,10 @@ func (scanning *Scanning) SkipWhitespaces() (token.Token, bool) {
 	for {
 		peek := scanning.reader.Peek()
 		if peek == '\n' {
+			scanning.reader.Pull()
 			if endOfStatement, ok := scanning.incrementLineIndex(); ok {
 				return endOfStatement, true
 			}
-			scanning.reader.Pull()
 			continue
 		}
 		if peek == ' ' {
