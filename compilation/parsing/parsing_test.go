@@ -8,8 +8,8 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
-func NewTestParser(tokens token.Reader) *Parsing {
-	return NewDefaultFactory().WithTokenReader(tokens).NewParser()
+func NewTestParser(tokens token.Stream) *Parsing {
+	return NewDefaultFactory().WithTokenStream(tokens).NewParser()
 }
 
 func TestParseTopLevelStatements(test *testing.T) {

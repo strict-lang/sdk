@@ -8,8 +8,8 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
-// ParseConditionalStatement parses a conditional statement and it's optional else-clause.
-func (parsing *Parsing) ParseConditionalStatement() ast.Node {
+// parseConditionalStatement parses a conditional statement and it's optional else-clause.
+func (parsing *Parsing) parseConditionalStatement() ast.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.IfKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -22,7 +22,7 @@ func (parsing *Parsing) ParseConditionalStatement() ast.Node {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
-	body, err := parsing.ParseStatementBlock()
+	body, err := parsing.parseStatementBlock()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
@@ -48,16 +48,16 @@ func (parsing *Parsing) ParseConditionalStatement() ast.Node {
 
 func (parsing *Parsing) parseElseIfOrBlock() (ast.Node, error) {
 	if token.HasKeywordValue(parsing.token(), token.IfKeyword) {
-		return parsing.ParseConditionalStatement(), nil
+		return parsing.parseConditionalStatement(), nil
 	}
 	parsing.skipEndOfStatement()
-	return parsing.ParseStatementBlock()
+	return parsing.parseStatementBlock()
 }
 
-// ParseForStatement parses a loop statement, which starts with the
+// parseForStatement parses a loop statement, which starts with the
 // ForKeyword. The statement may either be a FromToLoopStatement or
 // a ForEachLoopStatement.
-func (parsing *Parsing) ParseForStatement() ast.Node {
+func (parsing *Parsing) parseForStatement() ast.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.ForKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -92,13 +92,13 @@ func (parsing *Parsing) completeForEachStatement(beginOffset source.Offset) ast.
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
-	body, err := parsing.ParseStatementBlock()
+	body, err := parsing.parseStatementBlock()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	return &ast.ForEachLoopStatement{
 		Field:        field,
-		Enumeration:  value,
+		Sequence:     value,
 		Body:         body,
 		NodePosition: parsing.createPosition(beginOffset),
 	}
@@ -132,7 +132,7 @@ func (parsing *Parsing) completeFromToStatement(beginOffset source.Offset) ast.N
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
-	body, err := parsing.ParseStatementBlock()
+	body, err := parsing.parseStatementBlock()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
@@ -145,10 +145,7 @@ func (parsing *Parsing) completeFromToStatement(beginOffset source.Offset) ast.N
 	}
 }
 
-// ParseYieldStatement parses a 'yield' statement. Yield statements add an
-// element to an implicitly created list, which is returned by the method.
-// Any kind of expression can be yielded.
-func (parsing *Parsing) ParseYieldStatement() ast.Node {
+func (parsing *Parsing) parseYieldStatement() ast.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.YieldKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -164,12 +161,7 @@ func (parsing *Parsing) ParseYieldStatement() ast.Node {
 	}
 }
 
-// ParseReturnStatement parses a 'return' statement. Return statements are
-// part of the control flow and used to either return a value from a method
-// or to end the method call within a branch, resulting in the remaining
-// instructions to be ignored. The ReturnStatement is always the last statement
-// within a StatementSequence / Branch.
-func (parsing *Parsing) ParseReturnStatement() ast.Node {
+func (parsing *Parsing) parseReturnStatement() ast.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.ReturnKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -193,14 +185,14 @@ func (parsing *Parsing) ParseReturnStatement() ast.Node {
 
 func (parsing *Parsing) parseNestedMethodDeclaration() ast.Node {
 	beginPosition := parsing.offset()
-	method, err := parsing.ParseMethodDeclaration()
+	method, err := parsing.parseMethodDeclaration()
 	if err != nil {
 		return parsing.createInvalidStatement(beginPosition, err)
 	}
 	return method
 }
 
-func (parsing *Parsing) ParseImportStatement() ast.Node {
+func (parsing *Parsing) parseImportStatement() ast.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.ImportKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -263,34 +255,35 @@ func (parsing *Parsing) parseOptionalAssignValue() (ast.Node, error) {
 	return parsing.ParseExpression()
 }
 
-// keywordStatementParser returns a function that parses statements based on a passed
+// findKeywordStatementParser returns a function that parses statements based on a passed
 // keyword. Most of the keywords start a statement. The returned bool is true, if a
 // function has been found.
-func (parsing *Parsing) keywordStatementParser(keyword token.Keyword) (func() ast.Node, bool) {
+func (parsing *Parsing) findKeywordStatementParser(keyword token.Keyword) (func() ast.
+	Node, bool) {
 	switch keyword {
 	case token.IfKeyword:
-		return parsing.ParseConditionalStatement, true
+		return parsing.parseConditionalStatement, true
 	case token.ForKeyword:
-		return parsing.ParseForStatement, true
+		return parsing.parseForStatement, true
 	case token.YieldKeyword:
-		return parsing.ParseYieldStatement, true
+		return parsing.parseYieldStatement, true
 	case token.ReturnKeyword:
-		return parsing.ParseReturnStatement, true
+		return parsing.parseReturnStatement, true
 	case token.ImportKeyword:
-		return parsing.ParseImportStatement, true
+		return parsing.parseImportStatement, true
 	case token.TestKeyword:
-		return parsing.ParseTestStatement, true
+		return parsing.parseTestStatement, true
 	case token.AssertKeyword:
-		return parsing.ParseAssertStatement, true
+		return parsing.parseAssertStatement, true
 	case token.MethodKeyword:
 		return parsing.parseNestedMethodDeclaration, true
 	}
 	return nil, false
 }
 
-// ParseKeywordStatement parses a statement that starts with a keyword.
-func (parsing *Parsing) ParseKeywordStatement(keyword token.Keyword) ast.Node {
-	function, ok := parsing.keywordStatementParser(keyword)
+// parseKeywordStatement parses a statement that starts with a keyword.
+func (parsing *Parsing) parseKeywordStatement(keyword token.Keyword) ast.Node {
+	function, ok := parsing.findKeywordStatementParser(keyword)
 	if ok {
 		return function()
 	}
@@ -316,13 +309,13 @@ func (parsing *Parsing) parseAssignStatement(operator token.Operator, leftHandSi
 	}, nil
 }
 
-func (parsing *Parsing) ParseTestStatement() ast.Node {
+func (parsing *Parsing) parseTestStatement() ast.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.TestKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
-	statements, err := parsing.ParseStatementBlock()
+	statements, err := parsing.parseStatementBlock()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
@@ -333,7 +326,7 @@ func (parsing *Parsing) ParseTestStatement() ast.Node {
 	}
 }
 
-func (parsing *Parsing) ParseAssertStatement() ast.Node {
+func (parsing *Parsing) parseAssertStatement() ast.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.AssertKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -349,9 +342,9 @@ func (parsing *Parsing) ParseAssertStatement() ast.Node {
 	}
 }
 
-// ParseInstructionStatement parses a statement that is not a structured-control flow
+// parseInstructionStatement parses a statement that is not a structured-control flow
 // statement. Instructions mostly operate on values and assign fields.
-func (parsing *Parsing) ParseInstructionStatement() (ast.Node, error) {
+func (parsing *Parsing) parseInstructionStatement() (ast.Node, error) {
 	leftHandSide, err := parsing.ParseExpression()
 	if err != nil {
 		return nil, err
@@ -386,11 +379,11 @@ func isKeywordExpressionToken(entry token.Token) bool {
 // ParseStatement parses the next statement from the stream of tokens. Statements include
 // conditionals or loops, therefor this function may end up scanning multiple statements
 // and call itself.
-func (parsing *Parsing) ParseStatement() ast.Node {
+func (parsing *Parsing) parseStatement() ast.Node {
 	beginOffset := parsing.offset()
 	switch current := parsing.token(); {
 	case isKeywordStatementToken(current):
-		return parsing.ParseKeywordStatement(token.KeywordValue(current))
+		return parsing.parseKeywordStatement(token.KeywordValue(current))
 	case isKeywordExpressionToken(current):
 		fallthrough
 	case token.IsIdentifierToken(current):
@@ -398,7 +391,7 @@ func (parsing *Parsing) ParseStatement() ast.Node {
 	case token.IsOperatorToken(current):
 		fallthrough
 	case token.IsLiteralToken(current):
-		statement, err := parsing.ParseInstructionStatement()
+		statement, err := parsing.parseInstructionStatement()
 		if err != nil {
 			return parsing.createInvalidStatement(beginOffset, err)
 		}
@@ -412,7 +405,7 @@ func (parsing *Parsing) ParseStatement() ast.Node {
 // ParseStatementSequence parses a sequence of statements. The sequence
 // is ended when the first token in a line has an indent other than the
 // value in the current blocks indent field.
-func (parsing *Parsing) ParseStatementSequence() []ast.Node {
+func (parsing *Parsing) parseStatementSequence() []ast.Node {
 	var statements []ast.Node
 	for {
 		expectedIndent := parsing.block.Indent
@@ -432,7 +425,7 @@ func (parsing *Parsing) ParseStatementSequence() []ast.Node {
 		if current.Indent() < expectedIndent {
 			break
 		}
-		statement := parsing.ParseStatement()
+		statement := parsing.parseStatement()
 		if _, ok := statement.(*ast.InvalidStatement); ok {
 			break
 		}
@@ -442,7 +435,7 @@ func (parsing *Parsing) ParseStatementSequence() []ast.Node {
 }
 
 // ParseStatementBlock parses a block of statements.
-func (parsing *Parsing) ParseStatementBlock() (*ast.BlockStatement, error) {
+func (parsing *Parsing) parseStatementBlock() (*ast.BlockStatement, error) {
 	beginOffset := parsing.offset()
 	indent := parsing.token().Indent()
 	if indent < parsing.block.Indent {
@@ -452,7 +445,7 @@ func (parsing *Parsing) ParseStatementBlock() (*ast.BlockStatement, error) {
 		}
 	}
 	parsing.openBlock(indent)
-	statements := parsing.ParseStatementSequence()
+	statements := parsing.parseStatementSequence()
 	parsing.closeBlock()
 	return &ast.BlockStatement{
 		Children:     statements,

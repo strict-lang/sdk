@@ -2,6 +2,7 @@ package parsing
 
 import (
 	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
 	"gitlab.com/strict-lang/sdk/compilation/source"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
@@ -50,6 +51,8 @@ func (parsing *Parsing) expectKeyword(expected token.Keyword) error {
 	return nil
 }
 
+// expectAnyIdentifier expecteds some token that is of type identifier,
+// regardless of its value and returns an error if it fails.
 func (parsing *Parsing) expectAnyIdentifier() (*ast.Identifier, error) {
 	current := parsing.token()
 	if !token.IsIdentifierToken(current) {
@@ -83,4 +86,38 @@ func (parsing *Parsing) createInvalidStatement(beginOffset source.Offset, err er
 func (parsing *Parsing) skipEndOfStatement() {
 	// Do not report the missing end of statement.
 	parsing.advance()
+}
+
+// reportError reports an error to the diagnostics bag, starting at the
+// passed position and ending at the parsers current position.
+func (parsing *Parsing) reportError(err error, position ast.Position) {
+	parsing.recorder.Record(diagnostic.RecordedEntry{
+		Kind:     &diagnostic.Error,
+		Stage:    &diagnostic.SyntacticalAnalysis,
+		Message:  err.Error(),
+		Position: position,
+	})
+}
+
+func (parsing *Parsing) createTokenPosition() ast.Position {
+	return parsing.token().Position()
+}
+
+func (parsing *Parsing) createPosition(beginOffset source.Offset) ast.Position {
+	return &offsetPosition{begin: beginOffset, end: parsing.offset()}
+}
+
+type offsetPosition struct {
+	begin source.Offset
+	end   source.Offset
+}
+
+// Begin returns the offset to the position begin.
+func (position offsetPosition) Begin() source.Offset {
+	return position.begin
+}
+
+// End returns the offset to the positions end.
+func (position offsetPosition) End() source.Offset {
+	return position.end
 }

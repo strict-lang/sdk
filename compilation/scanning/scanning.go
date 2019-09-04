@@ -12,7 +12,7 @@ const (
 	WhitespaceIndent token.Indent = 1
 )
 
-// Scanning is a token.Reader that performs lexical analysis on a stream or characters.
+// Scanning is a token.Stream that performs lexical analysis on a stream or characters.
 type Scanning struct {
 	reader         *RecordingSourceReader
 	lineMapBuilder *linemap.Builder
@@ -68,7 +68,7 @@ func NewScanning(reader source.Reader) *Scanning {
 	return NewDiagnosticScanner(reader, diagnostic.NewBag())
 }
 
-var _ token.Reader = &Scanning{}
+var _ token.Stream = &Scanning{}
 
 func NewStringScanning(input string) *Scanning {
 	return NewScanning(source.NewStringReader(input))

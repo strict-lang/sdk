@@ -2,7 +2,7 @@ package ast
 
 // Visitor visits every node in the ast. The visitor-pattern is used to traverse
 // the syntax-tree. Every ast-node has an 'Accept' method that lets the visitor
-//visit itself and all of its children. In contrast to many visitor-pattern
+// visit itself and all of its children. In contrast to many visitor-pattern
 // implementations, the visitor is not an interface. It has a lot of  methods
 // and because of golang's type-system, every visitor-implementation would have
 // to implement every method. Instead one can create a default-visitor, which

@@ -45,7 +45,7 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		Source:        &compilation.FileSource{File: file},
 		TargetArduino: targetArduino,
 	}
-	result := compilation.Run()
+	result := compilation.Compile()
 	if result.Error != nil {
 		command.PrintErrf("Failed to compile the file: %s\n", result.Error)
 		return

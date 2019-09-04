@@ -12,7 +12,7 @@ import (
 //  bitshift operations, this method however will fail parsing
 //  nested generic like `list<list<number>>` because the scanning
 //  scans a RightShift operator instead of two GreaterOperators.
-func (parsing *Parsing) ParseTypeName() (ast.TypeName, error) {
+func (parsing *Parsing) parseTypeName() (ast.TypeName, error) {
 	typename := parsing.token()
 	parsing.advance()
 	if !token.IsIdentifierToken(typename) {
@@ -27,7 +27,7 @@ func (parsing *Parsing) ParseTypeName() (ast.TypeName, error) {
 		}, nil
 	}
 	parsing.advance()
-	generic, err := parsing.ParseTypeName()
+	generic, err := parsing.parseTypeName()
 	if err != nil {
 		return nil, err
 	}

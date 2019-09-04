@@ -47,7 +47,7 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 
 	for entry, expected := range entries {
 		parser := NewTestParser(scanning.NewStringScanning(entry))
-		method, err := parser.ParseMethodDeclaration()
+		method, err := parser.parseMethodDeclaration()
 		if err != nil {
 			test.Errorf("unexpected error: %s", err)
 			continue

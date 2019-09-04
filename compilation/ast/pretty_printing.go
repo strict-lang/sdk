@@ -9,10 +9,10 @@ import (
 const prettyPrintIndent = "  "
 
 type Printing struct {
-	buffer  strings.Builder
-	indent  int
-	visitor *Visitor
-	colored bool
+	buffer             strings.Builder
+	indent             int
+	visitor            *Visitor
+	colored            bool
 	noNewLineAfterNode int
 }
 
@@ -50,7 +50,7 @@ func newPrinting() *Printing {
 		VisitConditionalStatement: printing.printConditionalStatement,
 	}
 	printing.visitor = visitor
-	printing.colored = true
+	printing.colored = false
 	return printing
 }
 
@@ -115,7 +115,7 @@ func (printing *Printing) printIndentedListFieldBegin(name string) {
 	printing.noNewLineAfterNode++
 }
 
-func (printing *Printing ) printListFieldEnd() {
+func (printing *Printing) printListFieldEnd() {
 	printing.decreaseIndent()
 	printing.printIndent()
 	if printing.colored {
@@ -265,7 +265,7 @@ func (printing *Printing) printRangedLoopStatement(statement *RangedLoopStatemen
 func (printing *Printing) printForEachLoopStatement(statement *ForEachLoopStatement) {
 	printing.printNodeBegin("ForEachLoopStatement")
 	printing.printIndentedNodeField("field", statement.Field)
-	printing.printIndentedNodeField("enumeration", statement.Enumeration)
+	printing.printIndentedNodeField("enumeration", statement.Sequence)
 	printing.printIndentedNodeField("body", statement.Body)
 	printing.printNodeEnd()
 }

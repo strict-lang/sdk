@@ -2,8 +2,8 @@ package parsing
 
 import (
 	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/code"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
-	"gitlab.com/strict-lang/sdk/compilation/scope"
 	"gitlab.com/strict-lang/sdk/compilation/source"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
@@ -15,8 +15,8 @@ const notParsingMethod = ""
 // one translation unit. It does some scope management but does not do to many
 // checks that could be considered semantic.
 type Parsing struct {
-	tokenReader token.Reader
-	rootScope   *scope.Scope
+	tokenReader token.Stream
+	rootScope   *code.Scope
 	recorder    *diagnostic.Bag
 	block       *Block
 	unitName    string
@@ -34,15 +34,22 @@ type Parsing struct {
 // It helps the parsing to scanning code blocks and know where a block ends.
 type Block struct {
 	Indent token.Indent
-	Scope  *scope.Scope
+	Scope  *code.Scope
 	Parent *Block
+}
+
+// ParseTranslationUnit invokes the parsing on the translation unit.
+// This method can only be called once on the Parsing instance.
+func (parsing *Parsing) ParseTranslationUnit() (*ast.TranslationUnit, error) {
+	topLevelNodes := parsing.parseTopLevelNodes()
+	return ast.NewTranslationUnit(parsing.unitName, topLevelNodes), nil
 }
 
 // openBlock opens a new block of code, updates the parsing block pointer and
 // creates a new scope for that block that is a child-scope of the parsers
 // last block. Only statements with the blocks indent may go into the block.
 func (parsing *Parsing) openBlock(indent token.Indent) {
-	var blockScope *scope.Scope
+	var blockScope *code.Scope
 	if parsing.block == nil {
 		blockScope = parsing.rootScope.NewChild()
 	} else {
@@ -54,15 +61,6 @@ func (parsing *Parsing) openBlock(indent token.Indent) {
 		Parent: parsing.block,
 	}
 	parsing.block = block
-}
-
-func (parsing *Parsing) reportError(err error, position ast.Position) {
-	parsing.recorder.Record(diagnostic.RecordedEntry{
-		Kind:     &diagnostic.Error,
-		Stage:    &diagnostic.SyntacticalAnalysis,
-		Message:  err.Error(),
-		Position: position,
-	})
 }
 
 func (parsing *Parsing) token() token.Token {
@@ -85,41 +83,15 @@ func (parsing *Parsing) offset() source.Offset {
 	return parsing.token().Position().Begin()
 }
 
-type offsetPosition struct {
-	begin source.Offset
-	end   source.Offset
-}
-
-func (position offsetPosition) Begin() source.Offset {
-	return position.begin
-}
-
-func (position offsetPosition) End() source.Offset {
-	return position.end
-}
-
-func (parsing *Parsing) createPosition(beginOffset source.Offset) ast.Position {
-	return &offsetPosition{begin: beginOffset, end: parsing.offset()}
-}
-
-func (parsing *Parsing) createTokenPosition() ast.Position {
-	return parsing.token().Position()
+func (parsing *Parsing) isParsingMethod() bool {
+	return parsing.currentMethodName != notParsingMethod
 }
 
 func (parsing *Parsing) parseTopLevelNodes() []ast.Node {
 	beginOffset := parsing.offset()
-	block, err := parsing.ParseStatementBlock()
+	block, err := parsing.parseStatementBlock()
 	if err != nil {
 		return []ast.Node{parsing.createInvalidStatement(beginOffset, err)}
 	}
 	return block.Children
-}
-
-func (parsing *Parsing) ParseTranslationUnit() (*ast.TranslationUnit, error) {
-	topLevelNodes := parsing.parseTopLevelNodes()
-	return ast.NewTranslationUnit(parsing.unitName, parsing.rootScope, topLevelNodes), nil
-}
-
-func (parsing *Parsing) isParsingMethod() bool {
-	return parsing.currentMethodName != notParsingMethod
 }

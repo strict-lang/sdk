@@ -1,48 +1,55 @@
 package parsing
 
 import (
+	"gitlab.com/strict-lang/sdk/compilation/code"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
-	"gitlab.com/strict-lang/sdk/compilation/scope"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
+// Factory is responsible for creating new parsing instances.
 type Factory struct {
-	TokenReader token.Reader
-	UnitName    string
-	Bag         *diagnostic.Bag
+	tokens   token.Stream
+	unitName string
+	bag      *diagnostic.Bag
 }
 
+// NewDefaultFactory creates a factory with default values.
 func NewDefaultFactory() *Factory {
 	return &Factory{
-		UnitName: "undefined",
-		Bag:      diagnostic.NewBag(),
+		unitName: "undefined",
+		bag:      diagnostic.NewBag(),
 	}
 }
 
+// WithUnitName sets the name of the translation unit.
 func (factory *Factory) WithUnitName(name string) *Factory {
-	factory.UnitName = name
+	factory.unitName = name
 	return factory
 }
 
-func (factory *Factory) WithTokenReader(reader token.Reader) *Factory {
-	factory.TokenReader = reader
+// WithTokenStream set the source of tokens. This field is not copied per
+// parser thus, creating multiple Parsings from a factory is not possible,
+// unless the stream is changed each time.
+func (factory *Factory) WithTokenStream(reader token.Stream) *Factory {
+	factory.tokens = reader
 	return factory
 }
 
-func (factory *Factory) WithRecorder(recorder *diagnostic.Bag) *Factory {
-	factory.Bag = recorder
+// WithDiagnosticBag sets the diagnostic.Bag that diagnostics are reported to.
+func (factory *Factory) WithDiagnosticBag(recorder *diagnostic.Bag) *Factory {
+	factory.bag = recorder
 	return factory
 }
 
 // NewParser creates a parsing instance that parses the tokens of the given
-// token.Reader and uses the 'unit' as its ast-root node. Errors while parsing
+// token.Stream and uses the 'unit' as its ast-root node. Errors while parsing
 // are recorded by the 'recorder'.
 func (factory *Factory) NewParser() *Parsing {
 	parser := &Parsing{
-		rootScope:   scope.NewRootScope(),
-		tokenReader: factory.TokenReader,
-		recorder:    factory.Bag,
-		unitName:    factory.UnitName,
+		rootScope:   code.NewRootScope(),
+		tokenReader: factory.tokens,
+		recorder:    factory.bag,
+		unitName:    factory.unitName,
 	}
 	parser.openBlock(token.NoIndent)
 	parser.advance()

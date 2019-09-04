@@ -57,7 +57,7 @@ func (generation *Generation) GenerateRangedLoopStatement(statement *ast.RangedL
 
 func (generation *Generation) GenerateForEachLoopStatement(statement *ast.ForEachLoopStatement) {
 	generation.EmitFormatted("for (auto %s : ", statement.Field.Value)
-	generation.EmitNode(statement.Enumeration)
+	generation.EmitNode(statement.Sequence)
 	generation.Emit(") ")
 
 	generation.EmitNode(statement.Body)

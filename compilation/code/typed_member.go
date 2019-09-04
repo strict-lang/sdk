@@ -12,3 +12,9 @@ type TypedMethodParameter struct {
 	Name string
 	Type *Type
 }
+
+type TypedInstanceField struct {
+}
+
+type TypedLocalField struct {
+}

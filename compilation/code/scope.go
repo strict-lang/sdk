@@ -1,4 +1,4 @@
-package scope
+package code
 
 import (
 	"errors"
@@ -10,24 +10,18 @@ var (
 	ErrNoSuchSymbol = errors.New("constantpool does not exist")
 )
 
-type AttributeKind int
-
 const (
 	ScopedTypeAttribute AttributeKind = iota
 	ScopedFieldAttribute
 	ScopedMethodAttribute
 )
 
-type Scoped interface {
-	Scope() *Scope
-}
-
 type Scope struct {
 	parent     *Scope
 	name       string
 	depth      int
 	childCount int
-	symbols    map[string]Scoped
+	symbols    map[string]Attribute
 }
 
 func NewRootScope() *Scope {
@@ -36,35 +30,35 @@ func NewRootScope() *Scope {
 		name:       "@",
 		depth:      0,
 		childCount: 0,
-		symbols:    make(map[string]Scoped),
+		symbols:    make(map[string]Attribute),
 	}
 }
 
-func (scope *Scope) PutSymbol(symbol string, scoped Scoped) error {
+func (scope *Scope) PutSymbol(symbol string, attribute Attribute) error {
 	if scope.ContainsSymbol(symbol) {
 		return ErrSymbolExists
 	}
-	scope.symbols[symbol] = scoped
+	scope.symbols[symbol] = attribute
 	return nil
 }
 
-func (scope *Scope) RemoveSymbol(symbol string) (Scoped, error) {
+func (scope *Scope) RemoveSymbol(symbol string) (Attribute, error) {
 	if scoped, ok := scope.symbols[symbol]; ok {
 		delete(scope.symbols, symbol)
 		return scoped, nil
 	}
 	if scope.parent == nil {
-		return nil, ErrNoSuchSymbol
+		return Attribute{}, ErrNoSuchSymbol
 	}
 	return scope.parent.RemoveSymbol(symbol)
 }
 
-func (scope *Scope) LookupSymbol(symbol string) (Scoped, bool) {
+func (scope *Scope) LookupSymbol(symbol string) (Attribute, bool) {
 	if scoped, ok := scope.symbols[symbol]; ok {
 		return scoped, true
 	}
 	if scope.parent == nil {
-		return nil, false
+		return Attribute{}, false
 	}
 	return scope.parent.LookupSymbol(symbol)
 }
@@ -103,7 +97,7 @@ func (scope *Scope) NewNamedChild(name string) *Scope {
 		parent:  scope,
 		name:    childName,
 		depth:   scope.depth + 1,
-		symbols: make(map[string]Scoped),
+		symbols: make(map[string]Attribute),
 	}
 }
 

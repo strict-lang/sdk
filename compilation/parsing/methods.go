@@ -6,19 +6,18 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
-// ParseMethodDeclaration parses a method declaration.
-func (parsing *Parsing) ParseMethodDeclaration() (*ast.MethodDeclaration, error) {
+func (parsing *Parsing) parseMethodDeclaration() (*ast.MethodDeclaration, error) {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.MethodKeyword); err != nil {
 		return nil, err
 	}
-	declaration, err := parsing.parseMethodDeclaration()
+	declaration, err := parsing.parseMethodSignature()
 	if err != nil {
 		return nil, err
 	}
 	var body ast.Node
 	if token.OperatorValue(parsing.token()) == token.ArrowOperator {
-		body, err = parsing.ParseMethodAssignment()
+		body, err = parsing.parseMethodAssignment()
 	} else {
 		parsing.skipEndOfStatement()
 		body, err = parsing.parseMethodBody(declaration.methodName.Value)
@@ -43,12 +42,13 @@ type methodDeclaration struct {
 
 func (parsing *Parsing) parseMethodBody(methodName string) (node ast.Node, err error) {
 	parsing.currentMethodName = methodName
-	node, err = parsing.ParseStatementBlock()
+	node, err = parsing.parseStatementBlock()
 	parsing.currentMethodName = notParsingMethod
 	return
 }
 
-func (parsing *Parsing) parseMethodDeclaration() (declaration methodDeclaration, err error) {
+func (parsing *Parsing) parseMethodSignature() (declaration methodDeclaration,
+	err error) {
 	declaration.returnTypeName, err = parsing.parseOptionalReturnTypeName()
 	if err != nil {
 		return methodDeclaration{}, err
@@ -72,15 +72,15 @@ func (parsing *Parsing) parseOptionalReturnTypeName() (ast.TypeName, error) {
 			NodePosition: parsing.createPosition(parsing.offset()),
 		}, nil
 	}
-	return parsing.ParseTypeName()
+	return parsing.parseTypeName()
 }
 
-func (parsing *Parsing) ParseMethodAssignment() (ast.Node, error) {
+func (parsing *Parsing) parseMethodAssignment() (ast.Node, error) {
 	if err := parsing.skipOperator(token.ArrowOperator); err != nil {
 		return nil, err
 	}
 	beginPosition := parsing.offset()
-	statement := parsing.ParseStatement()
+	statement := parsing.parseStatement()
 	if expression, isExpression := statement.(*ast.ExpressionStatement); isExpression {
 		return &ast.ReturnStatement{
 			NodePosition: parsing.createPosition(beginPosition),
@@ -121,7 +121,7 @@ func (parsing *Parsing) parseParameterList() (parameters ast.ParameterList, err 
 
 func (parsing *Parsing) parseParameter() (*ast.Parameter, error) {
 	beginOffset := parsing.offset()
-	typeName, err := parsing.ParseTypeName()
+	typeName, err := parsing.parseTypeName()
 	if err != nil {
 		return nil, err
 	}

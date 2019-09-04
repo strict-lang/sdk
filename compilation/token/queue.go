@@ -7,7 +7,7 @@ type QueueReader struct {
 	queue Queue
 }
 
-var _ Reader = &QueueReader{}
+var _ Stream = &QueueReader{}
 
 func NewQueueReader(queue Queue) *QueueReader {
 	return &QueueReader{

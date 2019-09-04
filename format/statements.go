@@ -71,7 +71,7 @@ func (printer *PrettyPrinter) printForEachLoopStatement(loop *ast.ForEachLoopSta
 	printer.appendFormatted(
 		"for %s in ", loop.Field.Value)
 
-	printer.printNode(loop.Enumeration)
+	printer.printNode(loop.Sequence)
 	printer.append(" do")
 	printer.appendLineBreak()
 	printer.indent.Open()

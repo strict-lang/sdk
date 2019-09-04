@@ -19,7 +19,7 @@ for num in numbers do
 `
 	unit, err := parsing.
 		NewDefaultFactory().
-		WithTokenReader(scanning.NewStringScanning(source)).
+		WithTokenStream(scanning.NewStringScanning(source)).
 		NewParser().
 		ParseTranslationUnit()
 

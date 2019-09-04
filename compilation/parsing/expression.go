@@ -153,7 +153,7 @@ func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token.Precedenc
 }
 
 func (parsing *Parsing) parseConstructor() (*ast.MethodCall, error) {
-	typeName, err := parsing.ParseTypeName()
+	typeName, err := parsing.parseTypeName()
 	if err != nil {
 		return nil, err
 	}

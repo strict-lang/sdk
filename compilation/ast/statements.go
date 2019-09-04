@@ -69,20 +69,15 @@ func (conditional *ConditionalStatement) Position() Position {
 	return conditional.NodePosition
 }
 
-// Loop statement that counts from an initial value to some target
-// while incrementing the current value each step. The values of a
+// RangedLoopStatement is a control statement that. Counting from an initial
+// value to some target while incrementing a field each step. The values of a
 // ranged loop are numeral.
 type RangedLoopStatement struct {
 	NodePosition Position
-	// Name of the field in which the current value is stored.
-	ValueField *Identifier
-	// Initial value assigned to the value field.
+	ValueField   *Identifier
 	InitialValue Node
-	// Value that, when reached, breaks the loop.
-	EndValue Node
-	// Body of the loop that is executed each time after the value field
-	// is updated. May contain break and continue statements.
-	Body Node
+	EndValue     Node
+	Body         Node
 }
 
 func (loop *RangedLoopStatement) Accept(visitor *Visitor) {
@@ -100,19 +95,14 @@ func (loop *RangedLoopStatement) Position() Position {
 	return loop.NodePosition
 }
 
-// Loop that iterates an enumeration of elements without requiring
-// explicit indexing. As opposed to the ranged loop, the element
-// iterated may be of any type.
+// ForEachLoopStatement is a control statement. Iterating an enumeration without
+// requiring explicit indexing. As opposed to the ranged loop, the element
+// iterated may be of any type that implements the 'Sequence' interface.
 type ForEachLoopStatement struct {
 	NodePosition Position
-	// Body of the loop that is executed for every element in the collection.
-	// May contain break and continue statements.
-	Body Node
-	// Field is the name of the local field that has the value of
-	// the current element of target.
-	Field *Identifier
-	// Target is the collection that is iterated.
-	Enumeration Node
+	Body         Node
+	Field        *Identifier
+	Sequence     Node
 }
 
 func (loop *ForEachLoopStatement) Accept(visitor *Visitor) {
@@ -121,7 +111,7 @@ func (loop *ForEachLoopStatement) Accept(visitor *Visitor) {
 
 func (loop *ForEachLoopStatement) AcceptAll(visitor *Visitor) {
 	visitor.VisitForEachLoopStatement(loop)
-	loop.Enumeration.AcceptAll(visitor)
+	loop.Sequence.AcceptAll(visitor)
 	loop.Body.AcceptAll(visitor)
 }
 
@@ -165,10 +155,13 @@ func (decrement *DecrementStatement) Position() Position {
 	return decrement.NodePosition
 }
 
+// YieldStatement yields an expression to an implicit list that is returned by
+// the method it is defined in. Yield statements can only be in methods,
+// returning a 'Sequence'. And their values type have to be of the sequences
+// element type. Those statements are not accompanied by a ReturnStatement.
 type YieldStatement struct {
 	NodePosition Position
-	// Value is the value that is yielded.
-	Value Node
+	Value        Node
 }
 
 func (yield *YieldStatement) Accept(visitor *Visitor) {
@@ -184,11 +177,17 @@ func (yield *YieldStatement) Position() Position {
 	return yield.NodePosition
 }
 
+// ReturnStatement is a control statement that can prematurely end the execution
+// of a method or emit the return value. Return statements with a return value
+// can only be defined in methods not returning 'void'. This statement is always
+// the last statement in a block.
 type ReturnStatement struct {
 	NodePosition Position
-	// Value is the value that is returned.
-	// This pointer can be nil, if the return does not return a value.
-	Value Node
+	Value        Node
+}
+
+func (statement *ReturnStatement) IsReturningValue() bool {
+	return statement.Value != nil
 }
 
 func (statement *ReturnStatement) Accept(visitor *Visitor) {
@@ -204,6 +203,7 @@ func (statement *ReturnStatement) Position() Position {
 	return statement.NodePosition
 }
 
+// InvalidStatement represents a statement that has not been parsed correctly.
 type InvalidStatement struct {
 	NodePosition Position
 }
@@ -220,6 +220,7 @@ func (statement *InvalidStatement) Position() Position {
 	return statement.NodePosition
 }
 
+// EmptyStatement is a statement that does not execute any instructions.
 type EmptyStatement struct {
 	NodePosition Position
 }
@@ -236,6 +237,9 @@ func (statement *EmptyStatement) Position() Position {
 	return statement.NodePosition
 }
 
+// AssignStatement assigns values to left-hand-side expressions. Operations like
+// add-assign are also represented by this Node. If the 'Target' node is a
+// FieldDeclaration, this is a field definition.
 type AssignStatement struct {
 	Target       Node
 	Value        Node
@@ -257,6 +261,7 @@ func (statement *AssignStatement) Position() Position {
 	return statement.NodePosition
 }
 
+// ImportStatement
 type ImportStatement struct {
 	Path         string
 	Alias        *Identifier
@@ -283,6 +288,7 @@ func moduleNameByPath(path string) string {
 	}
 	return path[begin:end]
 }
+
 func (statement *ImportStatement) Accept(visitor *Visitor) {
 	visitor.VisitImportStatement(statement)
 }
