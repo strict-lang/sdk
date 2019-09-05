@@ -8,10 +8,10 @@ import (
 type Node interface {
 	Positioned
 
-	// Lets the visitor visit this node.
+	// Accept makes the visitor visit this node.
 	Accept(visitor *Visitor)
-	// Lets the visitor visit this node and its children.
-	AcceptAll(visitor *Visitor)
+	// AcceptRecursive makes the visitor visit this node and its children.
+	AcceptRecursive(visitor *Visitor)
 }
 
 // Named is implemented by all nodes that have a name.

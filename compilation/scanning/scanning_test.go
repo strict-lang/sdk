@@ -22,9 +22,9 @@ func TestScannerEndOfStatementInsertion(test *testing.T) {
 		if count != expectedCount {
 			test.Errorf("%s has %d EndOfFile tokens, expected %d", entry, count, expectedCount)
 			test.Logf("The tokens: %s", tokens)
-		}
+		}}
 	}
-}
+
 
 func countEndOfStatements(tokens []token.Token) int {
 	var count int
@@ -95,7 +95,7 @@ func TestScanExpression(test *testing.T) {
 func TestScanMethodDeclaration(test *testing.T) {
 	const entry = `
 	method number add(number a, number b) 
-		return a + b
+		return 0.123 + 3.210
 	`
 	scanner := NewStringScanning(entry)
 	assertKeyword(test, scanner.Pull(), token.MethodKeyword)
@@ -110,9 +110,9 @@ func TestScanMethodDeclaration(test *testing.T) {
 	assertOperator(test, scanner.Pull(), token.RightParenOperator)
 	assertEndOfStatement(test, scanner.Pull())
 	assertKeyword(test, scanner.Pull(), token.ReturnKeyword)
-	assertTokenValue(test, scanner.Pull(), "a")
+	assertTokenValue(test, scanner.Pull(), "0.123")
 	assertOperator(test, scanner.Pull(), token.AddOperator)
-	assertTokenValue(test, scanner.Pull(), "b")
+	assertTokenValue(test, scanner.Pull(), "3.210")
 	assertEndOfStatement(test, scanner.Pull())
 	assertEndOfFile(test, scanner.Pull())
 }

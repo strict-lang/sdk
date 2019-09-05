@@ -29,5 +29,5 @@ func parseAndPrintAst(command *cobra.Command, sourceFile *os.File) {
 	if parseResult.Error != nil {
 		return
 	}
-	ast.Print(parseResult.Unit)
+	ast.PrintColored(parseResult.Unit)
 }

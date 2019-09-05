@@ -13,7 +13,9 @@ func (parsing *Parsing) couldBeLookingAtTypeName() bool {
 	if token.IsIdentifierToken(parsing.peek()) {
 		return true
 	}
-	return token.HasOperatorValue(parsing.peek(), token.SmallerOperator)
+	peek := parsing.peek()
+	return token.HasOperatorValue(peek, token.SmallerOperator) ||
+		token.HasOperatorValue(peek, token.LeftBracketOperator)
 }
 
 // parseTypeName is a recursive method that parses type names. When calling
@@ -28,19 +30,26 @@ func (parsing *Parsing) parseTypeName() (ast.TypeName, error) {
 			Expected: "TypeName",
 		}
 	}
-	if token.OperatorValue(parsing.token()) != token.SmallerOperator {
-		return &ast.ConcreteTypeName{
-			Name: typeName.Value(),
-			NodePosition: parsing.createPosition(beginOffset)	,
-		}, nil
+	operator := token.OperatorValue(parsing.token())
+	if operator == token.SmallerOperator {
+		return parsing.parseGenericTypeName(beginOffset, typeName.Value())
 	}
-	parsing.advance()
-	return parsing.parseGenericTypeName(beginOffset, typeName.Value())
+	concrete := &ast.ConcreteTypeName{
+		Name: typeName.Value(),
+		NodePosition: parsing.createPosition(beginOffset)	,
+	}
+	if operator == token.LeftBracketOperator {
+		return parsing.parseListTypeName(beginOffset, concrete)
+	}
+	return concrete, nil
 }
 
 func (parsing *Parsing) parseGenericTypeName(
 	beginOffset source.Offset, base string) (ast.TypeName, error) {
 
+	if err := parsing.skipOperator(token.SmallerOperator); err != nil {
+		return nil, err
+	}
 	generic, err := parsing.parseTypeName()
 	if err != nil {
 		return nil, err
@@ -58,4 +67,23 @@ func (parsing *Parsing) parseGenericTypeName(
 		Generic: generic,
 		NodePosition: parsing.createPosition(beginOffset),
 	}, nil
+}
+
+func (parsing *Parsing) parseListTypeName(
+	beginOffset source.Offset, base ast.TypeName) (ast.TypeName, error) {
+
+	if err := parsing.skipOperator(token.LeftBracketOperator); err != nil {
+		return nil, err
+	}
+	if err := parsing.skipOperator(token.RightBracketOperator); err != nil {
+		return nil, err
+	}
+	typeName := &ast.ListTypeName{
+		ElementTypeName: base,
+		NodePosition:    parsing.createPosition(beginOffset),
+	}
+	if token.HasOperatorValue(parsing.token(), token.LeftBracketOperator) {
+		return parsing.parseListTypeName(beginOffset, typeName)
+	}
+	return typeName, nil
 }

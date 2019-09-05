@@ -39,7 +39,7 @@ func NewNamingChecker(recorder *diagnostic.Bag, unit *ast.TranslationUnit) *Nami
 }
 
 func (check *NamingCheck) Run() {
-	check.unit.AcceptAll(check.visitor)
+	check.unit.AcceptRecursive(check.visitor)
 }
 
 // reportInvalidNode reports that the node has an invalid name.

@@ -387,8 +387,10 @@ func (parsing *Parsing) parseFieldDeclarationOrDefinition() ast.Node {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	if !token.HasOperatorValue(parsing.token(), token.AssignOperator) {
+		parsing.skipEndOfStatement()
 		return declaration
 	}
+	parsing.advance()
 	return parsing.completeParsingFieldDefinition(beginOffset, declaration)
 }
 func (parsing *Parsing) completeParsingFieldDefinition(
@@ -398,6 +400,7 @@ func (parsing *Parsing) completeParsingFieldDefinition(
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
+	parsing.skipEndOfStatement()
 	return &ast.AssignStatement{
 		Target:       declaration,
 		Value:        value,
@@ -416,6 +419,7 @@ func (parsing *Parsing) parseFieldDeclaration() (ast.Node, error) {
 	if err != nil {
 		return nil, err
 	}
+	parsing.advance()
 	return &ast.FieldDeclaration{
 		Name:         fieldName,
 		TypeName:     typeName,

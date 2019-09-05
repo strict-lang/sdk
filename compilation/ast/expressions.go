@@ -19,11 +19,11 @@ func (call *MethodCall) Accept(visitor *Visitor) {
 	visitor.VisitMethodCall(call)
 }
 
-func (call *MethodCall) AcceptAll(visitor *Visitor) {
+func (call *MethodCall) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitMethodCall(call)
-	call.Method.AcceptAll(visitor)
+	call.Method.AcceptRecursive(visitor)
 	for _, argument := range call.Arguments {
-		argument.AcceptAll(visitor)
+		argument.AcceptRecursive(visitor)
 	}
 }
 
@@ -40,7 +40,7 @@ func (identifier *Identifier) Accept(visitor *Visitor) {
 	visitor.VisitIdentifier(identifier)
 }
 
-func (identifier *Identifier) AcceptAll(visitor *Visitor) {
+func (identifier *Identifier) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitIdentifier(identifier)
 }
 
@@ -59,9 +59,9 @@ func (unary *UnaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitUnaryExpression(unary)
 }
 
-func (unary *UnaryExpression) AcceptAll(visitor *Visitor) {
+func (unary *UnaryExpression) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitUnaryExpression(unary)
-	unary.Operand.AcceptAll(visitor)
+	unary.Operand.AcceptRecursive(visitor)
 }
 
 func (unary *UnaryExpression) Position() Position {
@@ -80,10 +80,10 @@ func (binary *BinaryExpression) Accept(visitor *Visitor) {
 	visitor.VisitBinaryExpression(binary)
 }
 
-func (binary *BinaryExpression) AcceptAll(visitor *Visitor) {
+func (binary *BinaryExpression) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitBinaryExpression(binary)
-	binary.LeftOperand.AcceptAll(visitor)
-	binary.RightOperand.AcceptAll(visitor)
+	binary.LeftOperand.AcceptRecursive(visitor)
+	binary.RightOperand.AcceptRecursive(visitor)
 }
 
 func (binary *BinaryExpression) Position() Position {
@@ -100,10 +100,10 @@ func (selector *SelectorExpression) Accept(visitor *Visitor) {
 	visitor.VisitSelectorExpression(selector)
 }
 
-func (selector *SelectorExpression) AcceptAll(visitor *Visitor) {
+func (selector *SelectorExpression) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitSelectorExpression(selector)
-	selector.Target.AcceptAll(visitor)
-	selector.Selection.AcceptAll(visitor)
+	selector.Target.AcceptRecursive(visitor)
+	selector.Selection.AcceptRecursive(visitor)
 }
 
 func (selector *SelectorExpression) Position() Position {
@@ -119,9 +119,9 @@ func (create *CreateExpression) Accept(visitor *Visitor) {
 	visitor.VisitCreateExpression(create)
 }
 
-func (create *CreateExpression) AcceptAll(visitor *Visitor) {
+func (create *CreateExpression) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitCreateExpression(create)
-	create.Constructor.AcceptAll(visitor)
+	create.Constructor.AcceptRecursive(visitor)
 }
 
 func (create *CreateExpression) Position() Position {

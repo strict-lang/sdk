@@ -34,10 +34,11 @@ func (scanning *Scanning) gatherNumericDigits(builder *strings.Builder, base Rad
 	}
 	builder.WriteRune(rune(scanning.reader.Last()))
 	for {
-		if !isDigitInRadix(scanning.reader.Peek().DigitValue(), base) {
+		char := scanning.reader.Pull()
+		if !isDigitInRadix(char.DigitValue(), base) {
 			return
 		}
-		builder.WriteRune(rune(scanning.reader.Pull()))
+		builder.WriteRune(rune(char))
 	}
 }
 

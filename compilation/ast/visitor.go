@@ -11,6 +11,7 @@ type Visitor struct {
 	VisitParameter            func(*Parameter)
 	VisitMethodCall           func(*MethodCall)
 	VisitIdentifier           func(*Identifier)
+	VisitListTypeName         func(*ListTypeName)
 	VisitTestStatement        func(*TestStatement)
 	VisitStringLiteral        func(*StringLiteral)
 	VisitNumberLiteral        func(*NumberLiteral)
@@ -44,6 +45,7 @@ func NewEmptyVisitor() *Visitor {
 		VisitParameter:            func(*Parameter) {},
 		VisitMethodCall:           func(*MethodCall) {},
 		VisitIdentifier:           func(*Identifier) {},
+		VisitListTypeName:         func(*ListTypeName) {},
 		VisitTestStatement:        func(*TestStatement) {},
 		VisitStringLiteral:        func(*StringLiteral) {},
 		VisitNumberLiteral:        func(*NumberLiteral) {},

@@ -9,7 +9,7 @@ func (literal *StringLiteral) Accept(visitor *Visitor) {
 	visitor.VisitStringLiteral(literal)
 }
 
-func (literal *StringLiteral) AcceptAll(visitor *Visitor) {
+func (literal *StringLiteral) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitStringLiteral(literal)
 }
 
@@ -26,7 +26,7 @@ func (literal *NumberLiteral) Accept(visitor *Visitor) {
 	visitor.VisitNumberLiteral(literal)
 }
 
-func (literal *NumberLiteral) AcceptAll(visitor *Visitor) {
+func (literal *NumberLiteral) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitNumberLiteral(literal)
 }
 

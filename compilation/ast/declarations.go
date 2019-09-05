@@ -14,12 +14,12 @@ func (method *MethodDeclaration) Accept(visitor *Visitor) {
 	visitor.VisitMethodDeclaration(method)
 }
 
-func (method *MethodDeclaration) AcceptAll(visitor *Visitor) {
+func (method *MethodDeclaration) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitMethodDeclaration(method)
 	for _, parameter := range method.Parameters {
-		parameter.AcceptAll(visitor)
+		parameter.AcceptRecursive(visitor)
 	}
-	method.Body.AcceptAll(visitor)
+	method.Body.AcceptRecursive(visitor)
 }
 
 func (method *MethodDeclaration) Position() Position {
@@ -40,7 +40,7 @@ func (parameter *Parameter) Accept(visitor *Visitor) {
 	visitor.VisitParameter(parameter)
 }
 
-func (parameter *Parameter) AcceptAll(visitor *Visitor) {
+func (parameter *Parameter) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitParameter(parameter)
 }
 
@@ -58,7 +58,7 @@ func (field *FieldDeclaration) Accept(visitor *Visitor) {
 	visitor.VisitFieldDeclaration(field)
 }
 
-func (field *FieldDeclaration) AcceptAll(visitor *Visitor) {
+func (field *FieldDeclaration) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitFieldDeclaration(field)
 }
 

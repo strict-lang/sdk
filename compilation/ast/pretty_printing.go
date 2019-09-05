@@ -22,6 +22,7 @@ func newPrinting() *Printing {
 		VisitParameter:            printing.printParameter,
 		VisitMethodCall:           printing.printMethodCall,
 		VisitIdentifier:           printing.printIdentifier,
+		VisitListTypeName:         printing.printListTypeName,
 		VisitTestStatement:        printing.printTestStatement,
 		VisitStringLiteral:        printing.printStringLiteral,
 		VisitNumberLiteral:        printing.printNumberLiteral,
@@ -50,12 +51,26 @@ func newPrinting() *Printing {
 		VisitConditionalStatement: printing.printConditionalStatement,
 	}
 	printing.visitor = visitor
-	printing.colored = false
 	return printing
 }
 
+func newColoredPrinting() *Printing {
+	printing := newPrinting()
+	printing.colored = true
+	return printing
+}
+
+// Print prints a pretty representation of the AST node.
 func Print(node Node) {
 	printing := newPrinting()
+	printing.printNode(node)
+	fmt.Println(printing.buffer.String())
+}
+
+// PrintColored prints a pretty representation of the AST node, that uses
+// colors to highlight the output in a way that makes it easier to read.
+func PrintColored(node Node) {
+	printing := newColoredPrinting()
 	printing.printNode(node)
 	fmt.Println(printing.buffer.String())
 }
@@ -293,6 +308,10 @@ func (printing *Printing) printParameter(parameter *Parameter) {
 }
 
 func (printing *Printing) printGenericTypeName(name *GenericTypeName) {
+	printing.print(name.FullName())
+}
+
+func (printing *Printing) printListTypeName(name *ListTypeName) {
 	printing.print(name.FullName())
 }
 

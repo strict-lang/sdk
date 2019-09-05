@@ -28,10 +28,10 @@ func (unit *TranslationUnit) Accept(visitor *Visitor) {
 	visitor.VisitTranslationUnit(unit)
 }
 
-func (unit *TranslationUnit) AcceptAll(visitor *Visitor) {
+func (unit *TranslationUnit) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitTranslationUnit(unit)
 	for _, topLevelNode := range unit.Children {
-		topLevelNode.AcceptAll(visitor)
+		topLevelNode.AcceptRecursive(visitor)
 	}
 }
 
