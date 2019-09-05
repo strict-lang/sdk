@@ -51,8 +51,8 @@ func (parsing *Parsing) expectKeyword(expected token.Keyword) error {
 	return nil
 }
 
-// expectAnyIdentifier expecteds some token that is of type identifier,
-// regardless of its value and returns an error if it fails.
+// expectAnyIdentifier expects the next token to be an identifier,
+// without regards to its value and returns an error if it fails.
 func (parsing *Parsing) expectAnyIdentifier() (*ast.Identifier, error) {
 	current := parsing.token()
 	if !token.IsIdentifierToken(current) {

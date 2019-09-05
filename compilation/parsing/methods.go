@@ -17,7 +17,7 @@ func (parsing *Parsing) parseMethodDeclaration() (*ast.MethodDeclaration, error)
 	}
 	var body ast.Node
 	if token.OperatorValue(parsing.token()) == token.ArrowOperator {
-		body, err = parsing.parseMethodAssignment()
+		body, err = parsing.parseAssignedMethodExpression()
 	} else {
 		parsing.skipEndOfStatement()
 		body, err = parsing.parseMethodBody(declaration.methodName.Value)
@@ -75,7 +75,7 @@ func (parsing *Parsing) parseOptionalReturnTypeName() (ast.TypeName, error) {
 	return parsing.parseTypeName()
 }
 
-func (parsing *Parsing) parseMethodAssignment() (ast.Node, error) {
+func (parsing *Parsing) parseAssignedMethodExpression() (ast.Node, error) {
 	if err := parsing.skipOperator(token.ArrowOperator); err != nil {
 		return nil, err
 	}

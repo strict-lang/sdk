@@ -14,11 +14,11 @@ func (parsing *Parsing) parseConditionalStatement() ast.Node {
 	if err := parsing.skipKeyword(token.IfKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	condition, err := parsing.ParseExpression()
+	condition, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	if err := parsing.skipKeyword(token.DoKeyword); err != nil {
+	if err = parsing.skipKeyword(token.DoKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
@@ -81,14 +81,14 @@ func (parsing *Parsing) completeForEachStatement(beginOffset source.Offset) ast.
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.advance()
-	if err := parsing.skipKeyword(token.InKeyword); err != nil {
+	if err = parsing.skipKeyword(token.InKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	value, err := parsing.ParseExpression()
+	value, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	if err := parsing.skipKeyword(token.DoKeyword); err != nil {
+	if err = parsing.skipKeyword(token.DoKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
@@ -114,21 +114,21 @@ func (parsing *Parsing) completeFromToStatement(beginOffset source.Offset) ast.N
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.advance()
-	if err := parsing.skipKeyword(token.FromKeyword); err != nil {
+	if err = parsing.skipKeyword(token.FromKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	from, err := parsing.ParseExpression()
+	from, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	if err := parsing.skipKeyword(token.ToKeyword); err != nil {
+	if err = parsing.skipKeyword(token.ToKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	to, err := parsing.ParseExpression()
+	to, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	if err := parsing.skipKeyword(token.DoKeyword); err != nil {
+	if err = parsing.skipKeyword(token.DoKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
@@ -150,7 +150,7 @@ func (parsing *Parsing) parseYieldStatement() ast.Node {
 	if err := parsing.skipKeyword(token.YieldKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	rightHandSide, err := parsing.ParseExpression()
+	rightHandSide, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
@@ -172,7 +172,7 @@ func (parsing *Parsing) parseReturnStatement() ast.Node {
 			NodePosition: parsing.createPosition(beginOffset),
 		}
 	}
-	rightHandSide, err := parsing.ParseExpression()
+	rightHandSide, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
@@ -252,7 +252,7 @@ func (parsing *Parsing) parseOptionalAssignValue() (ast.Node, error) {
 		return nil, errNoAssign
 	}
 	parsing.advance()
-	return parsing.ParseExpression()
+	return parsing.parseExpression()
 }
 
 // findKeywordStatementParser returns a function that parses statements based on a passed
@@ -296,7 +296,7 @@ func (parsing *Parsing) parseKeywordStatement(keyword token.Keyword) ast.Node {
 
 func (parsing *Parsing) parseAssignStatement(operator token.Operator, leftHandSide ast.Node) (ast.Node, error) {
 	beginOffset := parsing.offset()
-	rightHandSide, err := parsing.ParseExpression()
+	rightHandSide, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err), err
 	}
@@ -331,7 +331,7 @@ func (parsing *Parsing) parseAssertStatement() ast.Node {
 	if err := parsing.skipKeyword(token.AssertKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	expression, err := parsing.ParseExpression()
+	expression, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
@@ -345,7 +345,7 @@ func (parsing *Parsing) parseAssertStatement() ast.Node {
 // parseInstructionStatement parses a statement that is not a structured-control flow
 // statement. Instructions mostly operate on values and assign fields.
 func (parsing *Parsing) parseInstructionStatement() (ast.Node, error) {
-	leftHandSide, err := parsing.ParseExpression()
+	leftHandSide, err := parsing.parseExpression()
 	if err != nil {
 		return nil, err
 	}
@@ -376,6 +376,53 @@ func isKeywordExpressionToken(entry token.Token) bool {
 	return token.IsKeywordToken(entry) && token.KeywordValue(entry) == token.CreateKeyword
 }
 
+func (parsing *Parsing) shouldParseFieldDeclaration() bool {
+	return parsing.couldBeLookingAtTypeName()
+}
+
+func (parsing *Parsing) parseFieldDeclarationOrDefinition() ast.Node {
+	beginOffset := parsing.offset()
+	declaration, err := parsing.parseFieldDeclaration()
+	if err != nil {
+		return parsing.createInvalidStatement(beginOffset, err)
+	}
+	if !token.HasOperatorValue(parsing.token(), token.AssignOperator) {
+		return declaration
+	}
+	return parsing.completeParsingFieldDefinition(beginOffset, declaration)
+}
+func (parsing *Parsing) completeParsingFieldDefinition(
+	beginOffset source.Offset, declaration ast.Node) ast.Node {
+
+	value, err := parsing.parseExpression()
+	if err != nil {
+		return parsing.createInvalidStatement(beginOffset, err)
+	}
+	return &ast.AssignStatement{
+		Target:       declaration,
+		Value:        value,
+		Operator:     token.AssignOperator,
+		NodePosition: parsing.createPosition(beginOffset),
+	}
+}
+
+func (parsing *Parsing) parseFieldDeclaration() (ast.Node, error) {
+	beginOffset := parsing.offset()
+	typeName, err := parsing.parseTypeName()
+	if err != nil {
+		return nil, err
+	}
+	fieldName, err := parsing.expectAnyIdentifier()
+	if err != nil {
+		return nil, err
+	}
+	return &ast.FieldDeclaration{
+		Name:         fieldName,
+		TypeName:     typeName,
+		NodePosition: parsing.createPosition(beginOffset),
+	}, nil
+}
+
 // ParseStatement parses the next statement from the stream of tokens. Statements include
 // conditionals or loops, therefor this function may end up scanning multiple statements
 // and call itself.
@@ -387,6 +434,9 @@ func (parsing *Parsing) parseStatement() ast.Node {
 	case isKeywordExpressionToken(current):
 		fallthrough
 	case token.IsIdentifierToken(current):
+		if parsing.shouldParseFieldDeclaration() {
+			return parsing.parseFieldDeclarationOrDefinition()
+		}
 		fallthrough
 	case token.IsOperatorToken(current):
 		fallthrough

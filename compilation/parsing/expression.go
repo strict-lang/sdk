@@ -12,11 +12,11 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
-func (parsing *Parsing) ParseExpression() (ast.Node, error) {
+func (parsing *Parsing) parseExpression() (ast.Node, error) {
 	return parsing.parseBinaryExpression(token.LowPrecedence + 1)
 }
 
-func (parsing *Parsing) ParseOperand() (ast.Node, error) {
+func (parsing *Parsing) parseOperand() (ast.Node, error) {
 	switch last := parsing.token(); {
 	case token.IsIdentifierToken(last):
 		return parsing.parseIdentifier()
@@ -57,7 +57,7 @@ func (parsing *Parsing) parseNumberLiteral() (*ast.NumberLiteral, error) {
 func (parsing *Parsing) completeLeftParenExpression() (ast.Node, error) {
 	parsing.advance()
 	parsing.expressionDepth++
-	expression, err := parsing.ParseExpression()
+	expression, err := parsing.parseExpression()
 	if err != nil {
 		return expression, err
 	}
@@ -74,8 +74,8 @@ func (parsing *Parsing) completeLeftParenExpression() (ast.Node, error) {
 
 // ParseOperation parses the initial operand and continues to parsing operands on
 // that operand, forming a node for another expression.
-func (parsing *Parsing) ParseOperation() (ast.Node, error) {
-	operand, err := parsing.ParseOperand()
+func (parsing *Parsing) parseOperation() (ast.Node, error) {
+	operand, err := parsing.parseOperand()
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (parsing *Parsing) parseSelection(operand ast.Node) (ast.Node, error) {
 	if err := parsing.skipOperator(token.DotOperator); err != nil {
 		return nil, err
 	}
-	field, err := parsing.ParseOperand()
+	field, err := parsing.parseOperand()
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (parsing *Parsing) parseSelection(operand ast.Node) (ast.Node, error) {
 // Example: 'a + b' or '(1 + 2) + 3'
 func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token.Precedence) (ast.Node, error) {
 	beginOffset := parsing.offset()
-	leftHandSide, err := parsing.ParseUnaryExpression()
+	leftHandSide, err := parsing.parseUnaryExpression()
 	if err != nil {
 		return nil, err
 	}
@@ -179,21 +179,21 @@ func (parsing *Parsing) parseCreateExpression() (ast.Node, error) {
 // operations with only one operand (arity of one). An example of a unary
 // expression is the negation '!(expression)'. The single operand may be
 // any kind of expression, including another unary expression.
-func (parsing *Parsing) ParseUnaryExpression() (ast.Node, error) {
+func (parsing *Parsing) parseUnaryExpression() (ast.Node, error) {
 	beginOffset := parsing.offset()
 	operatorToken := parsing.token()
 	if token.KeywordValue(operatorToken) == token.CreateKeyword {
 		return parsing.parseCreateExpression()
 	}
 	if !token.IsOperatorOrOperatorKeywordToken(operatorToken) {
-		return parsing.ParseOperation()
+		return parsing.parseOperation()
 	}
 	operator := token.OperatorValue(operatorToken)
 	if !operator.IsUnaryOperator() {
-		return parsing.ParseOperation()
+		return parsing.parseOperation()
 	}
 	parsing.advance()
-	operand, err := parsing.ParseUnaryExpression()
+	operand, err := parsing.parseUnaryExpression()
 	if err != nil {
 		return nil, err
 	}
@@ -229,7 +229,7 @@ func (parsing *Parsing) parseArgumentList() ([]ast.Node, error) {
 	}
 	var arguments []ast.Node
 	for {
-		next, err := parsing.ParseExpression()
+		next, err := parsing.parseExpression()
 		if err != nil {
 			return arguments, err
 		}
