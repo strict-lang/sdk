@@ -4,9 +4,11 @@ import "gitlab.com/strict-lang/sdk/compilation/ast"
 
 func (generation *Generation) EmitMethodDeclaration(declaration *ast.MethodDeclaration) {
 	generation.EmitIndent()
-	generation.EmitNode(declaration.Name)
-	generation.Emit(" ")
+
 	generation.EmitNode(declaration.Type)
+	generation.Emit(" ")
+	generation.EmitNode(declaration.Name)
+
 	generation.Emit("(")
 	for index, parameter := range declaration.Parameters {
 		if index != 0 {
