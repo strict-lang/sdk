@@ -49,7 +49,7 @@ func (testFile *TestFile) emitFailedAssertion(statement *ast.AssertStatement) {
 }
 
 func generateAssertionFailureMessage(expression ast.Node) string {
-	assertionMessage := newAssertionMessageComputation()
+	assertionMessage := backend.newAssertionMessageComputation()
 	assertionMessage.generateNode(expression)
 	return assertionMessage.String()
 }

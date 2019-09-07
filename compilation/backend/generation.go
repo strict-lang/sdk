@@ -47,7 +47,7 @@ func NewGeneration(unit *ast.TranslationUnit) (generation *Generation) {
 }
 
 func (generation *Generation) Filename() string {
-	return fmt.Sprintf("%s.cc", generation.unit.ToTypeName())
+	return fmt.Sprintf("%s.cc", generation.unit.ToTypeName().NonGenericName())
 }
 
 func (generation *Generation) String() string {

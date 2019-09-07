@@ -1,4 +1,4 @@
-package testfile
+package backend
 
 import (
 	"gitlab.com/strict-lang/sdk/compilation/ast"
@@ -21,6 +21,12 @@ func newAssertionMessageComputation() *assertionMessageComputation {
 	visitor.VisitStringLiteral = computation.visitStringLiteral
 	computation.visitor = visitor
 	return computation
+}
+
+func ComputeAssertionMessage(assertedExpression ast.Node) string {
+	computation := newAssertionMessageComputation()
+	computation.generateNode(assertedExpression)
+	return computation.String()
 }
 
 func (computation *assertionMessageComputation) String() string {

@@ -152,12 +152,13 @@ func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token.Precedenc
 	}
 }
 
-func (parsing *Parsing) parseConstructor() (*ast.MethodCall, error) {
+func (parsing *Parsing) parseConstructor() (*ast.MethodCall, ast.TypeName, error) {
 	typeName, err := parsing.parseTypeName()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return parsing.parseMethodCallOnNode(typeName)
+	methodCall, err := parsing.parseMethodCallOnNode(typeName)
+	return methodCall, typeName, err
 }
 
 func (parsing *Parsing) parseCreateExpression() (ast.Node, error) {
@@ -165,13 +166,14 @@ func (parsing *Parsing) parseCreateExpression() (ast.Node, error) {
 	if err := parsing.skipKeyword(token.CreateKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err), err
 	}
-	constructor, err := parsing.parseConstructor()
+	constructor, typeName, err := parsing.parseConstructor()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err), err
 	}
 	return &ast.CreateExpression{
 		NodePosition: parsing.createPosition(beginOffset),
 		Constructor:  constructor,
+		Type: typeName,
 	}, nil
 }
 

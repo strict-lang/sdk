@@ -32,9 +32,8 @@ func (generation *Generation) declareYieldList() {
 	if generation.method == nil {
 		panic("Yield statement outside of method")
 	}
-	typeName := updateTypeName(generation.method.declaration.Type)
-	generation.EmitIndent()
-	generation.EmitFormatted("%s %s;\n", typeName.FullName(), yieldListName)
+	generation.EmitNode(generation.method.declaration.Type)
+	generation.EmitFormatted(" %s;", yieldListName)
 }
 
 func (generation *Generation) returnYieldList() {
@@ -75,8 +74,12 @@ func (generation *Generation) GenerateReturnStatement(statement *ast.ReturnState
 	generation.EmitEndOfLine()
 }
 
+func (generation *Generation) GenerateFieldDeclaration(declaration *ast.FieldDeclaration) {
+	generation.EmitNode(declaration.TypeName)
+	generation.EmitFormatted(" %s", declaration.Name.Value)
+}
+
 func (generation *Generation) GenerateAssignStatement(statement *ast.AssignStatement) {
-	generation.Emit("auto ")
 	generation.EmitNode(statement.Target)
 	generation.EmitFormatted(" = ")
 	generation.EmitNode(statement.Value)
@@ -108,4 +111,42 @@ func (generation *Generation) GenerateExpressionStatement(statement *ast.Express
 	generation.EmitNode(statement.Expression)
 	generation.Emit(";")
 	generation.EmitEndOfLine()
+}
+func (generation *Generation) GenerateAssertStatement(statement *ast.AssertStatement) {
+
+	generation.Emit("if (!(")
+	generation.EmitNode(statement.Expression)
+	generation.Emit(")) {")
+	generation.EmitEndOfLine()
+	generation.IncreaseIndent()
+	generation.EmitIndent()
+	generation.EmitFormatted("throw \"%s\"", ComputeAssertionMessage(statement.Expression))
+	generation.EmitEndOfLine()
+	generation.DecreaseIndent()
+	generation.Emit("}")
+	generation.EmitEndOfLine()
+}
+
+func (generation *Generation) GenerateIncrementStatement(statement *ast.IncrementStatement) {
+	generation.EmitNode(statement.Operand)
+	generation.Emit("++")
+}
+
+func (generation *Generation) GenerateDecrementStatement(statement *ast.DecrementStatement) {
+	generation.EmitNode(statement.Operand)
+	generation.Emit("--")
+}
+
+func (generation *Generation) GenerateInvalidStatement(statement *ast.InvalidStatement) {
+	generation.Emit("#error Invalid node at position")
+}
+
+func (generation *Generation) GenerateEmptyStatement(statement *ast.EmptyStatement) {}
+
+func (generation *Generation) GenerateCreateExpression(create *ast.CreateExpression) {
+	generation.EmitNode(create.Constructor)
+}
+
+func (generation *Generation) GenerateTestStatement(create *ast.TestStatement) {
+	// Not Implemented
 }

@@ -51,7 +51,7 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		return
 	}
 	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command})
-	if err := writeGeneratedSources(result); err != nil {
+	if err = writeGeneratedSources(result); err != nil {
 		command.PrintErrf("Failed to write generated code; %s\n", err.Error())
 		return
 	}

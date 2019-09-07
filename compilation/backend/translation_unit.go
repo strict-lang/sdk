@@ -7,10 +7,15 @@ import (
 func (generation *Generation) GenerateTranslationUnit(unit *ast.TranslationUnit) {
 	importStatements, nonImports := splitImportStatements(unit.Children)
 	methods, nonMethods := splitMethodDeclarations(nonImports)
+	generation.generateImplicitImports()
 	generation.generateSection(importStatements)
 	generation.generateSection(methods)
 	generation.GenerateMainMethod(nonMethods)
 	generation.Emit("\n")
+}
+
+func (generation *Generation) generateImplicitImports() {
+	generation.Emit("#include <string>\n")
 }
 
 func (generation *Generation) generateSection(nodes []ast.Node) {
