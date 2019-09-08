@@ -22,6 +22,10 @@ type NumberLiteral struct {
 	NodePosition Position
 }
 
+func (literal *NumberLiteral) IsFloat() bool {
+	return false
+}
+
 func (literal *NumberLiteral) Accept(visitor *Visitor) {
 	visitor.VisitNumberLiteral(literal)
 }

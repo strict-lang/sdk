@@ -16,35 +16,12 @@ var defaultImplicitConversionTargets = []TypeDescriptor{
 
 type Type struct {
 	Name                      string
-	Methods                   map[string]TypedMethod
+	Methods                   map[string]*TypedMethod
 	Descriptor                TypeDescriptor
 	ParameterCount            int
-	ImplicitConversionTargets []TypeDescriptor
+	ImplicitConversionTargets []*Type
 	SuperType                 *Type
-	SuperInterfaces           []Type
-}
-
-type TypeBuilder struct {
-	Name                      string
-	Descriptor                TypeDescriptor
-	ParameterCount            int
-	Methods                   []TypedMethod
-	ImplicitConversionTargets []TypeDescriptor
-}
-
-func (builder TypeBuilder) Create() Type {
-	methods := map[string]TypedMethod{}
-	for _, method := range builder.Methods {
-		methods[method.Name] = method
-	}
-	return Type{
-		Name:           builder.Name,
-		Descriptor:     builder.Descriptor,
-		ParameterCount: builder.ParameterCount,
-		Methods:        methods,
-		ImplicitConversionTargets: append(
-			builder.ImplicitConversionTargets, defaultImplicitConversionTargets...),
-	}
+	SuperInterfaces           []*Type
 }
 
 // Is returns whether this is the target type or a subtype of the target type.

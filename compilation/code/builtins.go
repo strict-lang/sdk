@@ -1,57 +1,29 @@
 package code
 
-type BuiltinRegistration struct {
+
+
+var builtinTypes = struct {
+	boolType *Type
+	intType *Type
+	floatType *Type
+	invalidType *Type
+	stringType *Type
+} {
+	boolType: createPrimitiveType("bool"),
+	intType: createPrimitiveType("int"),
+	floatType: createPrimitiveType("float"),
+	invalidType: createPrimitiveType("invalid"),
+	stringType: createPrimitiveType("string"),
 }
 
-// AnyType and VoidType are not created using the TypeBuilder since they are
-// special essential types that do not have the default parameters for things
-// like implicit conversion checks.
-var (
-	AnyType = Type{
-		Name:       "any",
-		Descriptor: typeDescriptorAny,
+func createPrimitiveType(name string) *Type {
+	return &Type{
+		Name:                      name,
+		Methods:                   map[string]*TypedMethod{},
+		Descriptor:                TypeDescriptor(name),
+		ParameterCount:            0,
+		ImplicitConversionTargets: []*Type{},
+		SuperType:                 nil, // TODO(): Common super type
+		SuperInterfaces:           []*Type{},
 	}
-
-	VoidType = Type{
-		Name:       "void",
-		Descriptor: typeDescriptorVoid,
-	}
-
-	BoolType = TypeBuilder{
-		Name:       "bool",
-		Descriptor: typeDescriptorBool,
-	}.Create()
-
-	NumberType = TypeBuilder{
-		Name:       "number",
-		Descriptor: typeDescriptorNumber,
-	}.Create()
-
-	TextType = TypeBuilder{
-		Name:       "text",
-		Descriptor: typeDescriptorText,
-		Methods: []TypedMethod{
-			{
-				Name:       "size",
-				ReturnType: &NumberType,
-			},
-			{
-				Name:       "isEmpty",
-				ReturnType: &BoolType,
-			},
-		},
-	}.Create()
-)
-
-func (builtins *BuiltinRegistration) register() {
-	builtins.registerType(&AnyType)
-	builtins.registerType(&VoidType)
-	builtins.registerType(&TextType)
-	builtins.registerType(&NumberType)
-	builtins.registerType(&BoolType)
 }
-
-func (builtins *BuiltinRegistration) registerType(builtinType *Type) {
-}
-
-func (builtins *BuiltinRegistration) registerMethod(method *TypedMethod) {}

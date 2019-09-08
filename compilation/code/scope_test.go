@@ -4,19 +4,15 @@ import (
 	"testing"
 )
 
-type Dummy struct {
-	scope *Scope
-}
-
-func (dummy Dummy) Scope() *Scope {
-	return dummy.scope
+func createDummyAttribute() Attribute {
+  return Attribute{}
 }
 
 func TestParentModifiesChild(test *testing.T) {
 	scope := NewRootScope()
 	child := scope.NewChild()
 
-	err := scope.PutSymbol("a", Dummy{scope: scope})
+	err := scope.PutSymbol("a", createDummyAttribute())
 	expectNoError(test, err)
 	expectSymbol(test, scope, "a")
 	expectSymbol(test, child, "a")
@@ -26,7 +22,7 @@ func TestChildDoesNotModifyParent(test *testing.T) {
 	scope := NewRootScope()
 	child := scope.NewChild()
 
-	err := child.PutSymbol("a", Dummy{scope: child})
+	err := child.PutSymbol("a", createDummyAttribute())
 	expectNoError(test, err)
 	expectSymbol(test, child, "a")
 	expectNoSymbol(test, scope, "a")
@@ -34,7 +30,7 @@ func TestChildDoesNotModifyParent(test *testing.T) {
 
 func TestChildScopeCreation(test *testing.T) {
 	scope := NewRootScope()
-	err := scope.PutSymbol("a", Dummy{scope: scope})
+	err := scope.PutSymbol("a", createDummyAttribute())
 	expectNoError(test, err)
 
 	child := scope.NewChild()
