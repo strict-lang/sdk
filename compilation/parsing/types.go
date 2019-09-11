@@ -35,7 +35,7 @@ func (parsing *Parsing) parseTypeName() (ast.TypeName, error) {
 		return parsing.parseGenericTypeName(beginOffset, typeName.Value())
 	}
 	concrete := &ast.ConcreteTypeName{
-		Name: typeName.Value(),
+		Name:         typeName.Value(),
 		NodePosition: parsing.createPosition(beginOffset),
 	}
 	if operator == token.LeftBracketOperator {

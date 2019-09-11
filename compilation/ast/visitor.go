@@ -29,6 +29,7 @@ type Visitor struct {
 	VisitFieldDeclaration     func(*FieldDeclaration)
 	VisitGenericTypeName      func(*GenericTypeName)
 	VisitConcreteTypeName     func(*ConcreteTypeName)
+	VisitClassDeclaration     func(*ClassDeclaration)
 	VisitBinaryExpression     func(*BinaryExpression)
 	VisitMethodDeclaration    func(*MethodDeclaration)
 	VisitSelectorExpression   func(*SelectorExpression)
@@ -62,6 +63,7 @@ func NewEmptyVisitor() *Visitor {
 		VisitAssignStatement:      func(*AssignStatement) {},
 		VisitInvalidStatement:     func(*InvalidStatement) {},
 		VisitFieldDeclaration:     func(*FieldDeclaration) {},
+		VisitClassDeclaration:     func(*ClassDeclaration) {},
 		VisitSelectorExpression:   func(*SelectorExpression) {},
 		VisitIncrementStatement:   func(*IncrementStatement) {},
 		VisitDecrementStatement:   func(*DecrementStatement) {},

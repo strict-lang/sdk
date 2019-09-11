@@ -4,24 +4,10 @@ package ast
 // source code. It can have multiple children, which are seen as the roots
 // of the actual ast. This node however, is the real unit of the ast.
 type TranslationUnit struct {
-	name         string
-	Children     []Node
+	Name         string
+	Imports      []*ImportStatement
+	Class        ClassDeclaration
 	NodePosition Position
-}
-
-func NewEmptyTranslationUnit(name string) *TranslationUnit {
-	return NewTranslationUnit(name, []Node{})
-}
-
-func NewTranslationUnit(name string, children []Node) *TranslationUnit {
-	return &TranslationUnit{
-		name:     name,
-		Children: children,
-	}
-}
-
-func (unit *TranslationUnit) Name() string {
-	return unit.name
 }
 
 func (unit *TranslationUnit) Accept(visitor *Visitor) {
@@ -30,18 +16,15 @@ func (unit *TranslationUnit) Accept(visitor *Visitor) {
 
 func (unit *TranslationUnit) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitTranslationUnit(unit)
-	for _, topLevelNode := range unit.Children {
-		topLevelNode.AcceptRecursive(visitor)
+	for _, importStatement := range unit.Imports {
+		importStatement.AcceptRecursive(visitor)
 	}
-}
-
-func (unit *TranslationUnit) AppendChild(node Node) {
-	unit.Children = append(unit.Children, node)
+	unit.Class.AcceptRecursive(visitor)
 }
 
 func (unit *TranslationUnit) ToTypeName() TypeName {
 	return &ConcreteTypeName{
-		Name:         unit.name,
+		Name:         unit.Name,
 		NodePosition: unit.NodePosition,
 	}
 }

@@ -18,10 +18,6 @@ type Generation struct {
 	importModules               map[string]string
 }
 
-type Extension interface {
-	ModifyVisitor(generation *Generation, visitor *ast.Visitor)
-}
-
 type FileNaming interface {
 	FileNameForUnit(unit *ast.TranslationUnit)
 }

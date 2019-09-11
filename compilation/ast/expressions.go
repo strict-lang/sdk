@@ -113,7 +113,7 @@ func (selector *SelectorExpression) Position() Position {
 type CreateExpression struct {
 	NodePosition Position
 	Constructor  *MethodCall
-	Type TypeName
+	Type         TypeName
 }
 
 func (create *CreateExpression) Accept(visitor *Visitor) {

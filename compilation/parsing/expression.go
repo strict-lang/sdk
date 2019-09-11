@@ -173,7 +173,7 @@ func (parsing *Parsing) parseCreateExpression() (ast.Node, error) {
 	return &ast.CreateExpression{
 		NodePosition: parsing.createPosition(beginOffset),
 		Constructor:  constructor,
-		Type: typeName,
+		Type:         typeName,
 	}, nil
 }
 

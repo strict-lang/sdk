@@ -1,19 +1,17 @@
 package code
 
-
-
 var builtinTypes = struct {
-	boolType *Type
-	intType *Type
-	floatType *Type
+	boolType    *Type
+	intType     *Type
+	floatType   *Type
 	invalidType *Type
-	stringType *Type
-} {
-	boolType: createPrimitiveType("bool"),
-	intType: createPrimitiveType("int"),
-	floatType: createPrimitiveType("float"),
+	stringType  *Type
+}{
+	boolType:    createPrimitiveType("bool"),
+	intType:     createPrimitiveType("int"),
+	floatType:   createPrimitiveType("float"),
 	invalidType: createPrimitiveType("invalid"),
-	stringType: createPrimitiveType("string"),
+	stringType:  createPrimitiveType("string"),
 }
 
 func createPrimitiveType(name string) *Type {

@@ -5,7 +5,7 @@ import (
 )
 
 func createDummyAttribute() Attribute {
-  return Attribute{}
+	return Attribute{}
 }
 
 func TestParentModifiesChild(test *testing.T) {

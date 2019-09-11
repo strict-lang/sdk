@@ -7,16 +7,16 @@ import (
 )
 
 type TypeInference struct {
-	visitor *ast.Visitor
-	lastResult inferenceResult
-	classType *Type
-	currentScope *Scope
+	visitor                 *ast.Visitor
+	lastResult              inferenceResult
+	classType               *Type
+	currentScope            *Scope
 	currentCallInstanceType *Type
-	lastIdentifier *ast.Identifier
+	lastIdentifier          *ast.Identifier
 }
 
 type inferenceResult struct {
-	type_ *Type
+	type_   *Type
 	success bool
 }
 
@@ -27,19 +27,19 @@ func (inference *TypeInference) inferNode(node ast.Node) inferenceResult {
 
 func (inference *TypeInference) emitType(emitted *Type) {
 	inference.lastResult = inferenceResult{
-		type_: emitted,
+		type_:   emitted,
 		success: true,
 	}
 }
 
 func (inference *TypeInference) emitError() {
 	inference.lastResult = inferenceResult{
-		type_: nil,
+		type_:   nil,
 		success: true,
 	}
 }
 
-var unaryOperationType = map[token.Operator] *Type {
+var unaryOperationType = map[token.Operator]*Type{
 	token.NegateOperator: builtinTypes.boolType,
 }
 
@@ -56,7 +56,7 @@ func (inference *TypeInference) visitUnaryExpression(expression *ast.UnaryExpres
 	inference.emitType(operationType)
 }
 
-func fixedTypeOperation(type_ *Type)  func(*Type) *Type {
+func fixedTypeOperation(type_ *Type) func(*Type) *Type {
 	return func(*Type) *Type {
 		return type_
 	}
@@ -68,18 +68,18 @@ func identityTypeOperation() func(*Type) *Type {
 	}
 }
 
-var binaryOperationType = map[token.Operator] func(*Type) *Type {
-	token.SmallerOperator: fixedTypeOperation(builtinTypes.boolType),
-	token.GreaterOperator: fixedTypeOperation(builtinTypes.boolType),
-	token.EqualsOperator: fixedTypeOperation(builtinTypes.boolType),
-	token.NotEqualsOperator: fixedTypeOperation(builtinTypes.boolType),
+var binaryOperationType = map[token.Operator]func(*Type) *Type{
+	token.SmallerOperator:       fixedTypeOperation(builtinTypes.boolType),
+	token.GreaterOperator:       fixedTypeOperation(builtinTypes.boolType),
+	token.EqualsOperator:        fixedTypeOperation(builtinTypes.boolType),
+	token.NotEqualsOperator:     fixedTypeOperation(builtinTypes.boolType),
 	token.SmallerEqualsOperator: fixedTypeOperation(builtinTypes.boolType),
 	token.GreaterEqualsOperator: fixedTypeOperation(builtinTypes.boolType),
-	token.AddOperator: identityTypeOperation(),
-	token.SubOperator: identityTypeOperation(),
-	token.MulOperator: identityTypeOperation(),
-	token.DivOperator: identityTypeOperation(),
-	token.ModOperator: identityTypeOperation(),
+	token.AddOperator:           identityTypeOperation(),
+	token.SubOperator:           identityTypeOperation(),
+	token.MulOperator:           identityTypeOperation(),
+	token.DivOperator:           identityTypeOperation(),
+	token.ModOperator:           identityTypeOperation(),
 }
 
 func (inference *TypeInference) visitBinaryExpression(expression *ast.BinaryExpression) {
@@ -111,9 +111,9 @@ func (inference *TypeInference) visitSelectorExpression(selector *ast.SelectorEx
 	}
 }
 
-func (inference *TypeInference)  visitMethodCall(call *ast.MethodCall) {
-	inference.lastIdentifier =  nil
-	defer func() {inference.lastIdentifier = nil}()
+func (inference *TypeInference) visitMethodCall(call *ast.MethodCall) {
+	inference.lastIdentifier = nil
+	defer func() { inference.lastIdentifier = nil }()
 	if result := inference.inferNode(call.Method); !result.success {
 		inference.emitError()
 		return

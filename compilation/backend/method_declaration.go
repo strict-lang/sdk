@@ -2,6 +2,8 @@ package backend
 
 import "gitlab.com/strict-lang/sdk/compilation/ast"
 
+const InitMethodName = "Generated$Init"
+
 func (generation *Generation) EmitMethodDeclaration(declaration *ast.MethodDeclaration) {
 	generation.EmitIndent()
 
@@ -24,4 +26,3 @@ func (generation *Generation) GenerateParameter(parameter *ast.Parameter) {
 	generation.Emit(" ")
 	generation.EmitNode(parameter.Name)
 }
-

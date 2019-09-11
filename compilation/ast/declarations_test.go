@@ -6,4 +6,5 @@ var (
 	_ Node = &MethodDeclaration{}
 	_ Node = &Parameter{}
 	_ Node = &FieldDeclaration{}
+	_ Node = &ClassDeclaration{}
 )

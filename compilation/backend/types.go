@@ -5,16 +5,16 @@ import (
 )
 
 const (
-	builtinTypeInt = "int"
-	builtinTypeFloat = "float"
-	builtinTypeString  = "std::string"
-	builtinTypeList  = "std::vector"
+	builtinTypeInt    = "int"
+	builtinTypeFloat  = "float"
+	builtinTypeString = "std::string"
+	builtinTypeList   = "std::vector"
 )
 
 var builtinTypes = map[string]string{
-	"String":   builtinTypeString,
-	"int": builtinTypeInt,
-	"float": builtinTypeFloat,
+	"String": builtinTypeString,
+	"int":    builtinTypeInt,
+	"float":  builtinTypeFloat,
 }
 
 func (generation *Generation) GenerateGenericTypeName(name *ast.GenericTypeName) {

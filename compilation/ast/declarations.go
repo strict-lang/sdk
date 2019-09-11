@@ -67,21 +67,29 @@ func (field *FieldDeclaration) Position() Position {
 }
 
 type ClassDeclaration struct {
-	Name string
-	Parameters []ClassParameter
-	SuperTypes []TypeName
+	Name         string
+	Parameters   []ClassParameter
+	SuperTypes   []TypeName
+	Children     []Node
 	NodePosition Position
 }
 
-func (class *ClassDeclaration) Accept(visitor *Visitor) {}
-func (class *ClassDeclaration) AcceptRecurvise(visitor *Visitor) {}
+func (class *ClassDeclaration) Accept(visitor *Visitor) {
+	visitor.VisitClassDeclaration(class)
+}
+
+func (class *ClassDeclaration) AcceptRecursive(visitor *Visitor) {
+	visitor.VisitClassDeclaration(class)
+	for _, child := range class.Children {
+		child.AcceptRecursive(visitor)
+	}
+}
 
 func (class *ClassDeclaration) Position() Position {
 	return class.NodePosition
 }
 
 type ClassParameter struct {
-	Name string
+	Name      string
 	SuperType TypeName
 }
-
