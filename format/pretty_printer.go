@@ -77,13 +77,7 @@ func (printer *PrettyPrinter) printNode(node ast.Node) {
 }
 
 func (printer *PrettyPrinter) printTranslationUnit(unit *ast.TranslationUnit) {
-	for _, child := range unit.Children {
-		printer.printNode(child)
-		if _, ok := child.(*ast.MethodDeclaration); !ok {
-			// TODO(MerlinOsayimwen): Find better way to filter declarations.
-			printer.appendLineBreak()
-		}
-	}
+	// FIXME
 }
 
 func (printer *PrettyPrinter) registerAstVisitors() {

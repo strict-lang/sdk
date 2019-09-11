@@ -38,6 +38,7 @@ func newPrinting() *Printing {
 		VisitCreateExpression:     printing.printCreateExpression,
 		VisitInvalidStatement:     printing.printInvalidStatement,
 		VisitFieldDeclaration:     printing.printFieldDeclaration,
+		VisitClassDeclaration:     printing.printClassDeclaration,
 		VisitGenericTypeName:      printing.printGenericTypeName,
 		VisitConcreteTypeName:     printing.printConcreteTypeName,
 		VisitBinaryExpression:     printing.printBinaryExpression,
@@ -215,13 +216,24 @@ func (printing *Printing) printExpressionStatement(statement *ExpressionStatemen
 
 func (printing *Printing) printTranslationUnit(unit *TranslationUnit) {
 	printing.printNodeBegin("TranslationUnit")
-	printing.printIndentedStringField("name", unit.name)
-	printing.printIndentedListFieldBegin("children")
-	for _, node := range unit.Children {
+	printing.printIndentedStringField("name", unit.Name)
+	printing.printIndentedListFieldBegin("imports")
+	for _, node := range unit.Imports {
 		printing.printListField(node)
 	}
 	printing.printListFieldEnd()
+	printing.printIndentedNodeField("class", unit.Class)
 	printing.printNodeEnd()
+}
+
+func (printing *Printing) printClassDeclaration(class *ClassDeclaration) {
+	printing.printNodeBegin("ClassDeclaration")
+	printing.printIndentedStringField("name", class.Name)
+	printing.printIndentedListFieldBegin("children")
+	for _, node := range class.Children {
+		printing.printListField(node)
+	}
+	printing.printListFieldEnd()
 }
 
 func (printing *Printing) printIdentifier(identifier *Identifier) {

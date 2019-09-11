@@ -6,7 +6,7 @@ package ast
 type TranslationUnit struct {
 	Name         string
 	Imports      []*ImportStatement
-	Class        ClassDeclaration
+	Class        *ClassDeclaration
 	NodePosition Position
 }
 

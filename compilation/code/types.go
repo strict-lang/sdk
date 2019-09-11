@@ -19,7 +19,7 @@ type Type struct {
 	Methods                   map[string]*TypedMethod
 	Descriptor                TypeDescriptor
 	ParameterCount            int
-	ImplicitConversionTargets []*Type
+	ImplicitConversionTargets []TypeDescriptor
 	SuperType                 *Type
 	SuperInterfaces           []*Type
 }
@@ -32,7 +32,7 @@ type Type struct {
 //
 // If this method returns true, instances of this type can be used as arguments,
 // assignments, etc for fields of the target type.
-func (type_ Type) Is(target Type) bool {
+func (type_ *Type) Is(target Type) bool {
 	if type_.IsExact(target) || type_.SuperType.Is(target) {
 		return true
 	}
@@ -44,11 +44,11 @@ func (type_ Type) Is(target Type) bool {
 	return false
 }
 
-func (type_ Type) IsExact(target Type) bool {
+func (type_ *Type) IsExact(target Type) bool {
 	return type_.Descriptor == target.Descriptor
 }
 
-func (type_ Type) IsImplicitlyConvertibleTo(targetDescriptor TypeDescriptor) bool {
+func (type_ *Type) IsImplicitlyConvertibleTo(targetDescriptor TypeDescriptor) bool {
 	if targetDescriptor == typeDescriptorAny {
 		return true
 	}
@@ -60,20 +60,20 @@ func (type_ Type) IsImplicitlyConvertibleTo(targetDescriptor TypeDescriptor) boo
 	return false
 }
 
-func (type_ Type) HasMethodWithName(name string) bool {
+func (type_ *Type) HasMethodWithName(name string) bool {
 	if _, hasMethod := type_.Methods[name]; !hasMethod {
 		return type_.SuperType.HasMethodWithName(name)
 	}
 	return true
 }
 
-func (type_ Type) LookupMethod(name string) (method TypedMethod, ok bool) {
+func (type_ *Type) LookupMethod(name string) (method *TypedMethod, ok bool) {
 	if method, ok = type_.Methods[name]; !ok {
 		return type_.SuperType.LookupMethod(name)
 	}
 	return
 }
 
-func (type_ Type) IsParameterized() bool {
+func (type_ *Type) IsParameterized() bool {
 	return type_.ParameterCount != 0
 }

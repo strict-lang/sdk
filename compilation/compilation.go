@@ -45,7 +45,7 @@ func (compilation *Compilation) Compile() Result {
 		GeneratedFileName: generator.Filename(),
 		Diagnostics:       parseResult.Diagnostics,
 		Error:             nil,
-		UnitName:          parseResult.Unit.Name(),
+		UnitName:          parseResult.Unit.Name,
 	}
 }
 

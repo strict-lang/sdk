@@ -20,7 +20,7 @@ func createPrimitiveType(name string) *Type {
 		Methods:                   map[string]*TypedMethod{},
 		Descriptor:                TypeDescriptor(name),
 		ParameterCount:            0,
-		ImplicitConversionTargets: []*Type{},
+		ImplicitConversionTargets: []TypeDescriptor{},
 		SuperType:                 nil, // TODO(): Common super type
 		SuperInterfaces:           []*Type{},
 	}

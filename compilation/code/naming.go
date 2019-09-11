@@ -46,7 +46,7 @@ func (check *NamingCheck) Run() {
 func (check *NamingCheck) reportInvalidNode(node ast.Node, message string) {
 	check.recorder.Record(diagnostic.RecordedEntry{
 		Position: node.Position(),
-		UnitName: check.unit.Name(),
+		UnitName: check.unit.Name,
 		Kind:     &diagnostic.Error,
 		Stage:    &diagnostic.SemanticAnalysis,
 		Message:  message,

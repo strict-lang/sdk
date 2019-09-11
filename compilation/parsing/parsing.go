@@ -38,11 +38,42 @@ type Block struct {
 	Parent *Block
 }
 
+func (parsing *Parsing) parseImportStatementList() (imports []*ast.ImportStatement, failed[]ast.Node) {
+	for token.HasKeywordValue(parsing.token(), token.ImportKeyword) {
+		result := parsing.parseImportStatement()
+		if importStatement, isImport := result.(*ast.ImportStatement); isImport {
+			imports = append(imports, importStatement)
+		} else {
+			failed = append(failed, result)
+		}
+	}
+	return
+}
+
+func (parsing *Parsing) parseClassDeclaration() *ast.ClassDeclaration {
+	begin := parsing.offset()
+	nodes := parsing.parseTopLevelNodes()
+	return &ast.ClassDeclaration{
+		Name:         parsing.unitName,
+		Parameters:   []ast.ClassParameter{},
+		SuperTypes:   []ast.TypeName{},
+		Children:     nodes,
+		NodePosition: parsing.createPosition(begin),
+	}
+}
+
 // ParseTranslationUnit invokes the parsing on the translation unit.
 // This method can only be called once on the Parsing instance.
 func (parsing *Parsing) ParseTranslationUnit() (*ast.TranslationUnit, error) {
-	topLevelNodes := parsing.parseTopLevelNodes()
-	return ast.NewTranslationUnit(parsing.unitName, topLevelNodes), nil
+	begin := parsing.offset()
+	imports, _ := parsing.parseImportStatementList()
+	class := parsing.parseClassDeclaration()
+	return &ast.TranslationUnit{
+		Name:         parsing.unitName,
+		Imports:      imports,
+		Class:        class,
+		NodePosition: parsing.createPosition(begin),
+	}, nil
 }
 
 // openBlock opens a new block of code, updates the parsing block pointer and
