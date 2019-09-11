@@ -40,12 +40,12 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		command.Printf("Invalid filename: %s\n", file.Name())
 		return
 	}
-	compilation := &compilation.Compilation{
+	compiler := &compilation.Compilation{
 		Name:          unitName,
 		Source:        &compilation.FileSource{File: file},
 		TargetArduino: targetArduino,
 	}
-	result := compilation.Compile()
+	result := compiler.Compile()
 	if result.Error != nil {
 		command.PrintErrf("Failed to compile the file: %s\n", result.Error)
 		return
@@ -59,12 +59,21 @@ func RunCompile(command *cobra.Command, arguments []string) {
 }
 
 func writeGeneratedSources(compilation compilation.Result) (err error) {
-	file, err := targetFile(compilation.GeneratedFileName)
-	if err != nil {
-		return
+	for _, generated := range compilation.GeneratedFiles {
+		if err := writeGeneratedSourceFile(generated); err != nil {
+			return err
+		}
 	}
-	_, err = file.Write(compilation.Generated)
-	return
+	return nil
+}
+
+func writeGeneratedSourceFile(generated compilation.Generated) error {
+	file, err := targetFile(generated.FileName)
+	if err != nil {
+		return err
+	}
+	_, err = file.Write(generated.Bytes)
+	return err
 }
 
 func targetFile(name string) (*os.File, error) {

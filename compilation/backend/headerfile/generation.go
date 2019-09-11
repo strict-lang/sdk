@@ -1,4 +1,4 @@
-package header
+package headerfile
 
 import (
 	"gitlab.com/strict-lang/sdk/compilation/ast"
@@ -9,6 +9,10 @@ type Generation struct {
 	backend.Extension
 
 	generation *backend.Generation
+}
+
+func NewGeneration() *Generation {
+	return &Generation{}
 }
 
 func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *ast.Visitor) {

@@ -14,6 +14,10 @@ type Generation struct {
 	hasWrittenInit bool
 }
 
+func NewGeneration() *Generation {
+	return &Generation{}
+}
+
 func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *ast.Visitor) {
 	generation.generation = parent
 	visitor.VisitClassDeclaration = generation.generateClassDeclaration
@@ -45,7 +49,7 @@ func splitMethods(nodes []ast.Node) (methods []*ast.MethodDeclaration, remainder
 }
 
 func (generation *Generation) writeMethodDeclaration(declaration *ast.MethodDeclaration) {
-	name := fmt.Sprintf("%s::%s", generation.className, declaration.Name)
+	name := fmt.Sprintf("%s::%s", generation.className, declaration.Name.Value)
 	instanceMethod := &ast.MethodDeclaration{
 		Name: &ast.Identifier{
 			Value:        name,

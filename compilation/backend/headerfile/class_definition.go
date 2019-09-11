@@ -1,4 +1,4 @@
-package header
+package headerfile
 
 import (
 	"gitlab.com/strict-lang/sdk/compilation/ast"
@@ -6,13 +6,13 @@ import (
 )
 
 type classDefinition struct {
-	name       string
-	parameters []ast.ClassParameter
-	superTypes []ast.TypeName
-	methods    []*ast.MethodDeclaration
-	fields     []*ast.FieldDeclaration
-	generation *backend.Generation
-	createInit bool
+	name             string
+	parameters       []ast.ClassParameter
+	superTypes       []ast.TypeName
+	methods          []*ast.MethodDeclaration
+	fields           []*ast.FieldDeclaration
+	generation       *backend.Generation
+	shouldCreateInit bool
 }
 
 func newClassDefinition(
@@ -33,13 +33,13 @@ func newClassDefinition(
 		createInit = true
 	}
 	return &classDefinition{
-		name:       declaration.Name,
-		parameters: declaration.Parameters,
-		superTypes: declaration.SuperTypes,
-		methods:    methods,
-		fields:     fields,
-		generation: generation,
-		createInit: createInit,
+		name:             declaration.Name,
+		parameters:       declaration.Parameters,
+		superTypes:       declaration.SuperTypes,
+		methods:          methods,
+		fields:           fields,
+		generation:       generation,
+		shouldCreateInit: createInit,
 	}
 }
 
@@ -68,12 +68,11 @@ func (class *classDefinition) writeSuperTypeInheritance() {
 
 func (class *classDefinition) generateCode() {
 	generation := class.generation
-	generation.EmitFormatted("class %s ")
+	generation.EmitFormatted("class %s ", class.name)
 	class.writeSuperTypeInheritance()
-	generation.Emit(" {")
+	generation.Emit("{")
 	generation.IncreaseIndent()
 	generation.EmitEndOfLine()
-	generation.EmitIndent()
 	class.writePublicMembers()
 	if class.shouldWritePrivateMembers() {
 		class.writePrivateMembers()
@@ -99,18 +98,21 @@ func (class *classDefinition) writePublicMembers() {
 	generation := class.generation
 	generation.Emit(" public:")
 	generation.EmitEndOfLine()
-	generation.EmitIndent()
 	for _, method := range class.methods {
+		generation.EmitIndent()
 		class.writeMethodDeclaration(method)
 	}
 	for _, field := range class.fields {
+		generation.EmitIndent()
 		class.writeFieldDeclaration(field)
 	}
+	generation.EmitIndent()
 	writeExplicitDefaultConstructor(class.name, generation)
+	generation.EmitEndOfLine()
 }
 
 func (class *classDefinition) shouldWritePrivateMembers() bool {
-	return class.createInit // Get amount of private members
+	return class.shouldCreateInit // Get amount of private members
 }
 
 func (class *classDefinition) writeInitMethod() {
@@ -121,7 +123,7 @@ func (class *classDefinition) writeInitMethod() {
 func (class *classDefinition) writePrivateMembers() {
 	class.generation.Emit(" private:")
 	class.generation.EmitEndOfLine()
-	if class.createInit {
+	if class.shouldCreateInit {
 		class.generation.EmitIndent()
 		class.writeInitMethod()
 	}
@@ -130,4 +132,5 @@ func (class *classDefinition) writePrivateMembers() {
 func writeExplicitDefaultConstructor(name string, generation *backend.Generation) {
 	generation.EmitFormatted("explicit %s()", name)
 	generation.Emit(";")
+
 }

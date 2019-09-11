@@ -3,6 +3,8 @@ package compilation
 import (
 	"gitlab.com/strict-lang/sdk/compilation/ast"
 	"gitlab.com/strict-lang/sdk/compilation/backend"
+	"gitlab.com/strict-lang/sdk/compilation/backend/headerfile"
+	"gitlab.com/strict-lang/sdk/compilation/backend/sourcefile"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
 	"gitlab.com/strict-lang/sdk/compilation/parsing"
 	"gitlab.com/strict-lang/sdk/compilation/scanning"
@@ -16,10 +18,14 @@ type Compilation struct {
 
 type Result struct {
 	UnitName          string
-	Generated         []byte
-	GeneratedFileName string
+	GeneratedFiles    []Generated
 	Diagnostics       *diagnostic.Diagnostics
 	Error             error
+}
+
+type Generated struct {
+	FileName string
+	Bytes []byte
 }
 
 // ParseResult contains the result of a Parsing.
@@ -33,16 +39,14 @@ func (compilation *Compilation) Compile() Result {
 	parseResult := compilation.parse()
 	if parseResult.Error != nil {
 		return Result{
-			Generated:   []byte{},
+			GeneratedFiles:   []Generated{},
 			Diagnostics: parseResult.Diagnostics,
 			Error:       parseResult.Error,
 			UnitName:    compilation.Name,
 		}
 	}
-	generator := backend.NewGeneration(parseResult.Unit)
 	return Result{
-		Generated:         []byte(generator.Generate()),
-		GeneratedFileName: generator.Filename(),
+		GeneratedFiles:    compilation.generateCppFile(parseResult.Unit),
 		Diagnostics:       parseResult.Diagnostics,
 		Error:             nil,
 		UnitName:          parseResult.Unit.Name,
@@ -65,5 +69,35 @@ func (compilation *Compilation) parse() ParseResult {
 		Unit:        unit,
 		Diagnostics: diagnostics,
 		Error:       err,
+	}
+}
+
+func (compilation *Compilation) generateCppFile(unit *ast.TranslationUnit) []Generated {
+	generated := make(chan Generated)
+	go func () {
+		generated <- compilation.generateHeaderFile(unit)
+	}()
+	go func () {
+		generated <- compilation.generateSourceFile(unit)
+	}()
+	return []Generated{
+		<- generated,
+		<- generated,
+	}
+}
+
+func (compilation *Compilation) generateHeaderFile(unit *ast.TranslationUnit) Generated {
+	generation := backend.NewGenerationWithExtension(unit, headerfile.NewGeneration())
+	return Generated{
+		FileName: compilation.Name + ".h",
+		Bytes:    []byte(generation.Generate()),
+	}
+}
+
+func (compilation *Compilation) generateSourceFile(unit *ast.TranslationUnit) Generated {
+	generation := backend.NewGenerationWithExtension(unit, sourcefile.NewGeneration())
+	return Generated{
+		FileName: compilation.Name + ".cc",
+		Bytes:    []byte(generation.Generate()),
 	}
 }
