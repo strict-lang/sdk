@@ -408,7 +408,9 @@ func (printing *Printing) printBlockStatement(statement *BlockStatement) {
 
 func (printing *Printing) printImportStatement(statement *ImportStatement) {
 	printing.printNodeBegin("ImportStatement")
-	printing.printIndentedStringField("path", statement.Path)
+	target := statement.Target
+	targetString := fmt.Sprintf("{path: %s, moduleName: %s}", target.FilePath(), target.toModuleName())
+	printing.printIndentedStringField("target", targetString)
 	if statement.Alias != nil {
 		printing.printIndentedNodeField("alias", statement.Alias)
 	}

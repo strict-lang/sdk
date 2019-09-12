@@ -2,7 +2,6 @@ package ast
 
 import (
 	"gitlab.com/strict-lang/sdk/compilation/token"
-	"strings"
 )
 
 type ExpressionStatement struct {
@@ -258,46 +257,6 @@ func (statement *AssignStatement) AcceptRecursive(visitor *Visitor) {
 }
 
 func (statement *AssignStatement) Position() Position {
-	return statement.NodePosition
-}
-
-// ImportStatement
-type ImportStatement struct {
-	Path         string
-	Alias        *Identifier
-	NodePosition Position
-}
-
-func (statement *ImportStatement) ModuleName() string {
-	if statement.Alias == nil || statement.Alias.Value == "" {
-		return moduleNameByPath(statement.Path)
-	}
-	return statement.Alias.Value
-}
-
-func moduleNameByPath(path string) string {
-	var begin = 0
-	if strings.Contains(path, "/") {
-		begin = strings.LastIndex(path, "/") + 1
-	}
-	var end int
-	if strings.HasSuffix(path, ".h") {
-		end = len(path) - 2
-	} else {
-		end = len(path)
-	}
-	return path[begin:end]
-}
-
-func (statement *ImportStatement) Accept(visitor *Visitor) {
-	visitor.VisitImportStatement(statement)
-}
-
-func (statement *ImportStatement) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitImportStatement(statement)
-}
-
-func (statement *ImportStatement) Position() Position {
 	return statement.NodePosition
 }
 

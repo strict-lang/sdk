@@ -4,7 +4,7 @@ import "gitlab.com/strict-lang/sdk/compilation/ast"
 
 func (generation *Generation) GenerateImportStatement(statement *ast.ImportStatement) {
 	moduleName := statement.ModuleName()
-	generation.importModule(moduleName, statement.Path)
+	generation.importModule(moduleName, statement.Target.FilePath())
 }
 
 func (generation *Generation) importModule(name, path string) {

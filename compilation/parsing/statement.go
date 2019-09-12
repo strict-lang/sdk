@@ -197,22 +197,52 @@ func (parsing *Parsing) parseImportStatement() ast.Node {
 	if err := parsing.skipKeyword(token.ImportKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	path := parsing.token()
-	if !token.IsStringLiteralToken(path) {
+	switch next := parsing.token(); {
+	case token.IsStringLiteralToken(next):
+		return parsing.parseFileImport(beginOffset)
+	case token.IsIdentifierToken(next):
+		return parsing.parseIdentifierChainImport(beginOffset)
+	default:
 		return parsing.createInvalidStatement(beginOffset, &UnexpectedTokenError{
-			Expected: "Path",
-			Token:    path,
+			Expected: "File or Class Path",
+			Token:    next,
 		})
 	}
+}
+
+func (parsing *Parsing) parseIdentifierChainImport(beginOffset source.Offset) ast.Node {
+	var chain []string
+	for token.IsIdentifierToken(parsing.token()) {
+		chain = append(chain, parsing.token().Value())
+		parsing.advance()
+		if token.HasOperatorValue(parsing.token(), token.DotOperator) {
+			parsing.advance()
+		}
+	}
+	return &ast.ImportStatement{
+		Target:       &ast.IdentifierChainImport{Chain: chain},
+		Alias:        nil,
+		NodePosition: parsing.createPosition(beginOffset),
+	}
+}
+
+func (parsing *Parsing) parseFileImport(beginOffset source.Offset) ast.Node {
+	target := &ast.FileImport{Path:parsing.token().Value()}
 	parsing.advance()
 	if !token.HasKeywordValue(parsing.token(), token.AsKeyword) {
 		parsing.skipEndOfStatement()
 		return &ast.ImportStatement{
-			Path:         path.Value(),
+			Target: target,
 			NodePosition: parsing.createPosition(beginOffset),
 		}
 	}
 	parsing.advance()
+	return parsing.parseFileImportWithAlias(beginOffset, target)
+}
+
+func (parsing *Parsing) parseFileImportWithAlias(
+	beginOffset source.Offset, target ast.ImportTarget) ast.Node {
+
 	aliasOffset := parsing.offset()
 	alias, err := parsing.parseImportAlias()
 	if err != nil {
@@ -221,7 +251,7 @@ func (parsing *Parsing) parseImportStatement() ast.Node {
 	aliasEnd := parsing.offset()
 	parsing.skipEndOfStatement()
 	return &ast.ImportStatement{
-		Path: path.Value(),
+		Target: target,
 		Alias: &ast.Identifier{
 			Value: alias,
 			NodePosition: &offsetPosition{
