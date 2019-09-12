@@ -6,6 +6,7 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
+
 func (parsing *Parsing) couldBeLookingAtTypeName() bool {
 	if !token.IsIdentifierToken(parsing.token()) {
 		return false

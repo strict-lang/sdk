@@ -377,7 +377,7 @@ func isKeywordExpressionToken(entry token.Token) bool {
 }
 
 func (parsing *Parsing) shouldParseFieldDeclaration() bool {
-	return parsing.couldBeLookingAtTypeName()
+	return parsing.isAtBeginOfStatement && parsing.couldBeLookingAtTypeName()
 }
 
 func (parsing *Parsing) parseFieldDeclarationOrDefinition() ast.Node {

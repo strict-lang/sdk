@@ -31,25 +31,28 @@ func (parsing *Parsing) parseOperand() (ast.Node, error) {
 }
 
 func (parsing *Parsing) parseIdentifier() (*ast.Identifier, error) {
-	defer parsing.advance()
+	value := parsing.token().Value()
+	parsing.advance()
 	return &ast.Identifier{
-		Value:        parsing.token().Value(),
+		Value:        value,
 		NodePosition: parsing.createTokenPosition(),
 	}, nil
 }
 
 func (parsing *Parsing) parseStringLiteral() (*ast.StringLiteral, error) {
-	defer parsing.advance()
+	value := parsing.token().Value()
+	parsing.advance()
 	return &ast.StringLiteral{
-		Value:        parsing.token().Value(),
+		Value:        value,
 		NodePosition: parsing.createTokenPosition(),
 	}, nil
 }
 
 func (parsing *Parsing) parseNumberLiteral() (*ast.NumberLiteral, error) {
-	defer parsing.advance()
+	value := parsing.token().Value()
+	parsing.advance()
 	return &ast.NumberLiteral{
-		Value:        parsing.token().Value(),
+		Value:        value,
 		NodePosition: parsing.createTokenPosition(),
 	}, nil
 }
@@ -95,14 +98,14 @@ func (parsing *Parsing) parseOperation() (ast.Node, error) {
 // been parsed. It is called by the ParseOperand method.
 func (parsing *Parsing) parseOperationOnOperand(operand ast.Node) (done bool, node ast.Node, err error) {
 	switch next := parsing.token(); {
+	case token.HasOperatorValue(next, token.LeftBracketOperator):
+		node, err = parsing.parseListSelectExpression(operand)
+		return false, node, err
 	case token.HasOperatorValue(next, token.LeftParenOperator):
 		node, err = parsing.parseMethodCallOnNode(operand)
 		return false, node, err
 	case token.HasOperatorValue(next, token.DotOperator):
 		node, err = parsing.parseSelectExpression(operand)
-		return false, node, err
-	case token.HasOperatorValue(next, token.LeftBracketOperator):
-		node, err = parsing.parseListSelectExpression(operand)
 		return false, node, err
 	}
 	return true, operand, nil
@@ -113,9 +116,16 @@ func (parsing *Parsing) parseListSelectExpression(target ast.Node) (ast.Node, er
 	if err := parsing.skipOperator(token.LeftBracketOperator); err != nil {
 		return nil, err
 	}
-	index, err := parsing.parseOperand()
+	index, err := parsing.parseExpression()
 	if err != nil {
 		return nil, err
+	}
+	defer parsing.advance()
+	if !token.HasOperatorValue(parsing.token(), token.RightBracketOperator) {
+		return nil, &UnexpectedTokenError{
+			Token:    parsing.token(),
+			Expected: "] / end of list access",
+		}
 	}
 	return &ast.ListSelectExpression{
 		Index:        target,

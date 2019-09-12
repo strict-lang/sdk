@@ -28,6 +28,7 @@ type Parsing struct {
 	// test statement within a method. The name is set to an empty string after a
 	// method has been parsed.
 	currentMethodName string
+	isAtBeginOfStatement bool
 }
 
 // Block represents a nested sequence of statements that has a set indentation level.
@@ -100,6 +101,7 @@ func (parsing *Parsing) token() token.Token {
 
 func (parsing *Parsing) advance() {
 	parsing.tokenReader.Pull()
+	parsing.isAtBeginOfStatement = false
 }
 
 func (parsing *Parsing) peek() token.Token {

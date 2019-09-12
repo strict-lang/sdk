@@ -86,6 +86,7 @@ func (parsing *Parsing) createInvalidStatement(beginOffset source.Offset, err er
 func (parsing *Parsing) skipEndOfStatement() {
 	// Do not report the missing end of statement.
 	parsing.advance()
+	parsing.isAtBeginOfStatement = true
 }
 
 // reportError reports an error to the diagnostics bag, starting at the
