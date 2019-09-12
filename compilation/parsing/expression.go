@@ -247,7 +247,7 @@ func (parsing *Parsing) parseArgumentList() ([]ast.Node, error) {
 		}
 		return arguments, &UnexpectedTokenError{
 			Token:    current,
-			Expected: "end of method",
+			Expected: "end of method call",
 		}
 	}
 }

@@ -47,7 +47,7 @@ func (scanning *Scanning) gatherNumber() (string, error) {
 	var builder strings.Builder
 	if scanning.reader.Last() == '0' {
 		builder.WriteRune('0')
-		scanning.Pull()
+		scanning.reader.Pull()
 		switch scanning.reader.Last() {
 		case 'x', 'X':
 			builder.WriteRune('x')
