@@ -7,12 +7,12 @@ package token
 type Stream interface {
 	// Pull pulls the next token from the stream. If there is no next token, an
 	// EndOfFile token is returned. Subsequent calls to Pull will never return
-	// the same token. The most recently pulled token is returned by Last().
+	// the same token. The most recently pulled token is returned by Current().
 	Pull() Token
 	// Peek peeks the next token in the stream without modifying it. If there is
 	// no next token, an EndOfFile token is returned. Subsequent calls to Peek will
 	// always return the same token until Pull() is called.
 	Peek() Token
-	// Last returns the most recently pulled token.
+	// Current returns the most recently pulled token.
 	Last() Token
 }

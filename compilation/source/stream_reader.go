@@ -46,7 +46,7 @@ func (reader *streamReader) Skip(count int) {
 	reader.stream.Discard(count)
 }
 
-func (reader *streamReader) Last() Char {
+func (reader *streamReader) Current() Char {
 	return reader.current
 }
 

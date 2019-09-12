@@ -28,11 +28,11 @@ func isDigitInRadix(digitValue int, base Radix) bool {
 }
 
 func (scanning *Scanning) gatherNumericDigits(builder *strings.Builder, base Radix) {
-	digitValue := scanning.reader.Last().DigitValue()
+	digitValue := scanning.reader.Current().DigitValue()
 	if !isDigitInRadix(digitValue, base) {
 		return
 	}
-	builder.WriteRune(rune(scanning.reader.Last()))
+	builder.WriteRune(rune(scanning.reader.Current()))
 	for {
 		char := scanning.reader.Pull()
 		if !isDigitInRadix(char.DigitValue(), base) {
@@ -45,10 +45,10 @@ func (scanning *Scanning) gatherNumericDigits(builder *strings.Builder, base Rad
 func (scanning *Scanning) gatherNumber() (string, error) {
 	scanning.reader.Pull()
 	var builder strings.Builder
-	if scanning.reader.Last() == '0' {
+	if scanning.reader.Current() == '0' {
 		builder.WriteRune('0')
 		scanning.reader.Pull()
-		switch scanning.reader.Last() {
+		switch scanning.reader.Current() {
 		case 'x', 'X':
 			builder.WriteRune('x')
 			scanning.reader.Pull()
@@ -67,7 +67,7 @@ func (scanning *Scanning) gatherNumber() (string, error) {
 		}
 	}
 	scanning.gatherNumericDigits(&builder, Decimal)
-	if scanning.reader.Last() == '.' {
+	if scanning.reader.Current() == '.' {
 		builder.WriteRune('.')
 		scanning.reader.Pull()
 		if err := scanning.gatherFloatingPointNumber(&builder); err != nil {
@@ -78,14 +78,14 @@ func (scanning *Scanning) gatherNumber() (string, error) {
 }
 
 func (scanning *Scanning) gatherExponent(builder *strings.Builder) error {
-	switch scanning.reader.Last() {
+	switch scanning.reader.Current() {
 	case '-', '+':
 		if scanning.reader.Pull().DigitValue() < int(Decimal) {
 			scanning.gatherNumericDigits(builder, Decimal)
 			return nil
 		}
 		return &UnexpectedCharError{
-			got:      scanning.reader.Last(),
+			got:      scanning.reader.Current(),
 			expected: "digital number",
 		}
 	}
@@ -94,7 +94,7 @@ func (scanning *Scanning) gatherExponent(builder *strings.Builder) error {
 
 func (scanning *Scanning) gatherFloatingPointNumber(builder *strings.Builder) error {
 	scanning.gatherNumericDigits(builder, Decimal)
-	switch scanning.reader.Last() {
+	switch scanning.reader.Current() {
 	case 'e', 'E':
 		builder.WriteRune('e')
 		scanning.reader.Pull()
@@ -105,9 +105,9 @@ func (scanning *Scanning) gatherFloatingPointNumber(builder *strings.Builder) er
 
 func (scanning *Scanning) gatherNumberWithRadix(builder *strings.Builder, radix Radix) (string, error) {
 	scanning.gatherNumericDigits(builder, radix)
-	if scanning.reader.Last().DigitValue() >= int(radix) {
+	if scanning.reader.Current().DigitValue() >= int(radix) {
 		return scanning.reader.String(), &UnexpectedCharError{
-			got:      scanning.reader.Last(),
+			got:      scanning.reader.Current(),
 			expected: fmt.Sprintf("number with radix %d", radix),
 		}
 	}

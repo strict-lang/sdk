@@ -34,7 +34,7 @@ func (scanning *Scanning) gatherStringLiteral() (string, error) {
 			}
 			// TODO: Change this after backend emits something else
 			builder.WriteRune('\\')
-			builder.WriteRune(rune(scanning.reader.Last()))
+			builder.WriteRune(rune(scanning.reader.Current()))
 			continue
 		}
 		builder.WriteRune(rune(next))

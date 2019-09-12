@@ -3,7 +3,7 @@ package source
 type Reader interface {
 	Pull() Char
 	Peek() Char
-	Last() Char
+	Current() Char
 	Index() Offset
 	Skip(count int)
 	IsExhausted() bool

@@ -52,7 +52,7 @@ func (reader *stringReader) Peek() Char {
 	return peeked
 }
 
-func (reader *stringReader) Last() Char {
+func (reader *stringReader) Current() Char {
 	return reader.last
 }
 

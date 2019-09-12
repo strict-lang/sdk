@@ -35,8 +35,8 @@ func (reader *RecordingSourceReader) Peek() source.Char {
 	return reader.delegate.Peek()
 }
 
-func (reader *RecordingSourceReader) Last() source.Char {
-	return reader.delegate.Last()
+func (reader *RecordingSourceReader) Current() source.Char {
+	return reader.delegate.Current()
 }
 
 func (reader *RecordingSourceReader) Index() source.Offset {
