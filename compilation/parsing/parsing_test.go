@@ -3,7 +3,6 @@ package parsing
 import (
 	"testing"
 
-	"gitlab.com/strict-lang/sdk/compilation/ast"
 	"gitlab.com/strict-lang/sdk/compilation/scanning"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
@@ -37,8 +36,5 @@ for num in range(1, 21) do
 		stdio.printf("%d", num)
 `
 	parser := NewTestParser(scanning.NewStringScanning(entry))
-	nodes := parser.parseTopLevelNodes()
-	for _, node := range nodes {
-		ast.Print(node)
-	}
+	parser.parseTopLevelNodes()
 }

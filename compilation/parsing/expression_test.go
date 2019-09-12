@@ -1,14 +1,13 @@
 package parsing
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
 	"gitlab.com/strict-lang/sdk/compilation/scanning"
 	"testing"
 )
 
 func TestParseBinaryExpression(test *testing.T) {
 	entries := []string{
-		"call(call(1))",
+		"call(call(arg))",
 		"1 isnt 1",
 		"1 is 1 or 1 isnt 2",
 		"random % 2 is 1",
@@ -27,10 +26,9 @@ func TestParseBinaryExpression(test *testing.T) {
 
 func testParsingBinaryExpression(test *testing.T, entry string) {
 	parser := NewTestParser(scanning.NewStringScanning(entry))
-	expression, err := parser.parseExpression()
+	_, err := parser.parseExpression()
 	if err != nil {
 		test.Errorf("unexpected error while parsing (%s): %s", entry, err.Error())
 		return
 	}
-	ast.Print(expression)
 }

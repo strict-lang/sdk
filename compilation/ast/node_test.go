@@ -7,11 +7,6 @@ type TestPosition struct {
 	EndOffset   source.Offset
 }
 
-var ZeroPosition Position = &TestPosition{
-	BeginOffset: 0,
-	EndOffset:   0,
-}
-
 func (position *TestPosition) Begin() source.Offset {
 	return position.BeginOffset
 }

@@ -7,27 +7,27 @@ func TestMatches(test *testing.T) {
 		&MethodCall{
 			Method: &Identifier{
 				Value:        "foo",
-				NodePosition: ZeroPosition,
+				NodePosition: ZeroPosition{},
 			},
 			Arguments: []Node{
 				&Identifier{
 					Value:        "bar",
-					NodePosition: ZeroPosition,
+					NodePosition: ZeroPosition{},
 				},
 			},
-			NodePosition: ZeroPosition,
+			NodePosition: ZeroPosition{},
 		}: &MethodCall{
 			Method: &Identifier{
 				Value:        "foo",
-				NodePosition: ZeroPosition,
+				NodePosition: ZeroPosition{},
 			},
 			Arguments: []Node{
 				&Identifier{
 					Value:        "bar",
-					NodePosition: ZeroPosition,
+					NodePosition: ZeroPosition{},
 				},
 			},
-			NodePosition: ZeroPosition,
+			NodePosition: ZeroPosition{},
 		},
 	}
 
@@ -46,27 +46,27 @@ func TestNotMatches(test *testing.T) {
 		&MethodCall{
 			Method: &Identifier{
 				Value:        "foo",
-				NodePosition: ZeroPosition,
+				NodePosition: ZeroPosition{},
 			},
 			Arguments: []Node{
 				&Identifier{
 					Value:        "bar",
-					NodePosition: ZeroPosition,
+					NodePosition: ZeroPosition{},
 				},
 			},
-			NodePosition: ZeroPosition,
+			NodePosition: ZeroPosition{},
 		}: &MethodCall{
 			Method: &Identifier{
 				Value:        "bar",
-				NodePosition: ZeroPosition,
+				NodePosition: ZeroPosition{},
 			},
 			Arguments: []Node{
 				&Identifier{
 					Value:        "foo",
-					NodePosition: ZeroPosition,
+					NodePosition: ZeroPosition{},
 				},
 			},
-			NodePosition: ZeroPosition,
+			NodePosition: ZeroPosition{},
 		},
 	}
 

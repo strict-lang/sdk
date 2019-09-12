@@ -17,6 +17,7 @@ func CreateGenericCppVisitor(generation *Generation) *ast.Visitor {
 		VisitInvalidStatement:     generation.GenerateInvalidStatement,
 		VisitParameter:            generation.GenerateParameter,
 		VisitTestStatement:        generation.GenerateTestStatement,
+		VisitClassDeclaration:     generation.GenerateClassDeclaration,
 		VisitMethodDeclaration:    generation.GenerateMethod,
 		VisitIdentifier:           generation.GenerateIdentifier,
 		VisitMethodCall:           generation.GenerateMethodCall,

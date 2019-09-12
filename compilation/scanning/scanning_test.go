@@ -1,9 +1,6 @@
 package scanning
 
 import (
-	"fmt"
-	pretty "github.com/tonnerre/golang-pretty"
-	"gitlab.com/strict-lang/sdk/compilation/source"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 	"strings"
 	"testing"
@@ -34,14 +31,6 @@ func countEndOfStatements(tokens []token.Token) int {
 		}
 	}
 	return count
-}
-
-func TestScanner_SkipWhitespaces(test *testing.T) {
-	scanner := NewStringScanning("   \t  \r\n  \n")
-	scanner.SkipWhitespaces()
-	if scanner.lineIndex != 2 {
-		test.Errorf("scanning has line-index %d, expected 2", scanner.lineIndex)
-	}
 }
 
 func TestIndentation(test *testing.T) {
@@ -144,22 +133,6 @@ func assertEndOfStatement(test *testing.T, got token.Token) {
 func assertEndOfFile(test *testing.T, got token.Token) {
 	if !token.IsEndOfFileToken(got) {
 		test.Errorf("unexpected token %s, expected %s", got, token.EndOfFileTokenName)
-	}
-}
-
-func TestLinemapCreation(test *testing.T) {
-	entryLineLengths := []int{
-		10, 1, 20, 2, 30, 4, 0, 50,
-	}
-	entry := createTextWithLineLengths(entryLineLengths)
-	scanner := NewStringScanning(entry)
-	ScanAllTokens(scanner)
-	linemap := scanner.NewLineMap()
-	fmt.Println(linemap.LineCount())
-	pretty.Print(linemap)
-	for index := 0; index < linemap.LineCount(); index++ {
-		offset := sumToIndex(entryLineLengths, index)
-		pretty.Print(linemap.PositionAtOffset(source.Offset(offset)))
 	}
 }
 

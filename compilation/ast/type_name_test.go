@@ -12,7 +12,7 @@ var (
 func NewTestConcreteTypeName(name string) *ConcreteTypeName {
 	return &ConcreteTypeName{
 		Name:         name,
-		NodePosition: ZeroPosition,
+		NodePosition: ZeroPosition{},
 	}
 }
 

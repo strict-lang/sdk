@@ -60,7 +60,7 @@ func RunCompile(command *cobra.Command, arguments []string) {
 
 func writeGeneratedSources(compilation compilation.Result) (err error) {
 	for _, generated := range compilation.GeneratedFiles {
-		if err := writeGeneratedSourceFile(generated); err != nil {
+		if err = writeGeneratedSourceFile(generated); err != nil {
 			return err
 		}
 	}

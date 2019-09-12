@@ -55,7 +55,6 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 		if !compareMethods(*method, expected) {
 			test.Errorf("unexpected node value %s, expected %s", *method, expected)
 		}
-		ast.Print(method)
 	}
 }
 

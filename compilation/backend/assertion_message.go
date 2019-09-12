@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-type assertionMessageComputation struct {
+type AssertionMessageComputation struct {
 	buffer  strings.Builder
 	visitor *ast.Visitor
 }
 
-func newAssertionMessageComputation() *assertionMessageComputation {
-	computation := &assertionMessageComputation{}
+func NewAssertionMessageComputation() *AssertionMessageComputation {
+	computation := &AssertionMessageComputation{}
 	visitor := ast.NewEmptyVisitor()
 	visitor.VisitBinaryExpression = computation.visitBinaryExpression
 	visitor.VisitUnaryExpression = computation.visitUnaryExpression
@@ -24,48 +24,49 @@ func newAssertionMessageComputation() *assertionMessageComputation {
 }
 
 func ComputeAssertionMessage(assertedExpression ast.Node) string {
-	computation := newAssertionMessageComputation()
-	computation.generateNode(assertedExpression)
+	computation := NewAssertionMessageComputation()
+	computation.GenerateNode(assertedExpression)
 	return computation.String()
 }
 
-func (computation *assertionMessageComputation) String() string {
+func (computation *AssertionMessageComputation) String() string {
 	return computation.buffer.String()
 }
 
-func (computation *assertionMessageComputation) generateNode(node ast.Node) {
+func (computation *AssertionMessageComputation) GenerateNode(node ast.Node) {
 	node.Accept(computation.visitor)
 }
 
-func (computation *assertionMessageComputation) visitBinaryExpression(expression *ast.BinaryExpression) {
+func (computation *AssertionMessageComputation) visitBinaryExpression(expression *ast.
+	BinaryExpression) {
 	computation.buffer.WriteString("( ")
-	computation.generateNode(expression.LeftOperand)
+	computation.GenerateNode(expression.LeftOperand)
 	computation.buffer.WriteString(" ")
 	message := translateComparisonOperatorToErrorMessage(expression.Operator)
 	computation.buffer.WriteString(message)
 	computation.buffer.WriteString(" ")
-	computation.generateNode(expression.RightOperand)
+	computation.GenerateNode(expression.RightOperand)
 	computation.buffer.WriteString(") ")
 }
 
-func (computation *assertionMessageComputation) visitUnaryExpression(expression *ast.UnaryExpression) {
+func (computation *AssertionMessageComputation) visitUnaryExpression(expression *ast.UnaryExpression) {
 	computation.buffer.WriteString("( ")
-	computation.generateNode(expression.Operand)
+	computation.GenerateNode(expression.Operand)
 	computation.buffer.WriteString(" ")
 	message := translateUnaryOperatorToErrorMessage(expression.Operator)
 	computation.buffer.WriteString(message)
 	computation.buffer.WriteString(" ) ")
 }
 
-func (computation *assertionMessageComputation) visitIdentifier(identifier *ast.Identifier) {
+func (computation *AssertionMessageComputation) visitIdentifier(identifier *ast.Identifier) {
 	computation.buffer.WriteString(identifier.Value)
 }
 
-func (computation *assertionMessageComputation) visitStringLiteral(literal *ast.StringLiteral) {
+func (computation *AssertionMessageComputation) visitStringLiteral(literal *ast.StringLiteral) {
 	computation.buffer.WriteString(literal.Value)
 }
 
-func (computation *assertionMessageComputation) visitNumberLiteral(literal *ast.NumberLiteral) {
+func (computation *AssertionMessageComputation) visitNumberLiteral(literal *ast.NumberLiteral) {
 	computation.buffer.WriteString(literal.Value)
 }
 

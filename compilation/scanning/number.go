@@ -43,24 +43,22 @@ func (scanning *Scanning) gatherNumericDigits(builder *strings.Builder, base Rad
 }
 
 func (scanning *Scanning) gatherNumber() (string, error) {
+	scanning.reader.Pull()
 	var builder strings.Builder
-	switch scanning.reader.Pull() {
-	case '0':
+	if scanning.reader.Last() == '0' {
 		builder.WriteRune('0')
-		switch scanning.reader.Peek() {
+		scanning.Pull()
+		switch scanning.reader.Last() {
 		case 'x', 'X':
 			builder.WriteRune('x')
-			scanning.reader.Pull()
 			scanning.reader.Pull()
 			return scanning.gatherNumberWithRadix(&builder, Hexadecimal)
 		case 'b', 'B':
 			builder.WriteRune('b')
 			scanning.reader.Pull()
-			scanning.reader.Pull()
 			return scanning.gatherNumberWithRadix(&builder, Binary)
 		case '.':
 			builder.WriteRune('.')
-			scanning.reader.Pull()
 			scanning.reader.Pull()
 			err := scanning.gatherFloatingPointNumber(&builder)
 			return builder.String(), err
