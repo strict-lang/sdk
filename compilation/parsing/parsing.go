@@ -1,6 +1,7 @@
 package parsing
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/compilation/ast"
 	"gitlab.com/strict-lang/sdk/compilation/code"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
@@ -40,6 +41,7 @@ type Block struct {
 }
 
 func (parsing *Parsing) parseImportStatementList() (imports []*ast.ImportStatement, failed[]ast.Node) {
+	fmt.Println(parsing.token())
 	for token.HasKeywordValue(parsing.token(), token.ImportKeyword) {
 		result := parsing.parseImportStatement()
 		if importStatement, isImport := result.(*ast.ImportStatement); isImport {

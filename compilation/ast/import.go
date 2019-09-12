@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"fmt"
 	"os"
 	"strings"
 )
@@ -37,13 +38,14 @@ func (target *IdentifierChainImport) FilePath() string {
 		return ""
 	}
 	var path strings.Builder
+	path.WriteRune('"')
 	for index, element := range target.Chain {
 		if index != 0 {
 			path.WriteRune(os.PathSeparator)
 		}
 		path.WriteString(element)
 	}
-	path.WriteString(".h")
+	path.WriteString(".h\"")
 	return path.String()
 }
 
@@ -60,7 +62,7 @@ type FileImport struct {
 }
 
 func (target *FileImport) FilePath() string {
-	return target.Path
+	return fmt.Sprintf("<%s>", target.Path)
 }
 
 func (target *FileImport) toModuleName() string {
