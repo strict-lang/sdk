@@ -43,13 +43,14 @@ func newPrinting() *Printing {
 		VisitConcreteTypeName:     printing.printConcreteTypeName,
 		VisitBinaryExpression:     printing.printBinaryExpression,
 		VisitMethodDeclaration:    printing.printMethodDeclaration,
-		VisitSelectorExpression:   printing.printSelectorExpression,
+		VisitSelectorExpression:   printing.printSelectExpression,
 		VisitIncrementStatement:   printing.printIncrementStatement,
 		VisitDecrementStatement:   printing.printDecrementStatement,
 		VisitRangedLoopStatement:  printing.printRangedLoopStatement,
 		VisitExpressionStatement:  printing.printExpressionStatement,
 		VisitForEachLoopStatement: printing.printForEachLoopStatement,
 		VisitConditionalStatement: printing.printConditionalStatement,
+		VisitListSelectExpression: printing.printListSelectExpression,
 	}
 	printing.visitor = visitor
 	return printing
@@ -351,10 +352,17 @@ func (printing *Printing) printDecrementStatement(statement *DecrementStatement)
 	printing.printNodeEnd()
 }
 
-func (printing *Printing) printSelectorExpression(expression *SelectorExpression) {
-	printing.printNodeBegin("Selector")
+func (printing *Printing) printSelectExpression(expression *SelectExpression) {
+	printing.printNodeBegin("Select")
 	printing.printIndentedNodeField("target", expression.Target)
 	printing.printIndentedNodeField("selection", expression.Selection)
+	printing.printNodeEnd()
+}
+
+func (printing *Printing) printListSelectExpression(expression *ListSelectExpression) {
+	printing.printNodeBegin("ListSelect")
+	printing.printIndentedNodeField("target", expression.Target)
+	printing.printIndentedNodeField("index", expression.Index)
 	printing.printNodeEnd()
 }
 

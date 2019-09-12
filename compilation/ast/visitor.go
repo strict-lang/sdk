@@ -32,13 +32,14 @@ type Visitor struct {
 	VisitClassDeclaration     func(*ClassDeclaration)
 	VisitBinaryExpression     func(*BinaryExpression)
 	VisitMethodDeclaration    func(*MethodDeclaration)
-	VisitSelectorExpression   func(*SelectorExpression)
+	VisitSelectorExpression   func(*SelectExpression)
 	VisitIncrementStatement   func(*IncrementStatement)
 	VisitDecrementStatement   func(*DecrementStatement)
 	VisitRangedLoopStatement  func(*RangedLoopStatement)
 	VisitExpressionStatement  func(*ExpressionStatement)
 	VisitForEachLoopStatement func(*ForEachLoopStatement)
 	VisitConditionalStatement func(*ConditionalStatement)
+	VisitListSelectExpression func(*ListSelectExpression)
 }
 
 func NewEmptyVisitor() *Visitor {
@@ -64,7 +65,7 @@ func NewEmptyVisitor() *Visitor {
 		VisitInvalidStatement:     func(*InvalidStatement) {},
 		VisitFieldDeclaration:     func(*FieldDeclaration) {},
 		VisitClassDeclaration:     func(*ClassDeclaration) {},
-		VisitSelectorExpression:   func(*SelectorExpression) {},
+		VisitSelectorExpression:   func(*SelectExpression) {},
 		VisitIncrementStatement:   func(*IncrementStatement) {},
 		VisitDecrementStatement:   func(*DecrementStatement) {},
 		VisitMethodDeclaration:    func(*MethodDeclaration) {},
@@ -74,5 +75,6 @@ func NewEmptyVisitor() *Visitor {
 		VisitExpressionStatement:  func(*ExpressionStatement) {},
 		VisitForEachLoopStatement: func(*ForEachLoopStatement) {},
 		VisitConditionalStatement: func(*ConditionalStatement) {},
+		VisitListSelectExpression: func(*ListSelectExpression) {},
 	}
 }

@@ -32,10 +32,11 @@ func CreateGenericCppVisitor(generation *Generation) *ast.Visitor {
 		VisitUnaryExpression:      generation.GenerateUnaryExpression,
 		VisitImportStatement:      generation.GenerateImportStatement,
 		VisitBinaryExpression:     generation.GenerateBinaryExpression,
-		VisitSelectorExpression:   generation.GenerateSelectorExpression,
+		VisitSelectorExpression:   generation.GenerateSelectExpression,
 		VisitExpressionStatement:  generation.GenerateExpressionStatement,
 		VisitRangedLoopStatement:  generation.GenerateRangedLoopStatement,
 		VisitConditionalStatement: generation.GenerateConditionalStatement,
 		VisitForEachLoopStatement: generation.GenerateForEachLoopStatement,
+		VisitListSelectExpression: generation.GenerateListSelectExpression,
 	}
 }

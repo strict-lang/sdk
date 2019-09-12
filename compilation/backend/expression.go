@@ -28,19 +28,26 @@ func (generation *Generation) GenerateUnaryExpression(unary *ast.UnaryExpression
 	generation.Emit(")")
 }
 
-func (generation *Generation) GenerateSelectorExpression(selector *ast.SelectorExpression) {
-	if id, ok := selector.Target.(*ast.Identifier); ok {
+func (generation *Generation) GenerateSelectExpression(expression *ast.SelectExpression) {
+	if id, ok := expression.Target.(*ast.Identifier); ok {
 		if _, moduleExists := generation.importModules[id.Value]; moduleExists {
-			generation.generateNamespaceSelector(selector)
+			generation.generateNamespaceSelector(expression)
 			return
 		}
 	}
-	generation.EmitNode(selector.Target)
+	generation.EmitNode(expression.Target)
 	generation.Emit(".")
-	generation.EmitNode(selector.Selection)
+	generation.EmitNode(expression.Selection)
 }
 
-func (generation *Generation) generateNamespaceSelector(selector *ast.SelectorExpression) {
+func (generation *Generation) GenerateListSelectExpression(expression *ast.ListSelectExpression) {
+	generation.EmitNode(expression.Target)
+	generation.Emit("[")
+	generation.EmitNode(expression.Index)
+	generation.Emit("]")
+}
+
+func (generation *Generation) generateNamespaceSelector(selector *ast.SelectExpression) {
 	generation.EmitNode(selector.Target)
 	generation.Emit("::")
 	generation.EmitNode(selector.Selection)

@@ -95,17 +95,36 @@ func (parsing *Parsing) parseOperation() (ast.Node, error) {
 // been parsed. It is called by the ParseOperand method.
 func (parsing *Parsing) parseOperationOnOperand(operand ast.Node) (done bool, node ast.Node, err error) {
 	switch next := parsing.token(); {
-	case token.OperatorValue(next) == token.LeftParenOperator:
-		call, err := parsing.parseMethodCallOnNode(operand)
-		return false, call, err
-	case token.OperatorValue(next) == token.DotOperator:
-		selector, err := parsing.parseSelection(operand)
-		return false, selector, err
+	case token.HasOperatorValue(next, token.LeftParenOperator):
+		node, err = parsing.parseMethodCallOnNode(operand)
+		return false, node, err
+	case token.HasOperatorValue(next, token.DotOperator):
+		node, err = parsing.parseSelectExpression(operand)
+		return false, node, err
+	case token.HasOperatorValue(next, token.LeftBracketOperator):
+		node, err = parsing.parseListSelectExpression(operand)
+		return false, node, err
 	}
 	return true, operand, nil
 }
 
-func (parsing *Parsing) parseSelection(operand ast.Node) (ast.Node, error) {
+func (parsing *Parsing) parseListSelectExpression(target ast.Node) (ast.Node, error) {
+	beginOffset := parsing.offset()
+	if err := parsing.skipOperator(token.LeftBracketOperator); err != nil {
+		return nil, err
+	}
+	index, err := parsing.parseOperand()
+	if err != nil {
+		return nil, err
+	}
+	return &ast.ListSelectExpression{
+		Index:        target,
+		Target:       index,
+		NodePosition: parsing.createPosition(beginOffset),
+	}, nil
+}
+
+func (parsing *Parsing) parseSelectExpression(target ast.Node) (ast.Node, error) {
 	beginOffset := parsing.offset()
 	if err := parsing.skipOperator(token.DotOperator); err != nil {
 		return nil, err
@@ -114,8 +133,8 @@ func (parsing *Parsing) parseSelection(operand ast.Node) (ast.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ast.SelectorExpression{
-		Target:       operand,
+	return &ast.SelectExpression{
+		Target:       target,
 		Selection:    field,
 		NodePosition: parsing.createPosition(beginOffset),
 	}, nil

@@ -90,24 +90,24 @@ func (binary *BinaryExpression) Position() Position {
 	return binary.NodePosition
 }
 
-type SelectorExpression struct {
+type SelectExpression struct {
 	Target       Node
 	Selection    Node
 	NodePosition Position
 }
 
-func (selector *SelectorExpression) Accept(visitor *Visitor) {
-	visitor.VisitSelectorExpression(selector)
+func (expression *SelectExpression) Accept(visitor *Visitor) {
+	visitor.VisitSelectorExpression(expression)
 }
 
-func (selector *SelectorExpression) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitSelectorExpression(selector)
-	selector.Target.AcceptRecursive(visitor)
-	selector.Selection.AcceptRecursive(visitor)
+func (expression *SelectExpression) AcceptRecursive(visitor *Visitor) {
+	visitor.VisitSelectorExpression(expression)
+	expression.Target.AcceptRecursive(visitor)
+	expression.Selection.AcceptRecursive(visitor)
 }
 
-func (selector *SelectorExpression) Position() Position {
-	return selector.NodePosition
+func (expression *SelectExpression) Position() Position {
+	return expression.NodePosition
 }
 
 type CreateExpression struct {
@@ -127,4 +127,24 @@ func (create *CreateExpression) AcceptRecursive(visitor *Visitor) {
 
 func (create *CreateExpression) Position() Position {
 	return create.NodePosition
+}
+
+type ListSelectExpression struct {
+	Index Node
+	Target Node
+	NodePosition Position
+}
+
+func (expression *ListSelectExpression) Accept(visitor *Visitor) {
+	visitor.VisitListSelectExpression(expression)
+}
+
+func (expression *ListSelectExpression) AcceptRecursive(visitor *Visitor) {
+	visitor.VisitListSelectExpression(expression)
+	expression.Index.AcceptRecursive(visitor)
+	expression.Target.AcceptRecursive(visitor)
+}
+
+func (expression *ListSelectExpression) Position() Position {
+	return expression.NodePosition
 }

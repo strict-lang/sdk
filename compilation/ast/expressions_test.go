@@ -2,7 +2,7 @@ package ast
 
 var (
 	_ Node = &Identifier{}
-	_ Node = &SelectorExpression{}
+	_ Node = &SelectExpression{}
 	_ Node = &BinaryExpression{}
 	_ Node = &UnaryExpression{}
 	_ Node = &MethodCall{}

@@ -19,7 +19,7 @@ func visitMethodName(node ast.Node, visitor identifierVisitor) bool {
 		visitor(identifier)
 		return true
 	}
-	if selection, isSelection := node.(*ast.SelectorExpression); isSelection {
+	if selection, isSelection := node.(*ast.SelectExpression); isSelection {
 		last, ok := findLastSelection(selection)
 		if !ok {
 			return false
@@ -29,8 +29,8 @@ func visitMethodName(node ast.Node, visitor identifierVisitor) bool {
 	return false
 }
 
-func findLastSelection(expression *ast.SelectorExpression) (node ast.Node, ok bool) {
-	if next, ok := expression.Selection.(*ast.SelectorExpression); ok {
+func findLastSelection(expression *ast.SelectExpression) (node ast.Node, ok bool) {
+	if next, ok := expression.Selection.(*ast.SelectExpression); ok {
 		return findLastSelection(next)
 	}
 	return expression.Selection, true

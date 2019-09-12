@@ -105,7 +105,7 @@ func (inference *TypeInference) methodCallInstance() *Type {
 	}
 }
 
-func (inference *TypeInference) visitSelectorExpression(selector *ast.SelectorExpression) {
+func (inference *TypeInference) visitSelectorExpression(selector *ast.SelectExpression) {
 	if _, ok := selector.Selection.(*ast.Identifier); ok {
 
 	}
