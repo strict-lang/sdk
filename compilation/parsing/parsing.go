@@ -27,7 +27,7 @@ type Parsing struct {
 	// name of the method which is currently parsed. It is required by the optional
 	// test statement within a method. The name is set to an empty string after a
 	// method has been parsed.
-	currentMethodName string
+	currentMethodName    string
 	isAtBeginOfStatement bool
 }
 
@@ -39,7 +39,7 @@ type Block struct {
 	Parent *Block
 }
 
-func (parsing *Parsing) parseImportStatementList() (imports []*syntaxtree.ImportStatement, failed[]syntaxtree.Node) {
+func (parsing *Parsing) parseImportStatementList() (imports []*syntaxtree.ImportStatement, failed []syntaxtree.Node) {
 	for token.HasKeywordValue(parsing.token(), token.ImportKeyword) {
 		result := parsing.parseImportStatement()
 		if importStatement, isImport := result.(*syntaxtree.ImportStatement); isImport {

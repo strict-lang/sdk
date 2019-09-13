@@ -256,7 +256,7 @@ func (parsing *Parsing) parseCallArgument() (*syntaxtree.CallArgument, error) {
 	beginOffset := parsing.offset()
 	var argument syntaxtree.CallArgument
 	if token.IsIdentifierToken(parsing.token()) &&
-		 token.HasOperatorValue(parsing.peek(), token.AssignOperator) {
+		token.HasOperatorValue(parsing.peek(), token.AssignOperator) {
 		fmt.Println("Label: ", parsing.token().Value())
 		argument.Label = parsing.token().Value()
 		parsing.advance()

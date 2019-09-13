@@ -6,9 +6,9 @@ import (
 )
 
 type ImportStatement struct {
-	Target 				ImportTarget
+	Target       ImportTarget
 	Alias        *Identifier
-	NodePosition 	Position
+	NodePosition Position
 }
 
 func (statement *ImportStatement) HasAlias() bool {
@@ -87,4 +87,3 @@ func (statement *ImportStatement) AcceptRecursive(visitor *Visitor) {
 func (statement *ImportStatement) Position() Position {
 	return statement.NodePosition
 }
-

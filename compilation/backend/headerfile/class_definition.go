@@ -1,8 +1,8 @@
 package headerfile
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/backend"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 )
 
 type classDefinition struct {

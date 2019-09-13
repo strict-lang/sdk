@@ -89,15 +89,15 @@ func (generation *Generation) generateLabeledConstructorCallLambdaBody(
 	typeName syntaxtree.TypeName, labeled []*syntaxtree.CallArgument, others []*syntaxtree.CallArgument) {
 	generation.EmitIndent()
 	generation.EmitNode(&syntaxtree.AssignStatement{
-		Target:       &syntaxtree.FieldDeclaration{
-			Name:         &syntaxtree.Identifier{
+		Target: &syntaxtree.FieldDeclaration{
+			Name: &syntaxtree.Identifier{
 				Value:        constructedFieldName,
 				NodePosition: syntaxtree.ZeroPosition{},
 			},
 			TypeName:     typeName,
 			NodePosition: syntaxtree.ZeroPosition{},
 		},
-		Value:        &syntaxtree.CallExpression{
+		Value: &syntaxtree.CallExpression{
 			Method:       typeName,
 			Arguments:    others,
 			NodePosition: syntaxtree.ZeroPosition{},
@@ -113,12 +113,12 @@ func (generation *Generation) generateLabeledConstructorCallLambdaBody(
 
 func (generation *Generation) emitFieldInitializationForLabeledArgument(argument *syntaxtree.CallArgument) {
 	generation.EmitNode(&syntaxtree.AssignStatement{
-		Target:       &syntaxtree.SelectExpression{
-			Target:       &syntaxtree.Identifier{
+		Target: &syntaxtree.SelectExpression{
+			Target: &syntaxtree.Identifier{
 				Value:        constructedFieldName,
 				NodePosition: syntaxtree.ZeroPosition{},
 			},
-			Selection:    &syntaxtree.Identifier{
+			Selection: &syntaxtree.Identifier{
 				Value:        argument.Label,
 				NodePosition: syntaxtree.ZeroPosition{},
 			},
@@ -143,7 +143,7 @@ func filterLabeledArguments(arguments []*syntaxtree.CallArgument) (labeled []*sy
 
 func (generation *Generation) emitArgumentList(arguments []*syntaxtree.CallArgument) {
 	generation.Emit("(")
-	for index, argument := range arguments{
+	for index, argument := range arguments {
 		if index != 0 {
 			generation.Emit(", ")
 		}
@@ -151,7 +151,6 @@ func (generation *Generation) emitArgumentList(arguments []*syntaxtree.CallArgum
 	}
 	generation.Emit(")")
 }
-
 
 func lookupMethodName(name string) string {
 	actualName, _ := builtinMethod(name)

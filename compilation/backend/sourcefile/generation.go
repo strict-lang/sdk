@@ -2,8 +2,8 @@ package sourcefile
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/backend"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 )
 
 type Generation struct {
@@ -51,8 +51,8 @@ func createInitBody(members []syntaxtree.Node) (body []syntaxtree.Node) {
 
 func createInitStatement(field *syntaxtree.FieldDeclaration) syntaxtree.Node {
 	return &syntaxtree.AssignStatement{
-		Target:       field.Name,
-		Value:        &syntaxtree.CallExpression{
+		Target: field.Name,
+		Value: &syntaxtree.CallExpression{
 			Method:       field.TypeName,
 			Arguments:    []*syntaxtree.CallArgument{},
 			NodePosition: syntaxtree.ZeroPosition{},

@@ -95,8 +95,8 @@ type ClassParameter struct {
 }
 
 type ConstructorDeclaration struct {
-	Parameters ParameterList
-	Body Node
+	Parameters   ParameterList
+	Body         Node
 	NodePosition Position
 }
 

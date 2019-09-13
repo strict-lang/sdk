@@ -78,9 +78,9 @@ func TestCodeGeneration(test *testing.T) {
 	}
 
 	unit := &syntaxtree.TranslationUnit{
-		Name:         "test",
-		Imports:      []*syntaxtree.ImportStatement{},
-		Class:        &syntaxtree.ClassDeclaration{
+		Name:    "test",
+		Imports: []*syntaxtree.ImportStatement{},
+		Class: &syntaxtree.ClassDeclaration{
 			Name:         "test",
 			Parameters:   []syntaxtree.ClassParameter{},
 			SuperTypes:   []syntaxtree.TypeName{},

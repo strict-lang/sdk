@@ -32,8 +32,8 @@ func (call *CallExpression) Position() Position {
 }
 
 type CallArgument struct {
-	Label string
-	Value Node
+	Label        string
+	Value        Node
 	NodePosition Position
 }
 
@@ -153,8 +153,8 @@ func (create *CreateExpression) Position() Position {
 }
 
 type ListSelectExpression struct {
-	Index Node
-	Target Node
+	Index        Node
+	Target       Node
 	NodePosition Position
 }
 

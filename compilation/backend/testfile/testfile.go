@@ -2,8 +2,8 @@ package testfile
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/backend"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 )
 
 type Extension struct{}

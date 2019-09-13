@@ -1,8 +1,8 @@
 package parsing
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/scanning"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"testing"
 )
 

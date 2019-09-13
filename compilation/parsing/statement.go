@@ -3,8 +3,8 @@ package parsing
 import (
 	"errors"
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/source"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
@@ -240,7 +240,7 @@ func (parsing *Parsing) parseFileImport(beginOffset source.Offset) syntaxtree.No
 	if !token.HasKeywordValue(parsing.token(), token.AsKeyword) {
 		parsing.skipEndOfStatement()
 		return &syntaxtree.ImportStatement{
-			Target: target,
+			Target:       target,
 			NodePosition: parsing.createPosition(beginOffset),
 		}
 	}
@@ -348,7 +348,7 @@ func (parsing *Parsing) parseConstructorDeclaration() syntaxtree.Node {
 	}
 	return &syntaxtree.ConstructorDeclaration{
 		Parameters:   parameters,
-		Body: body,
+		Body:         body,
 		NodePosition: parsing.createPosition(beginOffset),
 	}
 }
@@ -369,7 +369,7 @@ func (parsing *Parsing) parseKeywordStatement(keyword token.Keyword) syntaxtree.
 func (parsing *Parsing) parseAssignStatement(
 	operator token.Operator, leftHandSide syntaxtree.Node) (syntaxtree.Node, error) {
 
-		beginOffset := parsing.offset()
+	beginOffset := parsing.offset()
 	rightHandSide, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err), err
@@ -442,12 +442,24 @@ func (parsing *Parsing) parseInstructionStatement() (syntaxtree.Node, error) {
 	}, nil
 }
 
-func isKeywordStatementToken(entry token.Token) bool {
-	return token.IsKeywordToken(entry) && token.KeywordValue(entry) != token.CreateKeyword
+func (parsing *Parsing) isKeywordStatementToken(entry token.Token) bool {
+	if !token.IsKeywordToken(entry) {
+		return false
+	}
+	if token.HasKeywordValue(entry, token.CreateKeyword) {
+		return parsing.shouldParseConstructorDeclaration()
+	}
+	return true
 }
 
-func isKeywordExpressionToken(entry token.Token) bool {
-	return token.IsKeywordToken(entry) && token.KeywordValue(entry) == token.CreateKeyword
+func (parsing *Parsing) isKeywordExpressionToken(entry token.Token) bool {
+	if !token.IsKeywordToken(entry) {
+		return false
+	}
+	if token.HasKeywordValue(entry, token.CreateKeyword) {
+		return !parsing.shouldParseConstructorDeclaration()
+	}
+	return true
 }
 
 func (parsing *Parsing) shouldParseFieldDeclaration() bool {
@@ -507,9 +519,9 @@ func (parsing *Parsing) parseFieldDeclaration() (syntaxtree.Node, error) {
 func (parsing *Parsing) parseStatement() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	switch current := parsing.token(); {
-	case isKeywordStatementToken(current):
+	case parsing.isKeywordStatementToken(current):
 		return parsing.parseKeywordStatement(token.KeywordValue(current))
-	case isKeywordExpressionToken(current):
+	case parsing.isKeywordExpressionToken(current):
 		fallthrough
 	case token.IsIdentifierToken(current):
 		if parsing.shouldParseFieldDeclaration() {

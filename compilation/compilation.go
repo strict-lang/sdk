@@ -1,13 +1,13 @@
 package compilation
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/backend"
 	"gitlab.com/strict-lang/sdk/compilation/backend/headerfile"
 	"gitlab.com/strict-lang/sdk/compilation/backend/sourcefile"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
 	"gitlab.com/strict-lang/sdk/compilation/parsing"
 	"gitlab.com/strict-lang/sdk/compilation/scanning"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 )
 
 type Compilation struct {
@@ -17,15 +17,15 @@ type Compilation struct {
 }
 
 type Result struct {
-	UnitName          string
-	GeneratedFiles    []Generated
-	Diagnostics       *diagnostic.Diagnostics
-	Error             error
+	UnitName       string
+	GeneratedFiles []Generated
+	Diagnostics    *diagnostic.Diagnostics
+	Error          error
 }
 
 type Generated struct {
 	FileName string
-	Bytes []byte
+	Bytes    []byte
 }
 
 // ParseResult contains the result of a Parsing.
@@ -39,17 +39,17 @@ func (compilation *Compilation) Compile() Result {
 	parseResult := compilation.parse()
 	if parseResult.Error != nil {
 		return Result{
-			GeneratedFiles:   []Generated{},
-			Diagnostics: parseResult.Diagnostics,
-			Error:       parseResult.Error,
-			UnitName:    compilation.Name,
+			GeneratedFiles: []Generated{},
+			Diagnostics:    parseResult.Diagnostics,
+			Error:          parseResult.Error,
+			UnitName:       compilation.Name,
 		}
 	}
 	return Result{
-		GeneratedFiles:    compilation.generateCppFile(parseResult.Unit),
-		Diagnostics:       parseResult.Diagnostics,
-		Error:             nil,
-		UnitName:          parseResult.Unit.Name,
+		GeneratedFiles: compilation.generateCppFile(parseResult.Unit),
+		Diagnostics:    parseResult.Diagnostics,
+		Error:          nil,
+		UnitName:       parseResult.Unit.Name,
 	}
 }
 
@@ -74,15 +74,15 @@ func (compilation *Compilation) parse() ParseResult {
 
 func (compilation *Compilation) generateCppFile(unit *syntaxtree.TranslationUnit) []Generated {
 	generated := make(chan Generated)
-	go func () {
+	go func() {
 		generated <- compilation.generateHeaderFile(unit)
 	}()
-	go func () {
+	go func() {
 		generated <- compilation.generateSourceFile(unit)
 	}()
 	return []Generated{
-		<- generated,
-		<- generated,
+		<-generated,
+		<-generated,
 	}
 }
 
