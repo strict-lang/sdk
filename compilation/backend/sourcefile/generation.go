@@ -53,7 +53,7 @@ func createInitStatement(field *syntaxtree.FieldDeclaration) syntaxtree.Node {
 		Target:       field.Name,
 		Value:        &syntaxtree.CallExpression{
 			Method:       field.TypeName,
-			Arguments:    []syntaxtree.Node{},
+			Arguments:    []*syntaxtree.CallArgument{},
 			NodePosition: syntaxtree.ZeroPosition{},
 		},
 		Operator:     0,

@@ -20,7 +20,8 @@ func newPrinting() *Printing {
 	printing := &Printing{}
 	visitor := &Visitor{
 		VisitParameter:      printing.printParameter,
-		VisitCallExpression: printing.printMethodCall,
+		VisitCallExpression: printing.printCallExpression,
+		VisitCallArgument:   printing.printCallArgument,
 		VisitIdentifier:     printing.printIdentifier,
 		VisitListTypeName:   printing.printListTypeName,
 		VisitTestStatement:  printing.printTestStatement,
@@ -366,7 +367,7 @@ func (printing *Printing) printListSelectExpression(expression *ListSelectExpres
 	printing.printNodeEnd()
 }
 
-func (printing *Printing) printMethodCall(call *CallExpression) {
+func (printing *Printing) printCallExpression(call *CallExpression) {
 	printing.printNodeBegin("CallExpression")
 	printing.printIndentedNodeField("method", call.Method)
 	printing.printIndentedListFieldBegin("arguments")
@@ -374,6 +375,15 @@ func (printing *Printing) printMethodCall(call *CallExpression) {
 		printing.printListField(argument)
 	}
 	printing.printListFieldEnd()
+	printing.printNodeEnd()
+}
+
+func (printing *Printing) printCallArgument(argument *CallArgument) {
+	printing.printNodeBegin("CallArgument")
+	if argument.IsLabeled() {
+		printing.printIndentedStringField("label", argument.Label)
+	}
+	printing.printIndentedNodeField("value", argument.Value)
 	printing.printNodeEnd()
 }
 

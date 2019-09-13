@@ -1,11 +1,10 @@
 package parsing
 
 import (
-	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/code"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
 	"gitlab.com/strict-lang/sdk/compilation/source"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
@@ -41,7 +40,6 @@ type Block struct {
 }
 
 func (parsing *Parsing) parseImportStatementList() (imports []*syntaxtree.ImportStatement, failed[]syntaxtree.Node) {
-	fmt.Println(parsing.token())
 	for token.HasKeywordValue(parsing.token(), token.ImportKeyword) {
 		result := parsing.parseImportStatement()
 		if importStatement, isImport := result.(*syntaxtree.ImportStatement); isImport {

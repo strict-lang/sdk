@@ -321,8 +321,11 @@ func (parsing *Parsing) findKeywordStatementParser(keyword token.Keyword) (func(
 	return nil, false
 }
 
+// shouldParseConstructorDeclarations tells the parser whether it should
+// attempt to parse a ConstructorDeclaration by determining if it is looking
+// at a constructor call or declaration.
 func (parsing *Parsing) shouldParseConstructorDeclaration() bool {
-	return parsing.isAtBeginOfStatement
+	return parsing.isAtBeginOfStatement && !token.IsIdentifierToken(parsing.peek())
 }
 
 func (parsing *Parsing) maybeParseConstructorDeclaration() (func() syntaxtree.Node, bool) {
