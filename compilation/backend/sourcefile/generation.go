@@ -21,19 +21,28 @@ func NewGeneration() *Generation {
 func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *syntaxtree.Visitor) {
 	generation.generation = parent
 	visitor.VisitClassDeclaration = generation.generateClassDeclaration
+	visitor.VisitMethodDeclaration = generation.generateMethodDeclaration
 	visitor.VisitConstructorDeclaration = generation.generateConstructorDeclaration
+	generation.importMatchingHeader()
+}
+
+func (generation *Generation) importMatchingHeader() {
+	className := generation.generation.Unit.Class.Name
+	generation.generation.EmitFormatted("#include \"%s.h\"", className)
+	generation.generation.EmitEndOfLine()
+	generation.generation.EmitEndOfLine()
 }
 
 func (generation *Generation) generateClassDeclaration(declaration *syntaxtree.ClassDeclaration) {
 	generation.className = declaration.Name
-	methods, initBody := splitMethods(declaration.Children)
+	members, initBody := filterDeclarations(declaration.Children)
 	if len(initBody) > 0 {
 		generation.writeInitMethod(initBody)
 		generation.generation.EmitEndOfLine()
 		generation.hasWrittenInit = true
 	}
-	for _, method := range methods {
-		generation.writeMethodDeclaration(method)
+	for _, member := range members {
+		generation.generation.EmitNode(member)
 		generation.generation.EmitEndOfLine()
 	}
 }
@@ -62,18 +71,22 @@ func createInitStatement(field *syntaxtree.FieldDeclaration) syntaxtree.Node {
 	}
 }
 
-func splitMethods(nodes []syntaxtree.Node) (methods []*syntaxtree.MethodDeclaration, remainder []syntaxtree.Node) {
+func filterDeclarations(nodes []syntaxtree.Node) (declarations []syntaxtree.Node, remainder []syntaxtree.Node) {
 	for _, node := range nodes {
-		if method, isMethod := node.(*syntaxtree.MethodDeclaration); isMethod {
-			methods = append(methods, method)
-		} else {
+		switch node.(type) {
+		case *syntaxtree.MethodDeclaration, *syntaxtree.ConstructorDeclaration:
+			declarations = append(declarations, node)
+			continue
+		case *syntaxtree.FieldDeclaration: // Field declarations are not written
+			continue
+		default:
 			remainder = append(remainder, node)
 		}
 	}
 	return
 }
 
-func (generation *Generation) writeMethodDeclaration(declaration *syntaxtree.MethodDeclaration) {
+func (generation *Generation) generateMethodDeclaration(declaration *syntaxtree.MethodDeclaration) {
 	name := fmt.Sprintf("%s::%s", generation.className, declaration.Name.Value)
 	instanceMethod := &syntaxtree.MethodDeclaration{
 		Name: &syntaxtree.Identifier{
@@ -91,18 +104,14 @@ func (generation *Generation) writeMethodDeclaration(declaration *syntaxtree.Met
 func (generation *Generation) generateConstructorDeclaration(declaration *syntaxtree.ConstructorDeclaration) {
 	output := generation.generation
 	className := generation.generation.Unit.Class.Name
-	output.Emit(className)
+	output.EmitFormatted("%s::%s", className, className)
 	output.EmitParameterList(declaration.Parameters)
-	output.Emit(" {")
-	output.EmitEndOfLine()
-	output.IncreaseIndent()
+	output.Emit(" ")
 	output.EmitNode(declaration.Body)
-	output.DecreaseIndent()
-	output.Emit("}")
 }
 
 func (generation *Generation) writeInitMethod(body []syntaxtree.Node) {
-	generation.writeMethodDeclaration(&syntaxtree.MethodDeclaration{
+	generation.generateMethodDeclaration(&syntaxtree.MethodDeclaration{
 		Name: &syntaxtree.Identifier{
 			Value:        backend.InitMethodName,
 			NodePosition: syntaxtree.ZeroPosition{},

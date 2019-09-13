@@ -28,6 +28,14 @@ func (generation *Generation) GenerateUnaryExpression(unary *syntaxtree.UnaryExp
 	generation.Emit(")")
 }
 
+func isPointerTarget(node syntaxtree.Node) bool {
+	// TODO(merlinosayimwen): Replace this by attribute lookup
+	if identifier, isIdentifier := node.(*syntaxtree.Identifier); isIdentifier {
+		return identifier.Value == "this"
+	}
+	return false
+}
+
 func (generation *Generation) GenerateSelectExpression(expression *syntaxtree.SelectExpression) {
 	if id, ok := expression.Target.(*syntaxtree.Identifier); ok {
 		if _, moduleExists := generation.importModules[id.Value]; moduleExists {
@@ -36,7 +44,11 @@ func (generation *Generation) GenerateSelectExpression(expression *syntaxtree.Se
 		}
 	}
 	generation.EmitNode(expression.Target)
-	generation.Emit(".")
+	if isPointerTarget(expression.Target) {
+		generation.Emit("->")
+	} else {
+		generation.Emit(".")
+	}
 	generation.EmitNode(expression.Selection)
 }
 

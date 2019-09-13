@@ -18,17 +18,16 @@ func NewGeneration() *Generation {
 func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *syntaxtree.Visitor) {
 	generation.generation = parent
 	visitor.VisitClassDeclaration = generation.generateClassDeclaration
-	visitor.VisitConstructorDeclaration = generation.generateConstructorDeclaration
+	generation.emitPragmas()
+}
+
+func (generation *Generation) emitPragmas() {
+	generation.generation.Emit("#pragma once")
+	generation.generation.EmitEndOfLine()
+	generation.generation.EmitEndOfLine()
 }
 
 func (generation *Generation) generateClassDeclaration(declaration *syntaxtree.ClassDeclaration) {
 	definition := newClassDefinition(generation.generation, declaration)
 	definition.generateCode()
-}
-
-func (generation *Generation) generateConstructorDeclaration(declaration *syntaxtree.ConstructorDeclaration) {
-	output := generation.generation
-	className := generation.generation.Unit.Class.Name
-	output.Emit(className)
-	output.EmitParameterList(declaration.Parameters)
 }

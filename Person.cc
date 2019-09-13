@@ -1,3 +1,5 @@
+#include "Person.h"
+
 #include <string>
 namespace  {
   #include "Date.h"
@@ -8,11 +10,8 @@ namespace  {
 }
 
 
-void Person::Generated$Init() {
- Name NameDate BirthDatestd::vector<Person> FriendsPerson(Name name, Date birthDate) {
-{
-   this.Name = name;
-   this.BirthDate = birthDate;
-  }}}
-
+Person::Person(Name name, Date birthDate) {
+ this->Name = name;
+ this->BirthDate = birthDate;
+}
 

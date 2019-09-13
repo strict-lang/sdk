@@ -16,7 +16,7 @@ func (generation *Generation) GenerateTranslationUnit(unit *syntaxtree.Translati
 }
 
 func (generation *Generation) generateImplicitImports() {
-	generation.Emit("#include <string>\n")
+	generation.Emit("#include <string>\n#include <vector>\n")
 }
 
 func (generation *Generation) GenerateMainMethod(nodes []syntaxtree.Node) {
