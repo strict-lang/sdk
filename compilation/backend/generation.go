@@ -8,7 +8,7 @@ import (
 
 // Generation generates C code from an syntaxtree.
 type Generation struct {
-	unit                        *syntaxtree.TranslationUnit
+	Unit                        *syntaxtree.TranslationUnit
 	output                      *strings.Builder
 	buffer                      *strings.Builder
 	method                      *MethodDefinition
@@ -29,10 +29,10 @@ func NewGenerationWithExtension(unit *syntaxtree.TranslationUnit, extension Exte
 }
 
 // NewGeneration constructs a Generation that generates C code from
-// the nodes in the passed translation-unit.
+// the nodes in the passed translation-Unit.
 func NewGeneration(unit *syntaxtree.TranslationUnit) (generation *Generation) {
 	generation = &Generation{
-		unit:                        unit,
+		Unit:                        unit,
 		output:                      &strings.Builder{},
 		importModules:               map[string]string{},
 		appendNewLineAfterStatement: true,
@@ -43,7 +43,7 @@ func NewGeneration(unit *syntaxtree.TranslationUnit) (generation *Generation) {
 }
 
 func (generation *Generation) Filename() string {
-	return fmt.Sprintf("%s.cc", generation.unit.ToTypeName().NonGenericName())
+	return fmt.Sprintf("%s.cc", generation.Unit.ToTypeName().NonGenericName())
 }
 
 func (generation *Generation) String() string {
@@ -87,6 +87,6 @@ func (generation *Generation) EmitNode(node syntaxtree.Node) {
 }
 
 func (generation *Generation) Generate() string {
-	generation.EmitNode(generation.unit)
+	generation.EmitNode(generation.Unit)
 	return generation.String()
 }

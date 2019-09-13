@@ -21,6 +21,7 @@ func NewGeneration() *Generation {
 func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *syntaxtree.Visitor) {
 	generation.generation = parent
 	visitor.VisitClassDeclaration = generation.generateClassDeclaration
+	visitor.VisitConstructorDeclaration = generation.generateConstructorDeclaration
 }
 
 func (generation *Generation) generateClassDeclaration(declaration *syntaxtree.ClassDeclaration) {
@@ -85,6 +86,19 @@ func (generation *Generation) writeMethodDeclaration(declaration *syntaxtree.Met
 		NodePosition: declaration.NodePosition,
 	}
 	generation.generation.GenerateMethod(instanceMethod)
+}
+
+func (generation *Generation) generateConstructorDeclaration(declaration *syntaxtree.ConstructorDeclaration) {
+	output := generation.generation
+	className := generation.generation.Unit.Class.Name
+	output.Emit(className)
+	output.EmitParameterList(declaration.Parameters)
+	output.Emit(" {")
+	output.EmitEndOfLine()
+	output.IncreaseIndent()
+	output.EmitNode(declaration.Body)
+	output.DecreaseIndent()
+	output.Emit("}")
 }
 
 func (generation *Generation) writeInitMethod(body []syntaxtree.Node) {

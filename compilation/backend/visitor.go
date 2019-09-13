@@ -20,6 +20,7 @@ func CreateGenericCppVisitor(generation *Generation) *syntaxtree.Visitor {
 		VisitClassDeclaration:   generation.GenerateClassDeclaration,
 		VisitMethodDeclaration:  generation.GenerateMethod,
 		VisitIdentifier:         generation.GenerateIdentifier,
+		VisitCallArgument:       func(*syntaxtree.CallArgument) {},
 		VisitCallExpression:     generation.GenerateCallExpression,
 		VisitStringLiteral:      generation.GenerateStringLiteral,
 		VisitNumberLiteral:      generation.GenerateNumberLiteral,
@@ -38,5 +39,6 @@ func CreateGenericCppVisitor(generation *Generation) *syntaxtree.Visitor {
 		VisitConditionalStatement: generation.GenerateConditionalStatement,
 		VisitForEachLoopStatement: generation.GenerateForEachLoopStatement,
 		VisitListSelectExpression: generation.GenerateListSelectExpression,
+		VisitConstructorDeclaration: func (declaration *syntaxtree.ConstructorDeclaration) {},
 	}
 }

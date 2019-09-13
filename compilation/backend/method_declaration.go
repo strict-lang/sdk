@@ -6,13 +6,15 @@ const InitMethodName = "Generated$Init"
 
 func (generation *Generation) EmitMethodDeclaration(declaration *syntaxtree.MethodDeclaration) {
 	generation.EmitIndent()
-
 	generation.EmitNode(declaration.Type)
 	generation.Emit(" ")
 	generation.EmitNode(declaration.Name)
+	generation.EmitParameterList(declaration.Parameters)
+}
 
+func (generation *Generation) EmitParameterList(parameters syntaxtree.ParameterList) {
 	generation.Emit("(")
-	for index, parameter := range declaration.Parameters {
+	for index, parameter := range parameters {
 		if index != 0 {
 			generation.Emit(", ")
 		}
