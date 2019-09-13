@@ -76,9 +76,8 @@ func (generation *Generation) generateLabeledConstructorCall(
 	generation.Emit(" {")
 	generation.EmitEndOfLine()
 	generation.IncreaseIndent()
-
+	generation.generateLabeledConstructorCallLambdaBody(typeName, labeled, others)
 	generation.DecreaseIndent()
-	generation.EmitEndOfLine()
 	generation.EmitIndent()
 	generation.Emit("}()")
 
@@ -88,7 +87,7 @@ const constructedFieldName = "$_constructed"
 
 func (generation *Generation) generateLabeledConstructorCallLambdaBody(
 	typeName syntaxtree.TypeName, labeled []*syntaxtree.CallArgument, others []*syntaxtree.CallArgument) {
-
+	generation.EmitIndent()
 	generation.EmitNode(&syntaxtree.AssignStatement{
 		Target:       &syntaxtree.FieldDeclaration{
 			Name:         &syntaxtree.Identifier{
@@ -107,6 +106,7 @@ func (generation *Generation) generateLabeledConstructorCallLambdaBody(
 		NodePosition: syntaxtree.ZeroPosition{},
 	})
 	for _, argument := range labeled {
+		generation.EmitIndent()
 		generation.emitFieldInitializationForLabeledArgument(argument)
 	}
 }
