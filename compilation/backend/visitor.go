@@ -20,7 +20,7 @@ func CreateGenericCppVisitor(generation *Generation) *syntaxtree.Visitor {
 		VisitClassDeclaration:   generation.GenerateClassDeclaration,
 		VisitMethodDeclaration:  generation.GenerateMethod,
 		VisitIdentifier:         generation.GenerateIdentifier,
-		VisitCallExpression:     generation.GenerateMethodCall,
+		VisitCallExpression:     generation.GenerateCallExpression,
 		VisitStringLiteral:      generation.GenerateStringLiteral,
 		VisitNumberLiteral:      generation.GenerateNumberLiteral,
 		VisitYieldStatement:     generation.GenerateYieldStatement,
