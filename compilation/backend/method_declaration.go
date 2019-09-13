@@ -1,10 +1,10 @@
 package backend
 
-import "gitlab.com/strict-lang/sdk/compilation/ast"
+import "gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 
 const InitMethodName = "Generated$Init"
 
-func (generation *Generation) EmitMethodDeclaration(declaration *ast.MethodDeclaration) {
+func (generation *Generation) EmitMethodDeclaration(declaration *syntaxtree.MethodDeclaration) {
 	generation.EmitIndent()
 
 	generation.EmitNode(declaration.Type)
@@ -21,7 +21,7 @@ func (generation *Generation) EmitMethodDeclaration(declaration *ast.MethodDecla
 	generation.Emit(")")
 }
 
-func (generation *Generation) GenerateParameter(parameter *ast.Parameter) {
+func (generation *Generation) GenerateParameter(parameter *syntaxtree.Parameter) {
 	generation.EmitNode(parameter.Type)
 	generation.Emit(" ")
 	generation.EmitNode(parameter.Name)

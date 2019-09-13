@@ -1,6 +1,6 @@
-package ast
+package syntaxtree
 
-// Node is implemented by every node of the ast.
+// Node is implemented by every node of the syntaxtree.
 type Node interface {
 	Positioned
 

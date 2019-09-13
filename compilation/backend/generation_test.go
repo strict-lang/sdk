@@ -2,55 +2,55 @@ package backend
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 	"testing"
 )
 
 func TestCodeGeneration(test *testing.T) {
-	method := ast.MethodDeclaration{
-		Name: &ast.Identifier{Value: "commentOnAge"},
-		Type: &ast.ConcreteTypeName{
+	method := syntaxtree.MethodDeclaration{
+		Name: &syntaxtree.Identifier{Value: "commentOnAge"},
+		Type: &syntaxtree.ConcreteTypeName{
 			Name: "void",
 		},
-		Parameters: []*ast.Parameter{
+		Parameters: []*syntaxtree.Parameter{
 			{
-				Name: &ast.Identifier{
+				Name: &syntaxtree.Identifier{
 					Value: "age",
 				},
-				Type: &ast.ConcreteTypeName{
+				Type: &syntaxtree.ConcreteTypeName{
 					Name: "number",
 				},
 			},
 		},
-		Body: &ast.BlockStatement{
-			Children: []ast.Node{
-				&ast.ConditionalStatement{
-					Condition: &ast.BinaryExpression{
-						LeftOperand:  &ast.Identifier{Value: "age"},
-						RightOperand: &ast.NumberLiteral{Value: "18"},
+		Body: &syntaxtree.BlockStatement{
+			Children: []syntaxtree.Node{
+				&syntaxtree.ConditionalStatement{
+					Condition: &syntaxtree.BinaryExpression{
+						LeftOperand:  &syntaxtree.Identifier{Value: "age"},
+						RightOperand: &syntaxtree.NumberLiteral{Value: "18"},
 						Operator:     token.SmallerOperator,
 					},
-					Consequence: &ast.BlockStatement{
-						Children: []ast.Node{
-							&ast.ExpressionStatement{
-								Expression: &ast.MethodCall{
-									Method: &ast.Identifier{Value: "logf"},
-									Arguments: []ast.Node{
-										&ast.StringLiteral{Value: "%d is still young"},
-										&ast.Identifier{Value: "age"},
+					Consequence: &syntaxtree.BlockStatement{
+						Children: []syntaxtree.Node{
+							&syntaxtree.ExpressionStatement{
+								Expression: &syntaxtree.CallExpression{
+									Method: &syntaxtree.Identifier{Value: "logf"},
+									Arguments: []syntaxtree.Node{
+										&syntaxtree.StringLiteral{Value: "%d is still young"},
+										&syntaxtree.Identifier{Value: "age"},
 									},
 								},
 							},
 						},
 					},
-					Alternative: &ast.BlockStatement{
-						Children: []ast.Node{
-							&ast.ExpressionStatement{
-								Expression: &ast.MethodCall{
-									Method: &ast.Identifier{Value: "log"},
-									Arguments: []ast.Node{
-										&ast.StringLiteral{Value: "You are an adult"},
+					Alternative: &syntaxtree.BlockStatement{
+						Children: []syntaxtree.Node{
+							&syntaxtree.ExpressionStatement{
+								Expression: &syntaxtree.CallExpression{
+									Method: &syntaxtree.Identifier{Value: "log"},
+									Arguments: []syntaxtree.Node{
+										&syntaxtree.StringLiteral{Value: "You are an adult"},
 									},
 								},
 							},
@@ -61,14 +61,14 @@ func TestCodeGeneration(test *testing.T) {
 		},
 	}
 
-	call := ast.ExpressionStatement{
-		Expression: &ast.MethodCall{
-			Method: &ast.Identifier{Value: "commentOnAge"},
-			Arguments: []ast.Node{
-				&ast.MethodCall{
-					Method: &ast.Identifier{Value: "inputNumber"},
-					Arguments: []ast.Node{
-						&ast.StringLiteral{
+	call := syntaxtree.ExpressionStatement{
+		Expression: &syntaxtree.CallExpression{
+			Method: &syntaxtree.Identifier{Value: "commentOnAge"},
+			Arguments: []syntaxtree.Node{
+				&syntaxtree.CallExpression{
+					Method: &syntaxtree.Identifier{Value: "inputNumber"},
+					Arguments: []syntaxtree.Node{
+						&syntaxtree.StringLiteral{
 							Value: "How old are you?",
 						},
 					},
@@ -77,17 +77,17 @@ func TestCodeGeneration(test *testing.T) {
 		},
 	}
 
-	unit := &ast.TranslationUnit{
+	unit := &syntaxtree.TranslationUnit{
 		Name:         "test",
-		Imports:      []*ast.ImportStatement{},
-		Class:        &ast.ClassDeclaration{
+		Imports:      []*syntaxtree.ImportStatement{},
+		Class:        &syntaxtree.ClassDeclaration{
 			Name:         "test",
-			Parameters:   []ast.ClassParameter{},
-			SuperTypes:   []ast.TypeName{},
-			Children:     []ast.Node{&method, &call},
-			NodePosition: ast.ZeroPosition{},
+			Parameters:   []syntaxtree.ClassParameter{},
+			SuperTypes:   []syntaxtree.TypeName{},
+			Children:     []syntaxtree.Node{&method, &call},
+			NodePosition: syntaxtree.ZeroPosition{},
 		},
-		NodePosition: ast.ZeroPosition{},
+		NodePosition: syntaxtree.ZeroPosition{},
 	}
 	generator := NewGeneration(unit)
 	test.Log(generator.Generate())

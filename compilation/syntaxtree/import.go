@@ -1,8 +1,7 @@
-package ast
+package syntaxtree
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -41,7 +40,7 @@ func (target *IdentifierChainImport) FilePath() string {
 	path.WriteRune('"')
 	for index, element := range target.Chain {
 		if index != 0 {
-			path.WriteRune(os.PathSeparator)
+			path.WriteRune('/')
 		}
 		path.WriteString(element)
 	}
@@ -50,11 +49,8 @@ func (target *IdentifierChainImport) FilePath() string {
 }
 
 func (target *IdentifierChainImport) toModuleName() string {
-	if len(target.Chain) == 0 {
-		panic("IdentifierChainImport: Chain is empty")
-		return ""
-	}
-	return target.Chain[len(target.Chain) - 1]
+	// The module should be imported into an anonymous namespace
+	return ""
 }
 
 type FileImport struct {

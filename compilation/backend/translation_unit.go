@@ -1,10 +1,10 @@
 package backend
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 )
 
-func (generation *Generation) GenerateTranslationUnit(unit *ast.TranslationUnit) {
+func (generation *Generation) GenerateTranslationUnit(unit *syntaxtree.TranslationUnit) {
 	generation.generateImplicitImports()
 	for _, importStatement := range unit.Imports {
 		generation.EmitNode(importStatement)
@@ -19,9 +19,9 @@ func (generation *Generation) generateImplicitImports() {
 	generation.Emit("#include <string>\n")
 }
 
-func (generation *Generation) GenerateMainMethod(nodes []ast.Node) {
+func (generation *Generation) GenerateMainMethod(nodes []syntaxtree.Node) {
 	generation.Emit("int main(int argc, char **argv) ")
-	block := &ast.BlockStatement{
+	block := &syntaxtree.BlockStatement{
 		Children: nodes,
 	}
 	generation.EmitNode(block)

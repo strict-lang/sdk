@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 )
 
 var builtinMethods = map[string]string{
@@ -12,14 +12,14 @@ var builtinMethods = map[string]string{
 	"asString":    "c_str",
 }
 
-type identifierVisitor func(identifier *ast.Identifier)
+type identifierVisitor func(identifier *syntaxtree.Identifier)
 
-func visitMethodName(node ast.Node, visitor identifierVisitor) bool {
-	if identifier, isIdentifier := node.(*ast.Identifier); isIdentifier {
+func visitMethodName(node syntaxtree.Node, visitor identifierVisitor) bool {
+	if identifier, isIdentifier := node.(*syntaxtree.Identifier); isIdentifier {
 		visitor(identifier)
 		return true
 	}
-	if selection, isSelection := node.(*ast.SelectExpression); isSelection {
+	if selection, isSelection := node.(*syntaxtree.SelectExpression); isSelection {
 		last, ok := findLastSelection(selection)
 		if !ok {
 			return false
@@ -29,22 +29,22 @@ func visitMethodName(node ast.Node, visitor identifierVisitor) bool {
 	return false
 }
 
-func findLastSelection(expression *ast.SelectExpression) (node ast.Node, ok bool) {
-	if next, ok := expression.Selection.(*ast.SelectExpression); ok {
+func findLastSelection(expression *syntaxtree.SelectExpression) (node syntaxtree.Node, ok bool) {
+	if next, ok := expression.Selection.(*syntaxtree.SelectExpression); ok {
 		return findLastSelection(next)
 	}
 	return expression.Selection, true
 }
 
-func renameBuiltinMethodName(identifier *ast.Identifier) {
+func renameBuiltinMethodName(identifier *syntaxtree.Identifier) {
 	identifier.Value = lookupMethodName(identifier.Value)
 }
 
-func renameBuiltinMethodNameForCall(node ast.Node) {
+func renameBuiltinMethodNameForCall(node syntaxtree.Node) {
 	visitMethodName(node, renameBuiltinMethodName)
 }
 
-func (generation *Generation) GenerateMethodCall(call *ast.MethodCall) {
+func (generation *Generation) GenerateMethodCall(call *syntaxtree.CallExpression) {
 	renameBuiltinMethodNameForCall(call.Method)
 	generation.EmitNode(call.Method)
 	generation.Emit("(")

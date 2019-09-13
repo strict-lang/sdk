@@ -1,28 +1,28 @@
 package parsing
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/scanning"
 	"testing"
 )
 
 func TestParser_ParseMethodDeclaration(test *testing.T) {
-	var entries = map[string]ast.MethodDeclaration{
+	var entries = map[string]syntaxtree.MethodDeclaration{
 		`
 	method number add(number a, number b)	
 		ret = a + b
 		return ret
 `: {
-			Name: &ast.Identifier{Value: "add"},
-			Type: &ast.ConcreteTypeName{Name: "number"},
-			Parameters: []*ast.Parameter{
+			Name: &syntaxtree.Identifier{Value: "add"},
+			Type: &syntaxtree.ConcreteTypeName{Name: "number"},
+			Parameters: []*syntaxtree.Parameter{
 				{
-					Name: &ast.Identifier{Value: "a"},
-					Type: &ast.ConcreteTypeName{Name: "number"},
+					Name: &syntaxtree.Identifier{Value: "a"},
+					Type: &syntaxtree.ConcreteTypeName{Name: "number"},
 				},
 				{
-					Name: &ast.Identifier{Value: "b"},
-					Type: &ast.ConcreteTypeName{Name: "number"},
+					Name: &syntaxtree.Identifier{Value: "b"},
+					Type: &syntaxtree.ConcreteTypeName{Name: "number"},
 				},
 			},
 		},
@@ -31,15 +31,15 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 		for index from 0 to number do
 			yield index
 `: {
-			Name: &ast.Identifier{Value: "rangeTo"},
-			Type: &ast.GenericTypeName{
+			Name: &syntaxtree.Identifier{Value: "rangeTo"},
+			Type: &syntaxtree.GenericTypeName{
 				Name:    "list",
-				Generic: &ast.ConcreteTypeName{Name: "number"},
+				Generic: &syntaxtree.ConcreteTypeName{Name: "number"},
 			},
-			Parameters: []*ast.Parameter{
+			Parameters: []*syntaxtree.Parameter{
 				{
-					Name: &ast.Identifier{Value: "number"},
-					Type: &ast.ConcreteTypeName{Name: "number"},
+					Name: &syntaxtree.Identifier{Value: "number"},
+					Type: &syntaxtree.ConcreteTypeName{Name: "number"},
 				},
 			},
 		},
@@ -58,7 +58,7 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 	}
 }
 
-func compareMethods(method ast.MethodDeclaration, expected ast.MethodDeclaration) bool {
+func compareMethods(method syntaxtree.MethodDeclaration, expected syntaxtree.MethodDeclaration) bool {
 	if method.Name.Value != expected.Name.Value {
 		return false
 	}

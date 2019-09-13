@@ -3,13 +3,13 @@ package parsing
 import (
 	"errors"
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/source"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
 // parseConditionalStatement parses a conditional statement and it's optional else-clause.
-func (parsing *Parsing) parseConditionalStatement() ast.Node {
+func (parsing *Parsing) parseConditionalStatement() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.IfKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -22,31 +22,38 @@ func (parsing *Parsing) parseConditionalStatement() ast.Node {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
-	body, err := parsing.parseStatementBlock()
+	consequence, err := parsing.parseStatementBlock()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	if !token.HasKeywordValue(parsing.token(), token.ElseKeyword) {
-		return &ast.ConditionalStatement{
+		return &syntaxtree.ConditionalStatement{
 			Condition:    condition,
-			Consequence:  body,
+			Consequence:  consequence,
 			NodePosition: parsing.createPosition(beginOffset),
 		}
 	}
+	return parsing.parseConditionalStatementWithAlternative(
+		beginOffset, condition, consequence)
+}
+
+func (parsing *Parsing) parseConditionalStatementWithAlternative(
+	beginOffset source.Offset, condition syntaxtree.Node, consequence syntaxtree.Node) syntaxtree.Node {
+
 	parsing.advance()
-	elseBody, err := parsing.parseElseIfOrBlock()
+	alternative, err := parsing.parseElseIfOrBlock()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	return &ast.ConditionalStatement{
+	return &syntaxtree.ConditionalStatement{
 		Condition:    condition,
-		Consequence:  body,
-		Alternative:  elseBody,
+		Consequence:  consequence,
+		Alternative:  alternative,
 		NodePosition: parsing.createPosition(beginOffset),
 	}
 }
 
-func (parsing *Parsing) parseElseIfOrBlock() (ast.Node, error) {
+func (parsing *Parsing) parseElseIfOrBlock() (syntaxtree.Node, error) {
 	if token.HasKeywordValue(parsing.token(), token.IfKeyword) {
 		return parsing.parseConditionalStatement(), nil
 	}
@@ -57,7 +64,7 @@ func (parsing *Parsing) parseElseIfOrBlock() (ast.Node, error) {
 // parseForStatement parses a loop statement, which starts with the
 // ForKeyword. The statement may either be a FromToLoopStatement or
 // a ForEachLoopStatement.
-func (parsing *Parsing) parseForStatement() ast.Node {
+func (parsing *Parsing) parseForStatement() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.ForKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -75,7 +82,7 @@ func (parsing *Parsing) parseForStatement() ast.Node {
 // after it checked for a foreach statement. At this point the last token
 // is an identifier that is the name of the foreach loops element field.
 // This method completes the loops parsing.
-func (parsing *Parsing) completeForEachStatement(beginOffset source.Offset) ast.Node {
+func (parsing *Parsing) completeForEachStatement(beginOffset source.Offset) syntaxtree.Node {
 	field, err := parsing.expectAnyIdentifier()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -96,7 +103,7 @@ func (parsing *Parsing) completeForEachStatement(beginOffset source.Offset) ast.
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	return &ast.ForEachLoopStatement{
+	return &syntaxtree.ForEachLoopStatement{
 		Field:        field,
 		Sequence:     value,
 		Body:         body,
@@ -108,7 +115,7 @@ func (parsing *Parsing) completeForEachStatement(beginOffset source.Offset) ast.
 // after it peeked the 'from' keyword. At this point, the last token
 // is an identifier that is the name of the loops counter field. This
 // method completes the loops parsing.
-func (parsing *Parsing) completeFromToStatement(beginOffset source.Offset) ast.Node {
+func (parsing *Parsing) completeFromToStatement(beginOffset source.Offset) syntaxtree.Node {
 	field, err := parsing.expectAnyIdentifier()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -136,7 +143,7 @@ func (parsing *Parsing) completeFromToStatement(beginOffset source.Offset) ast.N
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	return &ast.RangedLoopStatement{
+	return &syntaxtree.RangedLoopStatement{
 		ValueField:   field,
 		InitialValue: from,
 		EndValue:     to,
@@ -145,7 +152,7 @@ func (parsing *Parsing) completeFromToStatement(beginOffset source.Offset) ast.N
 	}
 }
 
-func (parsing *Parsing) parseYieldStatement() ast.Node {
+func (parsing *Parsing) parseYieldStatement() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.YieldKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -155,20 +162,20 @@ func (parsing *Parsing) parseYieldStatement() ast.Node {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
-	return &ast.YieldStatement{
+	return &syntaxtree.YieldStatement{
 		Value:        rightHandSide,
 		NodePosition: parsing.createPosition(beginOffset),
 	}
 }
 
-func (parsing *Parsing) parseReturnStatement() ast.Node {
+func (parsing *Parsing) parseReturnStatement() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.ReturnKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	if token.IsEndOfStatementToken(parsing.token()) {
 		parsing.advance()
-		return &ast.ReturnStatement{
+		return &syntaxtree.ReturnStatement{
 			NodePosition: parsing.createPosition(beginOffset),
 		}
 	}
@@ -177,13 +184,13 @@ func (parsing *Parsing) parseReturnStatement() ast.Node {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
-	return &ast.ReturnStatement{
+	return &syntaxtree.ReturnStatement{
 		Value:        rightHandSide,
 		NodePosition: parsing.createPosition(beginOffset),
 	}
 }
 
-func (parsing *Parsing) parseNestedMethodDeclaration() ast.Node {
+func (parsing *Parsing) parseNestedMethodDeclaration() syntaxtree.Node {
 	beginPosition := parsing.offset()
 	method, err := parsing.parseMethodDeclaration()
 	if err != nil {
@@ -192,7 +199,7 @@ func (parsing *Parsing) parseNestedMethodDeclaration() ast.Node {
 	return method
 }
 
-func (parsing *Parsing) parseImportStatement() ast.Node {
+func (parsing *Parsing) parseImportStatement() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.ImportKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -210,7 +217,7 @@ func (parsing *Parsing) parseImportStatement() ast.Node {
 	}
 }
 
-func (parsing *Parsing) parseIdentifierChainImport(beginOffset source.Offset) ast.Node {
+func (parsing *Parsing) parseIdentifierChainImport(beginOffset source.Offset) syntaxtree.Node {
 	var chain []string
 	for token.IsIdentifierToken(parsing.token()) {
 		chain = append(chain, parsing.token().Value())
@@ -219,19 +226,20 @@ func (parsing *Parsing) parseIdentifierChainImport(beginOffset source.Offset) as
 			parsing.advance()
 		}
 	}
-	return &ast.ImportStatement{
-		Target:       &ast.IdentifierChainImport{Chain: chain},
+	parsing.skipEndOfStatement()
+	return &syntaxtree.ImportStatement{
+		Target:       &syntaxtree.IdentifierChainImport{Chain: chain},
 		Alias:        nil,
 		NodePosition: parsing.createPosition(beginOffset),
 	}
 }
 
-func (parsing *Parsing) parseFileImport(beginOffset source.Offset) ast.Node {
-	target := &ast.FileImport{Path:parsing.token().Value()}
+func (parsing *Parsing) parseFileImport(beginOffset source.Offset) syntaxtree.Node {
+	target := &syntaxtree.FileImport{Path: parsing.token().Value()}
 	parsing.advance()
 	if !token.HasKeywordValue(parsing.token(), token.AsKeyword) {
 		parsing.skipEndOfStatement()
-		return &ast.ImportStatement{
+		return &syntaxtree.ImportStatement{
 			Target: target,
 			NodePosition: parsing.createPosition(beginOffset),
 		}
@@ -241,7 +249,7 @@ func (parsing *Parsing) parseFileImport(beginOffset source.Offset) ast.Node {
 }
 
 func (parsing *Parsing) parseFileImportWithAlias(
-	beginOffset source.Offset, target ast.ImportTarget) ast.Node {
+	beginOffset source.Offset, target syntaxtree.ImportTarget) syntaxtree.Node {
 
 	aliasOffset := parsing.offset()
 	alias, err := parsing.parseImportAlias()
@@ -250,9 +258,9 @@ func (parsing *Parsing) parseFileImportWithAlias(
 	}
 	aliasEnd := parsing.offset()
 	parsing.skipEndOfStatement()
-	return &ast.ImportStatement{
+	return &syntaxtree.ImportStatement{
 		Target: target,
-		Alias: &ast.Identifier{
+		Alias: &syntaxtree.Identifier{
 			Value: alias,
 			NodePosition: &offsetPosition{
 				begin: aliasOffset,
@@ -277,7 +285,7 @@ func (parsing *Parsing) parseImportAlias() (string, error) {
 
 var errNoAssign = errors.New("no assign")
 
-func (parsing *Parsing) parseOptionalAssignValue() (ast.Node, error) {
+func (parsing *Parsing) parseOptionalAssignValue() (syntaxtree.Node, error) {
 	if !token.HasOperatorValue(parsing.token(), token.AssignOperator) {
 		return nil, errNoAssign
 	}
@@ -288,7 +296,7 @@ func (parsing *Parsing) parseOptionalAssignValue() (ast.Node, error) {
 // findKeywordStatementParser returns a function that parses statements based on a passed
 // keyword. Most of the keywords start a statement. The returned bool is true, if a
 // function has been found.
-func (parsing *Parsing) findKeywordStatementParser(keyword token.Keyword) (func() ast.
+func (parsing *Parsing) findKeywordStatementParser(keyword token.Keyword) (func() syntaxtree.
 	Node, bool) {
 	switch keyword {
 	case token.IfKeyword:
@@ -307,12 +315,43 @@ func (parsing *Parsing) findKeywordStatementParser(keyword token.Keyword) (func(
 		return parsing.parseAssertStatement, true
 	case token.MethodKeyword:
 		return parsing.parseNestedMethodDeclaration, true
+	case token.CreateKeyword:
+		return parsing.maybeParseConstructorDeclaration()
 	}
 	return nil, false
 }
 
+func (parsing *Parsing) shouldParseConstructorDeclaration() bool {
+	return parsing.isAtBeginOfStatement
+}
+
+func (parsing *Parsing) maybeParseConstructorDeclaration() (func() syntaxtree.Node, bool) {
+	return parsing.parseConstructorDeclaration, parsing.shouldParseConstructorDeclaration()
+}
+
+func (parsing *Parsing) parseConstructorDeclaration() syntaxtree.Node {
+	beginOffset := parsing.offset()
+	if err := parsing.skipKeyword(token.CreateKeyword); err != nil {
+		return parsing.createInvalidStatement(beginOffset, err)
+	}
+	parameters, err := parsing.parseParameterList()
+	if err != nil {
+		return parsing.createInvalidStatement(beginOffset, err)
+	}
+	parsing.skipEndOfStatement()
+	body, err := parsing.parseStatementBlock()
+	if err != nil {
+		return parsing.createInvalidStatement(beginOffset, err)
+	}
+	return &syntaxtree.ConstructorDeclaration{
+		Parameters:   parameters,
+		Body: body,
+		NodePosition: parsing.createPosition(beginOffset),
+	}
+}
+
 // parseKeywordStatement parses a statement that starts with a keyword.
-func (parsing *Parsing) parseKeywordStatement(keyword token.Keyword) ast.Node {
+func (parsing *Parsing) parseKeywordStatement(keyword token.Keyword) syntaxtree.Node {
 	function, ok := parsing.findKeywordStatementParser(keyword)
 	if ok {
 		return function()
@@ -321,17 +360,19 @@ func (parsing *Parsing) parseKeywordStatement(keyword token.Keyword) ast.Node {
 		Token:    parsing.token(),
 		Expected: "keyword that starts a statement",
 	}, parsing.createTokenPosition())
-	return &ast.InvalidStatement{}
+	return &syntaxtree.InvalidStatement{}
 }
 
-func (parsing *Parsing) parseAssignStatement(operator token.Operator, leftHandSide ast.Node) (ast.Node, error) {
-	beginOffset := parsing.offset()
+func (parsing *Parsing) parseAssignStatement(
+	operator token.Operator, leftHandSide syntaxtree.Node) (syntaxtree.Node, error) {
+
+		beginOffset := parsing.offset()
 	rightHandSide, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err), err
 	}
 	parsing.skipEndOfStatement()
-	return &ast.AssignStatement{
+	return &syntaxtree.AssignStatement{
 		Target:       leftHandSide,
 		Value:        rightHandSide,
 		Operator:     operator,
@@ -339,7 +380,7 @@ func (parsing *Parsing) parseAssignStatement(operator token.Operator, leftHandSi
 	}, nil
 }
 
-func (parsing *Parsing) parseTestStatement() ast.Node {
+func (parsing *Parsing) parseTestStatement() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.TestKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -349,14 +390,14 @@ func (parsing *Parsing) parseTestStatement() ast.Node {
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
-	return &ast.TestStatement{
+	return &syntaxtree.TestStatement{
 		NodePosition: parsing.createPosition(beginOffset),
 		MethodName:   parsing.currentMethodName,
 		Statements:   statements,
 	}
 }
 
-func (parsing *Parsing) parseAssertStatement() ast.Node {
+func (parsing *Parsing) parseAssertStatement() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.AssertKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
@@ -366,7 +407,7 @@ func (parsing *Parsing) parseAssertStatement() ast.Node {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
-	return &ast.AssertStatement{
+	return &syntaxtree.AssertStatement{
 		NodePosition: parsing.createPosition(beginOffset),
 		Expression:   expression,
 	}
@@ -374,7 +415,7 @@ func (parsing *Parsing) parseAssertStatement() ast.Node {
 
 // parseInstructionStatement parses a statement that is not a structured-control flow
 // statement. Instructions mostly operate on values and assign fields.
-func (parsing *Parsing) parseInstructionStatement() (ast.Node, error) {
+func (parsing *Parsing) parseInstructionStatement() (syntaxtree.Node, error) {
 	leftHandSide, err := parsing.parseExpression()
 	if err != nil {
 		return nil, err
@@ -386,14 +427,14 @@ func (parsing *Parsing) parseInstructionStatement() (ast.Node, error) {
 	case operator == token.IncrementOperator:
 		parsing.advance()
 		parsing.skipEndOfStatement()
-		return &ast.IncrementStatement{Operand: leftHandSide}, nil
+		return &syntaxtree.IncrementStatement{Operand: leftHandSide}, nil
 	case operator == token.DecrementOperator:
 		parsing.advance()
 		parsing.skipEndOfStatement()
-		return &ast.DecrementStatement{Operand: leftHandSide}, nil
+		return &syntaxtree.DecrementStatement{Operand: leftHandSide}, nil
 	}
 	parsing.advance()
-	return &ast.ExpressionStatement{
+	return &syntaxtree.ExpressionStatement{
 		Expression: leftHandSide,
 	}, nil
 }
@@ -410,7 +451,7 @@ func (parsing *Parsing) shouldParseFieldDeclaration() bool {
 	return parsing.isAtBeginOfStatement && parsing.couldBeLookingAtTypeName()
 }
 
-func (parsing *Parsing) parseFieldDeclarationOrDefinition() ast.Node {
+func (parsing *Parsing) parseFieldDeclarationOrDefinition() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	declaration, err := parsing.parseFieldDeclaration()
 	if err != nil {
@@ -424,14 +465,14 @@ func (parsing *Parsing) parseFieldDeclarationOrDefinition() ast.Node {
 	return parsing.completeParsingFieldDefinition(beginOffset, declaration)
 }
 func (parsing *Parsing) completeParsingFieldDefinition(
-	beginOffset source.Offset, declaration ast.Node) ast.Node {
+	beginOffset source.Offset, declaration syntaxtree.Node) syntaxtree.Node {
 
 	value, err := parsing.parseExpression()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
 	parsing.skipEndOfStatement()
-	return &ast.AssignStatement{
+	return &syntaxtree.AssignStatement{
 		Target:       declaration,
 		Value:        value,
 		Operator:     token.AssignOperator,
@@ -439,7 +480,7 @@ func (parsing *Parsing) completeParsingFieldDefinition(
 	}
 }
 
-func (parsing *Parsing) parseFieldDeclaration() (ast.Node, error) {
+func (parsing *Parsing) parseFieldDeclaration() (syntaxtree.Node, error) {
 	beginOffset := parsing.offset()
 	typeName, err := parsing.parseTypeName()
 	if err != nil {
@@ -450,7 +491,7 @@ func (parsing *Parsing) parseFieldDeclaration() (ast.Node, error) {
 		return nil, err
 	}
 	parsing.advance()
-	return &ast.FieldDeclaration{
+	return &syntaxtree.FieldDeclaration{
 		Name:         fieldName,
 		TypeName:     typeName,
 		NodePosition: parsing.createPosition(beginOffset),
@@ -460,7 +501,7 @@ func (parsing *Parsing) parseFieldDeclaration() (ast.Node, error) {
 // ParseStatement parses the next statement from the stream of tokens. Statements include
 // conditionals or loops, therefor this function may end up scanning multiple statements
 // and call itself.
-func (parsing *Parsing) parseStatement() ast.Node {
+func (parsing *Parsing) parseStatement() syntaxtree.Node {
 	beginOffset := parsing.offset()
 	switch current := parsing.token(); {
 	case isKeywordStatementToken(current):
@@ -489,8 +530,8 @@ func (parsing *Parsing) parseStatement() ast.Node {
 // ParseStatementSequence parses a sequence of statements. The sequence
 // is ended when the first token in a line has an indent other than the
 // value in the current blocks indent field.
-func (parsing *Parsing) parseStatementSequence() []ast.Node {
-	var statements []ast.Node
+func (parsing *Parsing) parseStatementSequence() []syntaxtree.Node {
+	var statements []syntaxtree.Node
 	for {
 		expectedIndent := parsing.block.Indent
 		current := parsing.token()
@@ -510,7 +551,7 @@ func (parsing *Parsing) parseStatementSequence() []ast.Node {
 			break
 		}
 		statement := parsing.parseStatement()
-		if _, ok := statement.(*ast.InvalidStatement); ok {
+		if _, ok := statement.(*syntaxtree.InvalidStatement); ok {
 			break
 		}
 		statements = append(statements, statement)
@@ -519,7 +560,7 @@ func (parsing *Parsing) parseStatementSequence() []ast.Node {
 }
 
 // ParseStatementBlock parses a block of statements.
-func (parsing *Parsing) parseStatementBlock() (*ast.BlockStatement, error) {
+func (parsing *Parsing) parseStatementBlock() (*syntaxtree.BlockStatement, error) {
 	beginOffset := parsing.offset()
 	indent := parsing.token().Indent()
 	if indent < parsing.block.Indent {
@@ -531,7 +572,7 @@ func (parsing *Parsing) parseStatementBlock() (*ast.BlockStatement, error) {
 	parsing.openBlock(indent)
 	statements := parsing.parseStatementSequence()
 	parsing.closeBlock()
-	return &ast.BlockStatement{
+	return &syntaxtree.BlockStatement{
 		Children:     statements,
 		NodePosition: parsing.createPosition(beginOffset),
 	}, nil

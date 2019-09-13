@@ -1,7 +1,7 @@
 package code
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
 )
 
@@ -13,21 +13,21 @@ const (
 		"than once in the parameter list"
 )
 
-// NamingCheck is traversing the ast and ensures that the names of all declared declaration
+// NamingCheck is traversing the syntaxtree and ensures that the names of all declared declaration
 // follows the naming rules. As opposed to many languages, Strict opposes strong rules on the
 // names of identifiers. Names may also influence the semantics.
 type NamingCheck struct {
 	recorder *diagnostic.Bag
-	unit     *ast.TranslationUnit
-	visitor  *ast.Visitor
+	unit     *syntaxtree.TranslationUnit
+	visitor  *syntaxtree.Visitor
 }
 
-func NewNamingChecker(recorder *diagnostic.Bag, unit *ast.TranslationUnit) *NamingCheck {
+func NewNamingChecker(recorder *diagnostic.Bag, unit *syntaxtree.TranslationUnit) *NamingCheck {
 	check := &NamingCheck{
 		recorder: recorder,
 		unit:     unit,
 	}
-	check.visitor = ast.NewEmptyVisitor()
+	check.visitor = syntaxtree.NewEmptyVisitor()
 	check.visitor.VisitParameter = check.CheckParameterNaming
 	check.visitor.VisitTranslationUnit = check.CheckTranslationUnitNaming
 	check.visitor.VisitAssignStatement = check.CheckFieldNaming
@@ -43,7 +43,7 @@ func (check *NamingCheck) Run() {
 }
 
 // reportInvalidNode reports that the node has an invalid name.
-func (check *NamingCheck) reportInvalidNode(node ast.Node, message string) {
+func (check *NamingCheck) reportInvalidNode(node syntaxtree.Node, message string) {
 	check.recorder.Record(diagnostic.RecordedEntry{
 		Position: node.Position(),
 		UnitName: check.unit.Name,
@@ -56,21 +56,21 @@ func (check *NamingCheck) reportInvalidNode(node ast.Node, message string) {
 // CheckImportedModuleNaming ensures that the name of the imported module is upper camel case.
 // Either by importing a file which starts with an upper case character or by having an
 // alias that is upper camel case. Everything else results in a semantic error.
-func (check *NamingCheck) CheckImportedModuleNaming(statement *ast.ImportStatement) {
+func (check *NamingCheck) CheckImportedModuleNaming(statement *syntaxtree.ImportStatement) {
 	if isUpperCamelCase(statement.ModuleName()) {
 		check.reportInvalidNode(statement, MessageInvalidModuleImport)
 	}
 }
 
 // CheckRangedLoopFieldNaming ensures that the loops value fields naming is lowerCamelCase.
-func (check *NamingCheck) CheckRangedLoopFieldNaming(loop *ast.RangedLoopStatement) {
+func (check *NamingCheck) CheckRangedLoopFieldNaming(loop *syntaxtree.RangedLoopStatement) {
 	if !isLowerCamelCase(loop.ValueField.Value) {
 		check.reportInvalidNode(loop.ValueField, MessageInvalidDeclarationName)
 	}
 }
 
 // CheckForEachLoopFieldNaming ensures that the loops value fields  naming is lowerCamelCase.
-func (check *NamingCheck) CheckForEachLoopFieldNaming(loop *ast.ForEachLoopStatement) {
+func (check *NamingCheck) CheckForEachLoopFieldNaming(loop *syntaxtree.ForEachLoopStatement) {
 	if !isLowerCamelCase(loop.Field.Value) {
 		check.reportInvalidNode(loop.Field, MessageInvalidDeclarationName)
 	}
@@ -78,16 +78,16 @@ func (check *NamingCheck) CheckForEachLoopFieldNaming(loop *ast.ForEachLoopState
 
 // CheckTranslationUnitNaming ensures that the translation units name is a valid name for
 // a Strict type, it has to be lowerCamelCase.
-func (check *NamingCheck) CheckTranslationUnitNaming(unit *ast.TranslationUnit) {
+func (check *NamingCheck) CheckTranslationUnitNaming(unit *syntaxtree.TranslationUnit) {
 	if !isLowerCamelCase(unit.ToTypeName().NonGenericName()) {
 		check.reportInvalidNode(unit, MessageInvalidUnitName)
 	}
 }
 
 // CheckFieldNaming ensures that all fields that are ever defined have an lowerCamelCase name.
-func (check *NamingCheck) CheckFieldNaming(method *ast.AssignStatement) {
+func (check *NamingCheck) CheckFieldNaming(method *syntaxtree.AssignStatement) {
 	assignedField := method.Target
-	identifier, isIdentifier := assignedField.(*ast.Identifier)
+	identifier, isIdentifier := assignedField.(*syntaxtree.Identifier)
 	if !isIdentifier {
 		return
 	}
@@ -100,14 +100,14 @@ func (check *NamingCheck) CheckFieldNaming(method *ast.AssignStatement) {
 // its parameters have explicit names if their type occurs more than once in the ParameterList.
 // Meaning that when the ParameterList contains two numbers: '(number, number x)', both of the
 // parameters need an explicit name: '(number x, number y)'.
-func (check *NamingCheck) CheckMethodNamingAndImplicitParameters(method *ast.MethodDeclaration) {
+func (check *NamingCheck) CheckMethodNamingAndImplicitParameters(method *syntaxtree.MethodDeclaration) {
 	if !isLowerCamelCase(method.Name.Value) {
 		check.reportInvalidNode(method, MessageInvalidDeclarationName)
 	}
 	check.ensureExplicitParameterNamingOnDuplicateTypes(method.Parameters)
 }
 
-func (check *NamingCheck) ensureExplicitParameterNamingOnDuplicateTypes(parameters ast.ParameterList) {
+func (check *NamingCheck) ensureExplicitParameterNamingOnDuplicateTypes(parameters syntaxtree.ParameterList) {
 	parameterTypeNames := map[string]bool{}
 	for _, parameter := range parameters {
 		if parameterTypeNames[parameter.Type.NonGenericName()] {
@@ -118,7 +118,7 @@ func (check *NamingCheck) ensureExplicitParameterNamingOnDuplicateTypes(paramete
 }
 
 // CheckParameterNaming ensures that a parameter is named lowerCamelCase.
-func (check *NamingCheck) CheckParameterNaming(parameter *ast.Parameter) {
+func (check *NamingCheck) CheckParameterNaming(parameter *syntaxtree.Parameter) {
 	if isLowerCamelCase(parameter.Name.Value) {
 		return
 	}

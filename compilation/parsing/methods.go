@@ -1,12 +1,12 @@
 package parsing
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/source"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
-func (parsing *Parsing) parseMethodDeclaration() (*ast.MethodDeclaration, error) {
+func (parsing *Parsing) parseMethodDeclaration() (*syntaxtree.MethodDeclaration, error) {
 	beginOffset := parsing.offset()
 	if err := parsing.skipKeyword(token.MethodKeyword); err != nil {
 		return nil, err
@@ -15,7 +15,7 @@ func (parsing *Parsing) parseMethodDeclaration() (*ast.MethodDeclaration, error)
 	if err != nil {
 		return nil, err
 	}
-	var body ast.Node
+	var body syntaxtree.Node
 	if token.OperatorValue(parsing.token()) == token.ArrowOperator {
 		body, err = parsing.parseAssignedMethodExpression()
 	} else {
@@ -25,7 +25,7 @@ func (parsing *Parsing) parseMethodDeclaration() (*ast.MethodDeclaration, error)
 	if err != nil {
 		return nil, err
 	}
-	return &ast.MethodDeclaration{
+	return &syntaxtree.MethodDeclaration{
 		Type:         declaration.returnTypeName,
 		Name:         declaration.methodName,
 		Body:         body,
@@ -35,12 +35,12 @@ func (parsing *Parsing) parseMethodDeclaration() (*ast.MethodDeclaration, error)
 }
 
 type methodDeclaration struct {
-	returnTypeName ast.TypeName
-	methodName     *ast.Identifier
-	parameters     ast.ParameterList
+	returnTypeName syntaxtree.TypeName
+	methodName     *syntaxtree.Identifier
+	parameters     syntaxtree.ParameterList
 }
 
-func (parsing *Parsing) parseMethodBody(methodName string) (node ast.Node, err error) {
+func (parsing *Parsing) parseMethodBody(methodName string) (node syntaxtree.Node, err error) {
 	parsing.currentMethodName = methodName
 	node, err = parsing.parseStatementBlock()
 	parsing.currentMethodName = notParsingMethod
@@ -65,9 +65,9 @@ func (parsing *Parsing) parseMethodSignature() (declaration methodDeclaration,
 	return
 }
 
-func (parsing *Parsing) parseOptionalReturnTypeName() (ast.TypeName, error) {
+func (parsing *Parsing) parseOptionalReturnTypeName() (syntaxtree.TypeName, error) {
 	if parsing.isLookingAtOperator(token.LeftParenOperator) {
-		return &ast.ConcreteTypeName{
+		return &syntaxtree.ConcreteTypeName{
 			Name:         "void",
 			NodePosition: parsing.createPosition(parsing.offset()),
 		}, nil
@@ -75,14 +75,14 @@ func (parsing *Parsing) parseOptionalReturnTypeName() (ast.TypeName, error) {
 	return parsing.parseTypeName()
 }
 
-func (parsing *Parsing) parseAssignedMethodExpression() (ast.Node, error) {
+func (parsing *Parsing) parseAssignedMethodExpression() (syntaxtree.Node, error) {
 	if err := parsing.skipOperator(token.ArrowOperator); err != nil {
 		return nil, err
 	}
 	beginPosition := parsing.offset()
 	statement := parsing.parseStatement()
-	if expression, isExpression := statement.(*ast.ExpressionStatement); isExpression {
-		return &ast.ReturnStatement{
+	if expression, isExpression := statement.(*syntaxtree.ExpressionStatement); isExpression {
+		return &syntaxtree.ReturnStatement{
 			NodePosition: parsing.createPosition(beginPosition),
 			Value:        expression,
 		}, nil
@@ -90,7 +90,7 @@ func (parsing *Parsing) parseAssignedMethodExpression() (ast.Node, error) {
 	return statement, nil
 }
 
-func (parsing *Parsing) parseParameterList() (parameters ast.ParameterList, err error) {
+func (parsing *Parsing) parseParameterList() (parameters syntaxtree.ParameterList, err error) {
 	if err := parsing.skipOperator(token.LeftParenOperator); err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (parsing *Parsing) parseParameterList() (parameters ast.ParameterList, err 
 	return parameters, nil
 }
 
-func (parsing *Parsing) parseParameter() (*ast.Parameter, error) {
+func (parsing *Parsing) parseParameter() (*syntaxtree.Parameter, error) {
 	beginOffset := parsing.offset()
 	typeName, err := parsing.parseTypeName()
 	if err != nil {
@@ -128,8 +128,8 @@ func (parsing *Parsing) parseParameter() (*ast.Parameter, error) {
 	if next := parsing.token(); token.IsIdentifierToken(next) {
 		idNameBegin := parsing.offset()
 		parsing.advance()
-		return &ast.Parameter{
-			Name: &ast.Identifier{
+		return &syntaxtree.Parameter{
+			Name: &syntaxtree.Identifier{
 				Value:        next.Value(),
 				NodePosition: parsing.createPosition(idNameBegin),
 			},
@@ -140,10 +140,10 @@ func (parsing *Parsing) parseParameter() (*ast.Parameter, error) {
 	return parsing.createTypeNamedParameter(beginOffset, typeName), nil
 }
 
-func (parsing *Parsing) createTypeNamedParameter(beginOffset source.Offset, typeName ast.TypeName) *ast.Parameter {
-	return &ast.Parameter{
+func (parsing *Parsing) createTypeNamedParameter(beginOffset source.Offset, typeName syntaxtree.TypeName) *syntaxtree.Parameter {
+	return &syntaxtree.Parameter{
 		Type: typeName,
-		Name: &ast.Identifier{
+		Name: &syntaxtree.Identifier{
 			Value: typeName.NonGenericName(),
 		},
 		NodePosition: parsing.createPosition(beginOffset),

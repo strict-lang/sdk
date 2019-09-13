@@ -1,7 +1,7 @@
 package compilation
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/backend"
 	"gitlab.com/strict-lang/sdk/compilation/backend/headerfile"
 	"gitlab.com/strict-lang/sdk/compilation/backend/sourcefile"
@@ -30,7 +30,7 @@ type Generated struct {
 
 // ParseResult contains the result of a Parsing.
 type ParseResult struct {
-	Unit        *ast.TranslationUnit
+	Unit        *syntaxtree.TranslationUnit
 	Diagnostics *diagnostic.Diagnostics
 	Error       error
 }
@@ -72,7 +72,7 @@ func (compilation *Compilation) parse() ParseResult {
 	}
 }
 
-func (compilation *Compilation) generateCppFile(unit *ast.TranslationUnit) []Generated {
+func (compilation *Compilation) generateCppFile(unit *syntaxtree.TranslationUnit) []Generated {
 	generated := make(chan Generated)
 	go func () {
 		generated <- compilation.generateHeaderFile(unit)
@@ -86,7 +86,7 @@ func (compilation *Compilation) generateCppFile(unit *ast.TranslationUnit) []Gen
 	}
 }
 
-func (compilation *Compilation) generateHeaderFile(unit *ast.TranslationUnit) Generated {
+func (compilation *Compilation) generateHeaderFile(unit *syntaxtree.TranslationUnit) Generated {
 	generation := backend.NewGenerationWithExtension(unit, headerfile.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".h",
@@ -94,7 +94,7 @@ func (compilation *Compilation) generateHeaderFile(unit *ast.TranslationUnit) Ge
 	}
 }
 
-func (compilation *Compilation) generateSourceFile(unit *ast.TranslationUnit) Generated {
+func (compilation *Compilation) generateSourceFile(unit *syntaxtree.TranslationUnit) Generated {
 	generation := backend.NewGenerationWithExtension(unit, sourcefile.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".cc",

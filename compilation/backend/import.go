@@ -1,8 +1,8 @@
 package backend
 
-import "gitlab.com/strict-lang/sdk/compilation/ast"
+import "gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 
-func (generation *Generation) GenerateImportStatement(statement *ast.ImportStatement) {
+func (generation *Generation) GenerateImportStatement(statement *syntaxtree.ImportStatement) {
 	moduleName := statement.ModuleName()
 	generation.importModule(moduleName, statement.Target.FilePath())
 }

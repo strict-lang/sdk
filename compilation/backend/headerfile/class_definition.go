@@ -1,32 +1,32 @@
 package headerfile
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/backend"
 )
 
 type classDefinition struct {
 	name             string
-	parameters       []ast.ClassParameter
-	superTypes       []ast.TypeName
-	methods          []*ast.MethodDeclaration
-	fields           []*ast.FieldDeclaration
+	parameters       []syntaxtree.ClassParameter
+	superTypes       []syntaxtree.TypeName
+	methods          []*syntaxtree.MethodDeclaration
+	fields           []*syntaxtree.FieldDeclaration
 	generation       *backend.Generation
 	shouldCreateInit bool
 }
 
 func newClassDefinition(
-	generation *backend.Generation, declaration *ast.ClassDeclaration) *classDefinition {
+	generation *backend.Generation, declaration *syntaxtree.ClassDeclaration) *classDefinition {
 
-	var methods []*ast.MethodDeclaration
-	var fields []*ast.FieldDeclaration
+	var methods []*syntaxtree.MethodDeclaration
+	var fields []*syntaxtree.FieldDeclaration
 	var createInit = false
 	for _, child := range declaration.Children {
-		if method, isMethod := child.(*ast.MethodDeclaration); isMethod {
+		if method, isMethod := child.(*syntaxtree.MethodDeclaration); isMethod {
 			methods = append(methods, method)
 			continue
 		}
-		if field, isField := child.(*ast.FieldDeclaration); isField {
+		if field, isField := child.(*syntaxtree.FieldDeclaration); isField {
 			fields = append(fields, field)
 			continue
 		}
@@ -82,13 +82,13 @@ func (class *classDefinition) generateCode() {
 	generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) writeMethodDeclaration(declaration *ast.MethodDeclaration) {
+func (class *classDefinition) writeMethodDeclaration(declaration *syntaxtree.MethodDeclaration) {
 	class.generation.EmitMethodDeclaration(declaration)
 	class.generation.Emit(";")
 	class.generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) writeFieldDeclaration(declaration *ast.FieldDeclaration) {
+func (class *classDefinition) writeFieldDeclaration(declaration *syntaxtree.FieldDeclaration) {
 	class.generation.GenerateFieldDeclaration(declaration)
 	class.generation.Emit(";")
 	class.generation.EmitEndOfLine()

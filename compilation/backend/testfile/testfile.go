@@ -2,7 +2,7 @@ package testfile
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/backend"
 )
 
@@ -14,7 +14,7 @@ type TestFile struct {
 	generation *backend.Generation
 }
 
-func (extension *Extension) ModifyVisitor(generation *backend.Generation, visitor *ast.Visitor) {
+func (extension *Extension) ModifyVisitor(generation *backend.Generation, visitor *syntaxtree.Visitor) {
 	testFile := &TestFile{
 		generation: generation,
 	}
@@ -25,7 +25,7 @@ const typeTestingInstance = "testing"
 const methodTestingInstance = "methodTesting"
 const returnOnFailure = false
 
-func (testFile *TestFile) emitAssertStatement(statement *ast.AssertStatement) {
+func (testFile *TestFile) emitAssertStatement(statement *syntaxtree.AssertStatement) {
 	generation := testFile.generation
 	generation.Emit("if (!(")
 	generation.EmitNode(statement.Expression)
@@ -39,7 +39,7 @@ func (testFile *TestFile) emitAssertStatement(statement *ast.AssertStatement) {
 	generation.EmitEndOfLine()
 }
 
-func (testFile *TestFile) emitFailedAssertion(statement *ast.AssertStatement) {
+func (testFile *TestFile) emitFailedAssertion(statement *syntaxtree.AssertStatement) {
 	failureMessage := generateAssertionFailureMessage(statement.Expression)
 	testFile.generation.EmitFormatted("%s.ReportFailedAssertion(\"%s\");",
 		methodTestingInstance, failureMessage)
@@ -48,7 +48,7 @@ func (testFile *TestFile) emitFailedAssertion(statement *ast.AssertStatement) {
 	}
 }
 
-func generateAssertionFailureMessage(expression ast.Node) string {
+func generateAssertionFailureMessage(expression syntaxtree.Node) string {
 	assertionMessage := backend.NewAssertionMessageComputation()
 	assertionMessage.GenerateNode(expression)
 	return assertionMessage.String()
@@ -57,11 +57,11 @@ func generateAssertionFailureMessage(expression ast.Node) string {
 type TestDefinition struct {
 	testedMethodName string
 	testMethodName   string
-	node             ast.TestStatement
+	node             syntaxtree.TestStatement
 	generation       *backend.Generation
 }
 
-func NewTestDefinition(node ast.TestStatement, generation *backend.Generation) *TestDefinition {
+func NewTestDefinition(node syntaxtree.TestStatement, generation *backend.Generation) *TestDefinition {
 	return &TestDefinition{
 		testedMethodName: node.MethodName,
 		testMethodName:   produceTestMethodName(node.MethodName),

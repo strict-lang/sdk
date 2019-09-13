@@ -1,7 +1,7 @@
 package parsing
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/source"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
@@ -21,7 +21,7 @@ func (parsing *Parsing) couldBeLookingAtTypeName() bool {
 
 // parseTypeName is a recursive method that parses type names. When calling
 // this method, the types primary name is the value of the 'last' token.
-func (parsing *Parsing) parseTypeName() (ast.TypeName, error) {
+func (parsing *Parsing) parseTypeName() (syntaxtree.TypeName, error) {
 	beginOffset := parsing.offset()
 	typeName := parsing.token()
 	parsing.advance()
@@ -35,7 +35,7 @@ func (parsing *Parsing) parseTypeName() (ast.TypeName, error) {
 	if operator == token.SmallerOperator {
 		return parsing.parseGenericTypeName(beginOffset, typeName.Value())
 	}
-	concrete := &ast.ConcreteTypeName{
+	concrete := &syntaxtree.ConcreteTypeName{
 		Name:         typeName.Value(),
 		NodePosition: parsing.createPosition(beginOffset),
 	}
@@ -46,7 +46,7 @@ func (parsing *Parsing) parseTypeName() (ast.TypeName, error) {
 }
 
 func (parsing *Parsing) parseGenericTypeName(
-	beginOffset source.Offset, base string) (ast.TypeName, error) {
+	beginOffset source.Offset, base string) (syntaxtree.TypeName, error) {
 
 	if err := parsing.skipOperator(token.SmallerOperator); err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (parsing *Parsing) parseGenericTypeName(
 		}
 	}
 	parsing.advance()
-	return &ast.GenericTypeName{
+	return &syntaxtree.GenericTypeName{
 		Name:         base,
 		Generic:      generic,
 		NodePosition: parsing.createPosition(beginOffset),
@@ -71,7 +71,7 @@ func (parsing *Parsing) parseGenericTypeName(
 }
 
 func (parsing *Parsing) parseListTypeName(
-	beginOffset source.Offset, base ast.TypeName) (ast.TypeName, error) {
+	beginOffset source.Offset, base syntaxtree.TypeName) (syntaxtree.TypeName, error) {
 
 	if err := parsing.skipOperator(token.LeftBracketOperator); err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (parsing *Parsing) parseListTypeName(
 	if err := parsing.skipOperator(token.RightBracketOperator); err != nil {
 		return nil, err
 	}
-	typeName := &ast.ListTypeName{
+	typeName := &syntaxtree.ListTypeName{
 		ElementTypeName: base,
 		NodePosition:    parsing.createPosition(beginOffset),
 	}

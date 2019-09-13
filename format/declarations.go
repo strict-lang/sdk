@@ -1,8 +1,8 @@
 package format
 
-import "gitlab.com/strict-lang/sdk/compilation/ast"
+import "gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 
-func (printer *PrettyPrinter) printMethod(method *ast.MethodDeclaration) {
+func (printer *PrettyPrinter) printMethod(method *syntaxtree.MethodDeclaration) {
 	printer.appendFormatted(
 		"method %s %s(", method.Type.FullName(), method.Name.Value)
 
@@ -13,7 +13,7 @@ func (printer *PrettyPrinter) printMethod(method *ast.MethodDeclaration) {
 	printer.printNode(method.Body)
 }
 
-func (printer *PrettyPrinter) writeMethodParameters(method *ast.MethodDeclaration) {
+func (printer *PrettyPrinter) writeMethodParameters(method *syntaxtree.MethodDeclaration) {
 	printer.indent.OpenContinuous()
 	parameters, combinedLength := printer.recordAllParameters(method)
 	lengthOfSpaces := len(parameters) * 2
@@ -54,7 +54,7 @@ func (printer *PrettyPrinter) writeShortParameterList(parameters []string) {
 }
 
 func (printer *PrettyPrinter) recordAllParameters(
-	call *ast.MethodDeclaration) (parameters []string, combinedLength int) {
+	call *syntaxtree.MethodDeclaration) (parameters []string, combinedLength int) {
 
 	for _, parameter := range call.Parameters {
 		recorded := printer.recordParameter(parameter)
@@ -64,7 +64,7 @@ func (printer *PrettyPrinter) recordAllParameters(
 	return
 }
 
-func (printer *PrettyPrinter) recordParameter(parameter *ast.Parameter) string {
+func (printer *PrettyPrinter) recordParameter(parameter *syntaxtree.Parameter) string {
 	buffer := NewStringWriter()
 	oldWriter := printer.swapWriter(buffer)
 	defer printer.setWriter(oldWriter)

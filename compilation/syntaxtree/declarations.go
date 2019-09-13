@@ -1,4 +1,4 @@
-package ast
+package syntaxtree
 
 type ParameterList []*Parameter
 
@@ -92,4 +92,25 @@ func (class *ClassDeclaration) Position() Position {
 type ClassParameter struct {
 	Name      string
 	SuperType TypeName
+}
+
+type ConstructorDeclaration struct {
+	Parameters ParameterList
+	Body Node
+	NodePosition Position
+}
+
+func (declaration *ConstructorDeclaration) Accept(visitor *Visitor) {
+	visitor.VisitConstructorDeclaration(declaration)
+}
+
+func (declaration *ConstructorDeclaration) AcceptRecursive(visitor *Visitor) {
+	visitor.VisitConstructorDeclaration(declaration)
+	for _, parameter := range declaration.Parameters {
+		parameter.AcceptRecursive(visitor)
+	}
+}
+
+func (declaration *ConstructorDeclaration) Position() Position {
+	return declaration.NodePosition
 }

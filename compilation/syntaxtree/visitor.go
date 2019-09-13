@@ -1,7 +1,7 @@
-package ast
+package syntaxtree
 
-// Visitor visits every node in the ast. The visitor-pattern is used to traverse
-// the syntax-tree. Every ast-node has an 'Accept' method that lets the visitor
+// Visitor visits every node in the syntaxtree. The visitor-pattern is used to traverse
+// the syntax-tree. Every syntaxtree-node has an 'Accept' method that lets the visitor
 // visit itself and all of its children. In contrast to many visitor-pattern
 // implementations, the visitor is not an interface. It has a lot of  methods
 // and because of golang's type-system, every visitor-implementation would have
@@ -9,12 +9,13 @@ package ast
 // only has noop-methods, and then set the visit-methods that should be custom.
 type Visitor struct {
 	VisitParameter            func(*Parameter)
-	VisitMethodCall           func(*MethodCall)
 	VisitIdentifier           func(*Identifier)
+	VisitCallArgument         func(*CallArgument)
 	VisitListTypeName         func(*ListTypeName)
 	VisitTestStatement        func(*TestStatement)
 	VisitStringLiteral        func(*StringLiteral)
 	VisitNumberLiteral        func(*NumberLiteral)
+	VisitCallExpression       func(*CallExpression)
 	VisitEmptyStatement       func(*EmptyStatement)
 	VisitYieldStatement       func(*YieldStatement)
 	VisitBlockStatement       func(*BlockStatement)
@@ -40,21 +41,23 @@ type Visitor struct {
 	VisitForEachLoopStatement func(*ForEachLoopStatement)
 	VisitConditionalStatement func(*ConditionalStatement)
 	VisitListSelectExpression func(*ListSelectExpression)
+	VisitConstructorDeclaration func(*ConstructorDeclaration)
 }
 
 func NewEmptyVisitor() *Visitor {
 	return &Visitor{
-		VisitParameter:            func(*Parameter) {},
-		VisitMethodCall:           func(*MethodCall) {},
-		VisitIdentifier:           func(*Identifier) {},
-		VisitListTypeName:         func(*ListTypeName) {},
-		VisitTestStatement:        func(*TestStatement) {},
-		VisitStringLiteral:        func(*StringLiteral) {},
-		VisitNumberLiteral:        func(*NumberLiteral) {},
-		VisitYieldStatement:       func(*YieldStatement) {},
-		VisitBlockStatement:       func(*BlockStatement) {},
-		VisitAssertStatement:      func(*AssertStatement) {},
-		VisitUnaryExpression:      func(*UnaryExpression) {},
+		VisitCallArgument:    func(*CallArgument) {},
+		VisitParameter:       func(*Parameter) {},
+		VisitCallExpression:  func(*CallExpression) {},
+		VisitIdentifier:      func(*Identifier) {},
+		VisitListTypeName:    func(*ListTypeName) {},
+		VisitTestStatement:   func(*TestStatement) {},
+		VisitStringLiteral:   func(*StringLiteral) {},
+		VisitNumberLiteral:   func(*NumberLiteral) {},
+		VisitYieldStatement:  func(*YieldStatement) {},
+		VisitBlockStatement:  func(*BlockStatement) {},
+		VisitAssertStatement: func(*AssertStatement) {},
+		VisitUnaryExpression: func(*UnaryExpression) {},
 		VisitCreateExpression:     func(*CreateExpression) {},
 		VisitEmptyStatement:       func(*EmptyStatement) {},
 		VisitImportStatement:      func(*ImportStatement) {},
@@ -76,5 +79,6 @@ func NewEmptyVisitor() *Visitor {
 		VisitForEachLoopStatement: func(*ForEachLoopStatement) {},
 		VisitConditionalStatement: func(*ConditionalStatement) {},
 		VisitListSelectExpression: func(*ListSelectExpression) {},
+		VisitConstructorDeclaration: func(*ConstructorDeclaration) {},
 	}
 }

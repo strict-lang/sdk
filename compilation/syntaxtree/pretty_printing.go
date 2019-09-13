@@ -1,4 +1,4 @@
-package ast
+package syntaxtree
 
 import (
 	"fmt"
@@ -19,16 +19,16 @@ type Printing struct {
 func newPrinting() *Printing {
 	printing := &Printing{}
 	visitor := &Visitor{
-		VisitParameter:            printing.printParameter,
-		VisitMethodCall:           printing.printMethodCall,
-		VisitIdentifier:           printing.printIdentifier,
-		VisitListTypeName:         printing.printListTypeName,
-		VisitTestStatement:        printing.printTestStatement,
-		VisitStringLiteral:        printing.printStringLiteral,
-		VisitNumberLiteral:        printing.printNumberLiteral,
-		VisitEmptyStatement:       printing.printEmptyStatement,
-		VisitYieldStatement:       printing.printYieldStatement,
-		VisitBlockStatement:       printing.printBlockStatement,
+		VisitParameter:      printing.printParameter,
+		VisitCallExpression: printing.printMethodCall,
+		VisitIdentifier:     printing.printIdentifier,
+		VisitListTypeName:   printing.printListTypeName,
+		VisitTestStatement:  printing.printTestStatement,
+		VisitStringLiteral:  printing.printStringLiteral,
+		VisitNumberLiteral:  printing.printNumberLiteral,
+		VisitEmptyStatement: printing.printEmptyStatement,
+		VisitYieldStatement: printing.printYieldStatement,
+		VisitBlockStatement: printing.printBlockStatement,
 		VisitAssertStatement:      printing.printAssertStatement,
 		VisitUnaryExpression:      printing.printUnaryExpression,
 		VisitImportStatement:      printing.printImportStatement,
@@ -366,8 +366,8 @@ func (printing *Printing) printListSelectExpression(expression *ListSelectExpres
 	printing.printNodeEnd()
 }
 
-func (printing *Printing) printMethodCall(call *MethodCall) {
-	printing.printNodeBegin("MethodCall")
+func (printing *Printing) printMethodCall(call *CallExpression) {
+	printing.printNodeBegin("CallExpression")
 	printing.printIndentedNodeField("method", call.Method)
 	printing.printIndentedListFieldBegin("arguments")
 	for _, argument := range call.Arguments {

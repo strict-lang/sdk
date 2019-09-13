@@ -2,7 +2,7 @@ package parsing
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/code"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
 	"gitlab.com/strict-lang/sdk/compilation/source"
@@ -40,11 +40,11 @@ type Block struct {
 	Parent *Block
 }
 
-func (parsing *Parsing) parseImportStatementList() (imports []*ast.ImportStatement, failed[]ast.Node) {
+func (parsing *Parsing) parseImportStatementList() (imports []*syntaxtree.ImportStatement, failed[]syntaxtree.Node) {
 	fmt.Println(parsing.token())
 	for token.HasKeywordValue(parsing.token(), token.ImportKeyword) {
 		result := parsing.parseImportStatement()
-		if importStatement, isImport := result.(*ast.ImportStatement); isImport {
+		if importStatement, isImport := result.(*syntaxtree.ImportStatement); isImport {
 			imports = append(imports, importStatement)
 		} else {
 			failed = append(failed, result)
@@ -53,13 +53,13 @@ func (parsing *Parsing) parseImportStatementList() (imports []*ast.ImportStateme
 	return
 }
 
-func (parsing *Parsing) parseClassDeclaration() *ast.ClassDeclaration {
+func (parsing *Parsing) parseClassDeclaration() *syntaxtree.ClassDeclaration {
 	begin := parsing.offset()
 	nodes := parsing.parseTopLevelNodes()
-	return &ast.ClassDeclaration{
+	return &syntaxtree.ClassDeclaration{
 		Name:         parsing.unitName,
-		Parameters:   []ast.ClassParameter{},
-		SuperTypes:   []ast.TypeName{},
+		Parameters:   []syntaxtree.ClassParameter{},
+		SuperTypes:   []syntaxtree.TypeName{},
 		Children:     nodes,
 		NodePosition: parsing.createPosition(begin),
 	}
@@ -67,11 +67,11 @@ func (parsing *Parsing) parseClassDeclaration() *ast.ClassDeclaration {
 
 // ParseTranslationUnit invokes the parsing on the translation unit.
 // This method can only be called once on the Parsing instance.
-func (parsing *Parsing) ParseTranslationUnit() (*ast.TranslationUnit, error) {
+func (parsing *Parsing) ParseTranslationUnit() (*syntaxtree.TranslationUnit, error) {
 	begin := parsing.offset()
 	imports, _ := parsing.parseImportStatementList()
 	class := parsing.parseClassDeclaration()
-	return &ast.TranslationUnit{
+	return &syntaxtree.TranslationUnit{
 		Name:         parsing.unitName,
 		Imports:      imports,
 		Class:        class,
@@ -122,11 +122,11 @@ func (parsing *Parsing) isParsingMethod() bool {
 	return parsing.currentMethodName != notParsingMethod
 }
 
-func (parsing *Parsing) parseTopLevelNodes() []ast.Node {
+func (parsing *Parsing) parseTopLevelNodes() []syntaxtree.Node {
 	beginOffset := parsing.offset()
 	block, err := parsing.parseStatementBlock()
 	if err != nil {
-		return []ast.Node{parsing.createInvalidStatement(beginOffset, err)}
+		return []syntaxtree.Node{parsing.createInvalidStatement(beginOffset, err)}
 	}
 	return block.Children
 }
