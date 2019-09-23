@@ -26,21 +26,3 @@ func TestScanningStringLiteralBody(test *testing.T) {
 func removeSurroundingQuotes(literal string) string {
 	return literal[1 : len(literal)-1]
 }
-
-func TestScanningInvalidStringLiteralBody(test *testing.T) {
-	entries := map[string]error{
-		"\"This contains a \nLinebreak\"": ErrStringContainsLineFeed,
-		"\"\\p Invalid escaped char \"":   ErrInvalidEscapedChar,
-	}
-	for entry, expected := range entries {
-		scanner := NewStringScanning(entry)
-		literal, err := scanner.gatherStringLiteral()
-		if err == nil {
-			test.Errorf("scanned invalid string %s as %s", entry, literal)
-			continue
-		}
-		if err != expected {
-			test.Errorf("unexpected error %s, expected %s", entry, expected)
-		}
-	}
-}

@@ -47,25 +47,25 @@ func (scanning *Scanning) operatorGathered(operator token.Operator) {
 }
 
 func (scanning Scanning) gatherOperator() (token.Operator, error) {
-	peek := scanning.reader.Pull()
-	options, ok := operatorOptionsOfChar(peek)
+	char := scanning.char()
+	options, ok := operatorOptionsOfChar(char)
 	if !ok || len(options) == 0 {
 		return token.InvalidOperator, ErrNoSuchOperator
 	}
-	next := scanning.reader.Peek()
-	return scanning.findOperatorOption(options, next)
+	return scanning.findOperatorOption(options, scanning.char())
 }
 
 func (scanning *Scanning) findOperatorOption(options OperatorOptions, char source.Char) (token.Operator, error) {
-	operator, ok := options[char]
+	operator, ok := options[scanning.peekChar()]
 	if ok {
-		scanning.reader.Pull()
+		scanning.advance()
 		return operator, nil
 	}
 	singleOperator, ok := options[singleChar]
 	if !ok {
 		return token.InvalidOperator, ErrNoSuchOperator
 	}
+	scanning.advance()
 	return singleOperator, nil
 }
 

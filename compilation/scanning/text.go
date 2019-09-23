@@ -20,7 +20,7 @@ func (scanning *Scanning) gatherStringLiteral() (string, error) {
 	}
 	var builder strings.Builder
 	for count := 0; count < textCharacterLimit; count++ {
-		next := scanning.reader.Pull()
+		next := scanning.char()
 		if next == '"' {
 			break
 		}
@@ -28,16 +28,17 @@ func (scanning *Scanning) gatherStringLiteral() (string, error) {
 			return "", ErrStringContainsLineFeed
 		}
 		if next == '\\' {
-			_, ok := findEscapedCharacter(scanning.reader.Pull())
+			_, ok := findEscapedCharacter(scanning.char())
 			if !ok {
 				return "", ErrInvalidEscapedChar
 			}
 			// TODO: Change this after backend emits something else
 			builder.WriteRune('\\')
-			builder.WriteRune(rune(scanning.reader.Current()))
+			scanning.advance()
 			continue
 		}
 		builder.WriteRune(rune(next))
+		scanning.advance()
 	}
 	return builder.String(), nil
 }

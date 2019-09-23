@@ -9,35 +9,38 @@ import (
 type charMatcher func(source.Char) bool
 
 func (scanning *Scanning) offset() source.Offset {
-	return scanning.reader.Index()
+	return scanning.input.Index()
 }
 
 func (scanning *Scanning) scanAllMatching(matcher charMatcher) (string, bool) {
 	var builder strings.Builder
 	for {
-		if !matcher(scanning.reader.Peek()) {
+		if scanning.input.IsExhausted() || !matcher(scanning.char()) {
 			break
 		}
-		builder.WriteRune(rune(scanning.reader.Pull()))
+		builder.WriteRune(rune(scanning.char()))
+		scanning.advance()
 	}
 	return builder.String(), builder.Len() > 0
 }
 
 func (scanning *Scanning) scanMatching(matcher charMatcher) (source.Char, bool) {
-	if !matcher(scanning.reader.Peek()) {
-		return 0, false
+	char := scanning.char()
+	if matcher(scanning.char()) {
+		scanning.advance()
+		return char, true
 	}
-	return scanning.reader.Pull(), true
+	return source.EndOfFile, false
 }
 
 // tryToSkip consumes the next character if it has the same id, as the one
 // passed to the function, otherwise the index remains the same.
 func (scanning *Scanning) tryToSkip(char source.Char) bool {
-	next := scanning.reader.Peek()
+	next := scanning.char()
 	if next != char {
 		return false
 	}
-	scanning.reader.Pull()
+	scanning.advance()
 	return true
 }
 
@@ -59,36 +62,35 @@ func (scanning *Scanning) createPositionToOffset(begin source.Offset) token.Posi
 
 func (scanning *Scanning) currentPosition() token.Position {
 	return token.Position{
-		BeginOffset: scanning.reader.Index(),
+		BeginOffset: scanning.input.Index(),
 		EndOffset:   scanning.offset(),
 	}
 }
 
-func (scanning *Scanning) SkipWhitespaces() (token.Token, bool) {
+func (scanning *Scanning) skipWhitespaces() (token.Token, bool) {
 	for {
-		peek := scanning.reader.Peek()
-		if peek == '\n' {
-			scanning.reader.Pull()
+		switch char := scanning.char(); char {
+		case '\n':
+			scanning.advance()
 			if endOfStatement, ok := scanning.incrementLineIndex(); ok {
 				return endOfStatement, true
 			}
 			continue
-		}
-		if peek == ' ' {
+		case ' ':
 			scanning.addWhitespaceIndent()
-			scanning.reader.Pull()
-			continue
-		}
-		if peek == '\t' {
+			break
+		case '\t':
 			scanning.addTabIndent()
-			scanning.reader.Pull()
-			continue
+			break
+		case '\r':
+			break
+		default:
+			return nil, false
 		}
-		if peek == '\r' {
-			scanning.reader.Pull()
-			continue
+		scanning.advance()
+		if scanning.input.IsExhausted() {
+			return nil, false
 		}
-		return nil, false
 	}
 }
 

@@ -36,6 +36,9 @@ func TestInvalidIdentifiers(test *testing.T) {
 // successfully, the test fails.
 func TestValidIdentifiers(test *testing.T) {
 	var entries = []string{
+		"a",  // single letter
+		"_",  // single underscore
+		"__", // multiple underscores
 		"PascalCase",
 		"mixedCaseIdentifier",
 		"lowercase",
@@ -45,9 +48,6 @@ func TestValidIdentifiers(test *testing.T) {
 		"trailingUnderscore_",
 		"trailingNumber0",
 		"m1x3d",
-		"a",  // single letter
-		"_",  // single underscore
-		"__", // multiple underscores
 		"__more_underscores__",
 	}
 
@@ -58,7 +58,7 @@ func TestValidIdentifiers(test *testing.T) {
 			test.Errorf("unexpected error %s", err.Error())
 		}
 		if identifier != entry {
-			test.Errorf("scanning wrongly scanned entry %s as %s", identifier, entry)
+			test.Errorf("scanning wrongly scanned entry %s as '%s'", entry, identifier)
 		}
 	}
 }

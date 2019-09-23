@@ -22,7 +22,7 @@ func TestGatheringOperator(test *testing.T) {
 			test.Errorf("unexpected error: %s", err)
 		}
 		if scanned != operator {
-			test.Errorf("expected operator %s but got %s", scanned.String(), operator.String())
+			test.Errorf("expected operator %s but got %s", operator.String(), operator.String())
 		}
 	}
 }

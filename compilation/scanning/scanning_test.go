@@ -35,9 +35,9 @@ func countEndOfStatements(tokens []token.Token) int {
 
 func TestIndentation(test *testing.T) {
 	entries := map[string]token.Indent{
+		"  b   is   not  true  ": 2,
 		"  a + b":                2,
 		"  b is not true":        2,
-		"  b   is   not  true  ": 2,
 	}
 	for entry, indent := range entries {
 		scanner := NewStringScanning(entry)
@@ -137,7 +137,7 @@ func assertEndOfStatement(test *testing.T, got token.Token, entry string) {
 func assertEndOfFile(test *testing.T, got token.Token, entry string) {
 	if !token.IsEndOfFileToken(got) {
 		test.Errorf("unexpected token while scanning \n%s\n expected %s but got %s",
-			entry, got, token.EndOfFileTokenName)
+			entry, token.EndOfFileTokenName, got)
 	}
 }
 

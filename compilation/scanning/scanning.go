@@ -14,7 +14,7 @@ const (
 
 // Scanning is a token.Stream that performs lexical analysis on a stream or characters.
 type Scanning struct {
-	reader         *RecordingSourceReader
+	input         *RecordingSourceReader
 	lineMapBuilder *linemap.Builder
 	diagnosticBag  *diagnostic.Bag
 	// peeked points to the most recently peeked token.
@@ -52,8 +52,8 @@ type Scanning struct {
 
 func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Bag) *Scanning {
 	beginOfFile := token.NewInvalidToken("BeginOfFile", token.Position{}, token.NoIndent)
-	return &Scanning{
-		reader:         decorateSourceReader(reader),
+	scanning := &Scanning{
+		input:         decorateSourceReader(reader),
 		lineMapBuilder: linemap.NewBuilder(),
 		diagnosticBag:  recorder,
 		last:           beginOfFile,
@@ -62,6 +62,8 @@ func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Bag) *Scann
 		updateIndent:   true,
 		emptyLine:      true, // The line is empty until a char is hit
 	}
+	scanning.advance()
+	return scanning
 }
 
 func NewScanning(reader source.Reader) *Scanning {
@@ -74,8 +76,20 @@ func NewStringScanning(input string) *Scanning {
 	return NewScanning(source.NewStringReader(input))
 }
 
+func (scanning *Scanning) advance() {
+	scanning.input.Pull()
+}
+
+func (scanning *Scanning) char() source.Char {
+	return scanning.input.Current()
+}
+
+func (scanning *Scanning) peekChar() source.Char {
+	return scanning.input.Peek()
+}
+
 func (scanning *Scanning) Pull() token.Token {
-	if scanning.reader.IsExhausted() {
+	if scanning.input.IsExhausted() {
 		return scanning.endOfFile()
 	}
 	if peeked := scanning.peeked; peeked != nil {
@@ -116,12 +130,13 @@ func (scanning *Scanning) Last() token.Token {
 }
 
 func (scanning *Scanning) resetTokenRecording() {
-	scanning.reader.Reset()
-	scanning.begin = scanning.reader.Index()
+	scanning.input.Reset()
+	scanning.begin = scanning.input.Index()
 }
 
 func (scanning *Scanning) createInvalidToken() token.Token {
-	return token.NewInvalidToken(scanning.reader.String(), scanning.currentPosition(), scanning.indent)
+	return token.NewInvalidToken(
+		scanning.input.String(), scanning.currentPosition(), scanning.indent)
 }
 
 func (scanning *Scanning) incrementLineIndex() (token.Token, bool) {
@@ -129,7 +144,7 @@ func (scanning *Scanning) incrementLineIndex() (token.Token, bool) {
 	scanning.updateIndent = true
 	length := scanning.offset() - scanning.lineBeginOffset
 	scanning.lineMapBuilder.Append(scanning.lineBeginOffset, length)
-	scanning.reader.resetInternalIndex()
+	scanning.input.resetInternalIndex()
 	scanning.lineIndex++
 	scanning.lineBeginOffset = scanning.offset()
 	if !scanning.shouldInsertEndOfStatement() || scanning.emptyLine {
@@ -144,7 +159,7 @@ func (scanning *Scanning) shouldInsertEndOfStatement() bool {
 }
 
 func (scanning *Scanning) next() token.Token {
-	if endOfStatement, ok := scanning.SkipWhitespaces(); ok {
+	if endOfStatement, ok := scanning.skipWhitespaces(); ok {
 		// The SkipWhitespaces method returns an EndOfStatementToken if it hits a
 		// linefeed character while the scanners 'insertEos' flag is set.
 		return endOfStatement
@@ -152,7 +167,7 @@ func (scanning *Scanning) next() token.Token {
 	scanning.resetTokenRecording()
 	scanning.updateIndent = false
 	scanning.emptyLine = false
-	if scanning.reader.Peek() == source.EndOfFile {
+	if scanning.char() == source.EndOfFile {
 		return scanning.endOfFile()
 	}
 	return scanning.nextNonEndOfFile()
@@ -169,19 +184,20 @@ func (scanning *Scanning) reportError(err error) {
 
 func (scanning *Scanning) SkipComment() {
 	// Skip the next '/' characters
-	scanning.reader.Pull()
+	scanning.advance()
+	scanning.advance()
 	for {
-		next := scanning.reader.Pull()
-		if next == '\n' {
+		scanning.advance()
+		if scanning.char() == '\n' {
 			break
 		}
 	}
 }
 
 func (scanning *Scanning) nextNonEndOfFile() token.Token {
-	switch next := scanning.reader.Peek(); {
+	switch next := scanning.char(); {
 	case next == '/':
-		if scanning.reader.Peek() == '/' {
+		if scanning.peekChar() == '/' {
 			scanning.SkipComment()
 			return scanning.nextNonEndOfFile()
 		}
@@ -193,6 +209,9 @@ func (scanning *Scanning) nextNonEndOfFile() token.Token {
 		return scanning.ScanOperator()
 	case next == '"':
 		return scanning.ScanStringLiteral()
+	}
+	if scanning.input.IsExhausted() {
+		return scanning.endOfFile()
 	}
 	return scanning.createInvalidToken()
 }
