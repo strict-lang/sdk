@@ -1,4 +1,4 @@
-package ast
+package syntaxtree
 
 // Ensures that all the declaration nodes are implementing the
 // Node interface.

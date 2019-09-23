@@ -1,4 +1,4 @@
-package ast
+package syntaxtree
 
 type StringLiteral struct {
 	Value        string

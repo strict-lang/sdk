@@ -1,13 +1,13 @@
 package backend
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"strings"
 )
 
 type MethodDefinition struct {
 	generation  *Generation
-	declaration *ast.MethodDeclaration
+	declaration *syntaxtree.MethodDeclaration
 	buffer      *strings.Builder
 	prologue    map[string]ProloguePart
 	epilogue    map[string]EpiloguePart
@@ -16,7 +16,7 @@ type MethodDefinition struct {
 type ProloguePart func()
 type EpiloguePart func()
 
-func (generation *Generation) NewMethodGeneration(method *ast.MethodDeclaration) *MethodDefinition {
+func (generation *Generation) NewMethodGeneration(method *syntaxtree.MethodDeclaration) *MethodDefinition {
 	return &MethodDefinition{
 		generation:  generation,
 		declaration: method,
@@ -26,7 +26,7 @@ func (generation *Generation) NewMethodGeneration(method *ast.MethodDeclaration)
 	}
 }
 
-func (generation *Generation) GenerateMethod(method *ast.MethodDeclaration) {
+func (generation *Generation) GenerateMethod(method *syntaxtree.MethodDeclaration) {
 	methodGenerator := generation.NewMethodGeneration(method)
 	generation.method = methodGenerator
 	methodGenerator.Emit()
@@ -67,7 +67,7 @@ func (definition *MethodDefinition) generateBody() string {
 	// Do not use the normal BlockStatement visitor for BlockStatement definition in
 	// a method body. It will generate open and close brackets and this will produce
 	// faulty code, if a prologue or epilogue is generated.
-	if block, ok := definition.declaration.Body.(*ast.BlockStatement); ok {
+	if block, ok := definition.declaration.Body.(*syntaxtree.BlockStatement); ok {
 		for _, child := range block.Children {
 			definition.generation.EmitNode(child)
 		}

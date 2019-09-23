@@ -42,7 +42,7 @@ func (factory *Factory) WithDiagnosticBag(recorder *diagnostic.Bag) *Factory {
 }
 
 // NewParser creates a parsing instance that parses the tokens of the given
-// token.Stream and uses the 'unit' as its ast-root node. Errors while parsing
+// token.Stream and uses the 'unit' as its syntaxtree-root node. Errors while parsing
 // are recorded by the 'recorder'.
 func (factory *Factory) NewParser() *Parsing {
 	parser := &Parsing{

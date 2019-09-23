@@ -2,7 +2,7 @@ package format
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"unicode/utf8"
 )
 
@@ -10,16 +10,16 @@ type PrettyPrinter struct {
 	format     Format
 	writer     Writer
 	indent     Indent
-	unit       *ast.TranslationUnit
+	unit       *syntaxtree.TranslationUnit
 	lineLength int
-	astVisitor *ast.Visitor
+	astVisitor *syntaxtree.Visitor
 	sawReturn  bool
 }
 
 type PrettyPrinterFactory struct {
 	Format Format
 	Writer Writer
-	Unit   *ast.TranslationUnit
+	Unit   *syntaxtree.TranslationUnit
 }
 
 func (factory *PrettyPrinterFactory) NewPrettyPrinter() *PrettyPrinter {
@@ -28,7 +28,7 @@ func (factory *PrettyPrinterFactory) NewPrettyPrinter() *PrettyPrinter {
 		writer:     factory.Writer,
 		unit:       factory.Unit,
 		indent:     Indent{},
-		astVisitor: ast.NewEmptyVisitor(),
+		astVisitor: syntaxtree.NewEmptyVisitor(),
 	}
 	printer.registerAstVisitors()
 	return printer
@@ -72,17 +72,17 @@ func (printer *PrettyPrinter) setWriter(writer Writer) {
 	printer.writer = writer
 }
 
-func (printer *PrettyPrinter) printNode(node ast.Node) {
+func (printer *PrettyPrinter) printNode(node syntaxtree.Node) {
 	node.Accept(printer.astVisitor)
 }
 
-func (printer *PrettyPrinter) printTranslationUnit(unit *ast.TranslationUnit) {
+func (printer *PrettyPrinter) printTranslationUnit(unit *syntaxtree.TranslationUnit) {
 	// FIXME
 }
 
 func (printer *PrettyPrinter) registerAstVisitors() {
 	printer.astVisitor.VisitMethodDeclaration = printer.printMethod
-	printer.astVisitor.VisitMethodCall = printer.printMethodCall
+	printer.astVisitor.VisitCallExpression = printer.printMethodCall
 	printer.astVisitor.VisitIdentifier = printer.printIdentifier
 	printer.astVisitor.VisitNumberLiteral = printer.printNumberLiteral
 	printer.astVisitor.VisitStringLiteral = printer.printStringLiteral

@@ -1,34 +1,57 @@
-package ast
+package syntaxtree
 
 import (
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
-type MethodCall struct {
+type CallExpression struct {
 	// Method is the called method. It can be any kind of expression
 	// with the value of a method. Common nodes are identifiers and
 	// field selectors.
 	Method Node
 	// An array of expression nodes that are the arguments passed to
 	// the method. The arguments types are checked during type checking.
-	Arguments    []Node
+	Arguments    []*CallArgument
 	NodePosition Position
 }
 
-func (call *MethodCall) Accept(visitor *Visitor) {
-	visitor.VisitMethodCall(call)
+func (call *CallExpression) Accept(visitor *Visitor) {
+	visitor.VisitCallExpression(call)
 }
 
-func (call *MethodCall) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitMethodCall(call)
+func (call *CallExpression) AcceptRecursive(visitor *Visitor) {
+	visitor.VisitCallExpression(call)
 	call.Method.AcceptRecursive(visitor)
 	for _, argument := range call.Arguments {
 		argument.AcceptRecursive(visitor)
 	}
 }
 
-func (call *MethodCall) Position() Position {
+func (call *CallExpression) Position() Position {
 	return call.Position()
+}
+
+type CallArgument struct {
+	Label        string
+	Value        Node
+	NodePosition Position
+}
+
+func (argument *CallArgument) IsLabeled() bool {
+	return argument.Label != ""
+}
+
+func (argument *CallArgument) Accept(visitor *Visitor) {
+	visitor.VisitCallArgument(argument)
+}
+
+func (argument *CallArgument) AcceptRecursive(visitor *Visitor) {
+	visitor.VisitCallArgument(argument)
+	argument.Value.AcceptRecursive(visitor)
+}
+
+func (argument *CallArgument) Position() Position {
+	return argument.NodePosition
 }
 
 type Identifier struct {
@@ -112,7 +135,7 @@ func (expression *SelectExpression) Position() Position {
 
 type CreateExpression struct {
 	NodePosition Position
-	Constructor  *MethodCall
+	Constructor  *CallExpression
 	Type         TypeName
 }
 
@@ -130,8 +153,8 @@ func (create *CreateExpression) Position() Position {
 }
 
 type ListSelectExpression struct {
-	Index Node
-	Target Node
+	Index        Node
+	Target       Node
 	NodePosition Position
 }
 

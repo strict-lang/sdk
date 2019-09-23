@@ -3,12 +3,12 @@ package main
 import (
 	"github.com/spf13/cobra"
 	"gitlab.com/strict-lang/sdk/compilation"
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"os"
 )
 
 var astCommand = &cobra.Command{
-	Use:   "ast [-c] [file]",
+	Use:   "syntaxtree [-c] [file]",
 	Short: "Prints the files AST",
 	Long:  `Ast parses a file and prints its Abstract Syntax Tree`,
 	Run:   RunAst,
@@ -29,5 +29,5 @@ func parseAndPrintAst(command *cobra.Command, sourceFile *os.File) {
 	if parseResult.Error != nil {
 		return
 	}
-	ast.PrintColored(parseResult.Unit)
+	syntaxtree.PrintColored(parseResult.Unit)
 }

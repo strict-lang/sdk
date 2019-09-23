@@ -1,31 +1,31 @@
 package format
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
-func (printer *PrettyPrinter) printIdentifier(identifier *ast.Identifier) {
+func (printer *PrettyPrinter) printIdentifier(identifier *syntaxtree.Identifier) {
 	printer.append(identifier.Value)
 }
 
-func (printer *PrettyPrinter) printNumberLiteral(number *ast.NumberLiteral) {
+func (printer *PrettyPrinter) printNumberLiteral(number *syntaxtree.NumberLiteral) {
 	printer.append(number.Value)
 }
 
-func (printer *PrettyPrinter) printStringLiteral(literal *ast.StringLiteral) {
+func (printer *PrettyPrinter) printStringLiteral(literal *syntaxtree.StringLiteral) {
 	printer.appendRune('"')
 	printer.append(literal.Value)
 	printer.appendRune('"')
 }
 
-func (printer *PrettyPrinter) printUnaryExpression(expression *ast.UnaryExpression) {
+func (printer *PrettyPrinter) printUnaryExpression(expression *syntaxtree.UnaryExpression) {
 	operatorName := keywordNameOrOperator(expression.Operator)
 	printer.append(operatorName)
 	printer.printNode(expression.Operand)
 }
 
-func (printer *PrettyPrinter) printBinaryExpression(expression *ast.BinaryExpression) {
+func (printer *PrettyPrinter) printBinaryExpression(expression *syntaxtree.BinaryExpression) {
 	printer.printNode(expression.LeftOperand)
 	printer.appendRune(' ')
 
@@ -43,14 +43,14 @@ func keywordNameOrOperator(operator token.Operator) string {
 	return operator.String()
 }
 
-func (printer *PrettyPrinter) printMethodCall(call *ast.MethodCall) {
+func (printer *PrettyPrinter) printMethodCall(call *syntaxtree.CallExpression) {
 	printer.printNode(call.Method)
 	printer.appendRune('(')
 	printer.indent.OpenContinuous()
 	printer.writeArguments(call)
 }
 
-func (printer *PrettyPrinter) writeArguments(call *ast.MethodCall) {
+func (printer *PrettyPrinter) writeArguments(call *syntaxtree.CallExpression) {
 	arguments, combinedLength := printer.recordAllArguments(call)
 	lengthOfSpaces := len(arguments) * 2 // Most arguments have the ', ' chars.
 	totalLineLength := combinedLength + printer.lineLength + lengthOfSpaces
@@ -90,7 +90,7 @@ func (printer *PrettyPrinter) writeShortArgumentList(arguments []string) {
 }
 
 func (printer *PrettyPrinter) recordAllArguments(
-	call *ast.MethodCall) (arguments []string, combinedLength int) {
+	call *syntaxtree.CallExpression) (arguments []string, combinedLength int) {
 
 	for _, argument := range call.Arguments {
 		recorded := printer.recordArgument(argument)
@@ -100,7 +100,7 @@ func (printer *PrettyPrinter) recordAllArguments(
 	return arguments, combinedLength
 }
 
-func (printer *PrettyPrinter) recordArgument(node ast.Node) string {
+func (printer *PrettyPrinter) recordArgument(node syntaxtree.Node) string {
 	buffer := NewStringWriter()
 	oldWriter := printer.swapWriter(buffer)
 	defer printer.setWriter(oldWriter)
@@ -109,7 +109,7 @@ func (printer *PrettyPrinter) recordArgument(node ast.Node) string {
 	return buffer.String()
 }
 
-func (printer *PrettyPrinter) printSelectorExpression(selector *ast.SelectExpression) {
+func (printer *PrettyPrinter) printSelectorExpression(selector *syntaxtree.SelectExpression) {
 	printer.printNode(selector.Target)
 	printer.appendRune('.')
 	printer.printNode(selector.Selection)

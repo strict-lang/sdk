@@ -2,37 +2,37 @@ package backend
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"strings"
 )
 
-// Generation generates C code from an ast.
+// Generation generates C code from an syntaxtree.
 type Generation struct {
-	unit                        *ast.TranslationUnit
+	Unit                        *syntaxtree.TranslationUnit
 	output                      *strings.Builder
 	buffer                      *strings.Builder
 	method                      *MethodDefinition
-	visitor                     *ast.Visitor
+	visitor                     *syntaxtree.Visitor
 	indent                      int8
 	appendNewLineAfterStatement bool
 	importModules               map[string]string
 }
 
 type FileNaming interface {
-	FileNameForUnit(unit *ast.TranslationUnit)
+	FileNameForUnit(unit *syntaxtree.TranslationUnit)
 }
 
-func NewGenerationWithExtension(unit *ast.TranslationUnit, extension Extension) *Generation {
+func NewGenerationWithExtension(unit *syntaxtree.TranslationUnit, extension Extension) *Generation {
 	generation := NewGeneration(unit)
 	extension.ModifyVisitor(generation, generation.visitor)
 	return generation
 }
 
 // NewGeneration constructs a Generation that generates C code from
-// the nodes in the passed translation-unit.
-func NewGeneration(unit *ast.TranslationUnit) (generation *Generation) {
+// the nodes in the passed translation-Unit.
+func NewGeneration(unit *syntaxtree.TranslationUnit) (generation *Generation) {
 	generation = &Generation{
-		unit:                        unit,
+		Unit:                        unit,
 		output:                      &strings.Builder{},
 		importModules:               map[string]string{},
 		appendNewLineAfterStatement: true,
@@ -43,7 +43,7 @@ func NewGeneration(unit *ast.TranslationUnit) (generation *Generation) {
 }
 
 func (generation *Generation) Filename() string {
-	return fmt.Sprintf("%s.cc", generation.unit.ToTypeName().NonGenericName())
+	return fmt.Sprintf("%s.cc", generation.Unit.ToTypeName().NonGenericName())
 }
 
 func (generation *Generation) String() string {
@@ -82,11 +82,11 @@ func (generation *Generation) DecreaseIndent() {
 	}
 }
 
-func (generation *Generation) EmitNode(node ast.Node) {
+func (generation *Generation) EmitNode(node syntaxtree.Node) {
 	node.Accept(generation.visitor)
 }
 
 func (generation *Generation) Generate() string {
-	generation.EmitNode(generation.unit)
+	generation.EmitNode(generation.Unit)
 	return generation.String()
 }

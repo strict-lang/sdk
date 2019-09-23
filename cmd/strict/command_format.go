@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"gitlab.com/strict-lang/sdk/compilation"
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/format"
 	"os"
 )
@@ -76,14 +76,14 @@ func formattingTargetFile(sourceFile *os.File) (*os.File, error) {
 	return createNewFile(formatTargetFile)
 }
 
-func formatUnitToFile(unit *ast.TranslationUnit, file *os.File) (err error) {
+func formatUnitToFile(unit *syntaxtree.TranslationUnit, file *os.File) (err error) {
 	buffer := format.NewStringWriter()
 	formatUnit(unit, buffer)
 	_, err = file.WriteString(buffer.String())
 	return
 }
 
-func formatUnit(unit *ast.TranslationUnit, writer format.Writer) {
+func formatUnit(unit *syntaxtree.TranslationUnit, writer format.Writer) {
 	factory := &format.PrettyPrinterFactory{
 		Format: standardFormat,
 		Unit:   unit,

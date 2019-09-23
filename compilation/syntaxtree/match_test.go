@@ -1,10 +1,10 @@
-package ast
+package syntaxtree
 
 import "testing"
 
 func TestMatches(test *testing.T) {
 	entries := map[Node]Node{
-		&MethodCall{
+		&CallExpression{
 			Method: &Identifier{
 				Value:        "foo",
 				NodePosition: ZeroPosition{},
@@ -16,7 +16,7 @@ func TestMatches(test *testing.T) {
 				},
 			},
 			NodePosition: ZeroPosition{},
-		}: &MethodCall{
+		}: &CallExpression{
 			Method: &Identifier{
 				Value:        "foo",
 				NodePosition: ZeroPosition{},
@@ -43,7 +43,7 @@ func TestMatches(test *testing.T) {
 
 func TestNotMatches(test *testing.T) {
 	entries := map[Node]Node{
-		&MethodCall{
+		&CallExpression{
 			Method: &Identifier{
 				Value:        "foo",
 				NodePosition: ZeroPosition{},
@@ -55,7 +55,7 @@ func TestNotMatches(test *testing.T) {
 				},
 			},
 			NodePosition: ZeroPosition{},
-		}: &MethodCall{
+		}: &CallExpression{
 			Method: &Identifier{
 				Value:        "bar",
 				NodePosition: ZeroPosition{},

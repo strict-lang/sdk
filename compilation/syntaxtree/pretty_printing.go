@@ -1,4 +1,4 @@
-package ast
+package syntaxtree
 
 import (
 	"fmt"
@@ -19,38 +19,40 @@ type Printing struct {
 func newPrinting() *Printing {
 	printing := &Printing{}
 	visitor := &Visitor{
-		VisitParameter:            printing.printParameter,
-		VisitMethodCall:           printing.printMethodCall,
-		VisitIdentifier:           printing.printIdentifier,
-		VisitListTypeName:         printing.printListTypeName,
-		VisitTestStatement:        printing.printTestStatement,
-		VisitStringLiteral:        printing.printStringLiteral,
-		VisitNumberLiteral:        printing.printNumberLiteral,
-		VisitEmptyStatement:       printing.printEmptyStatement,
-		VisitYieldStatement:       printing.printYieldStatement,
-		VisitBlockStatement:       printing.printBlockStatement,
-		VisitAssertStatement:      printing.printAssertStatement,
-		VisitUnaryExpression:      printing.printUnaryExpression,
-		VisitImportStatement:      printing.printImportStatement,
-		VisitAssignStatement:      printing.printAssignStatement,
-		VisitReturnStatement:      printing.printReturnStatement,
-		VisitTranslationUnit:      printing.printTranslationUnit,
-		VisitCreateExpression:     printing.printCreateExpression,
-		VisitInvalidStatement:     printing.printInvalidStatement,
-		VisitFieldDeclaration:     printing.printFieldDeclaration,
-		VisitClassDeclaration:     printing.printClassDeclaration,
-		VisitGenericTypeName:      printing.printGenericTypeName,
-		VisitConcreteTypeName:     printing.printConcreteTypeName,
-		VisitBinaryExpression:     printing.printBinaryExpression,
-		VisitMethodDeclaration:    printing.printMethodDeclaration,
-		VisitSelectorExpression:   printing.printSelectExpression,
-		VisitIncrementStatement:   printing.printIncrementStatement,
-		VisitDecrementStatement:   printing.printDecrementStatement,
-		VisitRangedLoopStatement:  printing.printRangedLoopStatement,
-		VisitExpressionStatement:  printing.printExpressionStatement,
-		VisitForEachLoopStatement: printing.printForEachLoopStatement,
-		VisitConditionalStatement: printing.printConditionalStatement,
-		VisitListSelectExpression: printing.printListSelectExpression,
+		VisitParameter:              printing.printParameter,
+		VisitCallExpression:         printing.printCallExpression,
+		VisitCallArgument:           printing.printCallArgument,
+		VisitIdentifier:             printing.printIdentifier,
+		VisitListTypeName:           printing.printListTypeName,
+		VisitTestStatement:          printing.printTestStatement,
+		VisitStringLiteral:          printing.printStringLiteral,
+		VisitNumberLiteral:          printing.printNumberLiteral,
+		VisitEmptyStatement:         printing.printEmptyStatement,
+		VisitYieldStatement:         printing.printYieldStatement,
+		VisitBlockStatement:         printing.printBlockStatement,
+		VisitAssertStatement:        printing.printAssertStatement,
+		VisitUnaryExpression:        printing.printUnaryExpression,
+		VisitImportStatement:        printing.printImportStatement,
+		VisitAssignStatement:        printing.printAssignStatement,
+		VisitReturnStatement:        printing.printReturnStatement,
+		VisitTranslationUnit:        printing.printTranslationUnit,
+		VisitCreateExpression:       printing.printCreateExpression,
+		VisitInvalidStatement:       printing.printInvalidStatement,
+		VisitFieldDeclaration:       printing.printFieldDeclaration,
+		VisitClassDeclaration:       printing.printClassDeclaration,
+		VisitGenericTypeName:        printing.printGenericTypeName,
+		VisitConcreteTypeName:       printing.printConcreteTypeName,
+		VisitBinaryExpression:       printing.printBinaryExpression,
+		VisitMethodDeclaration:      printing.printMethodDeclaration,
+		VisitSelectorExpression:     printing.printSelectExpression,
+		VisitIncrementStatement:     printing.printIncrementStatement,
+		VisitDecrementStatement:     printing.printDecrementStatement,
+		VisitRangedLoopStatement:    printing.printRangedLoopStatement,
+		VisitExpressionStatement:    printing.printExpressionStatement,
+		VisitForEachLoopStatement:   printing.printForEachLoopStatement,
+		VisitConditionalStatement:   printing.printConditionalStatement,
+		VisitListSelectExpression:   printing.printListSelectExpression,
+		VisitConstructorDeclaration: printing.printConstructorDeclaration,
 	}
 	printing.visitor = visitor
 	return printing
@@ -302,13 +304,26 @@ func (printing *Printing) printMethodDeclaration(method *MethodDeclaration) {
 	printing.printNodeBegin("MethodDeclaration")
 	printing.printIndentedNodeField("name", method.Name)
 	printing.printIndentedNodeField("returnType", method.Type)
+	printing.printParameterList(method.Parameters)
+	if method.Body != nil {
+		printing.printIndentedNodeField("body", method.Body)
+	}
+	printing.printNodeEnd()
+}
+
+func (printing *Printing) printParameterList(parameters ParameterList) {
 	printing.printIndentedListFieldBegin("parameters")
-	for _, parameter := range method.Parameters {
+	for _, parameter := range parameters {
 		printing.printListField(parameter)
 	}
 	printing.printListFieldEnd()
-	if method.Body != nil {
-		printing.printIndentedNodeField("body", method.Body)
+}
+
+func (printing *Printing) printConstructorDeclaration(declaration *ConstructorDeclaration) {
+	printing.printNodeBegin("ConstructorDeclaration")
+	printing.printParameterList(declaration.Parameters)
+	if declaration.Body != nil {
+		printing.printIndentedNodeField("body", declaration.Body)
 	}
 	printing.printNodeEnd()
 }
@@ -366,14 +381,23 @@ func (printing *Printing) printListSelectExpression(expression *ListSelectExpres
 	printing.printNodeEnd()
 }
 
-func (printing *Printing) printMethodCall(call *MethodCall) {
-	printing.printNodeBegin("MethodCall")
+func (printing *Printing) printCallExpression(call *CallExpression) {
+	printing.printNodeBegin("CallExpression")
 	printing.printIndentedNodeField("method", call.Method)
 	printing.printIndentedListFieldBegin("arguments")
 	for _, argument := range call.Arguments {
 		printing.printListField(argument)
 	}
 	printing.printListFieldEnd()
+	printing.printNodeEnd()
+}
+
+func (printing *Printing) printCallArgument(argument *CallArgument) {
+	printing.printNodeBegin("CallArgument")
+	if argument.IsLabeled() {
+		printing.printIndentedStringField("label", argument.Label)
+	}
+	printing.printIndentedNodeField("value", argument.Value)
 	printing.printNodeEnd()
 }
 

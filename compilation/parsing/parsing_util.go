@@ -1,9 +1,9 @@
 package parsing
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
 	"gitlab.com/strict-lang/sdk/compilation/source"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 )
 
@@ -53,7 +53,7 @@ func (parsing *Parsing) expectKeyword(expected token.Keyword) error {
 
 // expectAnyIdentifier expects the next token to be an identifier,
 // without regards to its value and returns an error if it fails.
-func (parsing *Parsing) expectAnyIdentifier() (*ast.Identifier, error) {
+func (parsing *Parsing) expectAnyIdentifier() (*syntaxtree.Identifier, error) {
 	current := parsing.token()
 	if !token.IsIdentifierToken(current) {
 		return nil, &UnexpectedTokenError{
@@ -61,7 +61,7 @@ func (parsing *Parsing) expectAnyIdentifier() (*ast.Identifier, error) {
 			Expected: "any identifier",
 		}
 	}
-	return &ast.Identifier{
+	return &syntaxtree.Identifier{
 		Value:        current.Value(),
 		NodePosition: parsing.createTokenPosition(),
 	}, nil
@@ -75,9 +75,9 @@ func (parsing *Parsing) isLookingAtOperator(operator token.Operator) bool {
 	return token.HasOperatorValue(parsing.peek(), operator)
 }
 
-func (parsing *Parsing) createInvalidStatement(beginOffset source.Offset, err error) ast.Node {
+func (parsing *Parsing) createInvalidStatement(beginOffset source.Offset, err error) syntaxtree.Node {
 	parsing.reportError(err, parsing.createPosition(beginOffset))
-	return &ast.InvalidStatement{
+	return &syntaxtree.InvalidStatement{
 		NodePosition: parsing.createPosition(beginOffset),
 	}
 }
@@ -91,7 +91,7 @@ func (parsing *Parsing) skipEndOfStatement() {
 
 // reportError reports an error to the diagnostics bag, starting at the
 // passed position and ending at the parsers current position.
-func (parsing *Parsing) reportError(err error, position ast.Position) {
+func (parsing *Parsing) reportError(err error, position syntaxtree.Position) {
 	parsing.recorder.Record(diagnostic.RecordedEntry{
 		Kind:     &diagnostic.Error,
 		Stage:    &diagnostic.SyntacticalAnalysis,
@@ -100,11 +100,11 @@ func (parsing *Parsing) reportError(err error, position ast.Position) {
 	})
 }
 
-func (parsing *Parsing) createTokenPosition() ast.Position {
+func (parsing *Parsing) createTokenPosition() syntaxtree.Position {
 	return parsing.token().Position()
 }
 
-func (parsing *Parsing) createPosition(beginOffset source.Offset) ast.Position {
+func (parsing *Parsing) createPosition(beginOffset source.Offset) syntaxtree.Position {
 	return &offsetPosition{begin: beginOffset, end: parsing.offset()}
 }
 

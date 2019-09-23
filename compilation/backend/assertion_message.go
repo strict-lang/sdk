@@ -1,19 +1,19 @@
 package backend
 
 import (
-	"gitlab.com/strict-lang/sdk/compilation/ast"
+	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 	"gitlab.com/strict-lang/sdk/compilation/token"
 	"strings"
 )
 
 type AssertionMessageComputation struct {
 	buffer  strings.Builder
-	visitor *ast.Visitor
+	visitor *syntaxtree.Visitor
 }
 
 func NewAssertionMessageComputation() *AssertionMessageComputation {
 	computation := &AssertionMessageComputation{}
-	visitor := ast.NewEmptyVisitor()
+	visitor := syntaxtree.NewEmptyVisitor()
 	visitor.VisitBinaryExpression = computation.visitBinaryExpression
 	visitor.VisitUnaryExpression = computation.visitUnaryExpression
 	visitor.VisitIdentifier = computation.visitIdentifier
@@ -23,7 +23,7 @@ func NewAssertionMessageComputation() *AssertionMessageComputation {
 	return computation
 }
 
-func ComputeAssertionMessage(assertedExpression ast.Node) string {
+func ComputeAssertionMessage(assertedExpression syntaxtree.Node) string {
 	computation := NewAssertionMessageComputation()
 	computation.GenerateNode(assertedExpression)
 	return computation.String()
@@ -33,11 +33,11 @@ func (computation *AssertionMessageComputation) String() string {
 	return computation.buffer.String()
 }
 
-func (computation *AssertionMessageComputation) GenerateNode(node ast.Node) {
+func (computation *AssertionMessageComputation) GenerateNode(node syntaxtree.Node) {
 	node.Accept(computation.visitor)
 }
 
-func (computation *AssertionMessageComputation) visitBinaryExpression(expression *ast.
+func (computation *AssertionMessageComputation) visitBinaryExpression(expression *syntaxtree.
 	BinaryExpression) {
 	computation.buffer.WriteString("( ")
 	computation.GenerateNode(expression.LeftOperand)
@@ -49,7 +49,7 @@ func (computation *AssertionMessageComputation) visitBinaryExpression(expression
 	computation.buffer.WriteString(") ")
 }
 
-func (computation *AssertionMessageComputation) visitUnaryExpression(expression *ast.UnaryExpression) {
+func (computation *AssertionMessageComputation) visitUnaryExpression(expression *syntaxtree.UnaryExpression) {
 	computation.buffer.WriteString("( ")
 	computation.GenerateNode(expression.Operand)
 	computation.buffer.WriteString(" ")
@@ -58,15 +58,15 @@ func (computation *AssertionMessageComputation) visitUnaryExpression(expression 
 	computation.buffer.WriteString(" ) ")
 }
 
-func (computation *AssertionMessageComputation) visitIdentifier(identifier *ast.Identifier) {
+func (computation *AssertionMessageComputation) visitIdentifier(identifier *syntaxtree.Identifier) {
 	computation.buffer.WriteString(identifier.Value)
 }
 
-func (computation *AssertionMessageComputation) visitStringLiteral(literal *ast.StringLiteral) {
+func (computation *AssertionMessageComputation) visitStringLiteral(literal *syntaxtree.StringLiteral) {
 	computation.buffer.WriteString(literal.Value)
 }
 
-func (computation *AssertionMessageComputation) visitNumberLiteral(literal *ast.NumberLiteral) {
+func (computation *AssertionMessageComputation) visitNumberLiteral(literal *syntaxtree.NumberLiteral) {
 	computation.buffer.WriteString(literal.Value)
 }
 

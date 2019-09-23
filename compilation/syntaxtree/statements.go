@@ -1,4 +1,4 @@
-package ast
+package syntaxtree
 
 import (
 	"gitlab.com/strict-lang/sdk/compilation/token"
