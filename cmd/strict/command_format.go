@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/compilation"
-	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
-	"gitlab.com/strict-lang/sdk/format"
+	"gitlab.com/strict-lang/sdk/pkg/compilation"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	"gitlab.com/strict-lang/sdk/pkg/format"
 	"os"
 )
 
