@@ -6,13 +6,13 @@ import (
 )
 
 type classDefinition struct {
-	name             string
-	parameters       []syntaxtree.ClassParameter
-	superTypes       []syntaxtree.TypeName
-	otherMembers     []syntaxtree.Node
-	fields           []syntaxtree.Node
-	generation       *backend.Generation
-	shouldCreateInit bool
+	name               string
+	parameters         []syntaxtree.ClassParameter
+	superTypes         []syntaxtree.TypeName
+	otherMembers       []syntaxtree.Node
+	fields             []syntaxtree.Node
+	generation         *backend.Generation
+	shouldCreateInit   bool
 	declarationVisitor *syntaxtree.Visitor
 }
 
@@ -22,13 +22,13 @@ func newClassDefinition(
 	fields, otherMembers := filterFieldDeclarations(declaration.Children)
 	createInit := len(fields) > 0
 	definition := &classDefinition{
-		name:             declaration.Name,
-		parameters:       declaration.Parameters,
-		superTypes:       declaration.SuperTypes,
-		otherMembers:     otherMembers,
-		fields:           fields,
-		generation:       generation,
-		shouldCreateInit: createInit,
+		name:               declaration.Name,
+		parameters:         declaration.Parameters,
+		superTypes:         declaration.SuperTypes,
+		otherMembers:       otherMembers,
+		fields:             fields,
+		generation:         generation,
+		shouldCreateInit:   createInit,
 		declarationVisitor: syntaxtree.NewEmptyVisitor(),
 	}
 	initializeVisitor(definition)

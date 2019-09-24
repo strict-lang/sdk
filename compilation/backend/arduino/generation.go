@@ -4,6 +4,7 @@ import (
 	"gitlab.com/strict-lang/sdk/compilation/backend"
 	"gitlab.com/strict-lang/sdk/compilation/syntaxtree"
 )
+
 type Generation struct {
 	backend.Extension
 
@@ -45,16 +46,16 @@ func (generation *Generation) VisitClassDeclaration(declaration *syntaxtree.Clas
 
 func (generation *Generation) generateSetupMethod(statements []syntaxtree.Node) {
 	generation.parent.EmitNode(&syntaxtree.MethodDeclaration{
-		Name:         &syntaxtree.Identifier{
+		Name: &syntaxtree.Identifier{
 			Value:        "setup",
 			NodePosition: syntaxtree.ZeroPosition{},
 		},
-		Type:         &syntaxtree.ConcreteTypeName{
+		Type: &syntaxtree.ConcreteTypeName{
 			Name:         "void",
 			NodePosition: syntaxtree.ZeroPosition{},
 		},
-		Parameters:   []*syntaxtree.Parameter{},
-		Body:         &syntaxtree.BlockStatement{
+		Parameters: []*syntaxtree.Parameter{},
+		Body: &syntaxtree.BlockStatement{
 			Children:     statements,
 			NodePosition: syntaxtree.ZeroPosition{},
 		},
@@ -108,5 +109,3 @@ func extractMethods(nodes []syntaxtree.Node) (methods []*syntaxtree.MethodDeclar
 	}
 	return
 }
-
-

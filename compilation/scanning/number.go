@@ -39,7 +39,7 @@ func (scanning *Scanning) gatherNumericDigits(builder *strings.Builder, base Rad
 		if scanning.input.IsExhausted() {
 			return
 		}
-	 	if !isDigitInRadix(char.DigitValue(), base) {
+		if !isDigitInRadix(char.DigitValue(), base) {
 			return
 		}
 		builder.WriteRune(rune(char))

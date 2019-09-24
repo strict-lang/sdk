@@ -14,7 +14,7 @@ const (
 
 // Scanning is a token.Stream that performs lexical analysis on a stream or characters.
 type Scanning struct {
-	input         *RecordingSourceReader
+	input          *RecordingSourceReader
 	lineMapBuilder *linemap.Builder
 	diagnosticBag  *diagnostic.Bag
 	// peeked points to the most recently peeked token.
@@ -53,7 +53,7 @@ type Scanning struct {
 func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Bag) *Scanning {
 	beginOfFile := token.NewInvalidToken("BeginOfFile", token.Position{}, token.NoIndent)
 	scanning := &Scanning{
-		input:         decorateSourceReader(reader),
+		input:          decorateSourceReader(reader),
 		lineMapBuilder: linemap.NewBuilder(),
 		diagnosticBag:  recorder,
 		last:           beginOfFile,

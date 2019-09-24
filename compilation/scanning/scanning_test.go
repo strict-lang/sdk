@@ -8,7 +8,7 @@ import (
 
 func TestScannerEndOfStatementInsertion(test *testing.T) {
 	entries := map[string]int{
-		"add(\na,\nb\n)": 1,
+		"add(\na,\nb\n)":                           1,
 		"add(a, b)\nadd(b, c)\nadd(b, add(a, c));": 3,
 	}
 

@@ -8,14 +8,14 @@ import (
 
 // Generation generates C code from an syntaxtree.
 type Generation struct {
-	Unit                        *syntaxtree.TranslationUnit
-	output                      *strings.Builder
-	buffer                      *strings.Builder
-	method                      *MethodDefinition
-	visitor                     *syntaxtree.Visitor
-	indent                      int8
-	appendNewLineAfterStatement bool
-	importModules               map[string]string
+	Unit                          *syntaxtree.TranslationUnit
+	output                        *strings.Builder
+	buffer                        *strings.Builder
+	method                        *MethodDefinition
+	visitor                       *syntaxtree.Visitor
+	indent                        int8
+	appendNewLineAfterStatement   bool
+	importModules                 map[string]string
 	shouldInsertNamespaceSelector bool
 }
 
@@ -33,10 +33,10 @@ func NewGenerationWithExtension(unit *syntaxtree.TranslationUnit, extension Exte
 // the nodes in the passed translation-Unit.
 func NewGeneration(unit *syntaxtree.TranslationUnit) (generation *Generation) {
 	generation = &Generation{
-		Unit:                        unit,
-		output:                      &strings.Builder{},
-		importModules:               map[string]string{},
-		appendNewLineAfterStatement: true,
+		Unit:                          unit,
+		output:                        &strings.Builder{},
+		importModules:                 map[string]string{},
+		appendNewLineAfterStatement:   true,
 		shouldInsertNamespaceSelector: true,
 	}
 	generation.buffer = generation.output

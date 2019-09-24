@@ -98,7 +98,7 @@ func (compilation *Compilation) generateArduinoFile(unit *syntaxtree.Translation
 	generation := backend.NewGenerationWithExtension(unit, arduino.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".ino",
-		Bytes: []byte(generation.Generate()),
+		Bytes:    []byte(generation.Generate()),
 	}
 }
 
