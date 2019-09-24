@@ -19,7 +19,7 @@ func TestRecreateInput(test *testing.T) {
 	for _, entry := range entries {
 		reader := NewStringReader(entry)
 		for {
-			next := Pull()
+			next := reader.Pull()
 			if next == EndOfFile {
 				break
 			}

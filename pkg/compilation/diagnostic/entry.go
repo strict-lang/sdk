@@ -24,9 +24,9 @@ func (entry Entry) PrintColored(printer Printer) {
 	highlight := entry.Kind.Color.SprintFunc()
 	underscore := underlinedColor.SprintFunc()
 
-	PrintFormatted("%s at line %s in %s:  ",
+	printer.PrintFormatted("%s at line %s in %s:  ",
 		highlight(entry.Kind.Name), highlight(line), highlight(entry.UnitName))
 
-	Print(underscore(entry.Source))
-	PrintFormatted("\n  => %s\n", highlight(entry.Message))
+	printer.Print(underscore(entry.Source))
+	printer.PrintFormatted("\n  => %s\n", highlight(entry.Message))
 }

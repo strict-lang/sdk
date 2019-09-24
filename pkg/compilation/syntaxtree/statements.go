@@ -17,7 +17,7 @@ func (expression *ExpressionStatement) AcceptRecursive(visitor *Visitor) {
 }
 
 func (expression *ExpressionStatement) Position() Position {
-	return Position()
+	return expression.Expression.Position()
 }
 
 type BlockStatement struct {
@@ -32,7 +32,7 @@ func (block *BlockStatement) Accept(visitor *Visitor) {
 func (block *BlockStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitBlockStatement(block)
 	for _, statement := range block.Children {
-		AcceptRecursive(visitor)
+		statement.AcceptRecursive(visitor)
 	}
 }
 
@@ -57,10 +57,10 @@ func (conditional *ConditionalStatement) Accept(visitor *Visitor) {
 
 func (conditional *ConditionalStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitConditionalStatement(conditional)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	conditional.Condition.AcceptRecursive(visitor)
+	conditional.Consequence.AcceptRecursive(visitor)
 	if conditional.HasAlternative() {
-		AcceptRecursive(visitor)
+		conditional.Alternative.AcceptRecursive(visitor)
 	}
 }
 
@@ -85,9 +85,9 @@ func (loop *RangedLoopStatement) Accept(visitor *Visitor) {
 
 func (loop *RangedLoopStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitRangedLoopStatement(loop)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	loop.InitialValue.AcceptRecursive(visitor)
+	loop.EndValue.AcceptRecursive(visitor)
+	loop.Body.AcceptRecursive(visitor)
 }
 
 func (loop *RangedLoopStatement) Position() Position {
@@ -110,8 +110,8 @@ func (loop *ForEachLoopStatement) Accept(visitor *Visitor) {
 
 func (loop *ForEachLoopStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitForEachLoopStatement(loop)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	loop.Field.AcceptRecursive(visitor)
+	loop.Body.AcceptRecursive(visitor)
 }
 
 func (loop *ForEachLoopStatement) Position() Position {
@@ -129,7 +129,7 @@ func (increment *IncrementStatement) Accept(visitor *Visitor) {
 
 func (increment *IncrementStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitIncrementStatement(increment)
-	AcceptRecursive(visitor)
+	increment.Operand.AcceptRecursive(visitor)
 }
 
 func (increment *IncrementStatement) Position() Position {
@@ -147,7 +147,7 @@ func (decrement *DecrementStatement) Accept(visitor *Visitor) {
 
 func (decrement *DecrementStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitDecrementStatement(decrement)
-	AcceptRecursive(visitor)
+	decrement.Operand.AcceptRecursive(visitor)
 }
 
 func (decrement *DecrementStatement) Position() Position {
@@ -169,7 +169,7 @@ func (yield *YieldStatement) Accept(visitor *Visitor) {
 
 func (yield *YieldStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitYieldStatement(yield)
-	AcceptRecursive(visitor)
+	yield.Value.AcceptRecursive(visitor)
 }
 
 func (yield *YieldStatement) Position() Position {
@@ -195,7 +195,7 @@ func (statement *ReturnStatement) Accept(visitor *Visitor) {
 
 func (statement *ReturnStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitReturnStatement(statement)
-	AcceptRecursive(visitor)
+	statement.Value.AcceptRecursive(visitor)
 }
 
 func (statement *ReturnStatement) Position() Position {
@@ -252,8 +252,8 @@ func (statement *AssignStatement) Accept(visitor *Visitor) {
 
 func (statement *AssignStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitAssignStatement(statement)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	statement.Target.AcceptRecursive(visitor)
+	statement.Value.AcceptRecursive(visitor)
 }
 
 func (statement *AssignStatement) Position() Position {
@@ -271,7 +271,7 @@ func (assert *AssertStatement) Accept(visitor *Visitor) {
 
 func (assert *AssertStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitAssertStatement(assert)
-	AcceptRecursive(visitor)
+	assert.Expression.AcceptRecursive(visitor)
 }
 
 func (assert *AssertStatement) Position() Position {
@@ -290,7 +290,7 @@ func (test *TestStatement) Accept(visitor *Visitor) {
 
 func (test *TestStatement) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitTestStatement(test)
-	AcceptRecursive(visitor)
+	test.Statements.AcceptRecursive(visitor)
 }
 
 func (test *TestStatement) Position() Position {

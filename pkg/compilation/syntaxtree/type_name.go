@@ -80,7 +80,7 @@ func (list *ListTypeName) Accept(visitor *Visitor) {
 
 func (list *ListTypeName) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitListTypeName(list)
-	AcceptRecursive(visitor)
+	list.ElementTypeName.AcceptRecursive(visitor)
 }
 
 func (list *ListTypeName) Position() Position {

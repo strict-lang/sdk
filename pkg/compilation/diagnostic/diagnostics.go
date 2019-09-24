@@ -9,6 +9,6 @@ func (diagnostics *Diagnostics) PrintEntries(printer Printer) {
 		for _, entry := range entries {
 			entry.PrintColored(printer)
 		}
-		PrintLine("")
+		printer.PrintLine("")
 	}
 }

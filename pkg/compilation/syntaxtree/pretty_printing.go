@@ -184,7 +184,7 @@ func (printing *Printing) printNewLine() {
 }
 
 func (printing *Printing) printNode(node Node) {
-	Accept(printing.visitor)
+	node.Accept(printing.visitor)
 }
 
 func (printing *Printing) printListField(node Node) {
@@ -433,7 +433,7 @@ func (printing *Printing) printBlockStatement(statement *BlockStatement) {
 func (printing *Printing) printImportStatement(statement *ImportStatement) {
 	printing.printNodeBegin("ImportStatement")
 	target := statement.Target
-	targetString := fmt.Sprintf("{path: %s, moduleName: %s}", FilePath(), toModuleName())
+	targetString := fmt.Sprintf("{path: %s, moduleName: %s}", target.FilePath(), target.toModuleName())
 	printing.printIndentedStringField("target", targetString)
 	if statement.Alias != nil {
 		printing.printIndentedNodeField("alias", statement.Alias)

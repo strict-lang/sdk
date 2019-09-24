@@ -77,11 +77,11 @@ func IsLiteralToken(token Token) bool {
 }
 
 func IsStringLiteralToken(token Token) bool {
-	return Name() == StringLiteralTokenName
+	return token.Name() == StringLiteralTokenName
 }
 
 func IsNumberLiteralToken(token Token) bool {
-	return Name() == NumberLiteralTokenName
+	return token.Name() == NumberLiteralTokenName
 }
 
 func IsIdentifierToken(token Token) bool {

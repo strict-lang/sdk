@@ -21,7 +21,7 @@ func (call *CallExpression) Accept(visitor *Visitor) {
 
 func (call *CallExpression) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitCallExpression(call)
-	AcceptRecursive(visitor)
+	call.Method.AcceptRecursive(visitor)
 	for _, argument := range call.Arguments {
 		argument.AcceptRecursive(visitor)
 	}
@@ -47,7 +47,7 @@ func (argument *CallArgument) Accept(visitor *Visitor) {
 
 func (argument *CallArgument) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitCallArgument(argument)
-	AcceptRecursive(visitor)
+	argument.Value.AcceptRecursive(visitor)
 }
 
 func (argument *CallArgument) Position() Position {
@@ -84,7 +84,7 @@ func (unary *UnaryExpression) Accept(visitor *Visitor) {
 
 func (unary *UnaryExpression) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitUnaryExpression(unary)
-	AcceptRecursive(visitor)
+	unary.Operand.AcceptRecursive(visitor)
 }
 
 func (unary *UnaryExpression) Position() Position {
@@ -105,8 +105,8 @@ func (binary *BinaryExpression) Accept(visitor *Visitor) {
 
 func (binary *BinaryExpression) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitBinaryExpression(binary)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	binary.LeftOperand.AcceptRecursive(visitor)
+	binary.RightOperand.AcceptRecursive(visitor)
 }
 
 func (binary *BinaryExpression) Position() Position {
@@ -125,8 +125,8 @@ func (expression *SelectExpression) Accept(visitor *Visitor) {
 
 func (expression *SelectExpression) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitSelectorExpression(expression)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	expression.Target.AcceptRecursive(visitor)
+	expression.Selection.AcceptRecursive(visitor)
 }
 
 func (expression *SelectExpression) Position() Position {
@@ -164,8 +164,8 @@ func (expression *ListSelectExpression) Accept(visitor *Visitor) {
 
 func (expression *ListSelectExpression) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitListSelectExpression(expression)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	expression.Target.AcceptRecursive(visitor)
+	expression.Index.AcceptRecursive(visitor)
 }
 
 func (expression *ListSelectExpression) Position() Position {

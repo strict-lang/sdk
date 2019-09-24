@@ -25,7 +25,7 @@ type FileNaming interface {
 
 func NewGenerationWithExtension(unit *syntaxtree.TranslationUnit, extension Extension) *Generation {
 	generation := NewGeneration(unit)
-	ModifyVisitor(generation, generation.visitor)
+	extension.ModifyVisitor(generation, generation.visitor)
 	return generation
 }
 

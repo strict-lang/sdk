@@ -122,9 +122,6 @@ func (check *NamingCheck) CheckParameterNaming(parameter *syntaxtree.Parameter) 
 	if isLowerCamelCase(parameter.Name.Value) {
 		return
 	}
-	if parameter.IsNamedAfterType() {
-		return
-	}
 	check.reportInvalidNode(parameter, MessageInvalidDeclarationName)
 }
 

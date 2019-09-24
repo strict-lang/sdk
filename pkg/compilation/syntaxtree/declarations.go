@@ -19,7 +19,7 @@ func (method *MethodDeclaration) AcceptRecursive(visitor *Visitor) {
 	for _, parameter := range method.Parameters {
 		parameter.AcceptRecursive(visitor)
 	}
-	AcceptRecursive(visitor)
+	method.Type.AcceptRecursive(visitor)
 }
 
 func (method *MethodDeclaration) Position() Position {
@@ -30,10 +30,6 @@ type Parameter struct {
 	Type         TypeName
 	Name         *Identifier
 	NodePosition Position
-}
-
-func (parameter Parameter) IsNamedAfterType() bool {
-	return NonGenericName() == parameter.Name.Value
 }
 
 func (parameter *Parameter) Accept(visitor *Visitor) {
@@ -81,7 +77,7 @@ func (class *ClassDeclaration) Accept(visitor *Visitor) {
 func (class *ClassDeclaration) AcceptRecursive(visitor *Visitor) {
 	visitor.VisitClassDeclaration(class)
 	for _, child := range class.Children {
-		AcceptRecursive(visitor)
+		child.AcceptRecursive(visitor)
 	}
 }
 
