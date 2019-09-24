@@ -1,22 +1,22 @@
 package parsing
 
 import (
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
-func (parsing *Parsing) parseMethodDeclaration() (*syntaxtree2.MethodDeclaration, error) {
+func (parsing *Parsing) parseMethodDeclaration() (*syntaxtree.MethodDeclaration, error) {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token2.MethodKeyword); err != nil {
+	if err := parsing.skipKeyword(token.MethodKeyword); err != nil {
 		return nil, err
 	}
 	declaration, err := parsing.parseMethodSignature()
 	if err != nil {
 		return nil, err
 	}
-	var body syntaxtree2.Node
-	if token2.OperatorValue(parsing.token()) == token2.ArrowOperator {
+	var body syntaxtree.Node
+	if token.OperatorValue(parsing.token()) == token.ArrowOperator {
 		body, err = parsing.parseAssignedMethodExpression()
 	} else {
 		parsing.skipEndOfStatement()
@@ -25,7 +25,7 @@ func (parsing *Parsing) parseMethodDeclaration() (*syntaxtree2.MethodDeclaration
 	if err != nil {
 		return nil, err
 	}
-	return &syntaxtree2.MethodDeclaration{
+	return &syntaxtree.MethodDeclaration{
 		Type:         declaration.returnTypeName,
 		Name:         declaration.methodName,
 		Body:         body,
@@ -35,12 +35,12 @@ func (parsing *Parsing) parseMethodDeclaration() (*syntaxtree2.MethodDeclaration
 }
 
 type methodDeclaration struct {
-	returnTypeName syntaxtree2.TypeName
-	methodName     *syntaxtree2.Identifier
-	parameters     syntaxtree2.ParameterList
+	returnTypeName syntaxtree.TypeName
+	methodName     *syntaxtree.Identifier
+	parameters     syntaxtree.ParameterList
 }
 
-func (parsing *Parsing) parseMethodBody(methodName string) (node syntaxtree2.Node, err error) {
+func (parsing *Parsing) parseMethodBody(methodName string) (node syntaxtree.Node, err error) {
 	parsing.currentMethodName = methodName
 	node, err = parsing.parseStatementBlock()
 	parsing.currentMethodName = notParsingMethod
@@ -65,9 +65,9 @@ func (parsing *Parsing) parseMethodSignature() (declaration methodDeclaration,
 	return
 }
 
-func (parsing *Parsing) parseOptionalReturnTypeName() (syntaxtree2.TypeName, error) {
-	if parsing.isLookingAtOperator(token2.LeftParenOperator) {
-		return &syntaxtree2.ConcreteTypeName{
+func (parsing *Parsing) parseOptionalReturnTypeName() (syntaxtree.TypeName, error) {
+	if parsing.isLookingAtOperator(token.LeftParenOperator) {
+		return &syntaxtree.ConcreteTypeName{
 			Name:         "void",
 			NodePosition: parsing.createPosition(parsing.offset()),
 		}, nil
@@ -75,14 +75,14 @@ func (parsing *Parsing) parseOptionalReturnTypeName() (syntaxtree2.TypeName, err
 	return parsing.parseTypeName()
 }
 
-func (parsing *Parsing) parseAssignedMethodExpression() (syntaxtree2.Node, error) {
-	if err := parsing.skipOperator(token2.ArrowOperator); err != nil {
+func (parsing *Parsing) parseAssignedMethodExpression() (syntaxtree.Node, error) {
+	if err := parsing.skipOperator(token.ArrowOperator); err != nil {
 		return nil, err
 	}
 	beginPosition := parsing.offset()
 	statement := parsing.parseStatement()
-	if expression, isExpression := statement.(*syntaxtree2.ExpressionStatement); isExpression {
-		return &syntaxtree2.ReturnStatement{
+	if expression, isExpression := statement.(*syntaxtree.ExpressionStatement); isExpression {
+		return &syntaxtree.ReturnStatement{
 			NodePosition: parsing.createPosition(beginPosition),
 			Value:        expression,
 		}, nil
@@ -90,12 +90,12 @@ func (parsing *Parsing) parseAssignedMethodExpression() (syntaxtree2.Node, error
 	return statement, nil
 }
 
-func (parsing *Parsing) parseParameterList() (parameters syntaxtree2.ParameterList, err error) {
-	if err := parsing.skipOperator(token2.LeftParenOperator); err != nil {
+func (parsing *Parsing) parseParameterList() (parameters syntaxtree.ParameterList, err error) {
+	if err := parsing.skipOperator(token.LeftParenOperator); err != nil {
 		return nil, err
 	}
 	for {
-		if token2.OperatorValue(parsing.token()) == token2.RightParenOperator {
+		if token.OperatorValue(parsing.token()) == token.RightParenOperator {
 			parsing.advance()
 			break
 		}
@@ -105,10 +105,10 @@ func (parsing *Parsing) parseParameterList() (parameters syntaxtree2.ParameterLi
 		}
 		parameters = append(parameters, parameter)
 		switch next := parsing.token(); {
-		case token2.OperatorValue(next) == token2.CommaOperator:
+		case token.OperatorValue(next) == token.CommaOperator:
 			parsing.advance()
 			continue
-		case token2.OperatorValue(next) != token2.RightParenOperator:
+		case token.OperatorValue(next) != token.RightParenOperator:
 			parsing.advance()
 			return parameters, &UnexpectedTokenError{
 				Token:    next,
@@ -119,17 +119,17 @@ func (parsing *Parsing) parseParameterList() (parameters syntaxtree2.ParameterLi
 	return parameters, nil
 }
 
-func (parsing *Parsing) parseParameter() (*syntaxtree2.Parameter, error) {
+func (parsing *Parsing) parseParameter() (*syntaxtree.Parameter, error) {
 	beginOffset := parsing.offset()
 	typeName, err := parsing.parseTypeName()
 	if err != nil {
 		return nil, err
 	}
-	if next := parsing.token(); token2.IsIdentifierToken(next) {
+	if next := parsing.token(); token.IsIdentifierToken(next) {
 		idNameBegin := parsing.offset()
 		parsing.advance()
-		return &syntaxtree2.Parameter{
-			Name: &syntaxtree2.Identifier{
+		return &syntaxtree.Parameter{
+			Name: &syntaxtree.Identifier{
 				Value:        next.Value(),
 				NodePosition: parsing.createPosition(idNameBegin),
 			},
@@ -140,10 +140,10 @@ func (parsing *Parsing) parseParameter() (*syntaxtree2.Parameter, error) {
 	return parsing.createTypeNamedParameter(beginOffset, typeName), nil
 }
 
-func (parsing *Parsing) createTypeNamedParameter(beginOffset source2.Offset, typeName syntaxtree2.TypeName) *syntaxtree2.Parameter {
-	return &syntaxtree2.Parameter{
+func (parsing *Parsing) createTypeNamedParameter(beginOffset source.Offset, typeName syntaxtree.TypeName) *syntaxtree.Parameter {
+	return &syntaxtree.Parameter{
 		Type: typeName,
-		Name: &syntaxtree2.Identifier{
+		Name: &syntaxtree.Identifier{
 			Value: typeName.NonGenericName(),
 		},
 		NodePosition: parsing.createPosition(beginOffset),

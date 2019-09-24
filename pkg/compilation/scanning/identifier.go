@@ -2,8 +2,8 @@ package scanning
 
 import (
 	"errors"
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 var (
@@ -11,11 +11,11 @@ var (
 	ErrInvalidIdentifier = errors.New("invalid identifier")
 )
 
-func isIdentifierBegin(char source2.Char) bool {
+func isIdentifierBegin(char source.Char) bool {
 	return char.IsAlphabetic() || char == '_'
 }
 
-func isIdentifierChar(char source2.Char) bool {
+func isIdentifierChar(char source.Char) bool {
 	return isIdentifierBegin(char) || char.IsNumeric()
 }
 
@@ -33,24 +33,24 @@ func (scanning *Scanning) gatherIdentifier() (string, error) {
 }
 
 // tryToScanIdentifier tries to scanning an identifier and records an error, if it fails.
-func (scanning *Scanning) ScanIdentifier() token2.Token {
+func (scanning *Scanning) ScanIdentifier() token.Token {
 	identifier, err := scanning.gatherIdentifier()
 	position := scanning.currentPosition()
 	if err != nil {
 		scanning.reportError(err)
 		return scanning.createInvalidToken()
 	}
-	return token2.NewIdentifierToken(identifier, position, scanning.indent)
+	return token.NewIdentifierToken(identifier, position, scanning.indent)
 }
 
-func (scanning *Scanning) ScanIdentifierOrKeyword() token2.Token {
+func (scanning *Scanning) ScanIdentifierOrKeyword() token.Token {
 	identifier, err := scanning.gatherIdentifier()
 	if err != nil {
 		scanning.reportError(err)
 		return scanning.createInvalidToken()
 	}
-	if keyword, ok := token2.KeywordByName(identifier); ok {
-		return token2.NewKeywordToken(keyword, scanning.currentPosition(), scanning.indent)
+	if keyword, ok := token.KeywordByName(identifier); ok {
+		return token.NewKeywordToken(keyword, scanning.currentPosition(), scanning.indent)
 	}
-	return token2.NewIdentifierToken(identifier, scanning.currentPosition(), scanning.indent)
+	return token.NewIdentifierToken(identifier, scanning.currentPosition(), scanning.indent)
 }

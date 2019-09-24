@@ -1,12 +1,12 @@
 package parsing
 
 import (
-	scanning2 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 	"testing"
 )
 
-func NewTestParser(tokens token2.Stream) *Parsing {
+func NewTestParser(tokens token.Stream) *Parsing {
 	return NewDefaultFactory().WithTokenStream(tokens).NewParser()
 }
 
@@ -34,6 +34,6 @@ for num in range(1, 21) do
 	else
 		stdio.printf("%d", num)
 `
-	parser := NewTestParser(scanning2.NewStringScanning(entry))
+	parser := NewTestParser(scanning.NewStringScanning(entry))
 	parser.parseTopLevelNodes()
 }

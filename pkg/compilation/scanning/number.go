@@ -2,7 +2,7 @@ package scanning
 
 import (
 	"fmt"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 	"strings"
 )
 
@@ -14,13 +14,13 @@ const (
 	Hexadecimal Radix = 16
 )
 
-func (scanning *Scanning) ScanNumber() token2.Token {
+func (scanning *Scanning) ScanNumber() token.Token {
 	number, err := scanning.gatherNumber()
 	if err != nil {
 		scanning.reportError(err)
 		return scanning.createInvalidToken()
 	}
-	return token2.NewNumberLiteralToken(number, scanning.currentPosition(), scanning.indent)
+	return token.NewNumberLiteralToken(number, scanning.currentPosition(), scanning.indent)
 }
 
 func isDigitInRadix(digitValue int, base Radix) bool {

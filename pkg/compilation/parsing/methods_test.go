@@ -1,28 +1,28 @@
 package parsing
 
 import (
-	scanning2 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 	"testing"
 )
 
 func TestParser_ParseMethodDeclaration(test *testing.T) {
-	var entries = map[string]syntaxtree2.MethodDeclaration{
+	var entries = map[string]syntaxtree.MethodDeclaration{
 		`
 	method number add(number a, number b)	
 		ret = a + b
 		return ret
 `: {
-			Name: &syntaxtree2.Identifier{Value: "add"},
-			Type: &syntaxtree2.ConcreteTypeName{Name: "number"},
-			Parameters: []*syntaxtree2.Parameter{
+			Name: &syntaxtree.Identifier{Value: "add"},
+			Type: &syntaxtree.ConcreteTypeName{Name: "number"},
+			Parameters: []*syntaxtree.Parameter{
 				{
-					Name: &syntaxtree2.Identifier{Value: "a"},
-					Type: &syntaxtree2.ConcreteTypeName{Name: "number"},
+					Name: &syntaxtree.Identifier{Value: "a"},
+					Type: &syntaxtree.ConcreteTypeName{Name: "number"},
 				},
 				{
-					Name: &syntaxtree2.Identifier{Value: "b"},
-					Type: &syntaxtree2.ConcreteTypeName{Name: "number"},
+					Name: &syntaxtree.Identifier{Value: "b"},
+					Type: &syntaxtree.ConcreteTypeName{Name: "number"},
 				},
 			},
 		},
@@ -31,22 +31,22 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 		for index from 0 to number do
 			yield index
 `: {
-			Name: &syntaxtree2.Identifier{Value: "rangeTo"},
-			Type: &syntaxtree2.GenericTypeName{
+			Name: &syntaxtree.Identifier{Value: "rangeTo"},
+			Type: &syntaxtree.GenericTypeName{
 				Name:    "list",
-				Generic: &syntaxtree2.ConcreteTypeName{Name: "number"},
+				Generic: &syntaxtree.ConcreteTypeName{Name: "number"},
 			},
-			Parameters: []*syntaxtree2.Parameter{
+			Parameters: []*syntaxtree.Parameter{
 				{
-					Name: &syntaxtree2.Identifier{Value: "number"},
-					Type: &syntaxtree2.ConcreteTypeName{Name: "number"},
+					Name: &syntaxtree.Identifier{Value: "number"},
+					Type: &syntaxtree.ConcreteTypeName{Name: "number"},
 				},
 			},
 		},
 	}
 
 	for entry, expected := range entries {
-		parser := NewTestParser(scanning2.NewStringScanning(entry))
+		parser := NewTestParser(scanning.NewStringScanning(entry))
 		method, err := parser.parseMethodDeclaration()
 		if err != nil {
 			test.Errorf("unexpected error: %s", err)
@@ -58,7 +58,7 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 	}
 }
 
-func compareMethods(method syntaxtree2.MethodDeclaration, expected syntaxtree2.MethodDeclaration) bool {
+func compareMethods(method syntaxtree.MethodDeclaration, expected syntaxtree.MethodDeclaration) bool {
 	if method.Name.Value != expected.Name.Value {
 		return false
 	}

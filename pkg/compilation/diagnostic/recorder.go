@@ -1,7 +1,7 @@
 package diagnostic
 
 import (
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
 )
 
 type RecordedEntry struct {
@@ -17,8 +17,8 @@ type Bag struct {
 }
 
 type RecordedPosition interface {
-	Begin() source2.Offset
-	End() source2.Offset
+	Begin() source.Offset
+	End() source.Offset
 }
 
 func NewBag() *Bag {
@@ -31,7 +31,7 @@ func (recorder *Bag) Record(entry RecordedEntry) {
 	*recorder.entries = append(*recorder.entries, entry)
 }
 
-type OffsetConversionFunction func(source2.Offset) source2.Position
+type OffsetConversionFunction func(source.Offset) source.Position
 
 func (recorder *Bag) CreateDiagnostics(converter OffsetConversionFunction) *Diagnostics {
 	mappedEntries := make(map[string][]Entry)

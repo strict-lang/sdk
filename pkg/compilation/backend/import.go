@@ -1,10 +1,10 @@
 package backend
 
 import (
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 )
 
-func (generation *Generation) GenerateImportStatement(statement *syntaxtree2.ImportStatement) {
+func (generation *Generation) GenerateImportStatement(statement *syntaxtree.ImportStatement) {
 	moduleName := statement.ModuleName()
 	generation.importModule(moduleName, statement.Target.FilePath())
 }

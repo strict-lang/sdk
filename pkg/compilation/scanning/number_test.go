@@ -1,7 +1,7 @@
 package scanning
 
 import (
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 	"testing"
 )
 
@@ -21,7 +21,7 @@ func TestGatheringValidNumber(test *testing.T) {
 	for _, entry := range entries {
 		scanner := NewStringScanning(entry)
 		scanned := scanner.Pull()
-		if !token2.IsLiteralToken(scanned) {
+		if !token.IsLiteralToken(scanned) {
 			test.Errorf("unexpected token %s, exptected literal %s", scanned, entry)
 			continue
 		}

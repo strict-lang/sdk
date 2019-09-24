@@ -1,8 +1,8 @@
 package backend
 
 import (
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 var builtinMethods = map[string]string{
@@ -13,14 +13,14 @@ var builtinMethods = map[string]string{
 	"asString":    "c_str",
 }
 
-type identifierVisitor func(identifier *syntaxtree2.Identifier)
+type identifierVisitor func(identifier *syntaxtree.Identifier)
 
-func visitMethodName(node syntaxtree2.Node, visitor identifierVisitor) bool {
-	if identifier, isIdentifier := node.(*syntaxtree2.Identifier); isIdentifier {
+func visitMethodName(node syntaxtree.Node, visitor identifierVisitor) bool {
+	if identifier, isIdentifier := node.(*syntaxtree.Identifier); isIdentifier {
 		visitor(identifier)
 		return true
 	}
-	if selection, isSelection := node.(*syntaxtree2.SelectExpression); isSelection {
+	if selection, isSelection := node.(*syntaxtree.SelectExpression); isSelection {
 		last, ok := findLastSelection(selection)
 		if !ok {
 			return false
@@ -30,23 +30,23 @@ func visitMethodName(node syntaxtree2.Node, visitor identifierVisitor) bool {
 	return false
 }
 
-func findLastSelection(expression *syntaxtree2.SelectExpression) (node syntaxtree2.Node, ok bool) {
-	if next, ok := expression.Selection.(*syntaxtree2.SelectExpression); ok {
+func findLastSelection(expression *syntaxtree.SelectExpression) (node syntaxtree.Node, ok bool) {
+	if next, ok := expression.Selection.(*syntaxtree.SelectExpression); ok {
 		return findLastSelection(next)
 	}
 	return expression.Selection, true
 }
 
-func renameBuiltinMethodName(identifier *syntaxtree2.Identifier) {
+func renameBuiltinMethodName(identifier *syntaxtree.Identifier) {
 	identifier.Value = lookupMethodName(identifier.Value)
 }
 
-func renameBuiltinMethodNameForCall(node syntaxtree2.Node) {
+func renameBuiltinMethodNameForCall(node syntaxtree.Node) {
 	visitMethodName(node, renameBuiltinMethodName)
 }
 
-func (generation *Generation) GenerateCallExpression(call *syntaxtree2.CallExpression) {
-	if typeName, isConstructorCall := call.Method.(syntaxtree2.TypeName); isConstructorCall {
+func (generation *Generation) GenerateCallExpression(call *syntaxtree.CallExpression) {
+	if typeName, isConstructorCall := call.Method.(syntaxtree.TypeName); isConstructorCall {
 		generation.generateConstructorCall(typeName, call)
 		return
 	}
@@ -58,7 +58,7 @@ func (generation *Generation) GenerateCallExpression(call *syntaxtree2.CallExpre
 	generation.emitArgumentList(call.Arguments)
 }
 
-func (generation *Generation) generateConstructorCall(typeName syntaxtree2.TypeName, call *syntaxtree2.CallExpression) {
+func (generation *Generation) generateConstructorCall(typeName syntaxtree.TypeName, call *syntaxtree.CallExpression) {
 	labeled, others := filterLabeledArguments(call.Arguments)
 	if len(labeled) == 0 {
 		generation.EmitNode(call.Method)
@@ -69,7 +69,7 @@ func (generation *Generation) generateConstructorCall(typeName syntaxtree2.TypeN
 }
 
 func (generation *Generation) generateLabeledConstructorCall(
-	typeName syntaxtree2.TypeName, labeled []*syntaxtree2.CallArgument, others []*syntaxtree2.CallArgument) {
+	typeName syntaxtree.TypeName, labeled []*syntaxtree.CallArgument, others []*syntaxtree.CallArgument) {
 
 	generation.Emit("[&]() -> ")
 	generation.EmitNode(typeName)
@@ -86,24 +86,24 @@ func (generation *Generation) generateLabeledConstructorCall(
 const constructedFieldName = "$_constructed"
 
 func (generation *Generation) generateLabeledConstructorCallLambdaBody(
-	typeName syntaxtree2.TypeName, labeled []*syntaxtree2.CallArgument, others []*syntaxtree2.CallArgument) {
+	typeName syntaxtree.TypeName, labeled []*syntaxtree.CallArgument, others []*syntaxtree.CallArgument) {
 	generation.EmitIndent()
-	generation.EmitNode(&syntaxtree2.AssignStatement{
-		Target: &syntaxtree2.FieldDeclaration{
-			Name: &syntaxtree2.Identifier{
+	generation.EmitNode(&syntaxtree.AssignStatement{
+		Target: &syntaxtree.FieldDeclaration{
+			Name: &syntaxtree.Identifier{
 				Value:        constructedFieldName,
-				NodePosition: syntaxtree2.ZeroPosition{},
+				NodePosition: syntaxtree.ZeroPosition{},
 			},
 			TypeName:     typeName,
-			NodePosition: syntaxtree2.ZeroPosition{},
+			NodePosition: syntaxtree.ZeroPosition{},
 		},
-		Value: &syntaxtree2.CallExpression{
+		Value: &syntaxtree.CallExpression{
 			Method:       typeName,
 			Arguments:    others,
-			NodePosition: syntaxtree2.ZeroPosition{},
+			NodePosition: syntaxtree.ZeroPosition{},
 		},
-		Operator:     token2.AssignOperator,
-		NodePosition: syntaxtree2.ZeroPosition{},
+		Operator:     token.AssignOperator,
+		NodePosition: syntaxtree.ZeroPosition{},
 	})
 	for _, argument := range labeled {
 		generation.EmitIndent()
@@ -111,26 +111,26 @@ func (generation *Generation) generateLabeledConstructorCallLambdaBody(
 	}
 }
 
-func (generation *Generation) emitFieldInitializationForLabeledArgument(argument *syntaxtree2.CallArgument) {
-	generation.EmitNode(&syntaxtree2.AssignStatement{
-		Target: &syntaxtree2.SelectExpression{
-			Target: &syntaxtree2.Identifier{
+func (generation *Generation) emitFieldInitializationForLabeledArgument(argument *syntaxtree.CallArgument) {
+	generation.EmitNode(&syntaxtree.AssignStatement{
+		Target: &syntaxtree.SelectExpression{
+			Target: &syntaxtree.Identifier{
 				Value:        constructedFieldName,
-				NodePosition: syntaxtree2.ZeroPosition{},
+				NodePosition: syntaxtree.ZeroPosition{},
 			},
-			Selection: &syntaxtree2.Identifier{
+			Selection: &syntaxtree.Identifier{
 				Value:        argument.Label,
-				NodePosition: syntaxtree2.ZeroPosition{},
+				NodePosition: syntaxtree.ZeroPosition{},
 			},
 			NodePosition: nil,
 		},
 		Value:        argument.Value,
-		Operator:     token2.AssignOperator,
-		NodePosition: syntaxtree2.ZeroPosition{},
+		Operator:     token.AssignOperator,
+		NodePosition: syntaxtree.ZeroPosition{},
 	})
 }
 
-func filterLabeledArguments(arguments []*syntaxtree2.CallArgument) (labeled []*syntaxtree2.CallArgument, others []*syntaxtree2.CallArgument) {
+func filterLabeledArguments(arguments []*syntaxtree.CallArgument) (labeled []*syntaxtree.CallArgument, others []*syntaxtree.CallArgument) {
 	for _, argument := range arguments {
 		if argument.IsLabeled() {
 			labeled = append(labeled, argument)
@@ -141,7 +141,7 @@ func filterLabeledArguments(arguments []*syntaxtree2.CallArgument) (labeled []*s
 	return
 }
 
-func (generation *Generation) emitArgumentList(arguments []*syntaxtree2.CallArgument) {
+func (generation *Generation) emitArgumentList(arguments []*syntaxtree.CallArgument) {
 	generation.Emit("(")
 	for index, argument := range arguments {
 		if index != 0 {

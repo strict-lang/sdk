@@ -1,19 +1,19 @@
 package scanning
 
 import (
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 	"testing"
 )
 
 func TestGatheringOperator(test *testing.T) {
-	entries := map[string]token2.Operator{
-		"+":   token2.AddOperator,
-		"++":  token2.IncrementOperator,
-		"+=":  token2.AddAssignOperator,
-		"+-":  token2.AddOperator,
-		"--+": token2.DecrementOperator,
-		"+=,": token2.AddAssignOperator,
-		"+,=": token2.AddOperator,
+	entries := map[string]token.Operator{
+		"+":   token.AddOperator,
+		"++":  token.IncrementOperator,
+		"+=":  token.AddAssignOperator,
+		"+-":  token.AddOperator,
+		"--+": token.DecrementOperator,
+		"+=,": token.AddAssignOperator,
+		"+,=": token.AddOperator,
 	}
 	for entry, operator := range entries {
 		scanner := NewStringScanning(entry)

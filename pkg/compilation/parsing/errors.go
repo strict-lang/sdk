@@ -3,7 +3,7 @@ package parsing
 import (
 	"errors"
 	"fmt"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 var (
@@ -18,7 +18,7 @@ var (
 // got a different one. It captures the token and has an optional 'expected' field, which
 // stores the name of the kind of token that was expected.
 type UnexpectedTokenError struct {
-	Token    token2.Token
+	Token    token.Token
 	Expected string
 }
 
@@ -33,7 +33,7 @@ func (err *UnexpectedTokenError) Error() string {
 // in a block of statements is invalid. The tokens indent always has
 // to match that of its block.
 type InvalidIndentationError struct {
-	Token    token2.Token
+	Token    token.Token
 	Expected string
 }
 

@@ -2,7 +2,7 @@ package scanning
 
 import (
 	"errors"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 	"strings"
 )
 
@@ -39,12 +39,12 @@ func (scanning *Scanning) gatherStringLiteral() (string, error) {
 	return builder.String(), nil
 }
 
-func (scanning *Scanning) ScanStringLiteral() token2.Token {
+func (scanning *Scanning) ScanStringLiteral() token.Token {
 	literal, err := scanning.gatherStringLiteral()
 	position := scanning.currentPosition()
 	if err != nil {
 		scanning.reportError(err)
 		return scanning.createInvalidToken()
 	}
-	return token2.NewStringLiteralToken(literal, position, scanning.indent)
+	return token.NewStringLiteralToken(literal, position, scanning.indent)
 }

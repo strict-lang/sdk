@@ -2,7 +2,7 @@ package scanning
 
 import (
 	"fmt"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 	"strings"
 	"testing"
 )
@@ -11,7 +11,7 @@ import (
 // that its GatherKeyword method scans them correctly. If it fails to scanning one
 // of the keywords, the test fails.
 func TestGatherKnownKeywords(test *testing.T) {
-	for entryName, entry := range token2.KeywordNames() {
+	for entryName, entry := range token.KeywordNames() {
 		scanner := NewStringScanning(entryName)
 		scanned, err := scanner.gatherKeyword()
 		if err != nil {
@@ -35,7 +35,7 @@ func TestGatherInvalidKeywords(test *testing.T) {
 		"AlsoNoKeyword",
 	}
 
-	for name := range token2.KeywordNames() {
+	for name := range token.KeywordNames() {
 		// Appends the name of all known keywords as an upper case string to
 		// the set of invalid entries. The language is case sensitive and thus
 		// should not scanning those strings as keywords.

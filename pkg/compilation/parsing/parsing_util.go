@@ -1,15 +1,15 @@
 package parsing
 
 import (
-	diagnostic2 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 // skipOperator skips the next keyword if it the passed operator, otherwise
 // otherwise an UnexpectedTokenError is returned.
-func (parsing *Parsing) skipOperator(operator token2.Operator) error {
+func (parsing *Parsing) skipOperator(operator token.Operator) error {
 	if err := parsing.expectOperator(operator); err != nil {
 		return err
 	}
@@ -19,7 +19,7 @@ func (parsing *Parsing) skipOperator(operator token2.Operator) error {
 
 // skipKeyword skips the next keyword if it the passed keyword, otherwise
 // otherwise an UnexpectedTokenError is returned.
-func (parsing *Parsing) skipKeyword(keyword token2.Keyword) error {
+func (parsing *Parsing) skipKeyword(keyword token.Keyword) error {
 	if err := parsing.expectKeyword(keyword); err != nil {
 		return err
 	}
@@ -29,8 +29,8 @@ func (parsing *Parsing) skipKeyword(keyword token2.Keyword) error {
 
 // expectOperator peeks the next token and expects it to be the passed operator,
 // otherwise an UnexpectedTokenError is returned.
-func (parsing *Parsing) expectOperator(expected token2.Operator) error {
-	if token2.OperatorValue(parsing.token()) != expected {
+func (parsing *Parsing) expectOperator(expected token.Operator) error {
+	if token.OperatorValue(parsing.token()) != expected {
 		return &UnexpectedTokenError{
 			Token:    parsing.token(),
 			Expected: expected.String(),
@@ -41,8 +41,8 @@ func (parsing *Parsing) expectOperator(expected token2.Operator) error {
 
 // expectKeyword peeks the next token and expects it to be the passed keyword,
 // otherwise an UnexpectedTokenError is returned.
-func (parsing *Parsing) expectKeyword(expected token2.Keyword) error {
-	if token2.KeywordValue(parsing.token()) != expected {
+func (parsing *Parsing) expectKeyword(expected token.Keyword) error {
+	if token.KeywordValue(parsing.token()) != expected {
 		return &UnexpectedTokenError{
 			Token:    parsing.token(),
 			Expected: expected.String(),
@@ -53,31 +53,31 @@ func (parsing *Parsing) expectKeyword(expected token2.Keyword) error {
 
 // expectAnyIdentifier expects the next token to be an identifier,
 // without regards to its value and returns an error if it fails.
-func (parsing *Parsing) expectAnyIdentifier() (*syntaxtree2.Identifier, error) {
+func (parsing *Parsing) expectAnyIdentifier() (*syntaxtree.Identifier, error) {
 	current := parsing.token()
-	if !token2.IsIdentifierToken(current) {
+	if !token.IsIdentifierToken(current) {
 		return nil, &UnexpectedTokenError{
 			Token:    current,
 			Expected: "any identifier",
 		}
 	}
-	return &syntaxtree2.Identifier{
+	return &syntaxtree.Identifier{
 		Value:        current.Value(),
 		NodePosition: parsing.createTokenPosition(),
 	}, nil
 }
 
-func (parsing *Parsing) isLookingAtKeyword(keyword token2.Keyword) bool {
-	return token2.HasKeywordValue(parsing.peek(), keyword)
+func (parsing *Parsing) isLookingAtKeyword(keyword token.Keyword) bool {
+	return token.HasKeywordValue(parsing.peek(), keyword)
 }
 
-func (parsing *Parsing) isLookingAtOperator(operator token2.Operator) bool {
-	return token2.HasOperatorValue(parsing.peek(), operator)
+func (parsing *Parsing) isLookingAtOperator(operator token.Operator) bool {
+	return token.HasOperatorValue(parsing.peek(), operator)
 }
 
-func (parsing *Parsing) createInvalidStatement(beginOffset source2.Offset, err error) syntaxtree2.Node {
+func (parsing *Parsing) createInvalidStatement(beginOffset source.Offset, err error) syntaxtree.Node {
 	parsing.reportError(err, parsing.createPosition(beginOffset))
-	return &syntaxtree2.InvalidStatement{
+	return &syntaxtree.InvalidStatement{
 		NodePosition: parsing.createPosition(beginOffset),
 	}
 }
@@ -91,34 +91,34 @@ func (parsing *Parsing) skipEndOfStatement() {
 
 // reportError reports an error to the diagnostics bag, starting at the
 // passed position and ending at the parsers current position.
-func (parsing *Parsing) reportError(err error, position syntaxtree2.Position) {
-	parsing.recorder.Record(diagnostic2.RecordedEntry{
-		Kind:     &diagnostic2.Error,
-		Stage:    &diagnostic2.SyntacticalAnalysis,
+func (parsing *Parsing) reportError(err error, position syntaxtree.Position) {
+	parsing.recorder.Record(diagnostic.RecordedEntry{
+		Kind:     &diagnostic.Error,
+		Stage:    &diagnostic.SyntacticalAnalysis,
 		Message:  err.Error(),
 		Position: position,
 	})
 }
 
-func (parsing *Parsing) createTokenPosition() syntaxtree2.Position {
+func (parsing *Parsing) createTokenPosition() syntaxtree.Position {
 	return parsing.token().Position()
 }
 
-func (parsing *Parsing) createPosition(beginOffset source2.Offset) syntaxtree2.Position {
+func (parsing *Parsing) createPosition(beginOffset source.Offset) syntaxtree.Position {
 	return &offsetPosition{begin: beginOffset, end: parsing.offset()}
 }
 
 type offsetPosition struct {
-	begin source2.Offset
-	end   source2.Offset
+	begin source.Offset
+	end   source.Offset
 }
 
 // Begin returns the offset to the position begin.
-func (position offsetPosition) Begin() source2.Offset {
+func (position offsetPosition) Begin() source.Offset {
 	return position.begin
 }
 
 // End returns the offset to the positions end.
-func (position offsetPosition) End() source2.Offset {
+func (position offsetPosition) End() source.Offset {
 	return position.end
 }

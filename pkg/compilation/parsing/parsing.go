@@ -2,10 +2,10 @@ package parsing
 
 import (
 	code2 "gitlab.com/strict-lang/sdk/pkg/compilation/code"
-	diagnostic2 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 const notParsingMethod = ""
@@ -15,9 +15,9 @@ const notParsingMethod = ""
 // one translation unit. It does some scope management but does not do to many
 // checks that could be considered semantic.
 type Parsing struct {
-	tokenReader token2.Stream
+	tokenReader token.Stream
 	rootScope   *code2.Scope
-	recorder    *diagnostic2.Bag
+	recorder    *diagnostic.Bag
 	block       *Block
 	unitName    string
 	// expressionDepth is the amount of parentheses encountered at the
@@ -34,15 +34,15 @@ type Parsing struct {
 // Block represents a nested sequence of statements that has a set indentation level.
 // It helps the parsing to scanning code blocks and know where a block ends.
 type Block struct {
-	Indent token2.Indent
+	Indent token.Indent
 	Scope  *code2.Scope
 	Parent *Block
 }
 
-func (parsing *Parsing) parseImportStatementList() (imports []*syntaxtree2.ImportStatement, failed []syntaxtree2.Node) {
-	for token2.HasKeywordValue(parsing.token(), token2.ImportKeyword) {
+func (parsing *Parsing) parseImportStatementList() (imports []*syntaxtree.ImportStatement, failed []syntaxtree.Node) {
+	for token.HasKeywordValue(parsing.token(), token.ImportKeyword) {
 		result := parsing.parseImportStatement()
-		if importStatement, isImport := result.(*syntaxtree2.ImportStatement); isImport {
+		if importStatement, isImport := result.(*syntaxtree.ImportStatement); isImport {
 			imports = append(imports, importStatement)
 		} else {
 			failed = append(failed, result)
@@ -51,13 +51,13 @@ func (parsing *Parsing) parseImportStatementList() (imports []*syntaxtree2.Impor
 	return
 }
 
-func (parsing *Parsing) parseClassDeclaration() *syntaxtree2.ClassDeclaration {
+func (parsing *Parsing) parseClassDeclaration() *syntaxtree.ClassDeclaration {
 	begin := parsing.offset()
 	nodes := parsing.parseTopLevelNodes()
-	return &syntaxtree2.ClassDeclaration{
+	return &syntaxtree.ClassDeclaration{
 		Name:         parsing.unitName,
-		Parameters:   []syntaxtree2.ClassParameter{},
-		SuperTypes:   []syntaxtree2.TypeName{},
+		Parameters:   []syntaxtree.ClassParameter{},
+		SuperTypes:   []syntaxtree.TypeName{},
 		Children:     nodes,
 		NodePosition: parsing.createPosition(begin),
 	}
@@ -65,11 +65,11 @@ func (parsing *Parsing) parseClassDeclaration() *syntaxtree2.ClassDeclaration {
 
 // ParseTranslationUnit invokes the parsing on the translation unit.
 // This method can only be called once on the Parsing instance.
-func (parsing *Parsing) ParseTranslationUnit() (*syntaxtree2.TranslationUnit, error) {
+func (parsing *Parsing) ParseTranslationUnit() (*syntaxtree.TranslationUnit, error) {
 	begin := parsing.offset()
 	imports, _ := parsing.parseImportStatementList()
 	class := parsing.parseClassDeclaration()
-	return &syntaxtree2.TranslationUnit{
+	return &syntaxtree.TranslationUnit{
 		Name:         parsing.unitName,
 		Imports:      imports,
 		Class:        class,
@@ -80,7 +80,7 @@ func (parsing *Parsing) ParseTranslationUnit() (*syntaxtree2.TranslationUnit, er
 // openBlock opens a new block of code, updates the parsing block pointer and
 // creates a new scope for that block that is a child-scope of the parsers
 // last block. Only statements with the blocks indent may go into the block.
-func (parsing *Parsing) openBlock(indent token2.Indent) {
+func (parsing *Parsing) openBlock(indent token.Indent) {
 	var blockScope *code2.Scope
 	if parsing.block == nil {
 		blockScope = parsing.rootScope.NewChild()
@@ -95,7 +95,7 @@ func (parsing *Parsing) openBlock(indent token2.Indent) {
 	parsing.block = block
 }
 
-func (parsing *Parsing) token() token2.Token {
+func (parsing *Parsing) token() token.Token {
 	return parsing.tokenReader.Last()
 }
 
@@ -104,7 +104,7 @@ func (parsing *Parsing) advance() {
 	parsing.isAtBeginOfStatement = false
 }
 
-func (parsing *Parsing) peek() token2.Token {
+func (parsing *Parsing) peek() token.Token {
 	return parsing.tokenReader.Peek()
 }
 
@@ -112,7 +112,7 @@ func (parsing *Parsing) closeBlock() {
 	parsing.block = parsing.block.Parent
 }
 
-func (parsing *Parsing) offset() source2.Offset {
+func (parsing *Parsing) offset() source.Offset {
 	return parsing.token().Position().Begin()
 }
 
@@ -120,11 +120,11 @@ func (parsing *Parsing) isParsingMethod() bool {
 	return parsing.currentMethodName != notParsingMethod
 }
 
-func (parsing *Parsing) parseTopLevelNodes() []syntaxtree2.Node {
+func (parsing *Parsing) parseTopLevelNodes() []syntaxtree.Node {
 	beginOffset := parsing.offset()
 	block, err := parsing.parseStatementBlock()
 	if err != nil {
-		return []syntaxtree2.Node{parsing.createInvalidStatement(beginOffset, err)}
+		return []syntaxtree.Node{parsing.createInvalidStatement(beginOffset, err)}
 	}
 	return block.Children
 }

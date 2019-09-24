@@ -1,7 +1,7 @@
 package scanning
 
 import (
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 	"strings"
 	"testing"
 )
@@ -23,10 +23,10 @@ func TestScannerEndOfStatementInsertion(test *testing.T) {
 	}
 }
 
-func countEndOfStatements(tokens []token2.Token) int {
+func countEndOfStatements(tokens []token.Token) int {
 	var count int
 	for _, element := range tokens {
-		if _, ok := element.(*token2.EndOfStatementToken); ok {
+		if _, ok := element.(*token.EndOfStatementToken); ok {
 			count++
 		}
 	}
@@ -34,7 +34,7 @@ func countEndOfStatements(tokens []token2.Token) int {
 }
 
 func TestIndentation(test *testing.T) {
-	entries := map[string]token2.Indent{
+	entries := map[string]token.Indent{
 		"  b   is   not  true  ": 2,
 		"  a + b":                2,
 		"  b is not true":        2,
@@ -44,7 +44,7 @@ func TestIndentation(test *testing.T) {
 		tokens := ScanAllTokens(scanner)
 		for _, scanned := range tokens {
 			if scanned.Indent() != indent {
-				if token2.IsEndOfStatementToken(scanned) {
+				if token.IsEndOfStatementToken(scanned) {
 					continue
 				}
 				test.Errorf("token %s has indent %d, expected %d", scanned, scanned.Indent(), indent)
@@ -59,12 +59,12 @@ func TestScanHelloWorld(test *testing.T) {
 	`
 	scanner := NewStringScanning(entry)
 	assertTokenValue(test, scanner.Pull(), "print", entry)
-	assertOperator(test, scanner.Pull(), token2.LeftParenOperator, entry)
+	assertOperator(test, scanner.Pull(), token.LeftParenOperator, entry)
 	assertTokenValue(test, scanner.Pull(), "string", entry)
-	assertOperator(test, scanner.Pull(), token2.LeftParenOperator, entry)
+	assertOperator(test, scanner.Pull(), token.LeftParenOperator, entry)
 	assertTokenValue(test, scanner.Pull(), "1", entry)
-	assertOperator(test, scanner.Pull(), token2.RightParenOperator, entry)
-	assertOperator(test, scanner.Pull(), token2.RightParenOperator, entry)
+	assertOperator(test, scanner.Pull(), token.RightParenOperator, entry)
+	assertOperator(test, scanner.Pull(), token.RightParenOperator, entry)
 	assertEndOfStatement(test, scanner.Pull(), entry)
 	assertEndOfFile(test, scanner.Pull(), entry)
 }
@@ -75,7 +75,7 @@ func TestScanExpression(test *testing.T) {
 	`
 	scanner := NewStringScanning(entry)
 	assertTokenValue(test, scanner.Pull(), "a", entry)
-	assertOperator(test, scanner.Pull(), token2.AddOperator, entry)
+	assertOperator(test, scanner.Pull(), token.AddOperator, entry)
 	assertTokenValue(test, scanner.Pull(), "b", entry)
 	assertEndOfStatement(test, scanner.Pull(), entry)
 	assertEndOfFile(test, scanner.Pull(), entry)
@@ -87,57 +87,57 @@ func TestScanMethodDeclaration(test *testing.T) {
 		return 0.123 + 3.210
 	`
 	scanner := NewStringScanning(entry)
-	assertKeyword(test, scanner.Pull(), token2.MethodKeyword, entry)
+	assertKeyword(test, scanner.Pull(), token.MethodKeyword, entry)
 	assertTokenValue(test, scanner.Pull(), "number", entry)
 	assertTokenValue(test, scanner.Pull(), "add", entry)
-	assertOperator(test, scanner.Pull(), token2.LeftParenOperator, entry)
+	assertOperator(test, scanner.Pull(), token.LeftParenOperator, entry)
 	assertTokenValue(test, scanner.Pull(), "number", entry)
 	assertTokenValue(test, scanner.Pull(), "a", entry)
-	assertOperator(test, scanner.Pull(), token2.CommaOperator, entry)
+	assertOperator(test, scanner.Pull(), token.CommaOperator, entry)
 	assertTokenValue(test, scanner.Pull(), "number", entry)
 	assertTokenValue(test, scanner.Pull(), "b", entry)
-	assertOperator(test, scanner.Pull(), token2.RightParenOperator, entry)
+	assertOperator(test, scanner.Pull(), token.RightParenOperator, entry)
 	assertEndOfStatement(test, scanner.Pull(), entry)
-	assertKeyword(test, scanner.Pull(), token2.ReturnKeyword, entry)
+	assertKeyword(test, scanner.Pull(), token.ReturnKeyword, entry)
 	assertTokenValue(test, scanner.Pull(), "0.123", entry)
-	assertOperator(test, scanner.Pull(), token2.AddOperator, entry)
+	assertOperator(test, scanner.Pull(), token.AddOperator, entry)
 	assertTokenValue(test, scanner.Pull(), "3.210", entry)
 	assertEndOfStatement(test, scanner.Pull(), entry)
 	assertEndOfFile(test, scanner.Pull(), entry)
 }
 
-func assertTokenValue(test *testing.T, got token2.Token, expected string, entry string) {
+func assertTokenValue(test *testing.T, got token.Token, expected string, entry string) {
 	if got.Value() != expected {
 		test.Errorf("unexpected token while scanning \n%s\n %s, expected %s",
 			entry, got, expected)
 	}
 }
 
-func assertOperator(test *testing.T, got token2.Token, wanted token2.Operator, entry string) {
-	if token2.OperatorValue(got) != wanted {
+func assertOperator(test *testing.T, got token.Token, wanted token.Operator, entry string) {
+	if token.OperatorValue(got) != wanted {
 		test.Errorf("unexpected token while scanning \n%s\n %s, expected %s",
 			entry, got, wanted.String())
 	}
 }
 
-func assertKeyword(test *testing.T, got token2.Token, wanted token2.Keyword, entry string) {
-	if token2.KeywordValue(got) != wanted {
+func assertKeyword(test *testing.T, got token.Token, wanted token.Keyword, entry string) {
+	if token.KeywordValue(got) != wanted {
 		test.Errorf("unexpected token while scanning \n%s\n expected %s but got %s",
 			entry, got, wanted.String())
 	}
 }
 
-func assertEndOfStatement(test *testing.T, got token2.Token, entry string) {
-	if !token2.IsEndOfStatementToken(got) {
+func assertEndOfStatement(test *testing.T, got token.Token, entry string) {
+	if !token.IsEndOfStatementToken(got) {
 		test.Errorf("unexpected token while scanning \n%s\n expected %s but got %s",
-			entry, got, token2.EndOfStatementTokenName)
+			entry, got, token.EndOfStatementTokenName)
 	}
 }
 
-func assertEndOfFile(test *testing.T, got token2.Token, entry string) {
-	if !token2.IsEndOfFileToken(got) {
+func assertEndOfFile(test *testing.T, got token.Token, entry string) {
+	if !token.IsEndOfFileToken(got) {
 		test.Errorf("unexpected token while scanning \n%s\n expected %s but got %s",
-			entry, token2.EndOfFileTokenName, got)
+			entry, token.EndOfFileTokenName, got)
 	}
 }
 

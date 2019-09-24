@@ -1,31 +1,31 @@
 package format
 
 import (
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
-func (printer *PrettyPrinter) printIdentifier(identifier *syntaxtree2.Identifier) {
+func (printer *PrettyPrinter) printIdentifier(identifier *syntaxtree.Identifier) {
 	printer.append(identifier.Value)
 }
 
-func (printer *PrettyPrinter) printNumberLiteral(number *syntaxtree2.NumberLiteral) {
+func (printer *PrettyPrinter) printNumberLiteral(number *syntaxtree.NumberLiteral) {
 	printer.append(number.Value)
 }
 
-func (printer *PrettyPrinter) printStringLiteral(literal *syntaxtree2.StringLiteral) {
+func (printer *PrettyPrinter) printStringLiteral(literal *syntaxtree.StringLiteral) {
 	printer.appendRune('"')
 	printer.append(literal.Value)
 	printer.appendRune('"')
 }
 
-func (printer *PrettyPrinter) printUnaryExpression(expression *syntaxtree2.UnaryExpression) {
+func (printer *PrettyPrinter) printUnaryExpression(expression *syntaxtree.UnaryExpression) {
 	operatorName := keywordNameOrOperator(expression.Operator)
 	printer.append(operatorName)
 	printer.printNode(expression.Operand)
 }
 
-func (printer *PrettyPrinter) printBinaryExpression(expression *syntaxtree2.BinaryExpression) {
+func (printer *PrettyPrinter) printBinaryExpression(expression *syntaxtree.BinaryExpression) {
 	printer.printNode(expression.LeftOperand)
 	printer.appendRune(' ')
 
@@ -36,21 +36,21 @@ func (printer *PrettyPrinter) printBinaryExpression(expression *syntaxtree2.Bina
 	printer.printNode(expression.RightOperand)
 }
 
-func keywordNameOrOperator(operator token2.Operator) string {
-	if keyword, ok := token2.KeywordValueOfOperator(operator); ok {
+func keywordNameOrOperator(operator token.Operator) string {
+	if keyword, ok := token.KeywordValueOfOperator(operator); ok {
 		return keyword.String()
 	}
 	return operator.String()
 }
 
-func (printer *PrettyPrinter) printMethodCall(call *syntaxtree2.CallExpression) {
+func (printer *PrettyPrinter) printMethodCall(call *syntaxtree.CallExpression) {
 	printer.printNode(call.Method)
 	printer.appendRune('(')
 	printer.indent.OpenContinuous()
 	printer.writeArguments(call)
 }
 
-func (printer *PrettyPrinter) writeArguments(call *syntaxtree2.CallExpression) {
+func (printer *PrettyPrinter) writeArguments(call *syntaxtree.CallExpression) {
 	arguments, combinedLength := printer.recordAllArguments(call)
 	lengthOfSpaces := len(arguments) * 2 // Most arguments have the ', ' chars.
 	totalLineLength := combinedLength + printer.lineLength + lengthOfSpaces
@@ -90,7 +90,7 @@ func (printer *PrettyPrinter) writeShortArgumentList(arguments []string) {
 }
 
 func (printer *PrettyPrinter) recordAllArguments(
-	call *syntaxtree2.CallExpression) (arguments []string, combinedLength int) {
+	call *syntaxtree.CallExpression) (arguments []string, combinedLength int) {
 
 	for _, argument := range call.Arguments {
 		recorded := printer.recordArgument(argument)
@@ -100,7 +100,7 @@ func (printer *PrettyPrinter) recordAllArguments(
 	return arguments, combinedLength
 }
 
-func (printer *PrettyPrinter) recordArgument(node syntaxtree2.Node) string {
+func (printer *PrettyPrinter) recordArgument(node syntaxtree.Node) string {
 	buffer := NewStringWriter()
 	oldWriter := printer.swapWriter(buffer)
 	defer printer.setWriter(oldWriter)
@@ -109,7 +109,7 @@ func (printer *PrettyPrinter) recordArgument(node syntaxtree2.Node) string {
 	return buffer.String()
 }
 
-func (printer *PrettyPrinter) printSelectorExpression(selector *syntaxtree2.SelectExpression) {
+func (printer *PrettyPrinter) printSelectorExpression(selector *syntaxtree.SelectExpression) {
 	printer.printNode(selector.Target)
 	printer.appendRune('.')
 	printer.printNode(selector.Selection)

@@ -1,7 +1,7 @@
 package parsing
 
 import (
-	scanning2 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
 	"testing"
 )
 
@@ -25,7 +25,7 @@ func TestParseBinaryExpression(test *testing.T) {
 }
 
 func testParsingBinaryExpression(test *testing.T, entry string) {
-	parser := NewTestParser(scanning2.NewStringScanning(entry))
+	parser := NewTestParser(scanning.NewStringScanning(entry))
 	if _, err := parser.parseExpression(); err != nil {
 		test.Errorf("unexpected error while parsing (%s): %s", entry, err.Error())
 	}

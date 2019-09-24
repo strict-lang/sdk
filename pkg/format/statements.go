@@ -1,10 +1,10 @@
 package format
 
 import (
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 )
 
-func (printer *PrettyPrinter) printBlockStatement(block *syntaxtree2.BlockStatement) {
+func (printer *PrettyPrinter) printBlockStatement(block *syntaxtree.BlockStatement) {
 	for _, statement := range block.Children {
 		printer.appendIndent()
 		printer.printNode(statement)
@@ -12,11 +12,11 @@ func (printer *PrettyPrinter) printBlockStatement(block *syntaxtree2.BlockStatem
 	}
 }
 
-func (printer *PrettyPrinter) printExpressionStatement(statement *syntaxtree2.ExpressionStatement) {
+func (printer *PrettyPrinter) printExpressionStatement(statement *syntaxtree.ExpressionStatement) {
 	printer.printNode(statement.Expression)
 }
 
-func (printer *PrettyPrinter) printConditionalStatement(statement *syntaxtree2.ConditionalStatement) {
+func (printer *PrettyPrinter) printConditionalStatement(statement *syntaxtree.ConditionalStatement) {
 	printer.sawReturn = false
 	printer.printIfHeader(statement)
 	printer.indent.Open()
@@ -32,10 +32,10 @@ func (printer *PrettyPrinter) printConditionalStatement(statement *syntaxtree2.C
 	printer.printElse(statement)
 }
 
-func (printer *PrettyPrinter) printElse(statement *syntaxtree2.ConditionalStatement) {
+func (printer *PrettyPrinter) printElse(statement *syntaxtree.ConditionalStatement) {
 	printer.appendIndent()
 	printer.append("else ")
-	if _, ok := statement.Alternative.(*syntaxtree2.ConditionalStatement); !ok {
+	if _, ok := statement.Alternative.(*syntaxtree.ConditionalStatement); !ok {
 		printer.appendLineBreak()
 		printer.indent.Open()
 		defer printer.indent.Close()
@@ -43,31 +43,31 @@ func (printer *PrettyPrinter) printElse(statement *syntaxtree2.ConditionalStatem
 	printer.printNode(statement.Alternative)
 }
 
-func (printer *PrettyPrinter) printIfHeader(statement *syntaxtree2.ConditionalStatement) {
+func (printer *PrettyPrinter) printIfHeader(statement *syntaxtree.ConditionalStatement) {
 	printer.append("if ")
 	printer.printNode(statement.Condition)
 	printer.append(" do")
 	printer.appendLineBreak()
 }
 
-func (printer *PrettyPrinter) printReturnStatement(statement *syntaxtree2.ReturnStatement) {
+func (printer *PrettyPrinter) printReturnStatement(statement *syntaxtree.ReturnStatement) {
 	printer.sawReturn = true
 	printer.append("return ")
 	printer.printNode(statement.Value)
 }
 
-func (printer *PrettyPrinter) printYieldStatement(statement *syntaxtree2.YieldStatement) {
+func (printer *PrettyPrinter) printYieldStatement(statement *syntaxtree.YieldStatement) {
 	printer.append("yield ")
 	printer.printNode(statement.Value)
 }
 
-func (printer *PrettyPrinter) printAssignStatement(statement *syntaxtree2.AssignStatement) {
+func (printer *PrettyPrinter) printAssignStatement(statement *syntaxtree.AssignStatement) {
 	printer.printNode(statement.Target)
 	printer.appendFormatted(" %s ", statement.Operator.String())
 	printer.printNode(statement.Value)
 }
 
-func (printer *PrettyPrinter) printForEachLoopStatement(loop *syntaxtree2.ForEachLoopStatement) {
+func (printer *PrettyPrinter) printForEachLoopStatement(loop *syntaxtree.ForEachLoopStatement) {
 	printer.appendFormatted(
 		"for %s in ", loop.Field.Value)
 
@@ -79,7 +79,7 @@ func (printer *PrettyPrinter) printForEachLoopStatement(loop *syntaxtree2.ForEac
 	printer.printNode(loop.Body)
 }
 
-func (printer *PrettyPrinter) printRangedLoopStatement(loop *syntaxtree2.RangedLoopStatement) {
+func (printer *PrettyPrinter) printRangedLoopStatement(loop *syntaxtree.RangedLoopStatement) {
 	printer.appendFormatted(
 		"for %s from ", loop.ValueField.Value)
 

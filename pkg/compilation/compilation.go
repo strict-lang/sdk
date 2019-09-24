@@ -1,14 +1,14 @@
 package compilation
 
 import (
-	backend2 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
-	arduino2 "gitlab.com/strict-lang/sdk/pkg/compilation/backend/arduino"
-	headerfile2 "gitlab.com/strict-lang/sdk/pkg/compilation/backend/headerfile"
-	sourcefile2 "gitlab.com/strict-lang/sdk/pkg/compilation/backend/sourcefile"
-	diagnostic2 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
-	parsing2 "gitlab.com/strict-lang/sdk/pkg/compilation/parsing"
-	scanning2 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend/arduino"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend/headerfile"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend/sourcefile"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/parsing"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 )
 
 type Compilation struct {
@@ -20,7 +20,7 @@ type Compilation struct {
 type Result struct {
 	UnitName       string
 	GeneratedFiles []Generated
-	Diagnostics    *diagnostic2.Diagnostics
+	Diagnostics    *diagnostic.Diagnostics
 	Error          error
 }
 
@@ -31,8 +31,8 @@ type Generated struct {
 
 // ParseResult contains the result of a Parsing.
 type ParseResult struct {
-	Unit        *syntaxtree2.TranslationUnit
-	Diagnostics *diagnostic2.Diagnostics
+	Unit        *syntaxtree.TranslationUnit
+	Diagnostics *diagnostic.Diagnostics
 	Error       error
 }
 
@@ -55,10 +55,10 @@ func (compilation *Compilation) Compile() Result {
 }
 
 func (compilation *Compilation) parse() ParseResult {
-	diagnosticBag := diagnostic2.NewBag()
-	sourceReader := newSourceReader()
-	tokenReader := scanning2.NewScanning(sourceReader)
-	parserFactory := parsing2.NewDefaultFactory().
+	diagnosticBag := diagnostic.NewBag()
+	sourceReader := compilation.Source.newSourceReader()
+	tokenReader := scanning.NewScanning(sourceReader)
+	parserFactory := parsing.NewDefaultFactory().
 		WithTokenStream(tokenReader).
 		WithDiagnosticBag(diagnosticBag).
 		WithUnitName(compilation.Name)
@@ -73,14 +73,14 @@ func (compilation *Compilation) parse() ParseResult {
 	}
 }
 
-func (compilation *Compilation) generateOutput(unit *syntaxtree2.TranslationUnit) []Generated {
+func (compilation *Compilation) generateOutput(unit *syntaxtree.TranslationUnit) []Generated {
 	if compilation.TargetArduino {
 		return []Generated{compilation.generateArduinoFile(unit)}
 	}
 	return compilation.generateCppFile(unit)
 }
 
-func (compilation *Compilation) generateCppFile(unit *syntaxtree2.TranslationUnit) []Generated {
+func (compilation *Compilation) generateCppFile(unit *syntaxtree.TranslationUnit) []Generated {
 	generated := make(chan Generated)
 	go func() {
 		generated <- compilation.generateHeaderFile(unit)
@@ -94,24 +94,24 @@ func (compilation *Compilation) generateCppFile(unit *syntaxtree2.TranslationUni
 	}
 }
 
-func (compilation *Compilation) generateArduinoFile(unit *syntaxtree2.TranslationUnit) Generated {
-	generation := backend2.NewGenerationWithExtension(unit, arduino2.NewGeneration())
+func (compilation *Compilation) generateArduinoFile(unit *syntaxtree.TranslationUnit) Generated {
+	generation := backend.NewGenerationWithExtension(unit, arduino.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".ino",
 		Bytes:    []byte(generation.Generate()),
 	}
 }
 
-func (compilation *Compilation) generateHeaderFile(unit *syntaxtree2.TranslationUnit) Generated {
-	generation := backend2.NewGenerationWithExtension(unit, headerfile2.NewGeneration())
+func (compilation *Compilation) generateHeaderFile(unit *syntaxtree.TranslationUnit) Generated {
+	generation := backend.NewGenerationWithExtension(unit, headerfile.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".h",
 		Bytes:    []byte(generation.Generate()),
 	}
 }
 
-func (compilation *Compilation) generateSourceFile(unit *syntaxtree2.TranslationUnit) Generated {
-	generation := backend2.NewGenerationWithExtension(unit, sourcefile2.NewGeneration())
+func (compilation *Compilation) generateSourceFile(unit *syntaxtree.TranslationUnit) Generated {
+	generation := backend.NewGenerationWithExtension(unit, sourcefile.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".cc",
 		Bytes:    []byte(generation.Generate()),

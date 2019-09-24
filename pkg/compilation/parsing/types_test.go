@@ -1,7 +1,7 @@
 package parsing
 
 import (
-	scanning2 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
 	"strings"
 	"testing"
 )
@@ -16,7 +16,7 @@ func TestParser_ParseTypeName(test *testing.T) {
 	}
 
 	for _, entry := range entries {
-		parser := NewTestParser(scanning2.NewStringScanning(entry))
+		parser := NewTestParser(scanning.NewStringScanning(entry))
 		name, err := parser.parseTypeName()
 		if err != nil {
 			test.Errorf("unexpected error while parsing %s: %s", entry, err)

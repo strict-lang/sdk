@@ -2,22 +2,22 @@ package parsing
 
 import (
 	code2 "gitlab.com/strict-lang/sdk/pkg/compilation/code"
-	diagnostic2 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 // Factory is responsible for creating new parsing instances.
 type Factory struct {
-	tokens   token2.Stream
+	tokens   token.Stream
 	unitName string
-	bag      *diagnostic2.Bag
+	bag      *diagnostic.Bag
 }
 
 // NewDefaultFactory creates a factory with default values.
 func NewDefaultFactory() *Factory {
 	return &Factory{
 		unitName: "undefined",
-		bag:      diagnostic2.NewBag(),
+		bag:      diagnostic.NewBag(),
 	}
 }
 
@@ -30,13 +30,13 @@ func (factory *Factory) WithUnitName(name string) *Factory {
 // WithTokenStream set the source of tokens. This field is not copied per
 // parser thus, creating multiple Parsings from a factory is not possible,
 // unless the stream is changed each time.
-func (factory *Factory) WithTokenStream(reader token2.Stream) *Factory {
+func (factory *Factory) WithTokenStream(reader token.Stream) *Factory {
 	factory.tokens = reader
 	return factory
 }
 
 // WithDiagnosticBag sets the diagnostic.Bag that diagnostics are reported to.
-func (factory *Factory) WithDiagnosticBag(recorder *diagnostic2.Bag) *Factory {
+func (factory *Factory) WithDiagnosticBag(recorder *diagnostic.Bag) *Factory {
 	factory.bag = recorder
 	return factory
 }
@@ -51,7 +51,7 @@ func (factory *Factory) NewParser() *Parsing {
 		recorder:    factory.bag,
 		unitName:    factory.unitName,
 	}
-	parser.openBlock(token2.NoIndent)
+	parser.openBlock(token.NoIndent)
 	parser.advance()
 	parser.isAtBeginOfStatement = true
 	return parser

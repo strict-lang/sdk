@@ -8,56 +8,56 @@ package parsing
 
 import (
 	"fmt"
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
-func (parsing *Parsing) parseExpression() (syntaxtree2.Node, error) {
-	return parsing.parseBinaryExpression(token2.LowPrecedence + 1)
+func (parsing *Parsing) parseExpression() (syntaxtree.Node, error) {
+	return parsing.parseBinaryExpression(token.LowPrecedence + 1)
 }
 
-func (parsing *Parsing) parseOperand() (syntaxtree2.Node, error) {
+func (parsing *Parsing) parseOperand() (syntaxtree.Node, error) {
 	switch last := parsing.token(); {
-	case token2.IsIdentifierToken(last):
+	case token.IsIdentifierToken(last):
 		return parsing.parseIdentifier()
-	case token2.IsStringLiteralToken(last):
+	case token.IsStringLiteralToken(last):
 		return parsing.parseStringLiteral()
-	case token2.IsNumberLiteralToken(last):
+	case token.IsNumberLiteralToken(last):
 		return parsing.parseNumberLiteral()
-	case token2.OperatorValue(last) == token2.LeftParenOperator:
+	case token.OperatorValue(last) == token.LeftParenOperator:
 		return parsing.completeLeftParenExpression()
 	}
 	return nil, fmt.Errorf("could not parse operand: %s", parsing.token())
 }
 
-func (parsing *Parsing) parseIdentifier() (*syntaxtree2.Identifier, error) {
+func (parsing *Parsing) parseIdentifier() (*syntaxtree.Identifier, error) {
 	value := parsing.token().Value()
 	parsing.advance()
-	return &syntaxtree2.Identifier{
+	return &syntaxtree.Identifier{
 		Value:        value,
 		NodePosition: parsing.createTokenPosition(),
 	}, nil
 }
 
-func (parsing *Parsing) parseStringLiteral() (*syntaxtree2.StringLiteral, error) {
+func (parsing *Parsing) parseStringLiteral() (*syntaxtree.StringLiteral, error) {
 	value := parsing.token().Value()
 	parsing.advance()
-	return &syntaxtree2.StringLiteral{
+	return &syntaxtree.StringLiteral{
 		Value:        value,
 		NodePosition: parsing.createTokenPosition(),
 	}, nil
 }
 
-func (parsing *Parsing) parseNumberLiteral() (*syntaxtree2.NumberLiteral, error) {
+func (parsing *Parsing) parseNumberLiteral() (*syntaxtree.NumberLiteral, error) {
 	value := parsing.token().Value()
 	parsing.advance()
-	return &syntaxtree2.NumberLiteral{
+	return &syntaxtree.NumberLiteral{
 		Value:        value,
 		NodePosition: parsing.createTokenPosition(),
 	}, nil
 }
 
-func (parsing *Parsing) completeLeftParenExpression() (syntaxtree2.Node, error) {
+func (parsing *Parsing) completeLeftParenExpression() (syntaxtree.Node, error) {
 	parsing.advance()
 	parsing.expressionDepth++
 	expression, err := parsing.parseExpression()
@@ -65,10 +65,10 @@ func (parsing *Parsing) completeLeftParenExpression() (syntaxtree2.Node, error) 
 		return expression, err
 	}
 	parsing.expressionDepth--
-	if token2.OperatorValue(parsing.token()) != token2.RightParenOperator {
+	if token.OperatorValue(parsing.token()) != token.RightParenOperator {
 		return nil, &UnexpectedTokenError{
 			Token:    parsing.token(),
-			Expected: token2.RightParenOperator.String(),
+			Expected: token.RightParenOperator.String(),
 		}
 	}
 	parsing.advance()
@@ -77,7 +77,7 @@ func (parsing *Parsing) completeLeftParenExpression() (syntaxtree2.Node, error) 
 
 // ParseOperation parses the initial operand and continues to parsing operands on
 // that operand, forming a node for another expression.
-func (parsing *Parsing) parseOperation() (syntaxtree2.Node, error) {
+func (parsing *Parsing) parseOperation() (syntaxtree.Node, error) {
 	operand, err := parsing.parseOperand()
 	if err != nil {
 		return nil, err
@@ -96,24 +96,24 @@ func (parsing *Parsing) parseOperation() (syntaxtree2.Node, error) {
 
 // ParseOperationOnOperand parses an operation on an operand that has already
 // been parsed. It is called by the ParseOperand method.
-func (parsing *Parsing) parseOperationOnOperand(operand syntaxtree2.Node) (done bool, node syntaxtree2.Node, err error) {
+func (parsing *Parsing) parseOperationOnOperand(operand syntaxtree.Node) (done bool, node syntaxtree.Node, err error) {
 	switch next := parsing.token(); {
-	case token2.HasOperatorValue(next, token2.LeftBracketOperator):
+	case token.HasOperatorValue(next, token.LeftBracketOperator):
 		node, err = parsing.parseListSelectExpression(operand)
 		return false, node, err
-	case token2.HasOperatorValue(next, token2.LeftParenOperator):
+	case token.HasOperatorValue(next, token.LeftParenOperator):
 		node, err = parsing.parseCallOnNode(operand)
 		return false, node, err
-	case token2.HasOperatorValue(next, token2.DotOperator):
+	case token.HasOperatorValue(next, token.DotOperator):
 		node, err = parsing.parseSelectExpression(operand)
 		return false, node, err
 	}
 	return true, operand, nil
 }
 
-func (parsing *Parsing) parseListSelectExpression(target syntaxtree2.Node) (syntaxtree2.Node, error) {
+func (parsing *Parsing) parseListSelectExpression(target syntaxtree.Node) (syntaxtree.Node, error) {
 	beginOffset := parsing.offset()
-	if err := parsing.skipOperator(token2.LeftBracketOperator); err != nil {
+	if err := parsing.skipOperator(token.LeftBracketOperator); err != nil {
 		return nil, err
 	}
 	index, err := parsing.parseExpression()
@@ -121,29 +121,29 @@ func (parsing *Parsing) parseListSelectExpression(target syntaxtree2.Node) (synt
 		return nil, err
 	}
 	defer parsing.advance()
-	if !token2.HasOperatorValue(parsing.token(), token2.RightBracketOperator) {
+	if !token.HasOperatorValue(parsing.token(), token.RightBracketOperator) {
 		return nil, &UnexpectedTokenError{
 			Token:    parsing.token(),
 			Expected: "] / end of list access",
 		}
 	}
-	return &syntaxtree2.ListSelectExpression{
+	return &syntaxtree.ListSelectExpression{
 		Index:        target,
 		Target:       index,
 		NodePosition: parsing.createPosition(beginOffset),
 	}, nil
 }
 
-func (parsing *Parsing) parseSelectExpression(target syntaxtree2.Node) (syntaxtree2.Node, error) {
+func (parsing *Parsing) parseSelectExpression(target syntaxtree.Node) (syntaxtree.Node, error) {
 	beginOffset := parsing.offset()
-	if err := parsing.skipOperator(token2.DotOperator); err != nil {
+	if err := parsing.skipOperator(token.DotOperator); err != nil {
 		return nil, err
 	}
 	field, err := parsing.parseOperand()
 	if err != nil {
 		return nil, err
 	}
-	return &syntaxtree2.SelectExpression{
+	return &syntaxtree.SelectExpression{
 		Target:       target,
 		Selection:    field,
 		NodePosition: parsing.createPosition(beginOffset),
@@ -155,7 +155,7 @@ func (parsing *Parsing) parseSelectExpression(target syntaxtree2.Node) (syntaxtr
 // binary expressions have a left-hand-side and right-hand-side operand and
 // the operator in between. The operands can be any kind of expression.
 // Example: 'a + b' or '(1 + 2) + 3'
-func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token2.Precedence) (syntaxtree2.Node, error) {
+func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token.Precedence) (syntaxtree.Node, error) {
 	beginOffset := parsing.offset()
 	leftHandSide, err := parsing.parseUnaryExpression()
 	if err != nil {
@@ -163,7 +163,7 @@ func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token2.Preceden
 	}
 	for {
 		operator := parsing.token()
-		precedence := token2.PrecedenceOfAny(operator)
+		precedence := token.PrecedenceOfAny(operator)
 		if precedence < requiredPrecedence {
 			return leftHandSide, nil
 		}
@@ -172,8 +172,8 @@ func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token2.Preceden
 		if err != nil {
 			return leftHandSide, err
 		}
-		leftHandSide = &syntaxtree2.BinaryExpression{
-			Operator:     token2.OperatorValue(operator),
+		leftHandSide = &syntaxtree.BinaryExpression{
+			Operator:     token.OperatorValue(operator),
 			LeftOperand:  leftHandSide,
 			RightOperand: rightHandSide,
 			NodePosition: parsing.createPosition(beginOffset),
@@ -181,7 +181,7 @@ func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token2.Preceden
 	}
 }
 
-func (parsing *Parsing) parseConstructor() (*syntaxtree2.CallExpression, syntaxtree2.TypeName, error) {
+func (parsing *Parsing) parseConstructor() (*syntaxtree.CallExpression, syntaxtree.TypeName, error) {
 	typeName, err := parsing.parseTypeName()
 	if err != nil {
 		return nil, nil, err
@@ -190,16 +190,16 @@ func (parsing *Parsing) parseConstructor() (*syntaxtree2.CallExpression, syntaxt
 	return methodCall, typeName, err
 }
 
-func (parsing *Parsing) parseCreateExpression() (syntaxtree2.Node, error) {
+func (parsing *Parsing) parseCreateExpression() (syntaxtree.Node, error) {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token2.CreateKeyword); err != nil {
+	if err := parsing.skipKeyword(token.CreateKeyword); err != nil {
 		return parsing.createInvalidStatement(beginOffset, err), err
 	}
 	constructor, typeName, err := parsing.parseConstructor()
 	if err != nil {
 		return parsing.createInvalidStatement(beginOffset, err), err
 	}
-	return &syntaxtree2.CreateExpression{
+	return &syntaxtree.CreateExpression{
 		NodePosition: parsing.createPosition(beginOffset),
 		Constructor:  constructor,
 		Type:         typeName,
@@ -210,16 +210,16 @@ func (parsing *Parsing) parseCreateExpression() (syntaxtree2.Node, error) {
 // operations with only one operand (arity of one). An example of a unary
 // expression is the negation '!(expression)'. The single operand may be
 // any kind of expression, including another unary expression.
-func (parsing *Parsing) parseUnaryExpression() (syntaxtree2.Node, error) {
+func (parsing *Parsing) parseUnaryExpression() (syntaxtree.Node, error) {
 	beginOffset := parsing.offset()
 	operatorToken := parsing.token()
-	if token2.KeywordValue(operatorToken) == token2.CreateKeyword {
+	if token.KeywordValue(operatorToken) == token.CreateKeyword {
 		return parsing.parseCreateExpression()
 	}
-	if !token2.IsOperatorOrOperatorKeywordToken(operatorToken) {
+	if !token.IsOperatorOrOperatorKeywordToken(operatorToken) {
 		return parsing.parseOperation()
 	}
-	operator := token2.OperatorValue(operatorToken)
+	operator := token.OperatorValue(operatorToken)
 	if !operator.IsUnaryOperator() {
 		return parsing.parseOperation()
 	}
@@ -228,7 +228,7 @@ func (parsing *Parsing) parseUnaryExpression() (syntaxtree2.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &syntaxtree2.UnaryExpression{
+	return &syntaxtree.UnaryExpression{
 		Operator:     operator,
 		Operand:      operand,
 		NodePosition: parsing.createPosition(beginOffset),
@@ -236,27 +236,27 @@ func (parsing *Parsing) parseUnaryExpression() (syntaxtree2.Node, error) {
 }
 
 // ParseMethodCall parses the call to a method.
-func (parsing *Parsing) parseCallOnNode(method syntaxtree2.Node) (*syntaxtree2.CallExpression, error) {
+func (parsing *Parsing) parseCallOnNode(method syntaxtree.Node) (*syntaxtree.CallExpression, error) {
 	beginOffset := parsing.offset()
-	if err := parsing.skipOperator(token2.LeftParenOperator); err != nil {
-		return &syntaxtree2.CallExpression{}, err
+	if err := parsing.skipOperator(token.LeftParenOperator); err != nil {
+		return &syntaxtree.CallExpression{}, err
 	}
 	arguments, err := parsing.parseArgumentList()
 	if err != nil {
-		return &syntaxtree2.CallExpression{}, err
+		return &syntaxtree.CallExpression{}, err
 	}
-	return &syntaxtree2.CallExpression{
+	return &syntaxtree.CallExpression{
 		Arguments:    arguments,
 		Method:       method,
 		NodePosition: parsing.createPosition(beginOffset),
 	}, nil
 }
 
-func (parsing *Parsing) parseCallArgument() (*syntaxtree2.CallArgument, error) {
+func (parsing *Parsing) parseCallArgument() (*syntaxtree.CallArgument, error) {
 	beginOffset := parsing.offset()
-	var argument syntaxtree2.CallArgument
-	if token2.IsIdentifierToken(parsing.token()) &&
-		token2.HasOperatorValue(parsing.peek(), token2.AssignOperator) {
+	var argument syntaxtree.CallArgument
+	if token.IsIdentifierToken(parsing.token()) &&
+		token.HasOperatorValue(parsing.peek(), token.AssignOperator) {
 		fmt.Println("Label: ", parsing.token().Value())
 		argument.Label = parsing.token().Value()
 		parsing.advance()
@@ -273,12 +273,12 @@ func (parsing *Parsing) parseCallArgument() (*syntaxtree2.CallArgument, error) {
 }
 
 // parseArgumentList parses the arguments of a CallExpression.
-func (parsing *Parsing) parseArgumentList() ([]*syntaxtree2.CallArgument, error) {
-	if token2.OperatorValue(parsing.token()) == token2.RightParenOperator {
+func (parsing *Parsing) parseArgumentList() ([]*syntaxtree.CallArgument, error) {
+	if token.OperatorValue(parsing.token()) == token.RightParenOperator {
 		parsing.advance()
-		return []*syntaxtree2.CallArgument{}, nil
+		return []*syntaxtree.CallArgument{}, nil
 	}
-	var arguments []*syntaxtree2.CallArgument
+	var arguments []*syntaxtree.CallArgument
 	for {
 		argument, err := parsing.parseCallArgument()
 		if err != nil {
@@ -287,11 +287,11 @@ func (parsing *Parsing) parseArgumentList() ([]*syntaxtree2.CallArgument, error)
 		arguments = append(arguments, argument)
 		current := parsing.token()
 
-		switch token2.OperatorValue(current) {
-		case token2.RightParenOperator:
+		switch token.OperatorValue(current) {
+		case token.RightParenOperator:
 			parsing.advance()
 			return arguments, nil
-		case token2.CommaOperator:
+		case token.CommaOperator:
 			parsing.advance()
 			continue
 		}

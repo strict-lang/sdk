@@ -2,11 +2,11 @@ package scanning
 
 import (
 	"fmt"
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
 )
 
 type UnexpectedCharError struct {
-	got      source2.Char
+	got      source.Char
 	expected string
 }
 

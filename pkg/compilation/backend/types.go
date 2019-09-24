@@ -1,7 +1,7 @@
 package backend
 
 import (
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 )
 
 const (
@@ -17,21 +17,21 @@ var builtinTypes = map[string]string{
 	"float":  builtinTypeFloat,
 }
 
-func (generation *Generation) GenerateGenericTypeName(name *syntaxtree2.GenericTypeName) {
+func (generation *Generation) GenerateGenericTypeName(name *syntaxtree.GenericTypeName) {
 	generation.Emit(name.Name)
 	generation.Emit("<")
 	generation.EmitNode(name.Generic)
 	generation.Emit(">")
 }
 
-func (generation *Generation) GenerateListTypeName(name *syntaxtree2.ListTypeName) {
+func (generation *Generation) GenerateListTypeName(name *syntaxtree.ListTypeName) {
 	generation.Emit(builtinTypeList)
 	generation.Emit("<")
 	generation.EmitNode(name.ElementTypeName)
 	generation.Emit(">")
 }
 
-func (generation *Generation) GenerateConcreteTypeName(name *syntaxtree2.ConcreteTypeName) {
+func (generation *Generation) GenerateConcreteTypeName(name *syntaxtree.ConcreteTypeName) {
 	translatedName := lookupTypeName(name.Name)
 	generation.Emit(translatedName)
 }

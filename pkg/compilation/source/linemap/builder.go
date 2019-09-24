@@ -1,17 +1,17 @@
 package linemap
 
 import (
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
 )
 
 type Builder struct {
-	index   source2.LineIndex
-	offset  source2.Offset
+	index   source.LineIndex
+	offset  source.Offset
 	lines   []lineEntry
-	offsets []source2.Offset
+	offsets []source.Offset
 }
 
-func (builder *Builder) Append(offset, length source2.Offset) {
+func (builder *Builder) Append(offset, length source.Offset) {
 	entry := lineEntry{
 		offset: offset,
 		index:  builder.index,

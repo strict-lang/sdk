@@ -2,7 +2,7 @@ package format
 
 import (
 	"fmt"
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 	"unicode/utf8"
 )
 
@@ -10,16 +10,16 @@ type PrettyPrinter struct {
 	format     Format
 	writer     Writer
 	indent     Indent
-	unit       *syntaxtree2.TranslationUnit
+	unit       *syntaxtree.TranslationUnit
 	lineLength int
-	astVisitor *syntaxtree2.Visitor
+	astVisitor *syntaxtree.Visitor
 	sawReturn  bool
 }
 
 type PrettyPrinterFactory struct {
 	Format Format
 	Writer Writer
-	Unit   *syntaxtree2.TranslationUnit
+	Unit   *syntaxtree.TranslationUnit
 }
 
 func (factory *PrettyPrinterFactory) NewPrettyPrinter() *PrettyPrinter {
@@ -28,7 +28,7 @@ func (factory *PrettyPrinterFactory) NewPrettyPrinter() *PrettyPrinter {
 		writer:     factory.Writer,
 		unit:       factory.Unit,
 		indent:     Indent{},
-		astVisitor: syntaxtree2.NewEmptyVisitor(),
+		astVisitor: syntaxtree.NewEmptyVisitor(),
 	}
 	printer.registerAstVisitors()
 	return printer
@@ -72,11 +72,11 @@ func (printer *PrettyPrinter) setWriter(writer Writer) {
 	printer.writer = writer
 }
 
-func (printer *PrettyPrinter) printNode(node syntaxtree2.Node) {
+func (printer *PrettyPrinter) printNode(node syntaxtree.Node) {
 	node.Accept(printer.astVisitor)
 }
 
-func (printer *PrettyPrinter) printTranslationUnit(unit *syntaxtree2.TranslationUnit) {
+func (printer *PrettyPrinter) printTranslationUnit(unit *syntaxtree.TranslationUnit) {
 	// FIXME
 }
 

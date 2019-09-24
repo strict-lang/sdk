@@ -1,7 +1,7 @@
 package syntaxtree
 
 import (
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 type CallExpression struct {
@@ -73,7 +73,7 @@ func (identifier *Identifier) Position() Position {
 
 // UnaryExpression is an operation on a single operand.
 type UnaryExpression struct {
-	Operator     token2.Operator
+	Operator     token.Operator
 	Operand      Node
 	NodePosition Position
 }
@@ -95,7 +95,7 @@ func (unary *UnaryExpression) Position() Position {
 type BinaryExpression struct {
 	LeftOperand  Node
 	RightOperand Node
-	Operator     token2.Operator
+	Operator     token.Operator
 	NodePosition Position
 }
 

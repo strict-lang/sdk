@@ -1,7 +1,7 @@
 package syntaxtree
 
 import (
-	token2 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 type ExpressionStatement struct {
@@ -242,7 +242,7 @@ func (statement *EmptyStatement) Position() Position {
 type AssignStatement struct {
 	Target       Node
 	Value        Node
-	Operator     token2.Operator
+	Operator     token.Operator
 	NodePosition Position
 }
 

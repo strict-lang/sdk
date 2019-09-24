@@ -1,7 +1,7 @@
 package scanning
 
 import (
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
 )
 
 var escapedCharacters = map[rune]rune{
@@ -16,9 +16,9 @@ var escapedCharacters = map[rune]rune{
 	'0':  rune(0),
 }
 
-func findEscapedCharacter(char source2.Char) (source2.Char, bool) {
+func findEscapedCharacter(char source.Char) (source.Char, bool) {
 	if escaped, ok := escapedCharacters[rune(char)]; ok {
-		return source2.Char(escaped), true
+		return source.Char(escaped), true
 	}
-	return source2.EndOfFile, false
+	return source.EndOfFile, false
 }

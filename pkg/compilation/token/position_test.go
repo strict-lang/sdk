@@ -1,12 +1,12 @@
 package token
 
 import (
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
 	"testing"
 )
 
 func TestPositionDoesNotContainOutside(test *testing.T) {
-	entries := map[Position]source2.Offset{
+	entries := map[Position]source.Offset{
 		{BeginOffset: 00, EndOffset: 10}: 11,
 		{BeginOffset: 11, EndOffset: 12}: 10,
 		{BeginOffset: 11, EndOffset: 13}: 14,

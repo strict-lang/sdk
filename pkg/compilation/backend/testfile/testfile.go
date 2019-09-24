@@ -2,19 +2,19 @@ package testfile
 
 import (
 	"fmt"
-	backend2 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 )
 
 type Extension struct{}
 
-var _ backend2.Extension = &Extension{}
+var _ backend.Extension = &Extension{}
 
 type TestFile struct {
-	generation *backend2.Generation
+	generation *backend.Generation
 }
 
-func (extension *Extension) ModifyVisitor(generation *backend2.Generation, visitor *syntaxtree2.Visitor) {
+func (extension *Extension) ModifyVisitor(generation *backend.Generation, visitor *syntaxtree.Visitor) {
 	testFile := &TestFile{
 		generation: generation,
 	}
@@ -25,7 +25,7 @@ const typeTestingInstance = "testing"
 const methodTestingInstance = "methodTesting"
 const returnOnFailure = false
 
-func (testFile *TestFile) emitAssertStatement(statement *syntaxtree2.AssertStatement) {
+func (testFile *TestFile) emitAssertStatement(statement *syntaxtree.AssertStatement) {
 	generation := testFile.generation
 	generation.Emit("if (!(")
 	generation.EmitNode(statement.Expression)
@@ -39,7 +39,7 @@ func (testFile *TestFile) emitAssertStatement(statement *syntaxtree2.AssertState
 	generation.EmitEndOfLine()
 }
 
-func (testFile *TestFile) emitFailedAssertion(statement *syntaxtree2.AssertStatement) {
+func (testFile *TestFile) emitFailedAssertion(statement *syntaxtree.AssertStatement) {
 	failureMessage := generateAssertionFailureMessage(statement.Expression)
 	testFile.generation.EmitFormatted("%s.ReportFailedAssertion(\"%s\");",
 		methodTestingInstance, failureMessage)
@@ -48,8 +48,8 @@ func (testFile *TestFile) emitFailedAssertion(statement *syntaxtree2.AssertState
 	}
 }
 
-func generateAssertionFailureMessage(expression syntaxtree2.Node) string {
-	assertionMessage := backend2.NewAssertionMessageComputation()
+func generateAssertionFailureMessage(expression syntaxtree.Node) string {
+	assertionMessage := backend.NewAssertionMessageComputation()
 	assertionMessage.GenerateNode(expression)
 	return assertionMessage.String()
 }
@@ -57,11 +57,11 @@ func generateAssertionFailureMessage(expression syntaxtree2.Node) string {
 type TestDefinition struct {
 	testedMethodName string
 	testMethodName   string
-	node             syntaxtree2.TestStatement
-	generation       *backend2.Generation
+	node             syntaxtree.TestStatement
+	generation       *backend.Generation
 }
 
-func NewTestDefinition(node syntaxtree2.TestStatement, generation *backend2.Generation) *TestDefinition {
+func NewTestDefinition(node syntaxtree.TestStatement, generation *backend.Generation) *TestDefinition {
 	return &TestDefinition{
 		testedMethodName: node.MethodName,
 		testMethodName:   produceTestMethodName(node.MethodName),

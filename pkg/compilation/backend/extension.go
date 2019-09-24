@@ -1,11 +1,11 @@
 package backend
 
 import (
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 )
 
 type Extension interface {
-	ModifyVisitor(generation *Generation, visitor *syntaxtree2.Visitor)
+	ModifyVisitor(generation *Generation, visitor *syntaxtree.Visitor)
 }
 
 type extensionSet struct {
@@ -16,7 +16,7 @@ func NewExtensionSet(extensions ...Extension) Extension {
 	return &extensionSet{elements: extensions}
 }
 
-func (extensions *extensionSet) ModifyVisitor(generation *Generation, visitor *syntaxtree2.Visitor) {
+func (extensions *extensionSet) ModifyVisitor(generation *Generation, visitor *syntaxtree.Visitor) {
 	for _, element := range extensions.elements {
 		element.ModifyVisitor(generation, visitor)
 	}

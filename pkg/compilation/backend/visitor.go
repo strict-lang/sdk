@@ -1,11 +1,11 @@
 package backend
 
 import (
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 )
 
-func CreateGenericCppVisitor(generation *Generation) *syntaxtree2.Visitor {
-	return &syntaxtree2.Visitor{
+func CreateGenericCppVisitor(generation *Generation) *syntaxtree.Visitor {
+	return &syntaxtree.Visitor{
 		VisitListTypeName:           generation.GenerateListTypeName,
 		VisitAssertStatement:        generation.GenerateAssertStatement,
 		VisitConcreteTypeName:       generation.GenerateConcreteTypeName,
@@ -20,7 +20,7 @@ func CreateGenericCppVisitor(generation *Generation) *syntaxtree2.Visitor {
 		VisitClassDeclaration:       generation.GenerateClassDeclaration,
 		VisitMethodDeclaration:      generation.GenerateMethod,
 		VisitIdentifier:             generation.GenerateIdentifier,
-		VisitCallArgument:           func(*syntaxtree2.CallArgument) {},
+		VisitCallArgument:           func(*syntaxtree.CallArgument) {},
 		VisitCallExpression:         generation.GenerateCallExpression,
 		VisitStringLiteral:          generation.GenerateStringLiteral,
 		VisitNumberLiteral:          generation.GenerateNumberLiteral,
@@ -39,6 +39,6 @@ func CreateGenericCppVisitor(generation *Generation) *syntaxtree2.Visitor {
 		VisitConditionalStatement:   generation.GenerateConditionalStatement,
 		VisitForEachLoopStatement:   generation.GenerateForEachLoopStatement,
 		VisitListSelectExpression:   generation.GenerateListSelectExpression,
-		VisitConstructorDeclaration: func(declaration *syntaxtree2.ConstructorDeclaration) {},
+		VisitConstructorDeclaration: func(declaration *syntaxtree.ConstructorDeclaration) {},
 	}
 }

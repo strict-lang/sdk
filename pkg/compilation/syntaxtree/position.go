@@ -1,7 +1,7 @@
 package syntaxtree
 
 import (
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
 )
 
 // Position is the position of a node in the source code. It may span
@@ -18,12 +18,12 @@ type Position interface {
 	// Begin returns the offset to the nodes begin. If the node is an
 	// expression, it will return the offset to the expressions first
 	// character. The begin is never greater than the end offset.
-	Begin() source2.Offset
+	Begin() source.Offset
 	// End returns the offset to the nodes end. If the node is an
 	// expression, i twill return the offset to the expressions last
 	// character. The end is never smaller than the begin. When comparing
 	// the positions of two nodes, favor the begin offset.
-	End() source2.Offset
+	End() source.Offset
 }
 
 // Positioned is implemented by all nodes that have a specific position
@@ -36,10 +36,10 @@ type Positioned interface {
 
 type ZeroPosition struct{}
 
-func (ZeroPosition) Begin() source2.Offset {
+func (ZeroPosition) Begin() source.Offset {
 	return 0
 }
 
-func (ZeroPosition) End() source2.Offset {
+func (ZeroPosition) End() source.Offset {
 	return 0
 }

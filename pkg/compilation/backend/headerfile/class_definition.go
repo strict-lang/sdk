@@ -1,23 +1,23 @@
 package headerfile
 
 import (
-	backend2 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 )
 
 type classDefinition struct {
 	name               string
-	parameters         []syntaxtree2.ClassParameter
-	superTypes         []syntaxtree2.TypeName
-	otherMembers       []syntaxtree2.Node
-	fields             []syntaxtree2.Node
-	generation         *backend2.Generation
+	parameters         []syntaxtree.ClassParameter
+	superTypes         []syntaxtree.TypeName
+	otherMembers       []syntaxtree.Node
+	fields             []syntaxtree.Node
+	generation         *backend.Generation
 	shouldCreateInit   bool
-	declarationVisitor *syntaxtree2.Visitor
+	declarationVisitor *syntaxtree.Visitor
 }
 
 func newClassDefinition(
-	generation *backend2.Generation, declaration *syntaxtree2.ClassDeclaration) *classDefinition {
+	generation *backend.Generation, declaration *syntaxtree.ClassDeclaration) *classDefinition {
 
 	fields, otherMembers := filterFieldDeclarations(declaration.Children)
 	createInit := len(fields) > 0
@@ -29,7 +29,7 @@ func newClassDefinition(
 		fields:             fields,
 		generation:         generation,
 		shouldCreateInit:   createInit,
-		declarationVisitor: syntaxtree2.NewEmptyVisitor(),
+		declarationVisitor: syntaxtree.NewEmptyVisitor(),
 	}
 	initializeVisitor(definition)
 	return definition
@@ -41,12 +41,12 @@ func initializeVisitor(definition *classDefinition) {
 	definition.declarationVisitor.VisitConstructorDeclaration = definition.writeConstructorDeclaration
 }
 
-func filterFieldDeclarations(nodes []syntaxtree2.Node) (fields []syntaxtree2.Node, others []syntaxtree2.Node) {
+func filterFieldDeclarations(nodes []syntaxtree.Node) (fields []syntaxtree.Node, others []syntaxtree.Node) {
 	for _, child := range nodes {
 		switch child.(type) {
-		case *syntaxtree2.MethodDeclaration, *syntaxtree2.ConstructorDeclaration:
+		case *syntaxtree.MethodDeclaration, *syntaxtree.ConstructorDeclaration:
 			others = append(others, child)
-		case *syntaxtree2.FieldDeclaration:
+		case *syntaxtree.FieldDeclaration:
 			fields = append(fields, child)
 		}
 	}
@@ -92,13 +92,13 @@ func (class *classDefinition) generateCode() {
 	generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) writeMethodDeclaration(declaration *syntaxtree2.MethodDeclaration) {
+func (class *classDefinition) writeMethodDeclaration(declaration *syntaxtree.MethodDeclaration) {
 	class.generation.EmitMethodDeclaration(declaration)
 	class.generation.Emit(";")
 	class.generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) writeFieldDeclaration(declaration *syntaxtree2.FieldDeclaration) {
+func (class *classDefinition) writeFieldDeclaration(declaration *syntaxtree.FieldDeclaration) {
 	class.generation.GenerateFieldDeclaration(declaration)
 	class.generation.Emit(";")
 	class.generation.EmitEndOfLine()
@@ -129,7 +129,7 @@ func (class *classDefinition) shouldWritePrivateMembers() bool {
 }
 
 func (class *classDefinition) writeInitMethod() {
-	class.generation.EmitFormatted("void %s();", backend2.InitMethodName)
+	class.generation.EmitFormatted("void %s();", backend.InitMethodName)
 	class.generation.EmitEndOfLine()
 }
 
@@ -144,7 +144,7 @@ func (class *classDefinition) writePrivateMembers() {
 	class.generation.DecreaseIndent()
 }
 
-func (class *classDefinition) writeConstructorDeclaration(declaration *syntaxtree2.ConstructorDeclaration) {
+func (class *classDefinition) writeConstructorDeclaration(declaration *syntaxtree.ConstructorDeclaration) {
 	output := class.generation
 	className := output.Unit.Class.Name
 	output.Emit("explicit ")
@@ -154,7 +154,7 @@ func (class *classDefinition) writeConstructorDeclaration(declaration *syntaxtre
 	output.EmitEndOfLine()
 }
 
-func writeExplicitDefaultConstructor(name string, generation *backend2.Generation) {
+func writeExplicitDefaultConstructor(name string, generation *backend.Generation) {
 	generation.EmitFormatted("explicit %s()", name)
 	generation.Emit(";")
 	generation.EmitEndOfLine()

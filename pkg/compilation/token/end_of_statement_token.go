@@ -1,7 +1,7 @@
 package token
 
 import (
-	source2 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
 )
 
 const (
@@ -13,7 +13,7 @@ type EndOfStatementToken struct {
 	position Position
 }
 
-func NewEndOfStatementToken(offset source2.Offset) Token {
+func NewEndOfStatementToken(offset source.Offset) Token {
 	return &EndOfStatementToken{
 		position: Position{offset, offset},
 	}

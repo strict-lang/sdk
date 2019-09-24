@@ -1,43 +1,43 @@
 package backend
 
 import (
-	syntaxtree2 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 )
 
-func (generation *Generation) GenerateIdentifier(identifier *syntaxtree2.Identifier) {
+func (generation *Generation) GenerateIdentifier(identifier *syntaxtree.Identifier) {
 	generation.Emit(identifier.Value)
 }
 
-func (generation *Generation) GenerateStringLiteral(literal *syntaxtree2.StringLiteral) {
+func (generation *Generation) GenerateStringLiteral(literal *syntaxtree.StringLiteral) {
 	generation.EmitFormatted(`"%s"`, literal.Value)
 }
 
-func (generation *Generation) GenerateNumberLiteral(literal *syntaxtree2.NumberLiteral) {
+func (generation *Generation) GenerateNumberLiteral(literal *syntaxtree.NumberLiteral) {
 	generation.Emit(literal.Value)
 }
 
-func (generation *Generation) GenerateBinaryExpression(binary *syntaxtree2.BinaryExpression) {
+func (generation *Generation) GenerateBinaryExpression(binary *syntaxtree.BinaryExpression) {
 	generation.EmitNode(binary.LeftOperand)
 	generation.EmitFormatted(" %s ", binary.Operator.String())
 	generation.EmitNode(binary.RightOperand)
 }
 
-func (generation *Generation) GenerateUnaryExpression(unary *syntaxtree2.UnaryExpression) {
+func (generation *Generation) GenerateUnaryExpression(unary *syntaxtree.UnaryExpression) {
 	generation.EmitFormatted("(%s", unary.Operator)
 	generation.EmitNode(unary.Operand)
 	generation.Emit(")")
 }
 
-func isPointerTarget(node syntaxtree2.Node) bool {
+func isPointerTarget(node syntaxtree.Node) bool {
 	// TODO(merlinosayimwen): Replace this by attribute lookup
-	if identifier, isIdentifier := node.(*syntaxtree2.Identifier); isIdentifier {
+	if identifier, isIdentifier := node.(*syntaxtree.Identifier); isIdentifier {
 		return identifier.Value == "this"
 	}
 	return false
 }
 
-func (generation *Generation) GenerateSelectExpression(expression *syntaxtree2.SelectExpression) {
-	if id, ok := expression.Target.(*syntaxtree2.Identifier); ok {
+func (generation *Generation) GenerateSelectExpression(expression *syntaxtree.SelectExpression) {
+	if id, ok := expression.Target.(*syntaxtree.Identifier); ok {
 		if _, moduleExists := generation.importModules[id.Value]; moduleExists {
 			generation.generateNamespaceSelector(expression)
 			return
@@ -52,14 +52,14 @@ func (generation *Generation) GenerateSelectExpression(expression *syntaxtree2.S
 	generation.EmitNode(expression.Selection)
 }
 
-func (generation *Generation) GenerateListSelectExpression(expression *syntaxtree2.ListSelectExpression) {
+func (generation *Generation) GenerateListSelectExpression(expression *syntaxtree.ListSelectExpression) {
 	generation.EmitNode(expression.Target)
 	generation.Emit("[")
 	generation.EmitNode(expression.Index)
 	generation.Emit("]")
 }
 
-func (generation *Generation) generateNamespaceSelector(selector *syntaxtree2.SelectExpression) {
+func (generation *Generation) generateNamespaceSelector(selector *syntaxtree.SelectExpression) {
 	if generation.shouldInsertNamespaceSelector {
 		generation.EmitNode(selector.Target)
 		generation.Emit("::")
