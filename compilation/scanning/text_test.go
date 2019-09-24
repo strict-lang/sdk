@@ -1,6 +1,8 @@
 package scanning
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestScanningStringLiteralBody(test *testing.T) {
 	entries := []string{
