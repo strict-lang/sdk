@@ -9,7 +9,7 @@ import (
 	"runtime"
 )
 
-const BinaryName = "Strict"
+const BinaryName = "strict"
 
 func binaryName() string {
 	if runtime.GOOS == "windows" {
@@ -20,19 +20,19 @@ func binaryName() string {
 
 func Install() error {
 	mg.Deps(InstallDeps)
-	if err := sh.RunV(mg.GoCmd(), "install", "./cmd/Strict"); err != nil {
-		fmt.Println("[MAGE] Failed to install binary")
+	if err := sh.RunV(mg.GoCmd(), "install", "./cmd/strict"); err != nil {
+		fmt.Println("build - failed to install binary")
 		return err
 	}
-	fmt.Println("[MAGE] Successfully installed binaries")
+	fmt.Println("build - successfully installed binaries")
 	return nil
 }
 
 func InstallDeps() error {
 	if err := sh.RunV("glide", "install"); err != nil {
-		fmt.Println("[MAGE] Failed tp install dependencies")
+		fmt.Println("build - failed tp install dependencies")
 		return err
 	}
-	fmt.Println("[MAGE] Successfully installed dependencies")
+	fmt.Println("build - successfully installed dependencies")
 	return nil
 }
