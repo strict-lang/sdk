@@ -60,7 +60,9 @@ func (generation *Generation) GenerateListSelectExpression(expression *syntaxtre
 }
 
 func (generation *Generation) generateNamespaceSelector(selector *syntaxtree.SelectExpression) {
-	generation.EmitNode(selector.Target)
-	generation.Emit("::")
+	if generation.shouldInsertNamespaceSelector {
+		generation.EmitNode(selector.Target)
+		generation.Emit("::")
+	}
 	generation.EmitNode(selector.Selection)
 }

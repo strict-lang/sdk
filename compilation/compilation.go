@@ -2,6 +2,7 @@ package compilation
 
 import (
 	"gitlab.com/strict-lang/sdk/compilation/backend"
+	"gitlab.com/strict-lang/sdk/compilation/backend/arduino"
 	"gitlab.com/strict-lang/sdk/compilation/backend/headerfile"
 	"gitlab.com/strict-lang/sdk/compilation/backend/sourcefile"
 	"gitlab.com/strict-lang/sdk/compilation/diagnostic"
@@ -46,7 +47,7 @@ func (compilation *Compilation) Compile() Result {
 		}
 	}
 	return Result{
-		GeneratedFiles: compilation.generateCppFile(parseResult.Unit),
+		GeneratedFiles: compilation.generateOutput(parseResult.Unit),
 		Diagnostics:    parseResult.Diagnostics,
 		Error:          nil,
 		UnitName:       parseResult.Unit.Name,
@@ -72,6 +73,13 @@ func (compilation *Compilation) parse() ParseResult {
 	}
 }
 
+func (compilation *Compilation) generateOutput(unit *syntaxtree.TranslationUnit) []Generated {
+	if compilation.TargetArduino {
+		return []Generated{compilation.generateArduinoFile(unit)}
+	}
+	return compilation.generateCppFile(unit)
+}
+
 func (compilation *Compilation) generateCppFile(unit *syntaxtree.TranslationUnit) []Generated {
 	generated := make(chan Generated)
 	go func() {
@@ -83,6 +91,14 @@ func (compilation *Compilation) generateCppFile(unit *syntaxtree.TranslationUnit
 	return []Generated{
 		<-generated,
 		<-generated,
+	}
+}
+
+func (compilation *Compilation) generateArduinoFile(unit *syntaxtree.TranslationUnit) Generated {
+	generation := backend.NewGenerationWithExtension(unit, arduino.NewGeneration())
+	return Generated{
+		FileName: compilation.Name + ".ino",
+		Bytes: []byte(generation.Generate()),
 	}
 }
 

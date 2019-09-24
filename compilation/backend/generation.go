@@ -16,6 +16,7 @@ type Generation struct {
 	indent                      int8
 	appendNewLineAfterStatement bool
 	importModules               map[string]string
+	shouldInsertNamespaceSelector bool
 }
 
 type FileNaming interface {
@@ -36,10 +37,15 @@ func NewGeneration(unit *syntaxtree.TranslationUnit) (generation *Generation) {
 		output:                      &strings.Builder{},
 		importModules:               map[string]string{},
 		appendNewLineAfterStatement: true,
+		shouldInsertNamespaceSelector: true,
 	}
 	generation.buffer = generation.output
 	generation.visitor = CreateGenericCppVisitor(generation)
 	return
+}
+
+func (generation *Generation) DisableNamespaceSelectors() {
+	generation.shouldInsertNamespaceSelector = false
 }
 
 func (generation *Generation) Filename() string {
