@@ -12,5 +12,5 @@ trim_trailing_whitespace = true
 [{*.md, *.mdown}]
 trim_trailing_whitespace = false
 
-[{*.cs, *.go, Makefile}]
+[{*.strict, *.cs, *.go, Makefile}]
 indent_style = tab
