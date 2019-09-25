@@ -48,6 +48,7 @@ type Scanning struct {
 	// lineBeginOffset is the offset to the lines begin. It is updated each
 	// time a new line is added to the lineMapBuilder.
 	lineBeginOffset source.Offset
+	hasHitEndOfFile bool
 }
 
 func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Bag) *Scanning {
@@ -61,6 +62,7 @@ func NewDiagnosticScanner(reader source.Reader, recorder *diagnostic.Bag) *Scann
 		peeked:         nil,
 		updateIndent:   true,
 		emptyLine:      true, // The line is empty until a char is hit
+		hasHitEndOfFile: false,
 	}
 	scanning.advance()
 	return scanning
@@ -116,12 +118,17 @@ func (scanning *Scanning) Peek() token.Token {
 // will first return an end-of-statement. There will never be two end-of-statements
 // at the end of a file.
 func (scanning *Scanning) endOfFile() token.Token {
-	last := scanning.last
-	if _, ok := last.(*token.EndOfStatementToken); ok {
+	if scanning.hasHitEndOfFile {
 		return token.EndOfFile
 	}
-	newLast := token.NewEndOfStatementToken(scanning.offset())
-	scanning.last = newLast
+	last := scanning.last
+	if _, ok := last.(*token.EndOfStatementToken); ok {
+		scanning.hasHitEndOfFile = true
+		scanning.last = token.EndOfFile
+	} else {
+		newLast := token.NewEndOfStatementToken(scanning.offset())
+		scanning.last = newLast
+	}
 	return scanning.last
 }
 

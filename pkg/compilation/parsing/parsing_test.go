@@ -14,7 +14,7 @@ func TestParseTopLevelStatements(test *testing.T) {
 	const entry = `
 import "stdio.h" as Io
 import "something"
-
+sdk
 shared int a = 0
 shared int x
 

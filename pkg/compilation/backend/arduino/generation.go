@@ -19,6 +19,7 @@ func NewGeneration() *Generation {
 func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *syntaxtree.Visitor) {
 	generation.parent = parent
 	parent.DisableNamespaceSelectors()
+	parent.DisableStdlibClassImport()
 	visitor.VisitClassDeclaration = generation.VisitClassDeclaration
 	visitor.VisitImportStatement = generation.VisitImportStatement
 	generation.importArduinoHeader()

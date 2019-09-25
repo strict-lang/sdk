@@ -16,7 +16,9 @@ func (generation *Generation) GenerateTranslationUnit(unit *syntaxtree.Translati
 }
 
 func (generation *Generation) generateImplicitImports() {
-	generation.Emit("#include <string>\n#include <vector>\n")
+	if generation.shouldImportStdlibClasses {
+		generation.Emit("#include <string>\n#include <vector>\n")
+	}
 }
 
 func (generation *Generation) GenerateMainMethod(nodes []syntaxtree.Node) {

@@ -131,12 +131,14 @@ func (generation *Generation) GenerateAssertStatement(statement *syntaxtree.Asse
 
 func (generation *Generation) GenerateIncrementStatement(statement *syntaxtree.IncrementStatement) {
 	generation.EmitNode(statement.Operand)
-	generation.Emit("++")
+	generation.Emit("++;")
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateDecrementStatement(statement *syntaxtree.DecrementStatement) {
 	generation.EmitNode(statement.Operand)
-	generation.Emit("--")
+	generation.Emit("--;")
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateInvalidStatement(statement *syntaxtree.InvalidStatement) {

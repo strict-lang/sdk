@@ -552,6 +552,11 @@ func (parsing *Parsing) parseStatementSequence() []syntaxtree.Node {
 		if token.IsEndOfFileToken(current) {
 			break
 		}
+		// FIXME
+		if token.IsEndOfStatementToken(current) {
+			parsing.advance()
+			continue
+		}
 		if current.Indent() > expectedIndent {
 			beginOffset := parsing.offset() - 1
 			invalid := parsing.createInvalidStatement(beginOffset, &InvalidIndentationError{
