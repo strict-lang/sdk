@@ -3,7 +3,7 @@ set(LIBSTRICT_PUBLIC_INCLUDE_DIRECTORIES .)
 set(LIBSTRICT_INCLUDE_PATH include/${LIBSTRICT_NAME})
 
 
-set(LIBSTRICT_SOURCE_FILES "strict/strict.cc")
+set(LIBSTRICT_SOURCE_FILES "strict/strict.cc" strict/collection/vector.h)
 set(LIBSTRICT_HEADER_FILES "strict/strict.hh")
 
 add_library(${LIBSTRICT_NAME} ${LIBSTRICT_SOURCE_FILES})

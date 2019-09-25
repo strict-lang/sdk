@@ -104,13 +104,26 @@ func (class *classDefinition) writeFieldDeclaration(declaration *syntaxtree.Fiel
 	class.generation.EmitEndOfLine()
 }
 
+func (class *classDefinition) shouldWriteExplicitDefaultConstructor() bool {
+	for _, member := range class.otherMembers {
+		if constructor, isConstructor := member.(*syntaxtree.ConstructorDeclaration); isConstructor {
+			if len(constructor.Parameters) == 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func (class *classDefinition) writePublicMembers() {
 	generation := class.generation
 	generation.Emit(" public:")
 	generation.IncreaseIndent()
 	generation.EmitEndOfLine()
 	generation.EmitIndent()
-	writeExplicitDefaultConstructor(class.name, generation)
+	if class.shouldWriteExplicitDefaultConstructor() {
+		writeExplicitDefaultConstructor(class.name, generation)
+	}
 	for _, member := range class.otherMembers {
 		generation.EmitIndent()
 		member.Accept(class.declarationVisitor)
