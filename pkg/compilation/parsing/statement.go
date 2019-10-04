@@ -462,7 +462,7 @@ func (parsing *Parsing) isKeywordExpressionToken(entry token.Token) bool {
 }
 
 func (parsing *Parsing) shouldParseFieldDeclaration() bool {
-	return parsing.isAtBeginOfStatement && parsing.couldBeLookingAtTypeName()
+	return /* parsing.isAtBeginOfStatement && */ parsing.couldBeLookingAtTypeName()
 }
 
 func (parsing *Parsing) parseFieldDeclarationOrDefinition() syntaxtree.Node {
@@ -524,7 +524,11 @@ func (parsing *Parsing) parseStatement() syntaxtree.Node {
 		fallthrough
 	case token.IsIdentifierToken(current):
 		if parsing.shouldParseFieldDeclaration() {
-			return parsing.parseFieldDeclarationOrDefinition()
+			node, err := parsing.parseFieldDeclarationOrListAccess()
+			if err != nil {
+				return parsing.createInvalidStatement(beginOffset, err)
+			}
+			return node
 		}
 		fallthrough
 	case token.IsOperatorToken(current):
@@ -539,6 +543,25 @@ func (parsing *Parsing) parseStatement() syntaxtree.Node {
 		err := fmt.Errorf("expected begin of statement or expression but got: %s", current)
 		return parsing.createInvalidStatement(beginOffset, err)
 	}
+}
+
+// parseFieldDeclarationOrListAccess either parses a FieldDeclaration or a ListSelect.
+// Both constructs are similar when only being able to peek one token.
+func (parsing *Parsing) parseFieldDeclarationOrListAccess() (syntaxtree.Node, error) {
+	beginOffset := parsing.offset()
+	baseTypeOrAccessedField := parsing.token()
+	parsing.advance()
+	if !token.HasOperatorValue(parsing.token(), token.LeftBracketOperator) {
+		return parsing.parseTypeNameFromBaseIdentifier(beginOffset, baseTypeOrAccessedField)
+	}
+	if token.OperatorValue(parsing.peek()) == token.RightBracketOperator {
+		return parsing.parseTypeNameFromBaseIdentifier(beginOffset, baseTypeOrAccessedField)
+	}
+	// This method has to be used because of selector chaining and calls.
+	return parsing.parseOperationsOnOperand(&syntaxtree.Identifier{
+		Value:        baseTypeOrAccessedField.Value(),
+		NodePosition: parsing.createPosition(beginOffset),
+	})
 }
 
 // ParseStatementSequence parses a sequence of statements. The sequence

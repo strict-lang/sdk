@@ -59,6 +59,7 @@ func (scanning *Scanning) findOperatorOption(options OperatorOptions, char sourc
 	operator, ok := options[scanning.peekChar()]
 	if ok {
 		scanning.advance()
+		scanning.advance() // Advance twice since first char is still current
 		return operator, nil
 	}
 	singleOperator, ok := options[singleChar]

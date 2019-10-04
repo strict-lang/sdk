@@ -24,6 +24,12 @@ func (parsing *Parsing) parseTypeName() (syntaxtree.TypeName, error) {
 	beginOffset := parsing.offset()
 	typeName := parsing.token()
 	parsing.advance()
+	return parsing.parseTypeNameFromBaseIdentifier(beginOffset, typeName)
+}
+
+func (parsing *Parsing) parseTypeNameFromBaseIdentifier(
+	beginOffset source.Offset, typeName token.Token) (syntaxtree.TypeName, error) {
+
 	if !token.IsIdentifierToken(typeName) {
 		return nil, &UnexpectedTokenError{
 			Token:    typeName,
@@ -76,7 +82,10 @@ func (parsing *Parsing) parseListTypeName(
 		return nil, err
 	}
 	if err := parsing.skipOperator(token.RightBracketOperator); err != nil {
-		return nil, err
+		return nil, &UnexpectedTokenError{
+			Token:    parsing.token(),
+			Expected: "], end of list name",
+		}
 	}
 	typeName := &syntaxtree.ListTypeName{
 		ElementTypeName: base,

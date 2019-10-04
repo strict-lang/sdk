@@ -14,6 +14,7 @@ func TestGatheringOperator(test *testing.T) {
 		"--+": token.DecrementOperator,
 		"+=,": token.AddAssignOperator,
 		"+,=": token.AddOperator,
+		">=": token.GreaterEqualsOperator,
 	}
 	for entry, operator := range entries {
 		scanner := NewStringScanning(entry)

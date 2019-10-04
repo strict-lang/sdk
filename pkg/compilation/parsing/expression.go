@@ -27,6 +27,7 @@ func (parsing *Parsing) parseOperand() (syntaxtree.Node, error) {
 	case token.OperatorValue(last) == token.LeftParenOperator:
 		return parsing.completeLeftParenExpression()
 	}
+	fmt.Println(parsing.tokenReader.Last(), parsing.tokenReader.Peek())
 	return nil, fmt.Errorf("could not parse operand: %s", parsing.token())
 }
 
@@ -82,6 +83,10 @@ func (parsing *Parsing) parseOperation() (syntaxtree.Node, error) {
 	if err != nil {
 		return nil, err
 	}
+	return parsing.parseOperationsOnOperand(operand)
+}
+
+func (parsing *Parsing) parseOperationsOnOperand(operand syntaxtree.Node) (syntaxtree.Node, error) {
 	for {
 		done, node, err := parsing.parseOperationOnOperand(operand)
 		if err != nil {
@@ -128,8 +133,8 @@ func (parsing *Parsing) parseListSelectExpression(target syntaxtree.Node) (synta
 		}
 	}
 	return &syntaxtree.ListSelectExpression{
-		Index:        target,
-		Target:       index,
+		Index:        index,
+		Target:       target,
 		NodePosition: parsing.createPosition(beginOffset),
 	}, nil
 }
