@@ -424,7 +424,7 @@ func (parsing *Parsing) parseInstructionStatement() (syntaxtree.Node, error) {
 	}
 	switch operator := token.OperatorValue(parsing.token()); {
 	case operator.IsAssign():
-		parsing.skipEndOfStatement()
+		parsing.advance() // ?
 		return parsing.parseAssignStatement(operator, leftHandSide)
 	case operator == token.IncrementOperator:
 		parsing.advance()

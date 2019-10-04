@@ -1,10 +1,10 @@
 package scanning
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/source/linemap"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/source/linemap"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 const (
@@ -196,6 +196,10 @@ func (scanning *Scanning) SkipComment() {
 	for {
 		scanning.advance()
 		if scanning.char() == '\n' {
+			scanning.advance()
+			scanning.skipWhitespaces()
+			scanning.resetTokenRecording()
+			scanning.incrementLineIndex()
 			break
 		}
 	}
@@ -208,6 +212,10 @@ func (scanning *Scanning) nextNonEndOfFile() token.Token {
 			scanning.SkipComment()
 			return scanning.nextNonEndOfFile()
 		}
+		fallthrough
+	case next == '\n' || next =='\r':
+		scanning.advance()
+		return scanning.nextNonEndOfFile()
 	case next.IsAlphabetic():
 		return scanning.ScanIdentifierOrKeyword()
 	case next.IsNumeric():
