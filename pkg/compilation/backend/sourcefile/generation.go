@@ -12,6 +12,7 @@ type Generation struct {
 	className      string
 	generation     *backend.Generation
 	hasWrittenInit bool
+	hasWrittenConstructor bool
 }
 
 func NewGeneration() *Generation {
@@ -45,6 +46,17 @@ func (generation *Generation) generateClassDeclaration(declaration *syntaxtree.C
 		generation.generation.EmitNode(member)
 		generation.generation.EmitEndOfLine()
 	}
+	if !generation.hasWrittenConstructor {
+		generation.writeImplicitConstructor()
+	}
+}
+
+func (generation *Generation) writeImplicitConstructor() {
+	generation.generateConstructorDeclaration(&syntaxtree.ConstructorDeclaration{
+		Parameters:   []*syntaxtree.Parameter{},
+		Body:         &syntaxtree.BlockStatement{},
+		NodePosition: syntaxtree.ZeroPosition{},
+	})
 }
 
 func createInitBody(members []syntaxtree.Node) (body []syntaxtree.Node) {
@@ -102,12 +114,33 @@ func (generation *Generation) generateMethodDeclaration(declaration *syntaxtree.
 }
 
 func (generation *Generation) generateConstructorDeclaration(declaration *syntaxtree.ConstructorDeclaration) {
+	generation.hasWrittenConstructor = true
 	output := generation.generation
 	className := generation.generation.Unit.Class.Name
 	output.EmitFormatted("%s::%s", className, className)
 	output.EmitParameterList(declaration.Parameters)
 	output.Emit(" ")
-	output.EmitNode(declaration.Body)
+	body := &syntaxtree.BlockStatement{
+		Children:     []syntaxtree.Node{
+			generation.generateInitCall(),
+			declaration.Body,
+		}	,
+		NodePosition: syntaxtree.ZeroPosition{},
+	}
+	output.EmitNode(body)
+}
+
+func (generation *Generation) generateInitCall() syntaxtree.Node {
+	return &syntaxtree.ExpressionStatement{
+		Expression: &syntaxtree.CallExpression{
+		Method:       &syntaxtree.Identifier{
+			Value:        backend.InitMethodName,
+			NodePosition: syntaxtree.ZeroPosition{},
+		},
+		Arguments:    []*syntaxtree.CallArgument{},
+		NodePosition: syntaxtree.ZeroPosition{},
+	},
+	}
 }
 
 func (generation *Generation) writeInitMethod(body []syntaxtree.Node) {
