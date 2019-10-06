@@ -7,14 +7,14 @@ import (
 	"os"
 )
 
-var astCommand = &cobra.Command{
-	Use:   "syntaxtree [-c] [file]",
+var treeCommand = &cobra.Command{
+	Use:   "tree [-c] [file]",
 	Short: "Prints the files AST",
-	Long:  `Ast parses a file and prints its Abstract Syntax Tree`,
-	Run:   RunAst,
+	Long:  `Tree parses a file and prints its Abstract Syntax Tree`,
+	Run:   runTreeCommand,
 }
 
-func RunAst(command *cobra.Command, arguments []string) {
+func runTreeCommand(command *cobra.Command, arguments []string) {
 	sourceFile, ok := findSourceFileInArguments(command, arguments)
 	if !ok {
 		return

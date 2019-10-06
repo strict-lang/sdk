@@ -20,6 +20,6 @@ func main() {
 func init() {
 	baseCommand.AddCommand(buildCommand)
 	baseCommand.AddCommand(versionCommand)
-	baseCommand.AddCommand(astCommand)
+	baseCommand.AddCommand(treeCommand)
 	baseCommand.AddCommand(tokenizeCommand)
 }
