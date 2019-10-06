@@ -2,7 +2,7 @@ package token
 
 import "fmt"
 
-const OperatorTokenName = "OperatorToken"
+const OperatorTokenName = "op"
 
 type OperatorToken struct {
 	Operator Operator

@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	EndOfStatementTokenName  = "EndOfStatement"
+	EndOfStatementTokenName  = ";"
 	EndOfStatementTokenValue = ";"
 )
 

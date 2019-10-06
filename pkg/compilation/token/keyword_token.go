@@ -1,5 +1,7 @@
 package token
 
+import "fmt"
+
 type KeywordToken struct {
 	Keyword  Keyword
 	position Position
@@ -15,7 +17,7 @@ func NewKeywordToken(keyword Keyword, position Position, indent Indent) Token {
 }
 
 func (keyword KeywordToken) String() string {
-	return keyword.Keyword.String()
+	return fmt.Sprintf("%s(%s)", KeywordTokenName, keyword.Keyword)
 }
 
 func (keyword KeywordToken) Name() string {
@@ -23,7 +25,7 @@ func (keyword KeywordToken) Name() string {
 }
 
 func (keyword KeywordToken) Value() string {
-	return string(keyword.Keyword)
+	return keyword.Value()
 }
 
 func (keyword KeywordToken) Position() Position {

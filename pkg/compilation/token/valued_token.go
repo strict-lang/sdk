@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	StringLiteralTokenName = "StringLiteralToken"
-	NumberLiteralTokenName = "NumberLiteralToken"
-	IdentifierTokenName    = "IdentifierToken"
+	StringLiteralTokenName = "str"
+	NumberLiteralTokenName = "num"
+	IdentifierTokenName    = "id"
 )
 
 type ValuedToken struct {

@@ -1,7 +1,7 @@
 package token
 
 const (
-	EndOfFileTokenName = "EndOfFile"
+	EndOfFileTokenName = "eof"
 )
 
 var (
