@@ -11,7 +11,7 @@ import (
 
 var tokenizeCommand = &cobra.Command{
 	Use:   "tokenize [-c] [file]",
-	Short: "Tokenizes the file and prints the tokens",
+	Short: "Scans the file and prints the tokens",
 	Long:  `Splits the files characters into tokens and prints them`,
 	Run:   RunTokenize,
 }

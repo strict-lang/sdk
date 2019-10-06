@@ -1,19 +1,19 @@
 package parsing
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/token"
 )
 
 func (parsing *Parsing) couldBeLookingAtTypeName() bool {
 	if !token.IsIdentifierToken(parsing.token()) {
 		return false
 	}
-	if token.IsIdentifierToken(parsing.peek()) {
+	peek := parsing.peek()
+	if token.IsIdentifierToken(peek) {
 		return true
 	}
-	peek := parsing.peek()
 	return token.HasOperatorValue(peek, token.SmallerOperator) ||
 		token.HasOperatorValue(peek, token.LeftBracketOperator)
 }

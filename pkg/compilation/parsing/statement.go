@@ -500,14 +500,42 @@ func (parsing *Parsing) parseFieldDeclaration() (syntaxtree.Node, error) {
 	if err != nil {
 		return nil, err
 	}
+	return parsing.parseFieldDeclarationWithTypeName(beginOffset, typeName)
+}
+
+func (parsing *Parsing) parseFieldDeclarationWithTypeName(
+	beginOffset source.Offset, typeName syntaxtree.TypeName) (syntaxtree.Node, error) {
+
 	fieldName, err := parsing.expectAnyIdentifier()
 	if err != nil {
 		return nil, err
 	}
 	parsing.advance()
-	return &syntaxtree.FieldDeclaration{
+	declaration := &syntaxtree.FieldDeclaration{
 		Name:         fieldName,
 		TypeName:     typeName,
+		NodePosition: parsing.createPosition(beginOffset),
+	}
+	if token.HasOperatorValue(parsing.token(), token.AssignOperator) {
+		return parsing.parseFieldDefinition(beginOffset, declaration)
+	}
+	return declaration, nil
+}
+
+func (parsing *Parsing) parseFieldDefinition(
+	beginOffset source.Offset, declaration *syntaxtree.FieldDeclaration) (syntaxtree.Node, error) {
+
+	if err := parsing.skipOperator(token.AssignOperator); err != nil {
+		return nil, err
+	}
+	value, err := parsing.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+	return &syntaxtree.AssignStatement{
+		Target:       declaration,
+		Value:        value,
+		Operator:     token.AssignOperator,
 		NodePosition: parsing.createPosition(beginOffset),
 	}, nil
 }
@@ -551,17 +579,26 @@ func (parsing *Parsing) parseFieldDeclarationOrListAccess() (syntaxtree.Node, er
 	beginOffset := parsing.offset()
 	baseTypeOrAccessedField := parsing.token()
 	parsing.advance()
-	if !token.HasOperatorValue(parsing.token(), token.LeftBracketOperator) {
-		return parsing.parseTypeNameFromBaseIdentifier(beginOffset, baseTypeOrAccessedField)
-	}
-	if token.OperatorValue(parsing.peek()) == token.RightBracketOperator {
-		return parsing.parseTypeNameFromBaseIdentifier(beginOffset, baseTypeOrAccessedField)
+	if (!token.HasOperatorValue(parsing.token(), token.LeftBracketOperator)) ||
+		(token.OperatorValue(parsing.peek()) == token.RightBracketOperator) {
+
+		return parsing.parseFieldDeclarationFromBaseTypeName(beginOffset, baseTypeOrAccessedField)
 	}
 	// This method has to be used because of selector chaining and calls.
 	return parsing.parseOperationsOnOperand(&syntaxtree.Identifier{
 		Value:        baseTypeOrAccessedField.Value(),
 		NodePosition: parsing.createPosition(beginOffset),
 	})
+}
+
+func (parsing *Parsing) parseFieldDeclarationFromBaseTypeName(
+	beginOffset source.Offset, baseTypeName token.Token) (syntaxtree.Node, error){
+
+	typeName, err := parsing.parseTypeNameFromBaseIdentifier(beginOffset, baseTypeName)
+	if err != nil {
+		return nil, err
+	}
+	return parsing.parseFieldDeclarationWithTypeName(beginOffset, typeName)
 }
 
 // ParseStatementSequence parses a sequence of statements. The sequence

@@ -31,6 +31,9 @@ func (EndOfFileToken) String() string {
 }
 
 func IsEndOfFileToken(token Token) bool {
+	if token == EndOfFile {
+		return true
+	}
 	_, ok := token.(*EndOfFileToken)
 	return ok
 }

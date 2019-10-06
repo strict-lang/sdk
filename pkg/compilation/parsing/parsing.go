@@ -1,7 +1,7 @@
 package parsing
 
 import (
-	code2 "gitlab.com/strict-lang/sdk/pkg/compilation/code"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/code"
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
@@ -16,7 +16,7 @@ const notParsingMethod = ""
 // checks that could be considered semantic.
 type Parsing struct {
 	tokenReader token.Stream
-	rootScope   *code2.Scope
+	rootScope   *code.Scope
 	recorder    *diagnostic.Bag
 	block       *Block
 	unitName    string
@@ -35,7 +35,7 @@ type Parsing struct {
 // It helps the parsing to scanning code blocks and know where a block ends.
 type Block struct {
 	Indent token.Indent
-	Scope  *code2.Scope
+	Scope  *code.Scope
 	Parent *Block
 }
 
@@ -81,7 +81,7 @@ func (parsing *Parsing) ParseTranslationUnit() (*syntaxtree.TranslationUnit, err
 // creates a new scope for that block that is a child-scope of the parsers
 // last block. Only statements with the blocks indent may go into the block.
 func (parsing *Parsing) openBlock(indent token.Indent) {
-	var blockScope *code2.Scope
+	var blockScope *code.Scope
 	if parsing.block == nil {
 		blockScope = parsing.rootScope.NewChild()
 	} else {

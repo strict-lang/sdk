@@ -1,8 +1,9 @@
 package parsing
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/token"
 	"testing"
 )
 
@@ -10,30 +11,39 @@ func NewTestParser(tokens token.Stream) *Parsing {
 	return NewDefaultFactory().WithTokenStream(tokens).NewParser()
 }
 
+func NewTestParserAndDiagnosticBag(tokens token.Stream) (*Parsing, *diagnostic.Bag) {
+	bag := diagnostic.NewBag()
+	return NewDefaultFactory().
+		WithDiagnosticBag(bag).
+		WithTokenStream(tokens).
+		NewParser(), bag
+}
+
 func TestParseTopLevelStatements(test *testing.T) {
 	const entry = `
-import "stdio.h" as Io
-import "something"
-sdk
-shared int a = 0
-shared int x
+import Neuron
 
-method nothing()
+Neuron[] inputNeurons
+Neuron outputNeuron
 
-method list<number> range(number begin, number end)
-  for num from begin to end do
-    yield num
+method float Calculate(float left, float right)
+  // float combinedWeights = combineWeights(left, right)
+  if combinedWeights >= outputNeuron.Bias do
+    return 1
+  else
+    return 0
 
-for num in range(1, 21) do
-  if num % 3 is 0 and num % 5 is 0 do
-    stdio.puts("FizzBuzz")
-  else if num % 3 is 0 do
-		stdio.puts("Fizz")
-	else if num % 5 is 0 do
-		stdio.puts("Buzz")
-	else
-		stdio.printf("%d", num)
+method float combineWeights(float left, float right)
+  float leftWeight = left * inputs[0].Weight
+  float rightWeight = right * inputs[1].Weight
+  return leftWeight + rightWeight
 `
-	parser := NewTestParser(scanning.NewStringScanning(entry))
-	parser.parseTopLevelNodes()
+	tokens := scanning.NewStringScanning(entry)
+	parser, bag := NewTestParserAndDiagnosticBag(tokens)
+	_, err := parser.ParseTranslationUnit()
+	if err != nil {
+		test.Error(err)
+	}
+	diagnostics := bag.CreateDiagnostics(tokens.NewLineMap().PositionAtOffset)
+	diagnostics.PrintEntries(diagnostic.NewFmtPrinter())
 }
