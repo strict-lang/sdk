@@ -1,8 +1,8 @@
 package scanning
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/token"
 	"strings"
 )
 
@@ -72,6 +72,9 @@ func (scanning *Scanning) skipWhitespaces() (token.Token, bool) {
 		switch char := scanning.char(); char {
 		case '\n':
 			scanning.advance()
+			if scanning.input.IsExhausted() {
+				return scanning.endOfFile(), true
+			}
 			if endOfStatement, ok := scanning.incrementLineIndex(); ok {
 				return endOfStatement, true
 			}

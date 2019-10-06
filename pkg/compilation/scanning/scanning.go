@@ -91,13 +91,13 @@ func (scanning *Scanning) peekChar() source.Char {
 }
 
 func (scanning *Scanning) Pull() token.Token {
-	if scanning.input.IsExhausted() {
-		return scanning.endOfFile()
-	}
 	if peeked := scanning.peeked; peeked != nil {
 		scanning.last = peeked
 		scanning.peeked = nil
 		return peeked
+	}
+	if scanning.input.IsExhausted() {
+		return scanning.endOfFile()
 	}
 	next := scanning.next()
 	scanning.last = next
@@ -121,8 +121,7 @@ func (scanning *Scanning) endOfFile() token.Token {
 	if scanning.hasHitEndOfFile {
 		return token.EndOfFile
 	}
-	last := scanning.last
-	if _, ok := last.(*token.EndOfStatementToken); ok {
+	if token.IsEndOfStatementToken(scanning.last) {
 		scanning.hasHitEndOfFile = true
 		scanning.last = token.EndOfFile
 	} else {
@@ -174,7 +173,7 @@ func (scanning *Scanning) next() token.Token {
 	scanning.resetTokenRecording()
 	scanning.updateIndent = false
 	scanning.emptyLine = false
-	if scanning.char() == source.EndOfFile {
+	if scanning.char() == source.EndOfFile || scanning.input.IsExhausted() {
 		return scanning.endOfFile()
 	}
 	return scanning.nextNonEndOfFile()
