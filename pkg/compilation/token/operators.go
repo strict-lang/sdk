@@ -98,29 +98,31 @@ const (
 	HighPrecedence  = 8
 )
 
+var precedenceTable = map[Operator] Precedence {
+	MulOperator: 5,
+	DivOperator: 5,
+	ModOperator: 5,
+	ShiftLeftOperator: 5,
+	ShiftRightOperator: 5,
+
+	AddOperator: 4,
+	SubOperator: 4,
+	XorOperator: 4,
+	SmallerEqualsOperator: 3,
+	SmallerOperator: 3,
+	GreaterEqualsOperator: 3,
+	GreaterOperator: 3,
+	EqualsOperator: 3,
+	NotEqualsOperator: 3,
+	AndOperator: 2,
+	OrOperator: 1,
+}
+
 func (operator Operator) Precedence() Precedence {
-	switch operator {
-	case MulOperator,
-		DivOperator,
-		ShiftLeftOperator,
-		ShiftRightOperator:
-		return LowPrecedence
-	case EqualsOperator,
-		NotEqualsOperator,
-		GreaterOperator,
-		GreaterEqualsOperator:
-		return 3
-	case AddOperator,
-		SubOperator,
-		ModOperator:
-		return 4
-	case AndOperator:
-		return 5
-	case OrOperator,
-		XorOperator:
-		return 6
+	if precedence, ok := precedenceTable[operator]; ok {
+		return precedence
 	}
-	return 0
+	return LowPrecedence
 }
 
 func (operator Operator) IsAssign() bool {

@@ -173,7 +173,7 @@ func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token.Precedenc
 			return leftHandSide, nil
 		}
 		parsing.advance()
-		rightHandSide, err := parsing.parseBinaryExpression(precedence)
+		rightHandSide, err := parsing.parseBinaryExpression(precedence + 1)
 		if err != nil {
 			return leftHandSide, err
 		}

@@ -2,11 +2,14 @@ package parsing
 
 import (
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
 	"testing"
 )
 
 func TestParseBinaryExpression(test *testing.T) {
 	entries := []string{
+		"1 * 1",
+		"1 + 1 * 2",
 		"printf(\"%d\", limit(10) + 1))",
 		"call(call(arg))",
 		"1 isnt 1",
@@ -26,7 +29,19 @@ func TestParseBinaryExpression(test *testing.T) {
 
 func testParsingBinaryExpression(test *testing.T, entry string) {
 	parser := NewTestParser(scanning.NewStringScanning(entry))
-	if _, err := parser.parseExpression(); err != nil {
+	output, err := parser.parseExpression()
+	if err != nil {
 		test.Errorf("unexpected error while parsing (%s): %s", entry, err.Error())
+		return
 	}
+	syntaxtree.PrintColored(output)
+}
+
+type testEntry struct {
+	code string
+	expected syntaxtree.Node
+}
+
+func testBinaryExpressionParsing(test *testing.T) {
+
 }
