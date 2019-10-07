@@ -27,7 +27,6 @@ func (parsing *Parsing) parseOperand() (syntaxtree.Node, error) {
 	case token.OperatorValue(last) == token.LeftParenOperator:
 		return parsing.completeLeftParenExpression()
 	}
-	fmt.Println(parsing.tokenReader.Last(), parsing.tokenReader.Peek())
 	return nil, fmt.Errorf("could not parse operand: %s", parsing.token())
 }
 
@@ -84,6 +83,17 @@ func (parsing *Parsing) parseOperation() (syntaxtree.Node, error) {
 		return nil, err
 	}
 	return parsing.parseOperationsOnOperand(operand)
+}
+
+func (parsing *Parsing) parseOperationOrAssign(
+	node syntaxtree.Node) (syntaxtree.Node, error) {
+
+	if token.IsOperatorToken(parsing.token()) {
+		operator := token.OperatorValue(parsing.token())
+		parsing.advance()
+		return parsing.parseAssignStatement(operator, node)
+	}
+	return node, nil
 }
 
 func (parsing *Parsing) parseOperationsOnOperand(operand syntaxtree.Node) (syntaxtree.Node, error) {
@@ -262,11 +272,9 @@ func (parsing *Parsing) parseCallArgument() (*syntaxtree.CallArgument, error) {
 	var argument syntaxtree.CallArgument
 	if token.IsIdentifierToken(parsing.token()) &&
 		token.HasOperatorValue(parsing.peek(), token.AssignOperator) {
-		fmt.Println("Label: ", parsing.token().Value())
 		argument.Label = parsing.token().Value()
 		parsing.advance()
 		parsing.advance()
-		fmt.Println("Looking at: ", parsing.token().Value())
 	}
 	value, err := parsing.parseExpression()
 	if err != nil {

@@ -83,7 +83,7 @@ func (generation *Generation) GenerateFieldDeclaration(declaration *syntaxtree.F
 
 func (generation *Generation) GenerateAssignStatement(statement *syntaxtree.AssignStatement) {
 	generation.EmitNode(statement.Target)
-	generation.EmitFormatted(" = ")
+	generation.EmitFormatted(" %s ", statement.Operator.String())
 	generation.EmitNode(statement.Value)
 	generation.Emit(";")
 	generation.EmitEndOfLine()
