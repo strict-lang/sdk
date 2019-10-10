@@ -45,6 +45,7 @@ const (
 	ConcreteTypeNameNodeKind
 	typeNameKindEnd
 	TranslationUnitNodeKind
+	WildcardNodeKind
 )
 
 // IsExpression returns true if the kind is an expression.

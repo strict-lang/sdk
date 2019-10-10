@@ -1,18 +1,22 @@
 package tree
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/input"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/input"
+	"testing"
 )
 
-type TestPosition struct {
-	BeginOffset input.Offset
-	EndOffset   input.Offset
+var regionTestEntries = []input.Region{
+	input.CreateEmptyRegion(10),
+	input.ZeroRegion,
+	input.CreateRegion(0, 10),
 }
 
-func (position *TestPosition) Begin() input.Offset {
-	return position.BeginOffset
-}
-
-func (position *TestPosition) End() input.Offset {
-	return position.EndOffset
+func RunNodeRegionTest(testing *testing.T, entryFactory func (region input.Region) Node) {
+	for _, entryRegion := range regionTestEntries {
+		entry := entryFactory(entryRegion)
+		if entry.Region() != entryRegion {
+			testing.Errorf("Invalid Region(): Expected %s - got %s",
+				entryRegion, entry.Region())
+		}
+	}
 }

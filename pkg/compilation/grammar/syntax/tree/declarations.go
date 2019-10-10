@@ -1,5 +1,7 @@
 package tree
 
+import "gitlab.com/strict-lang/sdk/pkg/compilation/input"
+
 type ParameterList []*Parameter
 
 type MethodDeclaration struct {
@@ -67,7 +69,7 @@ type ClassDeclaration struct {
 	Parameters   []ClassParameter
 	SuperTypes   []TypeName
 	Children     []Node
-	NodePosition InputRegion
+	NodeRegion   input.Region
 }
 
 func (class *ClassDeclaration) Accept(visitor *Visitor) {

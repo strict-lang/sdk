@@ -2,13 +2,22 @@ package tree
 
 import (
 	"fmt"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/input"
 	"strings"
 )
 
 type ImportStatement struct {
 	Target       ImportTarget
 	Alias        *Identifier
-	NodePosition InputRegion
+	NodeRegion input.Region
+}
+
+func CreateImportStatement(target ImportTarget, region input.Region) *ImportStatement {
+	return &ImportStatement{
+		Target:     target,
+		Alias:      nil,
+		NodeRegion: region,
+	}
 }
 
 func (statement *ImportStatement) HasAlias() bool {

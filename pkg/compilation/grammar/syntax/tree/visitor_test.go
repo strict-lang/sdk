@@ -153,5 +153,14 @@ func (test *VisitorTest) createVisitor() Visitor {
 		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {
 			test.reportNodeEncounter(ConstructorDeclarationNodeKind)
 		},
+		FieldSelectExpressionVisitor: func(*FieldSelectExpression) {
+			test.reportNodeEncounter(FieldSelectExpressionNodeKind)
+		},
+		PostfixExpressionVisitor: func(*PostfixExpression) {
+			test.reportNodeEncounter(PostfixExpressionNodeKind)
+		},
+		WildcardNodeVisitor: func(*WildcardNode) {
+			test.reportNodeEncounter(WildcardNodeKind)
+		},
 	}
 }

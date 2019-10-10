@@ -19,6 +19,7 @@ type Visitor interface {
 	VisitEmptyStatement(*EmptyStatement)
 	VisitYieldStatement(*YieldStatement)
 	VisitBlockStatement(*BlockStatement)
+	VisitWildcardNode(node *WildcardNode)
 	VisitAssertStatement(*AssertStatement)
 	VisitUnaryExpression(*UnaryExpression)
 	VisitImportStatement(*ImportStatement)
@@ -33,11 +34,13 @@ type Visitor interface {
 	VisitClassDeclaration(*ClassDeclaration)
 	VisitBinaryExpression(*BinaryExpression)
 	VisitMethodDeclaration(*MethodDeclaration)
+	VisitPostfixExpression(*PostfixExpression)
 	VisitRangedLoopStatement(*RangedLoopStatement)
 	VisitExpressionStatement(*ExpressionStatement)
 	VisitForEachLoopStatement(*ForEachLoopStatement)
 	VisitConditionalStatement(*ConditionalStatement)
 	VisitListSelectExpression(*ListSelectExpression)
+	VisitFieldSelectExpression(*FieldSelectExpression)
 	VisitConstructorDeclaration(*ConstructorDeclaration)
 }
 
@@ -51,6 +54,7 @@ type DelegatingVisitor struct {
 	NumberLiteralVisitor          func(*NumberLiteral)
 	CallExpressionVisitor         func(*CallExpression)
 	EmptyStatementVisitor         func(*EmptyStatement)
+	WildcardNodeVisitor           func(*WildcardNode)
 	YieldStatementVisitor         func(*YieldStatement)
 	BlockStatementVisitor         func(*BlockStatement)
 	AssertStatementVisitor        func(*AssertStatement)
@@ -62,6 +66,7 @@ type DelegatingVisitor struct {
 	CreateExpressionVisitor       func(*CreateExpression)
 	InvalidStatementVisitor       func(*InvalidStatement)
 	FieldDeclarationVisitor       func(*FieldDeclaration)
+	PostfixExpressionVisitor      func(*PostfixExpression)
 	GenericTypeNameVisitor        func(*GenericTypeName)
 	ConcreteTypeNameVisitor       func(*ConcreteTypeName)
 	ClassDeclarationVisitor       func(*ClassDeclaration)
@@ -72,6 +77,7 @@ type DelegatingVisitor struct {
 	ForEachLoopStatementVisitor   func(*ForEachLoopStatement)
 	ConditionalStatementVisitor   func(*ConditionalStatement)
 	ListSelectExpressionVisitor   func(*ListSelectExpression)
+	FieldSelectExpressionVisitor  func(*FieldSelectExpression)
 	ConstructorDeclarationVisitor func(*ConstructorDeclaration)
 }
 
@@ -87,6 +93,7 @@ func NewEmptyVisitor() Visitor {
 		CallExpressionVisitor:         func(*CallExpression) {},
 		EmptyStatementVisitor:         func(*EmptyStatement) {},
 		YieldStatementVisitor:         func(*YieldStatement) {},
+		WildcardNodeVisitor:           func(*WildcardNode) {},
 		BlockStatementVisitor:         func(*BlockStatement) {},
 		AssertStatementVisitor:        func(*AssertStatement) {},
 		UnaryExpressionVisitor:        func(*UnaryExpression) {},
@@ -97,6 +104,7 @@ func NewEmptyVisitor() Visitor {
 		CreateExpressionVisitor:       func(*CreateExpression) {},
 		InvalidStatementVisitor:       func(*InvalidStatement) {},
 		FieldDeclarationVisitor:       func(*FieldDeclaration) {},
+		PostfixExpressionVisitor:      func(*PostfixExpression) {},
 		GenericTypeNameVisitor:        func(*GenericTypeName) {},
 		ConcreteTypeNameVisitor:       func(*ConcreteTypeName) {},
 		ClassDeclarationVisitor:       func(*ClassDeclaration) {},
@@ -107,6 +115,7 @@ func NewEmptyVisitor() Visitor {
 		ForEachLoopStatementVisitor:   func(*ForEachLoopStatement) {},
 		ConditionalStatementVisitor:   func(*ConditionalStatement) {},
 		ListSelectExpressionVisitor:   func(*ListSelectExpression) {},
+		FieldSelectExpressionVisitor:  func(*FieldSelectExpression) {},
 		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {},
 	}
 }
@@ -194,6 +203,10 @@ func (visitor *DelegatingVisitor) VisitGenericTypeName(node *GenericTypeName) {
 	visitor.GenericTypeNameVisitor(node)
 }
 
+func (visitor *DelegatingVisitor) VisitListSelectExpression(node *ListSelectExpression) {
+	visitor.ListSelectExpressionVisitor(node)
+}
+
 func (visitor *DelegatingVisitor) VisitConcreteTypeName(node *ConcreteTypeName) {
 	visitor.ConcreteTypeNameVisitor(node)
 }
@@ -226,10 +239,18 @@ func (visitor *DelegatingVisitor) VisitConditionalStatement(node *ConditionalSta
 	visitor.ConditionalStatementVisitor(node)
 }
 
-func (visitor *DelegatingVisitor) VisitListSelectExpression(node *ListSelectExpression) {
-	visitor.ListSelectExpressionVisitor(node)
+func (visitor *DelegatingVisitor) VisitFieldSelectExpression(node *FieldSelectExpression) {
+	visitor.FieldSelectExpressionVisitor(node)
+}
+
+func (visitor *DelegatingVisitor) VisitWildcardNode(node *WildcardNode) {
+	visitor.WildcardNodeVisitor(node)
 }
 
 func (visitor *DelegatingVisitor) VisitConstructorDeclaration(node *ConstructorDeclaration) {
 	visitor.ConstructorDeclarationVisitor(node)
+}
+
+func (visitor *DelegatingVisitor) VisitPostfixExpression(node *PostfixExpression) {
+	visitor.PostfixExpressionVisitor(node)
 }
