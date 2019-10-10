@@ -13,35 +13,11 @@ type StoredExpression interface {
 	Expression
 }
 
-type CallExpression struct {
-	// Target is the procedure that is called.
-	Target Node
-	// An array of expression nodes that are the arguments passed to
-	// the method. The arguments types are checked during type checking.
-	Arguments    []*CallArgument
-	NodePosition InputRegion
-}
-
-func (call *CallExpression) Accept(visitor *Visitor) {
-	visitor.VisitCallExpression(call)
-}
-
-func (call *CallExpression) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitCallExpression(call)
-	call.Target.AcceptRecursive(visitor)
-	for _, argument := range call.Arguments {
-		argument.AcceptRecursive(visitor)
-	}
-}
-
-func (call *CallExpression) Area() InputRegion {
-	return call.Area()
-}
 
 type CallArgument struct {
 	Label        string
 	Value        Node
-	NodePosition InputRegion
+	Region input.Region
 }
 
 func (argument *CallArgument) IsLabeled() bool {
@@ -57,8 +33,8 @@ func (argument *CallArgument) AcceptRecursive(visitor Visitor) {
 	argument.Value.AcceptRecursive(visitor)
 }
 
-func (argument *CallArgument) Area()  input.Region{
-	return argument.NodePosition
+func (argument *CallArgument) Locate()  input.Region{
+	return argument.Region
 }
 
 type Identifier struct {
