@@ -1,26 +1,26 @@
 package compilation
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/input"
 	"os"
 )
 
 type Source interface {
-	newSourceReader() source.Reader
+	newSourceReader() input.Reader
 }
 
 type FileSource struct {
 	File *os.File
 }
 
-func (fileSource *FileSource) newSourceReader() source.Reader {
-	return source.NewStreamReader(fileSource.File)
+func (fileSource *FileSource) newSourceReader() input.Reader {
+	return input.NewStreamReader(fileSource.File)
 }
 
 type InMemorySource struct {
 	Source string
 }
 
-func (inMemorySource *InMemorySource) newSourceReader() source.Reader {
-	return source.NewStringReader(inMemorySource.Source)
+func (inMemorySource *InMemorySource) newSourceReader() input.Reader {
+	return input.NewStringReader(inMemorySource.Source)
 }

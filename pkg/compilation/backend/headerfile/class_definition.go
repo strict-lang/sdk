@@ -2,22 +2,22 @@ package headerfile
 
 import (
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
 )
 
 type classDefinition struct {
 	name               string
-	parameters         []syntaxtree.ClassParameter
-	superTypes         []syntaxtree.TypeName
-	otherMembers       []syntaxtree.Node
-	fields             []syntaxtree.Node
+	parameters         []tree.ClassParameter
+	superTypes         []tree.TypeName
+	otherMembers       []tree.Node
+	fields             []tree.Node
 	generation         *backend.Generation
 	shouldCreateInit   bool
-	declarationVisitor *syntaxtree.Visitor
+	declarationVisitor *tree.Visitor
 }
 
 func newClassDefinition(
-	generation *backend.Generation, declaration *syntaxtree.ClassDeclaration) *classDefinition {
+	generation *backend.Generation, declaration *tree.ClassDeclaration) *classDefinition {
 
 	fields, otherMembers := filterFieldDeclarations(declaration.Children)
 	createInit := len(fields) > 0
@@ -29,7 +29,7 @@ func newClassDefinition(
 		fields:             fields,
 		generation:         generation,
 		shouldCreateInit:   createInit,
-		declarationVisitor: syntaxtree.NewEmptyVisitor(),
+		declarationVisitor: tree.NewEmptyVisitor(),
 	}
 	initializeVisitor(definition)
 	return definition
@@ -41,12 +41,12 @@ func initializeVisitor(definition *classDefinition) {
 	definition.declarationVisitor.VisitConstructorDeclaration = definition.writeConstructorDeclaration
 }
 
-func filterFieldDeclarations(nodes []syntaxtree.Node) (fields []syntaxtree.Node, others []syntaxtree.Node) {
+func filterFieldDeclarations(nodes []tree.Node) (fields []tree.Node, others []tree.Node) {
 	for _, child := range nodes {
 		switch child.(type) {
-		case *syntaxtree.MethodDeclaration, *syntaxtree.ConstructorDeclaration:
+		case *tree.MethodDeclaration, *tree.ConstructorDeclaration:
 			others = append(others, child)
-		case *syntaxtree.FieldDeclaration:
+		case *tree.FieldDeclaration:
 			fields = append(fields, child)
 		}
 	}
@@ -92,13 +92,13 @@ func (class *classDefinition) generateCode() {
 	generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) writeMethodDeclaration(declaration *syntaxtree.MethodDeclaration) {
+func (class *classDefinition) writeMethodDeclaration(declaration *tree.MethodDeclaration) {
 	class.generation.EmitMethodDeclaration(declaration)
 	class.generation.Emit(";")
 	class.generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) writeFieldDeclaration(declaration *syntaxtree.FieldDeclaration) {
+func (class *classDefinition) writeFieldDeclaration(declaration *tree.FieldDeclaration) {
 	class.generation.GenerateFieldDeclaration(declaration)
 	class.generation.Emit(";")
 	class.generation.EmitEndOfLine()
@@ -106,7 +106,7 @@ func (class *classDefinition) writeFieldDeclaration(declaration *syntaxtree.Fiel
 
 func (class *classDefinition) shouldWriteExplicitDefaultConstructor() bool {
 	for _, member := range class.otherMembers {
-		if constructor, isConstructor := member.(*syntaxtree.ConstructorDeclaration); isConstructor {
+		if constructor, isConstructor := member.(*tree.ConstructorDeclaration); isConstructor {
 			if len(constructor.Parameters) == 0 {
 				return false
 			}
@@ -157,7 +157,7 @@ func (class *classDefinition) writePrivateMembers() {
 	class.generation.DecreaseIndent()
 }
 
-func (class *classDefinition) writeConstructorDeclaration(declaration *syntaxtree.ConstructorDeclaration) {
+func (class *classDefinition) writeConstructorDeclaration(declaration *tree.ConstructorDeclaration) {
 	output := class.generation
 	className := output.Unit.Class.Name
 	output.Emit("explicit ")

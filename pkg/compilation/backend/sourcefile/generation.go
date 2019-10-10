@@ -3,7 +3,7 @@ package sourcefile
 import (
 	"fmt"
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
 )
 
 type Generation struct {
@@ -19,7 +19,7 @@ func NewGeneration() *Generation {
 	return &Generation{}
 }
 
-func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *syntaxtree.Visitor) {
+func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.Visitor) {
 	generation.generation = parent
 	visitor.VisitClassDeclaration = generation.generateClassDeclaration
 	visitor.VisitMethodDeclaration = generation.generateMethodDeclaration
@@ -34,7 +34,7 @@ func (generation *Generation) importMatchingHeader() {
 	generation.generation.EmitEndOfLine()
 }
 
-func (generation *Generation) generateClassDeclaration(declaration *syntaxtree.ClassDeclaration) {
+func (generation *Generation) generateClassDeclaration(declaration *tree.ClassDeclaration) {
 	generation.className = declaration.Name
 	members, initBody := filterDeclarations(declaration.Children)
 	if len(initBody) > 0 {
@@ -52,16 +52,16 @@ func (generation *Generation) generateClassDeclaration(declaration *syntaxtree.C
 }
 
 func (generation *Generation) writeImplicitConstructor() {
-	generation.generateConstructorDeclaration(&syntaxtree.ConstructorDeclaration{
-		Parameters:   []*syntaxtree.Parameter{},
-		Body:         &syntaxtree.BlockStatement{},
-		NodePosition: syntaxtree.ZeroPosition{},
+	generation.generateConstructorDeclaration(&tree.ConstructorDeclaration{
+		Parameters:   []*tree.Parameter{},
+		Body:         &tree.BlockStatement{},
+		NodePosition: tree.ZeroArea{},
 	})
 }
 
-func createInitBody(members []syntaxtree.Node) (body []syntaxtree.Node) {
+func createInitBody(members []tree.Node) (body []tree.Node) {
 	for _, field := range members {
-		field, isField := field.(*syntaxtree.FieldDeclaration)
+		field, isField := field.(*tree.FieldDeclaration)
 		if !isField {
 			continue
 		}
@@ -70,26 +70,26 @@ func createInitBody(members []syntaxtree.Node) (body []syntaxtree.Node) {
 	return
 }
 
-func createInitStatement(field *syntaxtree.FieldDeclaration) syntaxtree.Node {
-	return &syntaxtree.AssignStatement{
+func createInitStatement(field *tree.FieldDeclaration) tree.Node {
+	return &tree.AssignStatement{
 		Target: field.Name,
-		Value: &syntaxtree.CallExpression{
-			Method:       field.TypeName,
-			Arguments:    []*syntaxtree.CallArgument{},
-			NodePosition: syntaxtree.ZeroPosition{},
+		Value: &tree.CallExpression{
+			Target:       field.TypeName,
+			Arguments:    []*tree.CallArgument{},
+			NodePosition: tree.ZeroArea{},
 		},
 		Operator:     0,
 		NodePosition: nil,
 	}
 }
 
-func filterDeclarations(nodes []syntaxtree.Node) (declarations []syntaxtree.Node, remainder []syntaxtree.Node) {
+func filterDeclarations(nodes []tree.Node) (declarations []tree.Node, remainder []tree.Node) {
 	for _, node := range nodes {
 		switch node.(type) {
-		case *syntaxtree.MethodDeclaration, *syntaxtree.ConstructorDeclaration:
+		case *tree.MethodDeclaration, *tree.ConstructorDeclaration:
 			declarations = append(declarations, node)
 			continue
-		case *syntaxtree.FieldDeclaration: // Field declarations are not written
+		case *tree.FieldDeclaration: // Field declarations are not written
 			continue
 		default:
 			remainder = append(remainder, node)
@@ -98,12 +98,12 @@ func filterDeclarations(nodes []syntaxtree.Node) (declarations []syntaxtree.Node
 	return
 }
 
-func (generation *Generation) generateMethodDeclaration(declaration *syntaxtree.MethodDeclaration) {
+func (generation *Generation) generateMethodDeclaration(declaration *tree.MethodDeclaration) {
 	name := fmt.Sprintf("%s::%s", generation.className, declaration.Name.Value)
-	instanceMethod := &syntaxtree.MethodDeclaration{
-		Name: &syntaxtree.Identifier{
+	instanceMethod := &tree.MethodDeclaration{
+		Name: &tree.Identifier{
 			Value:        name,
-			NodePosition: syntaxtree.ZeroPosition{},
+			NodePosition: tree.ZeroArea{},
 		},
 		Type:         declaration.Type,
 		Parameters:   declaration.Parameters,
@@ -113,51 +113,51 @@ func (generation *Generation) generateMethodDeclaration(declaration *syntaxtree.
 	generation.generation.GenerateMethod(instanceMethod)
 }
 
-func (generation *Generation) generateConstructorDeclaration(declaration *syntaxtree.ConstructorDeclaration) {
+func (generation *Generation) generateConstructorDeclaration(declaration *tree.ConstructorDeclaration) {
 	generation.hasWrittenConstructor = true
 	output := generation.generation
 	className := generation.generation.Unit.Class.Name
 	output.EmitFormatted("%s::%s", className, className)
 	output.EmitParameterList(declaration.Parameters)
 	output.Emit(" ")
-	body := &syntaxtree.BlockStatement{
-		Children:     []syntaxtree.Node{
+	body := &tree.BlockStatement{
+		Children:     []tree.Node{
 			generation.generateInitCall(),
 			declaration.Body,
 		}	,
-		NodePosition: syntaxtree.ZeroPosition{},
+		NodePosition: tree.ZeroArea{},
 	}
 	output.EmitNode(body)
 }
 
-func (generation *Generation) generateInitCall() syntaxtree.Node {
-	return &syntaxtree.ExpressionStatement{
-		Expression: &syntaxtree.CallExpression{
-		Method:       &syntaxtree.Identifier{
+func (generation *Generation) generateInitCall() tree.Node {
+	return &tree.ExpressionStatement{
+		Expression: &tree.CallExpression{
+		Target:       &tree.Identifier{
 			Value:        backend.InitMethodName,
-			NodePosition: syntaxtree.ZeroPosition{},
+			NodePosition: tree.ZeroArea{},
 		},
-		Arguments:    []*syntaxtree.CallArgument{},
-		NodePosition: syntaxtree.ZeroPosition{},
+		Arguments:    []*tree.CallArgument{},
+		NodePosition: tree.ZeroArea{},
 	},
 	}
 }
 
-func (generation *Generation) writeInitMethod(body []syntaxtree.Node) {
-	generation.generateMethodDeclaration(&syntaxtree.MethodDeclaration{
-		Name: &syntaxtree.Identifier{
+func (generation *Generation) writeInitMethod(body []tree.Node) {
+	generation.generateMethodDeclaration(&tree.MethodDeclaration{
+		Name: &tree.Identifier{
 			Value:        backend.InitMethodName,
-			NodePosition: syntaxtree.ZeroPosition{},
+			NodePosition: tree.ZeroArea{},
 		},
-		Type: &syntaxtree.ConcreteTypeName{
+		Type: &tree.ConcreteTypeName{
 			Name:         "void",
-			NodePosition: syntaxtree.ZeroPosition{},
+			NodePosition: tree.ZeroArea{},
 		},
-		Body: &syntaxtree.BlockStatement{
+		Body: &tree.BlockStatement{
 			Children:     body,
-			NodePosition: syntaxtree.ZeroPosition{},
+			NodePosition: tree.ZeroArea{},
 		},
-		Parameters:   []*syntaxtree.Parameter{},
-		NodePosition: syntaxtree.ZeroPosition{},
+		Parameters:   []*tree.Parameter{},
+		NodePosition: tree.ZeroArea{},
 	})
 }

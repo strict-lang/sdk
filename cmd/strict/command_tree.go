@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/spf13/cobra"
 	"gitlab.com/strict-lang/sdk/pkg/compilation"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree/pretty"
 	"os"
 )
 
@@ -29,5 +29,5 @@ func parseAndPrintAst(command *cobra.Command, sourceFile *os.File) {
 	if parseResult.Error != nil {
 		return
 	}
-	syntaxtree.PrintColored(parseResult.Unit)
+	pretty.PrintColored(parseResult.Unit)
 }

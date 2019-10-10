@@ -6,9 +6,9 @@ import (
 	"gitlab.com/strict-lang/sdk/pkg/compilation/backend/headerfile"
 	"gitlab.com/strict-lang/sdk/pkg/compilation/backend/sourcefile"
 	"gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/parsing"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/lexical"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
 )
 
 type Compilation struct {
@@ -31,7 +31,7 @@ type Generated struct {
 
 // ParseResult contains the result of a Parsing.
 type ParseResult struct {
-	Unit        *syntaxtree.TranslationUnit
+	Unit        *tree.TranslationUnit
 	Diagnostics *diagnostic.Diagnostics
 	Error       error
 }
@@ -57,8 +57,8 @@ func (compilation *Compilation) Compile() Result {
 func (compilation *Compilation) parse() ParseResult {
 	diagnosticBag := diagnostic.NewBag()
 	sourceReader := compilation.Source.newSourceReader()
-	tokenReader := scanning.NewScanning(sourceReader)
-	parserFactory := parsing.NewDefaultFactory().
+	tokenReader := lexical.NewScanning(sourceReader)
+	parserFactory := syntax.NewDefaultFactory().
 		WithTokenStream(tokenReader).
 		WithDiagnosticBag(diagnosticBag).
 		WithUnitName(compilation.Name)
@@ -73,14 +73,14 @@ func (compilation *Compilation) parse() ParseResult {
 	}
 }
 
-func (compilation *Compilation) generateOutput(unit *syntaxtree.TranslationUnit) []Generated {
+func (compilation *Compilation) generateOutput(unit *tree.TranslationUnit) []Generated {
 	if compilation.TargetArduino {
 		return []Generated{compilation.generateArduinoFile(unit)}
 	}
 	return compilation.generateCppFile(unit)
 }
 
-func (compilation *Compilation) generateCppFile(unit *syntaxtree.TranslationUnit) []Generated {
+func (compilation *Compilation) generateCppFile(unit *tree.TranslationUnit) []Generated {
 	generated := make(chan Generated)
 	go func() {
 		generated <- compilation.generateHeaderFile(unit)
@@ -94,7 +94,7 @@ func (compilation *Compilation) generateCppFile(unit *syntaxtree.TranslationUnit
 	}
 }
 
-func (compilation *Compilation) generateArduinoFile(unit *syntaxtree.TranslationUnit) Generated {
+func (compilation *Compilation) generateArduinoFile(unit *tree.TranslationUnit) Generated {
 	generation := backend.NewGenerationWithExtension(unit, arduino.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".ino",
@@ -102,7 +102,7 @@ func (compilation *Compilation) generateArduinoFile(unit *syntaxtree.Translation
 	}
 }
 
-func (compilation *Compilation) generateHeaderFile(unit *syntaxtree.TranslationUnit) Generated {
+func (compilation *Compilation) generateHeaderFile(unit *tree.TranslationUnit) Generated {
 	generation := backend.NewGenerationWithExtension(unit, headerfile.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".h",
@@ -110,7 +110,7 @@ func (compilation *Compilation) generateHeaderFile(unit *syntaxtree.TranslationU
 	}
 }
 
-func (compilation *Compilation) generateSourceFile(unit *syntaxtree.TranslationUnit) Generated {
+func (compilation *Compilation) generateSourceFile(unit *tree.TranslationUnit) Generated {
 	generation := backend.NewGenerationWithExtension(unit, sourcefile.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".cc",

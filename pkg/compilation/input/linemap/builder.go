@@ -1,0 +1,37 @@
+package linemap
+
+import (
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/input"
+)
+
+type Builder struct {
+	index   input.LineIndex
+	offset  input.Offset
+	lines   []lineEntry
+	offsets []input.Offset
+}
+
+func (builder *Builder) Append(offset, length input.Offset) {
+	entry := lineEntry{
+		offset: offset,
+		index:  builder.index,
+		length: length,
+	}
+	builder.offset = offset
+	builder.index++
+	builder.lines = append(builder.lines, entry)
+	builder.offsets = append(builder.offsets, offset)
+}
+
+func (builder *Builder) NewLineMap() *LineMap {
+	return &LineMap{
+		lines:       builder.lines,
+		lineOffsets: builder.offsets,
+	}
+}
+
+func NewBuilder() *Builder {
+	return &Builder{
+		index: 1,
+	}
+}

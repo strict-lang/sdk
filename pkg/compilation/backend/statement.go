@@ -1,10 +1,10 @@
 package backend
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
 )
 
-func (generation *Generation) GenerateConditionalStatement(statement *syntaxtree.ConditionalStatement) {
+func (generation *Generation) GenerateConditionalStatement(statement *tree.ConditionalStatement) {
 	generation.Emit("if (")
 	generation.EmitNode(statement.Condition)
 	generation.Emit(") ")
@@ -21,7 +21,7 @@ const (
 	yieldGeneratorName = "yield"
 )
 
-func (generation *Generation) GenerateYieldStatement(statement *syntaxtree.YieldStatement) {
+func (generation *Generation) GenerateYieldStatement(statement *tree.YieldStatement) {
 	generation.method.addToPrologue(yieldGeneratorName, generation.declareYieldList)
 	generation.method.addToEpilogue(yieldGeneratorName, generation.returnYieldList)
 
@@ -45,7 +45,7 @@ func (generation *Generation) returnYieldList() {
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateRangedLoopStatement(statement *syntaxtree.RangedLoopStatement) {
+func (generation *Generation) GenerateRangedLoopStatement(statement *tree.RangedLoopStatement) {
 	generation.EmitFormatted("for (auto %s = ", statement.ValueField.Value)
 	generation.EmitNode(statement.InitialValue)
 	generation.EmitFormatted("; %s < ", statement.ValueField.Value)
@@ -56,7 +56,7 @@ func (generation *Generation) GenerateRangedLoopStatement(statement *syntaxtree.
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateForEachLoopStatement(statement *syntaxtree.ForEachLoopStatement) {
+func (generation *Generation) GenerateForEachLoopStatement(statement *tree.ForEachLoopStatement) {
 	generation.EmitFormatted("for (auto %s : ", statement.Field.Value)
 	generation.EmitNode(statement.Sequence)
 	generation.Emit(") ")
@@ -65,7 +65,7 @@ func (generation *Generation) GenerateForEachLoopStatement(statement *syntaxtree
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateReturnStatement(statement *syntaxtree.ReturnStatement) {
+func (generation *Generation) GenerateReturnStatement(statement *tree.ReturnStatement) {
 	if statement.Value == nil {
 		generation.Emit("return;")
 		return
@@ -76,12 +76,12 @@ func (generation *Generation) GenerateReturnStatement(statement *syntaxtree.Retu
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateFieldDeclaration(declaration *syntaxtree.FieldDeclaration) {
+func (generation *Generation) GenerateFieldDeclaration(declaration *tree.FieldDeclaration) {
 	generation.EmitNode(declaration.TypeName)
 	generation.EmitFormatted(" %s", declaration.Name.Value)
 }
 
-func (generation *Generation) GenerateAssignStatement(statement *syntaxtree.AssignStatement) {
+func (generation *Generation) GenerateAssignStatement(statement *tree.AssignStatement) {
 	generation.EmitNode(statement.Target)
 	generation.EmitFormatted(" %s ", statement.Operator.String())
 	generation.EmitNode(statement.Value)
@@ -89,7 +89,7 @@ func (generation *Generation) GenerateAssignStatement(statement *syntaxtree.Assi
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateBlockStatement(block *syntaxtree.BlockStatement) {
+func (generation *Generation) GenerateBlockStatement(block *tree.BlockStatement) {
 	generation.Emit("{\n")
 	generation.IncreaseIndent()
 	shouldAppendEndOfLineAtBegin := generation.appendNewLineAfterStatement
@@ -109,12 +109,12 @@ func (generation *Generation) GenerateBlockStatement(block *syntaxtree.BlockStat
 	generation.Emit("}")
 }
 
-func (generation *Generation) GenerateExpressionStatement(statement *syntaxtree.ExpressionStatement) {
+func (generation *Generation) GenerateExpressionStatement(statement *tree.ExpressionStatement) {
 	generation.EmitNode(statement.Expression)
 	generation.Emit(";")
 	generation.EmitEndOfLine()
 }
-func (generation *Generation) GenerateAssertStatement(statement *syntaxtree.AssertStatement) {
+func (generation *Generation) GenerateAssertStatement(statement *tree.AssertStatement) {
 
 	generation.Emit("if (!(")
 	generation.EmitNode(statement.Expression)
@@ -129,28 +129,28 @@ func (generation *Generation) GenerateAssertStatement(statement *syntaxtree.Asse
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateIncrementStatement(statement *syntaxtree.IncrementStatement) {
+func (generation *Generation) GenerateIncrementStatement(statement *tree.IncrementStatement) {
 	generation.EmitNode(statement.Operand)
 	generation.Emit("++;")
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateDecrementStatement(statement *syntaxtree.DecrementStatement) {
+func (generation *Generation) GenerateDecrementStatement(statement *tree.DecrementStatement) {
 	generation.EmitNode(statement.Operand)
 	generation.Emit("--;")
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateInvalidStatement(statement *syntaxtree.InvalidStatement) {
+func (generation *Generation) GenerateInvalidStatement(statement *tree.InvalidStatement) {
 	generation.Emit("#error Invalid node at position")
 }
 
-func (generation *Generation) GenerateEmptyStatement(statement *syntaxtree.EmptyStatement) {}
+func (generation *Generation) GenerateEmptyStatement(statement *tree.EmptyStatement) {}
 
-func (generation *Generation) GenerateCreateExpression(create *syntaxtree.CreateExpression) {
+func (generation *Generation) GenerateCreateExpression(create *tree.CreateExpression) {
 	generation.EmitNode(create.Constructor)
 }
 
-func (generation *Generation) GenerateTestStatement(create *syntaxtree.TestStatement) {
+func (generation *Generation) GenerateTestStatement(create *tree.TestStatement) {
 	// Not Implemented
 }

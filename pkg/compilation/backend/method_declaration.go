@@ -1,12 +1,12 @@
 package backend
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
 )
 
 const InitMethodName = "Generated$Init"
 
-func (generation *Generation) EmitMethodDeclaration(declaration *syntaxtree.MethodDeclaration) {
+func (generation *Generation) EmitMethodDeclaration(declaration *tree.MethodDeclaration) {
 	generation.EmitIndent()
 	generation.EmitNode(declaration.Type)
 	generation.Emit(" ")
@@ -14,7 +14,7 @@ func (generation *Generation) EmitMethodDeclaration(declaration *syntaxtree.Meth
 	generation.EmitParameterList(declaration.Parameters)
 }
 
-func (generation *Generation) EmitParameterList(parameters syntaxtree.ParameterList) {
+func (generation *Generation) EmitParameterList(parameters tree.ParameterList) {
 	generation.Emit("(")
 	for index, parameter := range parameters {
 		if index != 0 {
@@ -25,7 +25,7 @@ func (generation *Generation) EmitParameterList(parameters syntaxtree.ParameterL
 	generation.Emit(")")
 }
 
-func (generation *Generation) GenerateParameter(parameter *syntaxtree.Parameter) {
+func (generation *Generation) GenerateParameter(parameter *tree.Parameter) {
 	generation.EmitNode(parameter.Type)
 	generation.Emit(" ")
 	generation.EmitNode(parameter.Name)

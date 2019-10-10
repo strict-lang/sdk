@@ -2,7 +2,7 @@ package arduino
 
 import (
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
 )
 
 type Generation struct {
@@ -16,7 +16,7 @@ func NewGeneration() *Generation {
 	return &Generation{}
 }
 
-func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *syntaxtree.Visitor) {
+func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.Visitor) {
 	generation.parent = parent
 	parent.DisableNamespaceSelectors()
 	parent.DisableStdlibClassImport()
@@ -31,12 +31,12 @@ func (generation *Generation) importArduinoHeader() {
 	generation.parent.EmitEndOfLine()
 }
 
-func (generation *Generation) VisitImportStatement(statement *syntaxtree.ImportStatement) {
+func (generation *Generation) VisitImportStatement(statement *tree.ImportStatement) {
 	generation.parent.EmitFormatted("#include %s", statement.Target.FilePath())
 	generation.parent.EmitEndOfLine()
 }
 
-func (generation *Generation) VisitClassDeclaration(declaration *syntaxtree.ClassDeclaration) {
+func (generation *Generation) VisitClassDeclaration(declaration *tree.ClassDeclaration) {
 	methods, others := extractMethods(declaration.Children)
 	generation.writeJustDeclarations(methods)
 	fields, setupBody := extractFieldDeclarations(others)
@@ -45,26 +45,26 @@ func (generation *Generation) VisitClassDeclaration(declaration *syntaxtree.Clas
 	generation.generateSetupMethod(setupBody)
 }
 
-func (generation *Generation) generateSetupMethod(statements []syntaxtree.Node) {
-	generation.parent.EmitNode(&syntaxtree.MethodDeclaration{
-		Name: &syntaxtree.Identifier{
+func (generation *Generation) generateSetupMethod(statements []tree.Node) {
+	generation.parent.EmitNode(&tree.MethodDeclaration{
+		Name: &tree.Identifier{
 			Value:        "setup",
-			NodePosition: syntaxtree.ZeroPosition{},
+			NodePosition: tree.ZeroArea{},
 		},
-		Type: &syntaxtree.ConcreteTypeName{
+		Type: &tree.ConcreteTypeName{
 			Name:         "void",
-			NodePosition: syntaxtree.ZeroPosition{},
+			NodePosition: tree.ZeroArea{},
 		},
-		Parameters: []*syntaxtree.Parameter{},
-		Body: &syntaxtree.BlockStatement{
+		Parameters: []*tree.Parameter{},
+		Body: &tree.BlockStatement{
 			Children:     statements,
-			NodePosition: syntaxtree.ZeroPosition{},
+			NodePosition: tree.ZeroArea{},
 		},
-		NodePosition: syntaxtree.ZeroPosition{},
+		NodePosition: tree.ZeroArea{},
 	})
 }
 
-func (generation *Generation) writeGlobalFieldDeclarations(fields []*syntaxtree.FieldDeclaration) {
+func (generation *Generation) writeGlobalFieldDeclarations(fields []*tree.FieldDeclaration) {
 	for _, field := range fields {
 		generation.parent.GenerateFieldDeclaration(field)
 		generation.parent.Emit(";")
@@ -73,7 +73,7 @@ func (generation *Generation) writeGlobalFieldDeclarations(fields []*syntaxtree.
 	generation.parent.EmitEndOfLine()
 }
 
-func (generation *Generation) writeJustDeclarations(methods []*syntaxtree.MethodDeclaration) {
+func (generation *Generation) writeJustDeclarations(methods []*tree.MethodDeclaration) {
 	for _, method := range methods {
 		generation.parent.EmitMethodDeclaration(method)
 		generation.parent.Emit(";")
@@ -82,16 +82,16 @@ func (generation *Generation) writeJustDeclarations(methods []*syntaxtree.Method
 	generation.parent.EmitEndOfLine()
 }
 
-func (generation *Generation) writeMethodDefinitions(methods []*syntaxtree.MethodDeclaration) {
+func (generation *Generation) writeMethodDefinitions(methods []*tree.MethodDeclaration) {
 	for _, method := range methods {
 		generation.parent.EmitNode(method)
 		generation.parent.EmitEndOfLine()
 	}
 }
 
-func extractFieldDeclarations(nodes []syntaxtree.Node) (fields []*syntaxtree.FieldDeclaration, others []syntaxtree.Node) {
+func extractFieldDeclarations(nodes []tree.Node) (fields []*tree.FieldDeclaration, others []tree.Node) {
 	for _, node := range nodes {
-		if field, isField := node.(*syntaxtree.FieldDeclaration); isField {
+		if field, isField := node.(*tree.FieldDeclaration); isField {
 			fields = append(fields, field)
 		} else {
 			others = append(others, node)
@@ -100,9 +100,9 @@ func extractFieldDeclarations(nodes []syntaxtree.Node) (fields []*syntaxtree.Fie
 	return
 }
 
-func extractMethods(nodes []syntaxtree.Node) (methods []*syntaxtree.MethodDeclaration, others []syntaxtree.Node) {
+func extractMethods(nodes []tree.Node) (methods []*tree.MethodDeclaration, others []tree.Node) {
 	for _, node := range nodes {
-		if method, isMethod := node.(*syntaxtree.MethodDeclaration); isMethod {
+		if method, isMethod := node.(*tree.MethodDeclaration); isMethod {
 			methods = append(methods, method)
 		} else {
 			others = append(others, node)

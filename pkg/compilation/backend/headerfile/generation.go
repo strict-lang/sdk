@@ -2,7 +2,7 @@ package headerfile
 
 import (
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/backend"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
 )
 
 type Generation struct {
@@ -15,7 +15,7 @@ func NewGeneration() *Generation {
 	return &Generation{}
 }
 
-func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *syntaxtree.Visitor) {
+func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.Visitor) {
 	generation.generation = parent
 	visitor.VisitClassDeclaration = generation.generateClassDeclaration
 	generation.emitPragmas()
@@ -27,7 +27,7 @@ func (generation *Generation) emitPragmas() {
 	generation.generation.EmitEndOfLine()
 }
 
-func (generation *Generation) generateClassDeclaration(declaration *syntaxtree.ClassDeclaration) {
+func (generation *Generation) generateClassDeclaration(declaration *tree.ClassDeclaration) {
 	definition := newClassDefinition(generation.generation, declaration)
 	definition.generateCode()
 }

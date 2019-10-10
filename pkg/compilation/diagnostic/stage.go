@@ -14,11 +14,11 @@ var (
 	}
 	SyntacticalAnalysis = Stage{
 		Name:        "syntactical analysis",
-		Alias:       "parsing",
-		Description: "turns a stream of tokens into an abstract syntax tree",
+		Alias:       "grammar",
+		Description: "turns a stream of tokens into an abstract grammar tree",
 	}
 	SemanticAnalysis = Stage{
 		Name:        "semantic analysis",
-		Description: "walks and validates the abstract syntax tree",
+		Description: "walks and validates the abstract grammar tree",
 	}
 )

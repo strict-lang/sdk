@@ -1,18 +1,18 @@
 package code
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
 	"log"
 )
 
 type TypeInference struct {
-	visitor                 *syntaxtree.Visitor
+	visitor                 *tree.Visitor
 	lastResult              inferenceResult
 	classType               *Type
 	currentScope            *Scope
 	currentCallInstanceType *Type
-	lastIdentifier          *syntaxtree.Identifier
+	lastIdentifier          *tree.Identifier
 }
 
 type inferenceResult struct {
@@ -20,7 +20,7 @@ type inferenceResult struct {
 	success bool
 }
 
-func (inference *TypeInference) inferNode(node syntaxtree.Node) inferenceResult {
+func (inference *TypeInference) inferNode(node tree.Node) inferenceResult {
 	node.Accept(inference.visitor)
 	return inference.lastResult
 }
@@ -43,7 +43,7 @@ var unaryOperationType = map[token.Operator]*Type{
 	token.NegateOperator: builtinTypes.boolType,
 }
 
-func (inference *TypeInference) visitUnaryExpression(expression *syntaxtree.UnaryExpression) {
+func (inference *TypeInference) visitUnaryExpression(expression *tree.UnaryExpression) {
 	if inferred := inference.inferNode(expression.Operand); !inferred.success {
 		inference.emitError()
 		return
@@ -82,7 +82,7 @@ var binaryOperationType = map[token.Operator]func(*Type) *Type{
 	token.ModOperator:           identityTypeOperation(),
 }
 
-func (inference *TypeInference) visitBinaryExpression(expression *syntaxtree.BinaryExpression) {
+func (inference *TypeInference) visitBinaryExpression(expression *tree.BinaryExpression) {
 	leftHandSideType := inference.inferNode(expression.LeftOperand)
 	rightHandSideType := inference.inferNode(expression.RightOperand)
 	if !leftHandSideType.success || !rightHandSideType.success {
@@ -105,16 +105,16 @@ func (inference *TypeInference) methodCallInstance() *Type {
 	}
 }
 
-func (inference *TypeInference) visitSelectorExpression(selector *syntaxtree.SelectExpression) {
-	if _, ok := selector.Selection.(*syntaxtree.Identifier); ok {
+func (inference *TypeInference) visitSelectorExpression(selector *tree.FieldSelectExpression) {
+	if _, ok := selector.Selection.(*tree.Identifier); ok {
 
 	}
 }
 
-func (inference *TypeInference) visitMethodCall(call *syntaxtree.CallExpression) {
+func (inference *TypeInference) visitMethodCall(call *tree.CallExpression) {
 	inference.lastIdentifier = nil
 	defer func() { inference.lastIdentifier = nil }()
-	if result := inference.inferNode(call.Method); !result.success {
+	if result := inference.inferNode(call.Target); !result.success {
 		inference.emitError()
 		return
 	}
@@ -134,7 +134,7 @@ func (inference *TypeInference) visitMethodCall(call *syntaxtree.CallExpression)
 	inference.currentCallInstanceType = method.ReturnType
 }
 
-func (inference *TypeInference) visitNumberLiteral(literal *syntaxtree.NumberLiteral) {
+func (inference *TypeInference) visitNumberLiteral(literal *tree.NumberLiteral) {
 	if literal.IsFloat() {
 		inference.emitType(builtinTypes.floatType)
 	} else {
@@ -142,6 +142,6 @@ func (inference *TypeInference) visitNumberLiteral(literal *syntaxtree.NumberLit
 	}
 }
 
-func (inference *TypeInference) visitStringLiteral(literal *syntaxtree.StringLiteral) {
+func (inference *TypeInference) visitStringLiteral(literal *tree.StringLiteral) {
 	inference.emitType(builtinTypes.stringType)
 }

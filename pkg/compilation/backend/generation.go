@@ -2,17 +2,17 @@ package backend
 
 import (
 	"fmt"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
 	"strings"
 )
 
-// Generation generates C code from an syntaxtree.
+// Generation generates C code from an tree.
 type Generation struct {
-	Unit                          *syntaxtree.TranslationUnit
+	Unit                          *tree.TranslationUnit
 	output                        *strings.Builder
 	buffer                        *strings.Builder
 	method                        *MethodDefinition
-	visitor                       *syntaxtree.Visitor
+	visitor                       *tree.Visitor
 	indent                        int8
 	appendNewLineAfterStatement   bool
 	importModules                 map[string]string
@@ -21,10 +21,10 @@ type Generation struct {
 }
 
 type FileNaming interface {
-	FileNameForUnit(unit *syntaxtree.TranslationUnit)
+	FileNameForUnit(unit *tree.TranslationUnit)
 }
 
-func NewGenerationWithExtension(unit *syntaxtree.TranslationUnit, extension Extension) *Generation {
+func NewGenerationWithExtension(unit *tree.TranslationUnit, extension Extension) *Generation {
 	generation := NewGeneration(unit)
 	extension.ModifyVisitor(generation, generation.visitor)
 	return generation
@@ -32,7 +32,7 @@ func NewGenerationWithExtension(unit *syntaxtree.TranslationUnit, extension Exte
 
 // NewGeneration constructs a Generation that generates C code from
 // the nodes in the passed translation-Unit.
-func NewGeneration(unit *syntaxtree.TranslationUnit) (generation *Generation) {
+func NewGeneration(unit *tree.TranslationUnit) (generation *Generation) {
 	generation = &Generation{
 		Unit:                          unit,
 		output:                        &strings.Builder{},
@@ -94,7 +94,7 @@ func (generation *Generation) DecreaseIndent() {
 	}
 }
 
-func (generation *Generation) EmitNode(node syntaxtree.Node) {
+func (generation *Generation) EmitNode(node tree.Node) {
 	node.Accept(generation.visitor)
 }
 

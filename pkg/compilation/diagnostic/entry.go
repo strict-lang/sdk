@@ -1,7 +1,7 @@
 package diagnostic
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/source"
+	 "gitlab.com/strict-lang/sdk/pkg/compilation/input"
 )
 
 type Entry struct {
@@ -14,8 +14,8 @@ type Entry struct {
 }
 
 type Position struct {
-	Column    source.Offset
-	LineIndex source.LineIndex
+	Column    input.Offset
+	LineIndex input.LineIndex
 }
 
 func (entry Entry) PrintColored(printer Printer) {
