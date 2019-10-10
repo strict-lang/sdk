@@ -18,7 +18,7 @@ func TestConstructorDeclaration_AcceptRecursive(testing *testing.T) {
 	region := &ConstructorDeclaration{
 		Parameters: ParameterList{
 			&Parameter{
-				Type: NewTestConcreteTypeName("Test"),
+				Type: createTestConcreteName("Test"),
 				Name: &Identifier{
 					Value:  "test",
 					Region: input.ZeroRegion,

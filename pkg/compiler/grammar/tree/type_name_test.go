@@ -9,7 +9,7 @@ var (
 	_ Node     = &GenericTypeName{}
 )
 
-func NewTestConcreteTypeName(name string) *ConcreteTypeName {
+func createTestConcreteName(name string) *ConcreteTypeName {
 	return &ConcreteTypeName{
 		Name:         name,
 		NodePosition: ZeroArea{},
@@ -21,7 +21,7 @@ func TestConcreteTypeName_FullName(test *testing.T) {
 		"abc", "name", "thisIsTheNameOfAType", "nonGeneric",
 	}
 	for _, entry := range entries {
-		typeName := NewTestConcreteTypeName(entry)
+		typeName := createTestConcreteName(entry)
 		if typeName.FullName() != entry {
 			test.Errorf("Unexpected full typename: %s, expected %s", typeName.FullName(), entry)
 		}

@@ -11,7 +11,7 @@ func TestFieldDeclaration_Accept(testing *testing.T) {
 			Value:  "test",
 			Region: input.ZeroRegion,
 		},
-		TypeName: NewTestConcreteTypeName("Type"),
+		TypeName: createTestConcreteName("Type"),
 		Region:   input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).Expect(FieldDeclarationNodeKind).Run()
@@ -23,7 +23,7 @@ func TestFieldDeclaration_AcceptRecursive(testing *testing.T) {
 			Value:  "test",
 			Region: input.ZeroRegion,
 		},
-		TypeName: NewTestConcreteTypeName("Type"),
+		TypeName: createTestConcreteName("Type"),
 		Region:   input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).
@@ -39,7 +39,7 @@ func TestFieldDeclaration_Locate(testing *testing.T) {
 				Value:  "test",
 				Region: input.ZeroRegion,
 			},
-			TypeName: NewTestConcreteTypeName("Type"),
+			TypeName: createTestConcreteName("Type"),
 			Region:   input.ZeroRegion,
 		}
 	})

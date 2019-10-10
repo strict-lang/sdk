@@ -8,7 +8,7 @@ import (
 func TestMethodDeclaration_Accept(testing *testing.T) {
 	entry := &MethodDeclaration{
 		Name:       &Identifier{Value: "Test"},
-		Type:       NewTestConcreteTypeName("void"),
+		Type:       createTestConcreteName("void"),
 		Parameters: ParameterList{},
 		Body:       &WildcardNode{Region: input.ZeroRegion},
 		Region:     input.ZeroRegion,
@@ -22,10 +22,10 @@ func TestMethodDeclaration_AcceptRecursive(testing *testing.T) {
 			Value:  "Test",
 			Region: input.ZeroRegion,
 		},
-		Type: NewTestConcreteTypeName("void"),
+		Type: createTestConcreteName("void"),
 		Parameters: ParameterList{
 			&Parameter{
-				Type: NewTestConcreteTypeName("int"),
+				Type: createTestConcreteName("int"),
 				Name:   &Identifier{
 					Value:  "count",
 					Region: input.ZeroRegion,
@@ -48,7 +48,7 @@ func TestMethodDeclaration_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &MethodDeclaration{
 			Name:       &Identifier{Value: "Test"},
-			Type:       NewTestConcreteTypeName("void"),
+			Type:       createTestConcreteName("void"),
 			Parameters: ParameterList{},
 			Body:       &WildcardNode{Region: input.ZeroRegion},
 			Region:     region,
