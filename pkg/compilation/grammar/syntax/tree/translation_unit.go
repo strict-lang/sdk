@@ -31,6 +31,6 @@ func (unit *TranslationUnit) ToTypeName() TypeName {
 	}
 }
 
-func (unit *TranslationUnit) Region() input.Region {
+func (unit *TranslationUnit) Locate() input.Region {
 	return unit.NodeRegion
 }

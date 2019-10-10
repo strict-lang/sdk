@@ -4,6 +4,11 @@ import (
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
 )
 
+type Statement interface{
+	Node
+	IsModifyingControlFlow() bool
+}
+
 type ExpressionStatement struct {
 	Expression Node
 }
@@ -40,33 +45,6 @@ func (block *BlockStatement) Area() InputRegion {
 	return block.NodePosition
 }
 
-type ConditionalStatement struct {
-	Condition    Node
-	Alternative  Node
-	Consequence  Node
-	NodePosition InputRegion
-}
-
-func (conditional *ConditionalStatement) HasAlternative() bool {
-	return conditional.Alternative != nil
-}
-
-func (conditional *ConditionalStatement) Accept(visitor *Visitor) {
-	visitor.VisitConditionalStatement(conditional)
-}
-
-func (conditional *ConditionalStatement) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitConditionalStatement(conditional)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
-	if conditional.HasAlternative() {
-		AcceptRecursive(visitor)
-	}
-}
-
-func (conditional *ConditionalStatement) Area() InputRegion {
-	return conditional.NodePosition
-}
 
 // RangedLoopStatement is a control statement that. Counting from an initial
 // value to some target while incrementing a field each step. The values of a

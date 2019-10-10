@@ -1,6 +1,9 @@
 package tree
 
-import "fmt"
+import (
+	"fmt"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/input"
+)
 
 type TypeName interface {
 	Node
@@ -10,7 +13,7 @@ type TypeName interface {
 
 type ConcreteTypeName struct {
 	Name         string
-	NodePosition InputRegion
+	Region input.Region
 }
 
 func (concrete *ConcreteTypeName) NonGenericName() string {
@@ -21,15 +24,15 @@ func (concrete *ConcreteTypeName) FullName() string {
 	return concrete.Name
 }
 
-func (concrete *ConcreteTypeName) Accept(visitor *Visitor) {
+func (concrete *ConcreteTypeName) Accept(visitor Visitor) {
 	visitor.VisitConcreteTypeName(concrete)
 }
 
-func (concrete *ConcreteTypeName) AcceptRecursive(visitor *Visitor) {
+func (concrete *ConcreteTypeName) AcceptRecursive(visitor Visitor) {
 	visitor.VisitConcreteTypeName(concrete)
 }
 
-func (concrete *ConcreteTypeName) Area() InputRegion {
+func (concrete *ConcreteTypeName) Locate() input.Region {
 	return concrete.NodePosition
 }
 

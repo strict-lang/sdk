@@ -31,7 +31,7 @@ func (expression *PostfixExpression) AcceptRecursive(visitor Visitor) {
 	expression.Operand.AcceptRecursive(visitor)
 }
 
-// Region returns the area of code that is covered by the node.
-func (expression *PostfixExpression) Region() input.Region {
+// Locate returns the area of code that is covered by the node.
+func (expression *PostfixExpression) Locate() input.Region {
 	return expression.NodePosition
 }

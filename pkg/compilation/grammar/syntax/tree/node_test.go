@@ -14,9 +14,9 @@ var regionTestEntries = []input.Region{
 func RunNodeRegionTest(testing *testing.T, entryFactory func (region input.Region) Node) {
 	for _, entryRegion := range regionTestEntries {
 		entry := entryFactory(entryRegion)
-		if entry.Region() != entryRegion {
-			testing.Errorf("Invalid Region(): Expected %s - got %s",
-				entryRegion, entry.Region())
+		if entry.Locate() != entryRegion {
+			testing.Errorf("Invalid Locate(): Expected %s - got %s",
+				entryRegion, entry.Locate())
 		}
 	}
 }

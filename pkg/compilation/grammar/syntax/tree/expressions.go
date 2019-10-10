@@ -2,6 +2,7 @@ package tree
 
 import (
 	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compilation/input"
 )
 
 type Expression interface {
@@ -47,29 +48,29 @@ func (argument *CallArgument) IsLabeled() bool {
 	return argument.Label != ""
 }
 
-func (argument *CallArgument) Accept(visitor *Visitor) {
+func (argument *CallArgument) Accept(visitor Visitor) {
 	visitor.VisitCallArgument(argument)
 }
 
-func (argument *CallArgument) AcceptRecursive(visitor *Visitor) {
+func (argument *CallArgument) AcceptRecursive(visitor Visitor) {
 	visitor.VisitCallArgument(argument)
 	argument.Value.AcceptRecursive(visitor)
 }
 
-func (argument *CallArgument) Area() InputRegion {
+func (argument *CallArgument) Area()  input.Region{
 	return argument.NodePosition
 }
 
 type Identifier struct {
 	Value        string
-	NodePosition InputRegion
+	Region input.Region
 }
 
-func (identifier *Identifier) Accept(visitor *Visitor) {
+func (identifier *Identifier) Accept(visitor Visitor) {
 	visitor.VisitIdentifier(identifier)
 }
 
-func (identifier *Identifier) AcceptRecursive(visitor *Visitor) {
+func (identifier *Identifier) AcceptRecursive(visitor Visitor) {
 	visitor.VisitIdentifier(identifier)
 }
 
@@ -80,21 +81,21 @@ func (identifier *Identifier) Area() InputRegion {
 // UnaryExpression is an operation on a single operand.
 type UnaryExpression struct {
 	Operator     token.Operator
-	Operand      Node
-	NodePosition InputRegion
+	Operand      Expression
+	NodeRegion   input.Region
 }
 
-func (unary *UnaryExpression) Accept(visitor *Visitor) {
+func (unary *UnaryExpression) Accept(visitor Visitor) {
 	visitor.VisitUnaryExpression(unary)
 }
 
-func (unary *UnaryExpression) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitUnaryExpression(unary)
+func (unary *UnaryExpression) AcceptRecursive(visitor Visitor) {
+	unary.Accept(visitor)
 	unary.Operand.AcceptRecursive(visitor)
 }
 
-func (unary *UnaryExpression) Area() InputRegion {
-	return unary.Area()
+func (unary *UnaryExpression) Locate() input.Region {
+	return unary.NodeRegion
 }
 
 // BinaryExpression is an operation on two operands.

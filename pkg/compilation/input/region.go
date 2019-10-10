@@ -2,7 +2,7 @@ package input
 
 import "fmt"
 
-// Region is the position of a node in the input code. It may span multiple
+// Locate is the position of a node in the input code. It may span multiple
 // lines or even the whole file. Regions are represented using two offsets and
 // thus don't give too many information. This is done because almost every tree
 // node has a position field and it would have big memory impacts if positions
@@ -42,15 +42,15 @@ func (region Region) ContainsRegion(target Region) bool {
 	return region.ContainsOffset(target.begin) && region.ContainsOffset(target.end)
 }
 
-// IsEmpty returns true if the region is empty. A Region is empty if the begin
+// IsEmpty returns true if the region is empty. A Locate is empty if the begin
 // and end are the same. Empty regions can not contain an offset or region.
 func (region Region) IsEmpty() bool {
 	return region.begin == region.end
 }
 
-// String returns a string representation of the Region.
+// String returns a string representation of the Locate.
 func (region Region) String() string {
-	return fmt.Sprintf("Region(begin: %d, end: %d)", region.begin, region.end)
+	return fmt.Sprintf("Locate(begin: %d, end: %d)", region.begin, region.end)
 }
 
 func orderBySize(left, right Offset) (Offset, Offset) {
@@ -60,7 +60,7 @@ func orderBySize(left, right Offset) (Offset, Offset) {
 	return left, right
 }
 
-// CreateRegion creates a non-empty Region. It ensures that the begin
+// CreateRegion creates a non-empty Locate. It ensures that the begin
 // is always prior to the end.
 func CreateRegion(begin, end Offset) Region {
 	actualBegin, actualEnd := orderBySize(begin, end)
@@ -70,7 +70,7 @@ func CreateRegion(begin, end Offset) Region {
 	}
 }
 
-// CreateEmptyRegion creates an empty Region at the offset.
+// CreateEmptyRegion creates an empty Locate at the offset.
 func CreateEmptyRegion(offset Offset) Region {
 	return Region{
 		begin: offset,
@@ -78,5 +78,5 @@ func CreateEmptyRegion(offset Offset) Region {
 	}
 }
 
-// ZeroRegion is an empty Region that is located at the begin of a file.
+// ZeroRegion is an empty Locate that is located at the begin of a file.
 var ZeroRegion = CreateEmptyRegion(0)

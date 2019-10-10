@@ -20,7 +20,7 @@ func TestRegion_Begin(testing *testing.T) {
 	for entry, expectedBegin := range entries {
 		region := entry.CreateRegion()
 		if region.Begin() != expectedBegin {
-			testing.Errorf("Unexpected Region Begin(): got %d - expected %d",
+			testing.Errorf("Unexpected Locate Begin(): got %d - expected %d",
 				region.Begin(), expectedBegin)
 		}
 	}
@@ -36,7 +36,7 @@ func TestRegion_End(testing *testing.T) {
 	for entry, expectedEnd := range entries {
 		region := entry.CreateRegion()
 		if region.End() != expectedEnd {
-			testing.Errorf("Unexpected Region End(): got %d - expected %d",
+			testing.Errorf("Unexpected Locate End(): got %d - expected %d",
 				region.Begin(), expectedEnd)
 		}
 	}
@@ -55,7 +55,7 @@ func TestRegion_ContainsOffset_Inside(testing *testing.T) {
 func testOffsetsInRegion(region Region, offsets []Offset, testing *testing.T) {
 	for _, offset := range offsets {
 		if !region.ContainsOffset(offset) {
-			testing.Errorf("Expected %d to be in Region %s", offset, region)
+			testing.Errorf("Expected %d to be in Locate %s", offset, region)
 		}
 	}
 }
@@ -74,7 +74,7 @@ func TestRegion_ContainsOffset_Outside(testing *testing.T) {
 func testOffsetsNotInRegion(region Region, offsets []Offset, testing *testing.T) {
 	for _, offset := range offsets {
 		if region.ContainsOffset(offset) {
-			testing.Errorf("Expected %s not to be in Region %s", offset, region)
+			testing.Errorf("Expected %s not to be in Locate %s", offset, region)
 		}
 	}
 }
@@ -92,7 +92,7 @@ func TestRegion_ContainsRegion_Inside(testing *testing.T) {
 func testRegionsInRegion(region Region, entries []Region, testing *testing.T) {
 	for _, entry := range entries {
 		if !region.ContainsRegion(entry) {
-			testing.Errorf("Expected %s to be in Region %s", entry, region)
+			testing.Errorf("Expected %s to be in Locate %s", entry, region)
 		}
 	}
 }
@@ -110,7 +110,7 @@ func TestRegion_ContainsRegion_Outside(testing *testing.T) {
 func testRegionsNotInRegion(region Region, entries []Region, testing *testing.T) {
 	for _, entry := range entries {
 		if region.ContainsRegion(entry) {
-			testing.Errorf("Expected %s not to be in Region %s", entry, region)
+			testing.Errorf("Expected %s not to be in Locate %s", entry, region)
 		}
 	}
 }
@@ -122,7 +122,7 @@ func TestRegion_IsEmpty_Empty(testing *testing.T) {
 	}
 	for _, entry := range entries {
 		if region := entry.CreateRegion(); !region.IsEmpty() {
-			testing.Errorf("Region %s is empty", region)
+			testing.Errorf("Locate %s is empty", region)
 		}
 	}
 }
@@ -135,20 +135,20 @@ func TestRegion_IsEmpty_NonEmpty(testing *testing.T) {
 	}
 	for _, entry := range entries {
 		if region := entry.CreateRegion(); region.IsEmpty() {
-			testing.Errorf("Region %s is not empty", region)
+			testing.Errorf("Locate %s is not empty", region)
 		}
 	}
 }
 
 func TestRegion_String(testing *testing.T) {
 	entries := map[regionEntry] string {
-		{0, 1}: "Region(begin: 0, end: 1)",
-		{0, 0}: "Region(begin: 0, end: 0)",
+		{0, 1}: "Locate(begin: 0, end: 1)",
+		{0, 0}: "Locate(begin: 0, end: 0)",
 	}
 	for entry, expectedString := range entries {
 		region := entry.CreateRegion()
 		if region.String() != expectedString {
-			testing.Errorf("Region has invalid String(): got %s - expected %s",
+			testing.Errorf("Locate has invalid String(): got %s - expected %s",
 				region.String(), expectedString)
 		}
 	}
