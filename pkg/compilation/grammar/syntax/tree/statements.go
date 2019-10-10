@@ -238,39 +238,4 @@ func (statement *AssignStatement) Area() InputRegion {
 	return statement.NodePosition
 }
 
-type AssertStatement struct {
-	NodePosition InputRegion
-	Expression   Node
-}
 
-func (assert *AssertStatement) Accept(visitor *Visitor) {
-	visitor.VisitAssertStatement(assert)
-}
-
-func (assert *AssertStatement) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitAssertStatement(assert)
-	AcceptRecursive(visitor)
-}
-
-func (assert *AssertStatement) Area() InputRegion {
-	return assert.NodePosition
-}
-
-type TestStatement struct {
-	NodePosition InputRegion
-	Statements   Node
-	MethodName   string
-}
-
-func (test *TestStatement) Accept(visitor *Visitor) {
-	visitor.VisitTestStatement(test)
-}
-
-func (test *TestStatement) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitTestStatement(test)
-	AcceptRecursive(visitor)
-}
-
-func (test *TestStatement) Area() InputRegion {
-	return test.NodePosition
-}

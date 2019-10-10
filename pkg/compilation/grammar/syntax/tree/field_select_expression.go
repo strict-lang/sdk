@@ -1,9 +1,11 @@
 package tree
 
+import "gitlab.com/strict-lang/sdk/pkg/compilation/input"
+
 type FieldSelectExpression struct {
 	Target       StoredExpression
 	Selection    Expression
-	NodePosition InputRegion
+	Region input.Region
 }
 
 func (expression *FieldSelectExpression) Accept(visitor Visitor) {
@@ -18,6 +20,6 @@ func (expression *FieldSelectExpression) AcceptRecursive(visitor Visitor) {
 	expression.Selection.AcceptRecursive(visitor)
 }
 
-func (expression *FieldSelectExpression) Area() InputRegion {
-	return expression.NodePosition
+func (expression *FieldSelectExpression) Locate() input.Region {
+	return expression.Region
 }
