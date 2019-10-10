@@ -45,55 +45,6 @@ func (block *BlockStatement) Area() InputRegion {
 	return block.NodePosition
 }
 
-// RangedLoopStatement is a control statement that. Counting from an initial
-// value to some target while incrementing a field each step. The values of a
-// ranged loop are numeral.
-type RangedLoopStatement struct {
-	NodePosition InputRegion
-	ValueField   *Identifier
-	InitialValue Node
-	EndValue     Node
-	Body         Node
-}
-
-func (loop *RangedLoopStatement) Accept(visitor *Visitor) {
-	visitor.VisitRangedLoopStatement(loop)
-}
-
-func (loop *RangedLoopStatement) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitRangedLoopStatement(loop)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
-}
-
-func (loop *RangedLoopStatement) Area() InputRegion {
-	return loop.NodePosition
-}
-
-// ForEachLoopStatement is a control statement. Iterating an enumeration without
-// requiring explicit indexing. As opposed to the ranged loop, the element
-// iterated may be of any type that implements the 'Sequence' interface.
-type ForEachLoopStatement struct {
-	NodePosition InputRegion
-	Body         Node
-	Field        *Identifier
-	Sequence     Node
-}
-
-func (loop *ForEachLoopStatement) Accept(visitor *Visitor) {
-	visitor.VisitForEachLoopStatement(loop)
-}
-
-func (loop *ForEachLoopStatement) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitForEachLoopStatement(loop)
-	loop.Field.AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
-}
-
-func (loop *ForEachLoopStatement) Area() InputRegion {
-	return loop.NodePosition
-}
 
 type IncrementStatement struct {
 	Operand      Node
