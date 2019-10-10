@@ -1,4 +1,4 @@
-package compilation
+package compiler
 
 import (
 	"os"

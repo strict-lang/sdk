@@ -1,9 +1,9 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/lexical"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree/pretty"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty"
 	"testing"
 )
 

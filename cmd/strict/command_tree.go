@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/pkg/compilation"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree/pretty"
+	"gitlab.com/strict-lang/sdk/pkg/compiler"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty"
 	"os"
 )
 
@@ -24,7 +24,7 @@ func runTreeCommand(command *cobra.Command, arguments []string) {
 }
 
 func parseAndPrintAst(command *cobra.Command, sourceFile *os.File) {
-	parseResult := compilation.ParseFile("formatted", sourceFile)
+	parseResult := compiler.ParseFile("formatted", sourceFile)
 	parseResult.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command})
 	if parseResult.Error != nil {
 		return

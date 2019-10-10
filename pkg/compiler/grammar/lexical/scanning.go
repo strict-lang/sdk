@@ -1,10 +1,10 @@
 package lexical
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/input"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/input/linemap"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input/linemap"
 )
 
 const (

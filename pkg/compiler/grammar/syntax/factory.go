@@ -1,9 +1,9 @@
 package syntax
 
 import (
-	code2 "gitlab.com/strict-lang/sdk/pkg/compilation/code"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
+	code2 "gitlab.com/strict-lang/sdk/pkg/compiler/code"
+	 "gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	 "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 )
 
 // Factory is responsible for creating new grammar instances.

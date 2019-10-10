@@ -16,17 +16,17 @@ var (
 	Error = Kind{
 		Name:        "Error",
 		Color:       color.New(color.FgRed),
-		Description: "compilation can not succeed",
+		Description: "compiler can not succeed",
 	}
 	Info = Kind{
 		Name:        "Info",
 		Color:       color.New(color.FgGreen),
-		Description: "compilation information",
+		Description: "compiler information",
 	}
 	Warning = Kind{
 		Name:        "Warning",
 		Color:       color.New(color.FgYellow),
-		Description: "compilation can still succeed",
+		Description: "compiler can still succeed",
 	}
 )
 

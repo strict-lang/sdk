@@ -2,8 +2,8 @@ package lexical
 
 import (
 	"errors"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 var (

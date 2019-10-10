@@ -3,9 +3,9 @@ package syntax
 import (
 	"errors"
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 // parseConditionalStatement parses a conditional statement and it's optional else-clause.

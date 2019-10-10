@@ -1,10 +1,10 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compilation/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/lexical"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree/pretty"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty"
 	"testing"
 )
 

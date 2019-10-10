@@ -1,9 +1,9 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/syntax/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 func (parsing *Parsing) couldBeLookingAtTypeName() bool {

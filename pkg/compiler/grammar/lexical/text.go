@@ -2,7 +2,7 @@ package lexical
 
 import (
 	"errors"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"strings"
 )
 

@@ -3,7 +3,7 @@ package syntax
 import (
 	"errors"
 	"fmt"
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/grammar/token"
+	 "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 )
 
 var (

@@ -1,7 +1,7 @@
-package compilation
+package compiler
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/input"
+	 "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"os"
 )
 
