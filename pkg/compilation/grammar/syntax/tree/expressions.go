@@ -140,22 +140,4 @@ func (create *CreateExpression) Area() InputRegion {
 	return create.NodePosition
 }
 
-type ListSelectExpression struct {
-	Index        Node
-	Target       Node
-	NodePosition InputRegion
-}
 
-func (expression *ListSelectExpression) Accept(visitor *Visitor) {
-	visitor.VisitListSelectExpression(expression)
-}
-
-func (expression *ListSelectExpression) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitListSelectExpression(expression)
-	expression.Index.AcceptRecursive(visitor)
-	expression.Target.AcceptRecursive(visitor)
-}
-
-func (expression *ListSelectExpression) Area() InputRegion {
-	return expression.NodePosition
-}
