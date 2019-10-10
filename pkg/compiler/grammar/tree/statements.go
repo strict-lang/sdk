@@ -213,26 +213,3 @@ func (statement *EmptyStatement) Area() InputRegion {
 	return statement.NodePosition
 }
 
-// AssignStatement assigns values to left-hand-side expressions. Operations like
-// add-assign are also represented by this Node. If the 'Target' node is a
-// FieldDeclaration, this is a field definition.
-type AssignStatement struct {
-	Target       Node
-	Value        Node
-	Operator     token.Operator
-	NodePosition InputRegion
-}
-
-func (statement *AssignStatement) Accept(visitor *Visitor) {
-	visitor.VisitAssignStatement(statement)
-}
-
-func (statement *AssignStatement) AcceptRecursive(visitor *Visitor) {
-	visitor.VisitAssignStatement(statement)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
-}
-
-func (statement *AssignStatement) Area() InputRegion {
-	return statement.NodePosition
-}
