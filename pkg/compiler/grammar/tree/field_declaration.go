@@ -9,7 +9,7 @@ type FieldDeclaration struct {
 }
 
 func (field *FieldDeclaration) Accept(visitor Visitor) {
-	VisitFieldDeclaration(field)
+	visitor.VisitFieldDeclaration(field)
 }
 
 func (field *FieldDeclaration) AcceptRecursive(visitor Visitor) {

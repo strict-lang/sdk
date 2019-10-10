@@ -13,14 +13,14 @@ func (argument *CallArgument) IsLabeled() bool {
 }
 
 func (argument *CallArgument) Accept(visitor Visitor) {
-	VisitCallArgument(argument)
+	visitor.VisitCallArgument(argument)
 }
 
 func (argument *CallArgument) AcceptRecursive(visitor Visitor) {
 	argument.Accept(visitor)
-	AcceptRecursive(visitor)
+	argument.Value.AcceptRecursive(visitor)
 }
 
-func (argument *CallArgument) Locate()  input.Region{
+func (argument *CallArgument) Locate() input.Region {
 	return argument.Region
 }

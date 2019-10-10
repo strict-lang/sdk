@@ -11,10 +11,10 @@ func (entry regionEntry) CreateRegion() Region {
 }
 
 func TestRegion_Begin(testing *testing.T) {
-	entries := map [regionEntry] Offset{
+	entries := map[regionEntry]Offset{
 		{0, 10}: 0,
-		{0, 0}: 0,
-		{1, 0}: 0,
+		{0, 0}:  0,
+		{1, 0}:  0,
 		{10, 9}: 9,
 	}
 	for entry, expectedBegin := range entries {
@@ -27,10 +27,10 @@ func TestRegion_Begin(testing *testing.T) {
 }
 
 func TestRegion_End(testing *testing.T) {
-	entries := map [regionEntry] Offset{
+	entries := map[regionEntry]Offset{
 		{0, 10}: 10,
-		{0, 0}: 0,
-		{1, 0}: 1,
+		{0, 0}:  0,
+		{1, 0}:  1,
 		{10, 9}: 10,
 	}
 	for entry, expectedEnd := range entries {
@@ -43,7 +43,7 @@ func TestRegion_End(testing *testing.T) {
 }
 
 func TestRegion_ContainsOffset_Inside(testing *testing.T) {
-	entries := map [regionEntry] []Offset {
+	entries := map[regionEntry][]Offset{
 		{0, 10}: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 	}
 	for entry, containedOffsets := range entries {
@@ -61,9 +61,9 @@ func testOffsetsInRegion(region Region, offsets []Offset, testing *testing.T) {
 }
 
 func TestRegion_ContainsOffset_Outside(testing *testing.T) {
-	entries := map [regionEntry] []Offset {
+	entries := map[regionEntry][]Offset{
 		{0, 10}: {-1, 11},
-		{0, 0}: {-1, 0, 1},
+		{0, 0}:  {-1, 0, 1},
 	}
 	for entry, nonContainedOffsets := range entries {
 		region := entry.CreateRegion()
@@ -80,7 +80,7 @@ func testOffsetsNotInRegion(region Region, offsets []Offset, testing *testing.T)
 }
 
 func TestRegion_ContainsRegion_Inside(testing *testing.T) {
-	entries := map [regionEntry] []Region {
+	entries := map[regionEntry][]Region{
 		{0, 10}: {{0, 1}, {9, 10}, {0, 10}},
 	}
 	for entry, containedRegions := range entries {
@@ -98,7 +98,7 @@ func testRegionsInRegion(region Region, entries []Region, testing *testing.T) {
 }
 
 func TestRegion_ContainsRegion_Outside(testing *testing.T) {
-	entries := map [regionEntry] []Region {
+	entries := map[regionEntry][]Region{
 		{0, 10}: {{-1, 1}, {11, 12}, {-1, 10}, {9, 15}},
 	}
 	for entry, containedRegions := range entries {
@@ -116,7 +116,7 @@ func testRegionsNotInRegion(region Region, entries []Region, testing *testing.T)
 }
 
 func TestRegion_IsEmpty_Empty(testing *testing.T) {
-	entries := []regionEntry {
+	entries := []regionEntry{
 		{0, 0},
 		{10, 10},
 	}
@@ -128,10 +128,10 @@ func TestRegion_IsEmpty_Empty(testing *testing.T) {
 }
 
 func TestRegion_IsEmpty_NonEmpty(testing *testing.T) {
-	entries := []regionEntry {
+	entries := []regionEntry{
 		{0, 1},
 		{0, 10},
-		{10,11},
+		{10, 11},
 	}
 	for _, entry := range entries {
 		if region := entry.CreateRegion(); region.IsEmpty() {
@@ -141,7 +141,7 @@ func TestRegion_IsEmpty_NonEmpty(testing *testing.T) {
 }
 
 func TestRegion_String(testing *testing.T) {
-	entries := map[regionEntry] string {
+	entries := map[regionEntry]string{
 		{0, 1}: "Locate(begin: 0, end: 1)",
 		{0, 0}: "Locate(begin: 0, end: 0)",
 	}

@@ -2,7 +2,7 @@ package lexical
 
 import (
 	"fmt"
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 type UnexpectedCharError struct {

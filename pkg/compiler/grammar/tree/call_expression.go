@@ -7,17 +7,17 @@ type CallExpression struct {
 	Target Node
 	// An array of expression nodes that are the arguments passed to
 	// the method. The arguments types are checked during type checking.
-	Arguments    []*CallArgument
-	Region input.Region
+	Arguments []*CallArgument
+	Region    input.Region
 }
 
 func (call *CallExpression) Accept(visitor Visitor) {
-	VisitCallExpression(call)
+	visitor.VisitCallExpression(call)
 }
 
 func (call *CallExpression) AcceptRecursive(visitor Visitor) {
 	call.Accept(visitor)
-	AcceptRecursive(visitor)
+	call.Target.AcceptRecursive(visitor)
 	for _, argument := range call.Arguments {
 		argument.AcceptRecursive(visitor)
 	}

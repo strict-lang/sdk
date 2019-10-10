@@ -9,15 +9,15 @@ type FieldSelectExpression struct {
 }
 
 func (expression *FieldSelectExpression) Accept(visitor Visitor) {
-	VisitFieldSelectExpression(expression)
+	visitor.VisitFieldSelectExpression(expression)
 }
 
 // AcceptRecursive lets the visitor visit the expression and its children.
 // The expressions target is accepted prior to the selection.
 func (expression *FieldSelectExpression) AcceptRecursive(visitor Visitor) {
 	expression.Accept(visitor)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	expression.Target.AcceptRecursive(visitor)
+	expression.Selection.AcceptRecursive(visitor)
 }
 
 func (expression *FieldSelectExpression) Locate() input.Region {

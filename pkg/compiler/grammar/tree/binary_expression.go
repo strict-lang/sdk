@@ -10,7 +10,7 @@ type BinaryExpression struct {
 	LeftOperand  Node
 	RightOperand Node
 	Operator     token.Operator
-	Region input.Region
+	Region       input.Region
 }
 
 func (binary *BinaryExpression) Accept(visitor Visitor) {
@@ -26,4 +26,3 @@ func (binary *BinaryExpression) AcceptRecursive(visitor Visitor) {
 func (binary *BinaryExpression) Locate() input.Region {
 	return binary.Region
 }
-

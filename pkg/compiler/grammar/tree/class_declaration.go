@@ -3,11 +3,11 @@ package tree
 import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type ClassDeclaration struct {
-	Name         string
-	Parameters   []ClassParameter
-	SuperTypes   []TypeName
-	Children     []Node
-	Region   input.Region
+	Name       string
+	Parameters []ClassParameter
+	SuperTypes []TypeName
+	Children   []Node
+	Region     input.Region
 }
 
 type ClassParameter struct {
@@ -16,13 +16,13 @@ type ClassParameter struct {
 }
 
 func (class *ClassDeclaration) Accept(visitor Visitor) {
-	VisitClassDeclaration(class)
+	visitor.VisitClassDeclaration(class)
 }
 
 func (class *ClassDeclaration) AcceptRecursive(visitor Visitor) {
 	class.Accept(visitor)
 	for _, child := range class.Children {
-		AcceptRecursive(visitor)
+		child.AcceptRecursive(visitor)
 	}
 }
 

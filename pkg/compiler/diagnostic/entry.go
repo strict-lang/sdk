@@ -1,7 +1,7 @@
 package diagnostic
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 type Entry struct {

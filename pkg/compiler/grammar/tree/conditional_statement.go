@@ -14,15 +14,15 @@ func (statement *ConditionalStatement) HasAlternative() bool {
 }
 
 func (statement *ConditionalStatement) Accept(visitor Visitor) {
-	VisitConditionalStatement(statement)
+	visitor.VisitConditionalStatement(statement)
 }
 
 func (statement *ConditionalStatement) AcceptRecursive(visitor Visitor) {
 	statement.Accept(visitor)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	statement.Condition.AcceptRecursive(visitor)
+	statement.Consequence.AcceptRecursive(visitor)
 	if statement.HasAlternative() {
-		AcceptRecursive(visitor)
+		statement.Alternative.AcceptRecursive(visitor)
 	}
 }
 

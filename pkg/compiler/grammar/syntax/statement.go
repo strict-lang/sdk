@@ -596,7 +596,7 @@ func (parsing *Parsing) parseFieldDeclarationOrListAccess() (tree.Node, error) {
 }
 
 func (parsing *Parsing) parseFieldDeclarationFromBaseTypeName(
-	beginOffset input.Offset, baseTypeName token.Token) (tree.Node, error){
+	beginOffset input.Offset, baseTypeName token.Token) (tree.Node, error) {
 
 	typeName, err := parsing.parseTypeNameFromBaseIdentifier(beginOffset, baseTypeName)
 	if err != nil {

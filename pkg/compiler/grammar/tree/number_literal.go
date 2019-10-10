@@ -3,12 +3,12 @@ package tree
 import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type NumberLiteral struct {
-	Value        string
-	Region   input.Region
+	Value  string
+	Region input.Region
 }
 
 func (literal *NumberLiteral) Accept(visitor Visitor) {
-	VisitNumberLiteral(literal)
+	visitor.VisitNumberLiteral(literal)
 }
 
 func (literal *NumberLiteral) AcceptRecursive(visitor Visitor) {

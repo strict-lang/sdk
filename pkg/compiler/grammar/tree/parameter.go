@@ -9,11 +9,11 @@ type Parameter struct {
 }
 
 func (parameter *Parameter) Accept(visitor Visitor) {
-	VisitParameter(parameter)
+	visitor.VisitParameter(parameter)
 }
 
 func (parameter *Parameter) AcceptRecursive(visitor Visitor) {
-	VisitParameter(parameter)
+	parameter.Accept(visitor)
 }
 
 func (parameter *Parameter) Locate() input.Region {

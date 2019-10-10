@@ -98,24 +98,24 @@ const (
 	HighPrecedence  = 8
 )
 
-var precedenceTable = map[Operator] Precedence {
-	MulOperator: 5,
-	DivOperator: 5,
-	ModOperator: 5,
-	ShiftLeftOperator: 5,
+var precedenceTable = map[Operator]Precedence{
+	MulOperator:        5,
+	DivOperator:        5,
+	ModOperator:        5,
+	ShiftLeftOperator:  5,
 	ShiftRightOperator: 5,
 
-	AddOperator: 4,
-	SubOperator: 4,
-	XorOperator: 4,
+	AddOperator:           4,
+	SubOperator:           4,
+	XorOperator:           4,
 	SmallerEqualsOperator: 3,
-	SmallerOperator: 3,
+	SmallerOperator:       3,
 	GreaterEqualsOperator: 3,
-	GreaterOperator: 3,
-	EqualsOperator: 3,
-	NotEqualsOperator: 3,
-	AndOperator: 2,
-	OrOperator: 1,
+	GreaterOperator:       3,
+	EqualsOperator:        3,
+	NotEqualsOperator:     3,
+	AndOperator:           2,
+	OrOperator:            1,
 }
 
 func (operator Operator) Precedence() Precedence {

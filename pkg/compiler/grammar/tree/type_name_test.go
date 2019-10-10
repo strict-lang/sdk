@@ -1,18 +1,14 @@
 package tree
 
-import "testing"
-
-var (
-	_ TypeName = &ConcreteTypeName{}
-	_ Node     = &ConcreteTypeName{}
-	_ TypeName = &GenericTypeName{}
-	_ Node     = &GenericTypeName{}
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"testing"
 )
 
 func createTestConcreteName(name string) *ConcreteTypeName {
 	return &ConcreteTypeName{
 		Name:         name,
-		NodePosition: ZeroArea{},
+		Region: input.ZeroRegion,
 	}
 }
 

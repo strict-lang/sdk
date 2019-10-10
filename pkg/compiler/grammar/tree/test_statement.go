@@ -9,12 +9,12 @@ type TestStatement struct {
 }
 
 func (test *TestStatement) Accept(visitor Visitor) {
-	VisitTestStatement(test)
+	visitor.VisitTestStatement(test)
 }
 
 func (test *TestStatement) AcceptRecursive(visitor Visitor) {
-	VisitTestStatement(test)
-	AcceptRecursive(visitor)
+	test.Accept(visitor)
+	test.Child.AcceptRecursive(visitor)
 }
 
 func (test *TestStatement) Locate() input.Region {

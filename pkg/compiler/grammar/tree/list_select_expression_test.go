@@ -17,7 +17,7 @@ func TestListSelectExpression_Accept(testing *testing.T) {
 func TestListSelectExpression_AcceptRecursive(testing *testing.T) {
 	region := &ListSelectExpression{
 		Target: &WildcardNode{Region: input.ZeroRegion},
-		Index:  &NumberLiteral{
+		Index: &NumberLiteral{
 			Value:  "10230",
 			Region: input.ZeroRegion,
 		},

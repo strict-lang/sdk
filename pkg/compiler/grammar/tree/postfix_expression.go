@@ -21,14 +21,14 @@ type PostfixExpression struct {
 
 // Accept lets the visitor visit this expression.
 func (expression *PostfixExpression) Accept(visitor Visitor) {
-	VisitPostfixExpression(expression)
+	visitor.VisitPostfixExpression(expression)
 }
 
 // AcceptRecursive lets the visitor visit the expression and calls the
 // same method on every child. Thus the complete branch is visited.
 func (expression *PostfixExpression) AcceptRecursive(visitor Visitor) {
 	expression.Accept(visitor)
-	AcceptRecursive(visitor)
+	expression.Operand.AcceptRecursive(visitor)
 }
 
 // Locate returns the area of code that is covered by the node.

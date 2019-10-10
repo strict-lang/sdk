@@ -1,7 +1,7 @@
 package lexical
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 var escapedCharacters = map[rune]rune{

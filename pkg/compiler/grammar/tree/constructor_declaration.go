@@ -9,7 +9,7 @@ type ConstructorDeclaration struct {
 }
 
 func (declaration *ConstructorDeclaration) Accept(visitor Visitor) {
-	VisitConstructorDeclaration(declaration)
+	visitor.VisitConstructorDeclaration(declaration)
 }
 
 func (declaration *ConstructorDeclaration) AcceptRecursive(visitor Visitor) {
@@ -17,7 +17,7 @@ func (declaration *ConstructorDeclaration) AcceptRecursive(visitor Visitor) {
 	for _, parameter := range declaration.Parameters {
 		parameter.AcceptRecursive(visitor)
 	}
-	AcceptRecursive(visitor)
+	declaration.Child.AcceptRecursive(visitor)
 }
 
 func (declaration *ConstructorDeclaration) Locate() input.Region {

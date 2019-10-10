@@ -7,7 +7,7 @@ import (
 
 func TestAssertStatement_Accept(testing *testing.T) {
 	region := &AssertStatement{
-		Region: input.ZeroRegion,
+		Region:     input.ZeroRegion,
 		Expression: &WildcardNode{Region: input.ZeroRegion},
 	}
 	CreateVisitorTest(region, testing).

@@ -1,8 +1,8 @@
 package code
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 const (

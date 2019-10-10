@@ -3,7 +3,7 @@ package tree
 import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type Identifier struct {
-	Value        string
+	Value  string
 	Region input.Region
 }
 
@@ -18,5 +18,3 @@ func (identifier *Identifier) AcceptRecursive(visitor Visitor) {
 func (identifier *Identifier) Locate() input.Region {
 	return identifier.Region
 }
-
-

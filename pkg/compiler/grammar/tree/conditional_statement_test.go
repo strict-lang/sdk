@@ -10,22 +10,22 @@ var _ Statement = &ConditionalStatement{}
 
 func TestConditionalStatement_Accept(testing *testing.T) {
 	entry := &ConditionalStatement{
-		Condition: &WildcardNode{},
+		Condition:   &WildcardNode{},
 		Consequence: &WildcardNode{},
-		Region: input.ZeroRegion,
+		Region:      input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).Expect(ConditionalStatementNodeKind).Run()
 }
 
 func TestConditionalStatement_AcceptRecursive_WithAlternative(testing *testing.T) {
 	entry := &ConditionalStatement{
-		Condition:    &UnaryExpression{
-			Operator:     token.NegateOperator,
-			Operand:      &WildcardNode{Region: input.ZeroRegion},
+		Condition: &UnaryExpression{
+			Operator:   token.NegateOperator,
+			Operand:    &WildcardNode{Region: input.ZeroRegion},
 			NodeRegion: input.ZeroRegion,
 		},
 		Consequence: &WildcardNode{Region: input.ZeroRegion},
-		Region:  input.ZeroRegion,
+		Region:      input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(ConditionalStatementNodeKind).
@@ -37,22 +37,22 @@ func TestConditionalStatement_AcceptRecursive_WithAlternative(testing *testing.T
 
 func TestConditionalStatement_AcceptRecursive_WithoutAlternative(testing *testing.T) {
 	entry := &ConditionalStatement{
-		Condition:   &UnaryExpression{
-			Operator:     token.NegateOperator,
-			Operand:      &WildcardNode{Region: input.ZeroRegion},
+		Condition: &UnaryExpression{
+			Operator:   token.NegateOperator,
+			Operand:    &WildcardNode{Region: input.ZeroRegion},
 			NodeRegion: input.ZeroRegion,
 		},
 		Consequence: &WildcardNode{Region: input.ZeroRegion},
 		Alternative: &WildcardNode{Region: input.ZeroRegion},
-		Region:  input.ZeroRegion,
+		Region:      input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).
-			Expect(ConditionalStatementNodeKind).
-			Expect(UnaryExpressionNodeKind).
-			Expect(WildcardNodeKind).
-			Expect(WildcardNodeKind).
-			Expect(WildcardNodeKind).
-			RunRecursive()
+		Expect(ConditionalStatementNodeKind).
+		Expect(UnaryExpressionNodeKind).
+		Expect(WildcardNodeKind).
+		Expect(WildcardNodeKind).
+		Expect(WildcardNodeKind).
+		RunRecursive()
 }
 
 func TestConditionalStatement_HasAlternative_WithAlternative(testing *testing.T) {
@@ -60,7 +60,7 @@ func TestConditionalStatement_HasAlternative_WithAlternative(testing *testing.T)
 		Condition:   &WildcardNode{Region: input.ZeroRegion},
 		Alternative: &WildcardNode{Region: input.ZeroRegion},
 		Consequence: &WildcardNode{Region: input.ZeroRegion},
-		Region:  input.ZeroRegion,
+		Region:      input.ZeroRegion,
 	}
 	if !entry.HasAlternative() {
 		testing.Error("Expected ConditionalStatement to have an alternative")
@@ -71,7 +71,7 @@ func TestConditionalStatement_HasAlternative_WithoutAlternative(testing *testing
 	entry := &ConditionalStatement{
 		Condition:   &WildcardNode{Region: input.ZeroRegion},
 		Consequence: &WildcardNode{Region: input.ZeroRegion},
-		Region:  input.ZeroRegion,
+		Region:      input.ZeroRegion,
 	}
 	if entry.HasAlternative() {
 		testing.Error("Expected ConditionalStatement not to have an alternative")

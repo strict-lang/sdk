@@ -7,16 +7,19 @@ import (
 
 func createTestTranslationUnit() *TranslationUnit {
 	return &TranslationUnit{
-		Name:       "Test",
-		Imports:    []*ImportStatement{
-			CreateImportStatement(&IdentifierChainImport{}, input.ZeroRegion),
+		Name: "Test",
+		Imports: []*ImportStatement{
+			{
+				Target: &IdentifierChainImport{},
+				Region: input.ZeroRegion,
+			},
 		},
-		Class:      &ClassDeclaration{
-			Name:         "Test",
-			Parameters:   []ClassParameter{},
-			SuperTypes:   []TypeName{},
-			Children:     []Node{&WildcardNode{Region: input.ZeroRegion}},
-			NodeRegion: input.ZeroRegion,
+		Class: &ClassDeclaration{
+			Name:       "Test",
+			Parameters: []ClassParameter{},
+			SuperTypes: []TypeName{},
+			Children:   []Node{&WildcardNode{Region: input.ZeroRegion}},
+			Region:     input.ZeroRegion,
 		},
 		NodeRegion: input.Region{},
 	}

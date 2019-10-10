@@ -14,8 +14,8 @@ func (expression *ListSelectExpression) Accept(visitor Visitor) {
 
 func (expression *ListSelectExpression) AcceptRecursive(visitor Visitor) {
 	expression.Accept(visitor)
-	AcceptRecursive(visitor)
-	AcceptRecursive(visitor)
+	expression.Target.AcceptRecursive(visitor)
+	expression.Index.AcceptRecursive(visitor)
 }
 
 func (expression *ListSelectExpression) Locate() input.Region {

@@ -11,12 +11,12 @@ var regionTestEntries = []input.Region{
 	input.CreateRegion(0, 10),
 }
 
-func RunNodeRegionTest(testing *testing.T, entryFactory func (region input.Region) Node) {
+func RunNodeRegionTest(testing *testing.T, entryFactory func(region input.Region) Node) {
 	for _, entryRegion := range regionTestEntries {
 		entry := entryFactory(entryRegion)
-		if Locate() != entryRegion {
+		if entry.Locate() != entryRegion {
 			testing.Errorf("Invalid Locate(): Expected %s - got %s",
-				entryRegion, Locate())
+				entryRegion, entry.Locate())
 		}
 	}
 }

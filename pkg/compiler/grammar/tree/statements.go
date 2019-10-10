@@ -1,10 +1,10 @@
 package tree
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 )
 
-type Statement interface{
+type Statement interface {
 	Node
 	IsModifyingControlFlow() bool
 }
@@ -44,7 +44,6 @@ func (block *BlockStatement) AcceptRecursive(visitor *Visitor) {
 func (block *BlockStatement) Area() InputRegion {
 	return block.NodePosition
 }
-
 
 // RangedLoopStatement is a control statement that. Counting from an initial
 // value to some target while incrementing a field each step. The values of a
@@ -237,5 +236,3 @@ func (statement *AssignStatement) AcceptRecursive(visitor *Visitor) {
 func (statement *AssignStatement) Area() InputRegion {
 	return statement.NodePosition
 }
-
-

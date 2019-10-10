@@ -7,7 +7,7 @@ import (
 
 func TestFieldDeclaration_Accept(testing *testing.T) {
 	entry := &FieldDeclaration{
-		Name:     &Identifier{
+		Name: &Identifier{
 			Value:  "test",
 			Region: input.ZeroRegion,
 		},
@@ -19,7 +19,7 @@ func TestFieldDeclaration_Accept(testing *testing.T) {
 
 func TestFieldDeclaration_AcceptRecursive(testing *testing.T) {
 	entry := &FieldDeclaration{
-		Name:     &Identifier{
+		Name: &Identifier{
 			Value:  "test",
 			Region: input.ZeroRegion,
 		},
@@ -35,7 +35,7 @@ func TestFieldDeclaration_AcceptRecursive(testing *testing.T) {
 func TestFieldDeclaration_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &FieldDeclaration{
-			Name:     &Identifier{
+			Name: &Identifier{
 				Value:  "test",
 				Region: input.ZeroRegion,
 			},

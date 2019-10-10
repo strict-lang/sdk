@@ -1,7 +1,7 @@
 package token
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"testing"
 )
 

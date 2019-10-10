@@ -7,7 +7,7 @@ import (
 
 func TestCallExpression_Accept(testing *testing.T) {
 	entry := &CallExpression{
-		Target:  &WildcardNode{Region: input.ZeroRegion},
+		Target:    &WildcardNode{Region: input.ZeroRegion},
 		Arguments: []*CallArgument{},
 		Region:    input.ZeroRegion,
 	}
@@ -19,7 +19,7 @@ func TestCallExpression_AcceptRecursive(testing *testing.T) {
 		Region: input.ZeroRegion,
 		Arguments: []*CallArgument{
 			{
-				Value:        &WildcardNode{Region: input.ZeroRegion},
+				Value:  &WildcardNode{Region: input.ZeroRegion},
 				Region: input.ZeroRegion,
 			},
 		},

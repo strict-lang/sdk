@@ -24,7 +24,7 @@ func TestStringLiteral_AcceptRecursive(testing *testing.T) {
 
 func TestStringLiteral_Region(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
-		return &	StringLiteral{
+		return &StringLiteral{
 			Value:      "test",
 			NodeRegion: region,
 		}

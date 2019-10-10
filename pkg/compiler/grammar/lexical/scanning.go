@@ -212,7 +212,7 @@ func (scanning *Scanning) nextNonEndOfFile() token.Token {
 			return scanning.nextNonEndOfFile()
 		}
 		fallthrough
-	case next == '\n' || next =='\r':
+	case next == '\n' || next == '\r':
 		scanning.advance()
 		return scanning.nextNonEndOfFile()
 	case next.IsAlphabetic():

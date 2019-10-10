@@ -7,8 +7,8 @@ import (
 
 // UnaryExpression is an operation on a single operand.
 type UnaryExpression struct {
-	Operator     token.Operator
-	Operand      Expression
+	Operator token.Operator
+	Operand  Expression
 	Region   input.Region
 }
 

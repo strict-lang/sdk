@@ -12,7 +12,7 @@ type TypeName interface {
 }
 
 type ConcreteTypeName struct {
-	Name         string
+	Name   string
 	Region input.Region
 }
 

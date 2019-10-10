@@ -2,16 +2,16 @@ package sourcefile
 
 import (
 	"fmt"
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/backend"
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 type Generation struct {
 	backend.Extension
 
-	className      string
-	generation     *backend.Generation
-	hasWrittenInit bool
+	className             string
+	generation            *backend.Generation
+	hasWrittenInit        bool
 	hasWrittenConstructor bool
 }
 
@@ -121,10 +121,10 @@ func (generation *Generation) generateConstructorDeclaration(declaration *tree.C
 	output.EmitParameterList(declaration.Parameters)
 	output.Emit(" ")
 	body := &tree.BlockStatement{
-		Children:     []tree.Node{
+		Children: []tree.Node{
 			generation.generateInitCall(),
 			declaration.Body,
-		}	,
+		},
 		NodePosition: tree.ZeroArea{},
 	}
 	output.EmitNode(body)
@@ -133,13 +133,13 @@ func (generation *Generation) generateConstructorDeclaration(declaration *tree.C
 func (generation *Generation) generateInitCall() tree.Node {
 	return &tree.ExpressionStatement{
 		Expression: &tree.CallExpression{
-		Target:       &tree.Identifier{
-			Value:        backend.InitMethodName,
+			Target: &tree.Identifier{
+				Value:        backend.InitMethodName,
+				NodePosition: tree.ZeroArea{},
+			},
+			Arguments:    []*tree.CallArgument{},
 			NodePosition: tree.ZeroArea{},
 		},
-		Arguments:    []*tree.CallArgument{},
-		NodePosition: tree.ZeroArea{},
-	},
 	}
 }
 

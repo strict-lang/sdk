@@ -4,8 +4,8 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type CreateExpression struct {
 	Region input.Region
-	Call  *CallExpression
-	Type         TypeName
+	Call   *CallExpression
+	Type   TypeName
 }
 
 func (create *CreateExpression) Accept(visitor Visitor) {

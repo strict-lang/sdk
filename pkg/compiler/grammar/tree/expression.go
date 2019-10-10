@@ -7,4 +7,3 @@ type Expression interface {
 type StoredExpression interface {
 	Expression
 }
-

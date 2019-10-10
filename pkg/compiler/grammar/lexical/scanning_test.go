@@ -1,7 +1,7 @@
 package lexical
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"strings"
 	"testing"
 )

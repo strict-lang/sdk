@@ -7,8 +7,8 @@ import (
 )
 
 type ImportStatement struct {
-	Target       ImportTarget
-	Alias        *Identifier
+	Target ImportTarget
+	Alias  *Identifier
 	Region input.Region
 }
 
@@ -67,7 +67,6 @@ func writePath(parts []string, builder *strings.Builder) {
 		builder.WriteString(element)
 	}
 }
-
 
 func (target *IdentifierChainImport) toModuleName() string {
 	// The module is imported into an anonymous namespace

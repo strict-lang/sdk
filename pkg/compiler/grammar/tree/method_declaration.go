@@ -13,11 +13,11 @@ type MethodDeclaration struct {
 }
 
 func (declaration *MethodDeclaration) Accept(visitor Visitor) {
-	VisitMethodDeclaration(declaration)
+	visitor.VisitMethodDeclaration(declaration)
 }
 
 func (declaration *MethodDeclaration) AcceptRecursive(visitor Visitor) {
-	VisitMethodDeclaration(declaration)
+	declaration.Accept(visitor)
 	for _, parameter := range declaration.Parameters {
 		parameter.AcceptRecursive(visitor)
 	}

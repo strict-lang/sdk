@@ -2,7 +2,7 @@ package backend
 
 import (
 	"fmt"
-	 "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"strings"
 )
 
@@ -17,7 +17,7 @@ type Generation struct {
 	appendNewLineAfterStatement   bool
 	importModules                 map[string]string
 	shouldInsertNamespaceSelector bool
-	shouldImportStdlibClasses    bool
+	shouldImportStdlibClasses     bool
 }
 
 type FileNaming interface {
@@ -39,7 +39,7 @@ func NewGeneration(unit *tree.TranslationUnit) (generation *Generation) {
 		importModules:                 map[string]string{},
 		appendNewLineAfterStatement:   true,
 		shouldInsertNamespaceSelector: true,
-		shouldImportStdlibClasses: true,
+		shouldImportStdlibClasses:     true,
 	}
 	generation.buffer = generation.output
 	generation.visitor = CreateGenericCppVisitor(generation)

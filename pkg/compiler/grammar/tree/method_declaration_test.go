@@ -18,7 +18,7 @@ func TestMethodDeclaration_Accept(testing *testing.T) {
 
 func TestMethodDeclaration_AcceptRecursive(testing *testing.T) {
 	entry := &MethodDeclaration{
-		Name:       &Identifier{
+		Name: &Identifier{
 			Value:  "Test",
 			Region: input.ZeroRegion,
 		},
@@ -26,15 +26,15 @@ func TestMethodDeclaration_AcceptRecursive(testing *testing.T) {
 		Parameters: ParameterList{
 			&Parameter{
 				Type: createTestConcreteName("int"),
-				Name:   &Identifier{
+				Name: &Identifier{
 					Value:  "count",
 					Region: input.ZeroRegion,
 				},
 				Region: input.ZeroRegion,
 			},
 		},
-		Body:       &WildcardNode{Region: input.ZeroRegion},
-		Region:     input.ZeroRegion,
+		Body:   &WildcardNode{Region: input.ZeroRegion},
+		Region: input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(MethodDeclarationNodeKind).

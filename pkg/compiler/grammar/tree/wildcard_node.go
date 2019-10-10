@@ -11,11 +11,11 @@ type WildcardNode struct {
 	Region input.Region
 }
 
-func (node* WildcardNode) Accept(visitor Visitor) {
-	VisitWildcardNode(node)
+func (node *WildcardNode) Accept(visitor Visitor) {
+	visitor.VisitWildcardNode(node)
 }
 
-func (node* WildcardNode) AcceptRecursive(visitor Visitor) {
+func (node *WildcardNode) AcceptRecursive(visitor Visitor) {
 	node.Accept(visitor)
 }
 

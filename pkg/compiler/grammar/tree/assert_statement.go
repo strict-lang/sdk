@@ -8,7 +8,7 @@ type AssertStatement struct {
 }
 
 func (assert *AssertStatement) Accept(visitor Visitor) {
-	VisitAssertStatement(assert)
+	visitor.VisitAssertStatement(assert)
 }
 
 func (assert *AssertStatement) AcceptRecursive(visitor Visitor) {
@@ -19,5 +19,3 @@ func (assert *AssertStatement) AcceptRecursive(visitor Visitor) {
 func (assert *AssertStatement) Locate() input.Region {
 	return assert.Region
 }
-
-

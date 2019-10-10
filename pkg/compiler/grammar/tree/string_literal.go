@@ -15,7 +15,7 @@ type StringLiteral struct {
 }
 
 func (literal *StringLiteral) Accept(visitor Visitor) {
-	VisitStringLiteral(literal)
+	visitor.VisitStringLiteral(literal)
 }
 
 func (literal *StringLiteral) AcceptRecursive(visitor Visitor) {
@@ -38,7 +38,7 @@ func (literal *StringLiteral) ToNumberLiteral() (*NumberLiteral, error) {
 		return nil, err
 	}
 	return &NumberLiteral{
-		Value: literal.Value,
-		NodeRegion: literal.NodeRegion,
+		Value:      literal.Value,
+		Region: literal.NodeRegion,
 	}, nil
 }
