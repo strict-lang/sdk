@@ -35,7 +35,7 @@ func (parsing *Parsing) parseIdentifier() (*tree.Identifier, error) {
 	parsing.advance()
 	return &tree.Identifier{
 		Value:        value,
-		NodePosition: parsing.createTokenPosition(),
+		Region: parsing.createRegionFromToken(),
 	}, nil
 }
 
@@ -44,7 +44,7 @@ func (parsing *Parsing) parseStringLiteral() (*tree.StringLiteral, error) {
 	parsing.advance()
 	return &tree.StringLiteral{
 		Value:        value,
-		NodePosition: parsing.createTokenPosition(),
+		Region: parsing.createRegionFromToken(),
 	}, nil
 }
 
@@ -53,7 +53,7 @@ func (parsing *Parsing) parseNumberLiteral() (*tree.NumberLiteral, error) {
 	parsing.advance()
 	return &tree.NumberLiteral{
 		Value:        value,
-		NodePosition: parsing.createTokenPosition(),
+		Region: parsing.createRegionFromToken(),
 	}, nil
 }
 
@@ -145,7 +145,7 @@ func (parsing *Parsing) parseListSelectExpression(target tree.Node) (tree.Node, 
 	return &tree.ListSelectExpression{
 		Index:        index,
 		Target:       target,
-		NodePosition: parsing.createPosition(beginOffset),
+		Region: parsing.createRegion(beginOffset),
 	}, nil
 }
 
@@ -161,7 +161,7 @@ func (parsing *Parsing) parseSelectExpression(target tree.Node) (tree.Node, erro
 	return &tree.FieldSelectExpression{
 		Target:       target,
 		Selection:    field,
-		NodePosition: parsing.createPosition(beginOffset),
+		Region: parsing.createRegion(beginOffset),
 	}, nil
 }
 
@@ -191,7 +191,7 @@ func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token.Precedenc
 			Operator:     token.OperatorValue(operator),
 			LeftOperand:  leftHandSide,
 			RightOperand: rightHandSide,
-			NodePosition: parsing.createPosition(beginOffset),
+			Region: parsing.createRegion(beginOffset),
 		}
 	}
 }
@@ -215,8 +215,8 @@ func (parsing *Parsing) parseCreateExpression() (tree.Node, error) {
 		return parsing.createInvalidStatement(beginOffset, err), err
 	}
 	return &tree.CreateExpression{
-		NodePosition: parsing.createPosition(beginOffset),
-		Constructor:  constructor,
+		Region: parsing.createRegion(beginOffset),
+		Call:  constructor,
 		Type:         typeName,
 	}, nil
 }
@@ -246,7 +246,7 @@ func (parsing *Parsing) parseUnaryExpression() (tree.Node, error) {
 	return &tree.UnaryExpression{
 		Operator:     operator,
 		Operand:      operand,
-		NodePosition: parsing.createPosition(beginOffset),
+		Region: parsing.createRegion(beginOffset),
 	}, nil
 }
 
@@ -263,7 +263,7 @@ func (parsing *Parsing) parseCallOnNode(method tree.Node) (*tree.CallExpression,
 	return &tree.CallExpression{
 		Arguments:    arguments,
 		Target:       method,
-		NodePosition: parsing.createPosition(beginOffset),
+		Region: parsing.createRegion(beginOffset),
 	}, nil
 }
 
@@ -281,7 +281,7 @@ func (parsing *Parsing) parseCallArgument() (*tree.CallArgument, error) {
 		return nil, err
 	}
 	argument.Value = value
-	argument.NodePosition = parsing.createPosition(beginOffset)
+	argument.Region = parsing.createRegion(beginOffset)
 	return &argument, nil
 }
 

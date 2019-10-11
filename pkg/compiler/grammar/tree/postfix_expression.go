@@ -16,7 +16,7 @@ type PostfixExpression struct {
 	// Operator is the type of operation that is applied to the operand.
 	Operator token.Operator
 	// InputRegion is the area of code covered by the node.
-	NodePosition input.Region
+	Region input.Region
 }
 
 // Accept lets the visitor visit this expression.
@@ -33,5 +33,5 @@ func (expression *PostfixExpression) AcceptRecursive(visitor Visitor) {
 
 // Locate returns the area of code that is covered by the node.
 func (expression *PostfixExpression) Locate() input.Region {
-	return expression.NodePosition
+	return expression.Region
 }

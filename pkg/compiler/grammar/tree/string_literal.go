@@ -11,7 +11,7 @@ type StringLiteral struct {
 	Value string
 	// Region is the region of the input that contain the literal.
 	// It contains the leading and trailing characters.
-	NodeRegion input.Region
+	Region input.Region
 }
 
 func (literal *StringLiteral) Accept(visitor Visitor) {
@@ -23,7 +23,7 @@ func (literal *StringLiteral) AcceptRecursive(visitor Visitor) {
 }
 
 func (literal *StringLiteral) Locate() input.Region {
-	return literal.NodeRegion
+	return literal.Region
 }
 
 func (literal *StringLiteral) ToStringLiteral() (*StringLiteral, error) {

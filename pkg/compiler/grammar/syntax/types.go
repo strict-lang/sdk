@@ -42,7 +42,7 @@ func (parsing *Parsing) parseTypeNameFromBaseIdentifier(
 	}
 	concrete := &tree.ConcreteTypeName{
 		Name:         typeName.Value(),
-		NodePosition: parsing.createPosition(beginOffset),
+		Region: parsing.createRegion(beginOffset),
 	}
 	if operator == token.LeftBracketOperator {
 		return parsing.parseListTypeName(beginOffset, concrete)
@@ -71,7 +71,7 @@ func (parsing *Parsing) parseGenericTypeName(
 	return &tree.GenericTypeName{
 		Name:         base,
 		Generic:      generic,
-		NodePosition: parsing.createPosition(beginOffset),
+		Region: parsing.createRegion(beginOffset),
 	}, nil
 }
 
@@ -89,7 +89,7 @@ func (parsing *Parsing) parseListTypeName(
 	}
 	typeName := &tree.ListTypeName{
 		ElementTypeName: base,
-		NodePosition:    parsing.createPosition(beginOffset),
+		Region:    parsing.createRegion(beginOffset),
 	}
 	if token.HasOperatorValue(parsing.token(), token.LeftBracketOperator) {
 		return parsing.parseListTypeName(beginOffset, typeName)

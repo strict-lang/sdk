@@ -59,7 +59,7 @@ func (parsing *Parsing) parseClassDeclaration() *tree.ClassDeclaration {
 		Parameters:   []tree.ClassParameter{},
 		SuperTypes:   []tree.TypeName{},
 		Children:     nodes,
-		NodePosition: parsing.createPosition(begin),
+		Region: parsing.createRegion(begin),
 	}
 }
 
@@ -73,7 +73,7 @@ func (parsing *Parsing) ParseTranslationUnit() (*tree.TranslationUnit, error) {
 		Name:         parsing.unitName,
 		Imports:      imports,
 		Class:        class,
-		NodePosition: parsing.createPosition(begin),
+		Region: parsing.createRegion(begin),
 	}, nil
 }
 
@@ -126,5 +126,11 @@ func (parsing *Parsing) parseTopLevelNodes() []tree.Node {
 	if err != nil {
 		return []tree.Node{parsing.createInvalidStatement(beginOffset, err)}
 	}
-	return block.Children
+	return convertStatementSliceToNodeSlice(block.Children)
+}
+
+func convertStatementSliceToNodeSlice(statements []tree.Statement) (nodes []tree.Node) {
+	for _, statement := range statements {
+		nodes = append(nodes, statement)
+	}
 }

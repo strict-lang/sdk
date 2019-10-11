@@ -9,7 +9,7 @@ type TranslationUnit struct {
 	Name       string
 	Imports    []*ImportStatement
 	Class      *ClassDeclaration
-	NodeRegion input.Region
+	Region input.Region
 }
 
 func (unit *TranslationUnit) Accept(visitor Visitor) {
@@ -27,10 +27,10 @@ func (unit *TranslationUnit) AcceptRecursive(visitor Visitor) {
 func (unit *TranslationUnit) ToTypeName() TypeName {
 	return &ConcreteTypeName{
 		Name:   unit.Name,
-		Region: unit.NodeRegion,
+		Region: unit.Region,
 	}
 }
 
 func (unit *TranslationUnit) Locate() input.Region {
-	return unit.NodeRegion
+	return unit.Region
 }

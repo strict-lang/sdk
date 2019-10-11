@@ -63,7 +63,7 @@ func (parsing *Parsing) expectAnyIdentifier() (*tree.Identifier, error) {
 	}
 	return &tree.Identifier{
 		Value:        current.Value(),
-		NodePosition: parsing.createTokenPosition(),
+		Region: parsing.createRegionFromToken(),
 	}, nil
 }
 
@@ -75,10 +75,10 @@ func (parsing *Parsing) isLookingAtOperator(operator token.Operator) bool {
 	return token.HasOperatorValue(parsing.peek(), operator)
 }
 
-func (parsing *Parsing) createInvalidStatement(beginOffset input.Offset, err error) tree.Node {
-	parsing.reportError(err, parsing.createPosition(beginOffset))
+func (parsing *Parsing) createInvalidStatement(beginOffset input.Offset, err error) tree.Statement {
+	parsing.reportError(err, parsing.createRegion(beginOffset))
 	return &tree.InvalidStatement{
-		NodePosition: parsing.createPosition(beginOffset),
+		Region: parsing.createRegion(beginOffset),
 	}
 }
 
@@ -91,7 +91,7 @@ func (parsing *Parsing) skipEndOfStatement() {
 
 // reportError reports an error to the diagnostics bag, starting at the
 // passed position and ending at the parsers current position.
-func (parsing *Parsing) reportError(err error, position tree.InputRegion) {
+func (parsing *Parsing) reportError(err error, position input.Region) {
 	parsing.recorder.Record(diagnostic.RecordedEntry{
 		Kind:     &diagnostic.Error,
 		Stage:    &diagnostic.SyntacticalAnalysis,
@@ -100,25 +100,12 @@ func (parsing *Parsing) reportError(err error, position tree.InputRegion) {
 	})
 }
 
-func (parsing *Parsing) createTokenPosition() tree.InputRegion {
-	return parsing.token().Position()
+func (parsing *Parsing) createRegionFromToken() input.Region  {
+	tokenPosition := parsing.token().Position()
+	return input.CreateRegion(tokenPosition.Begin(), tokenPosition.End())
 }
 
-func (parsing *Parsing) createPosition(beginOffset input.Offset) tree.InputRegion {
-	return &offsetPosition{begin: beginOffset, end: parsing.offset()}
+func (parsing *Parsing) createRegion(beginOffset input.Offset) input.Region {
+	return input.CreateRegion(beginOffset, parsing.offset())
 }
 
-type offsetPosition struct {
-	begin input.Offset
-	end   input.Offset
-}
-
-// Begin returns the offset to the position begin.
-func (position offsetPosition) Begin() input.Offset {
-	return position.begin
-}
-
-// End returns the offset to the positions end.
-func (position offsetPosition) End() input.Offset {
-	return position.end
-}

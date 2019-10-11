@@ -30,7 +30,7 @@ func (parsing *Parsing) parseMethodDeclaration() (*tree.MethodDeclaration, error
 		Name:         declaration.methodName,
 		Body:         body,
 		Parameters:   declaration.parameters,
-		NodePosition: parsing.createPosition(beginOffset),
+		Region: parsing.createRegion(beginOffset),
 	}, nil
 }
 
@@ -69,7 +69,7 @@ func (parsing *Parsing) parseOptionalReturnTypeName() (tree.TypeName, error) {
 	if parsing.isLookingAtOperator(token.LeftParenOperator) {
 		return &tree.ConcreteTypeName{
 			Name:         "void",
-			NodePosition: parsing.createPosition(parsing.offset()),
+			Region: parsing.createRegion(parsing.offset()),
 		}, nil
 	}
 	return parsing.parseTypeName()
@@ -83,7 +83,7 @@ func (parsing *Parsing) parseAssignedMethodExpression() (tree.Node, error) {
 	statement := parsing.parseStatement()
 	if expression, isExpression := statement.(*tree.ExpressionStatement); isExpression {
 		return &tree.ReturnStatement{
-			NodePosition: parsing.createPosition(beginPosition),
+			Region: parsing.createRegion(beginPosition),
 			Value:        expression,
 		}, nil
 	}
@@ -131,10 +131,10 @@ func (parsing *Parsing) parseParameter() (*tree.Parameter, error) {
 		return &tree.Parameter{
 			Name: &tree.Identifier{
 				Value:        next.Value(),
-				NodePosition: parsing.createPosition(idNameBegin),
+				Region: parsing.createRegion(idNameBegin),
 			},
 			Type:         typeName,
-			NodePosition: parsing.createPosition(beginOffset),
+			Region: parsing.createRegion(beginOffset),
 		}, nil
 	}
 	return parsing.createTypeNamedParameter(beginOffset, typeName), nil
@@ -146,6 +146,6 @@ func (parsing *Parsing) createTypeNamedParameter(beginOffset input.Offset, typeN
 		Name: &tree.Identifier{
 			Value: typeName.NonGenericName(),
 		},
-		NodePosition: parsing.createPosition(beginOffset),
+		Region: parsing.createRegion(beginOffset),
 	}
 }

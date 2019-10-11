@@ -8,9 +8,9 @@ import (
 
 func createTestPostfixExpression() *PostfixExpression {
 	return &PostfixExpression{
-		Operand:      &WildcardNode{Region: input.ZeroRegion},
-		Operator:     token.IncrementOperator,
-		NodePosition: input.ZeroRegion,
+		Operand:  &WildcardNode{Region: input.ZeroRegion},
+		Operator: token.IncrementOperator,
+		Region:   input.ZeroRegion,
 	}
 }
 
@@ -30,9 +30,9 @@ func TestPostfixExpression_AcceptRecursive(testing *testing.T) {
 func TestPostfixExpression_Region(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &PostfixExpression{
-			Operand:      &WildcardNode{Region: region},
-			Operator:     token.IncrementOperator,
-			NodePosition: region,
+			Operand:  &WildcardNode{Region: region},
+			Operator: token.IncrementOperator,
+			Region:   region,
 		}
 	})
 }
