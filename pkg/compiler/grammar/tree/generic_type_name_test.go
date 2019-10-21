@@ -6,8 +6,8 @@ import (
 )
 
 func TestGenericTypeName_Accept(testing *testing.T) {
-  entry := &GenericTypeName{}
-  CreateVisitorTest(entry, testing).Expect(GenericTypeNameNodeKind).Run()
+	entry := &GenericTypeName{}
+	CreateVisitorTest(entry, testing).Expect(GenericTypeNameNodeKind).Run()
 }
 
 func TestGenericTypeName_AcceptRecursive(testing *testing.T) {

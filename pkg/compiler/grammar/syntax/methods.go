@@ -3,149 +3,115 @@ package syntax
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
-func (parsing *Parsing) parseMethodDeclaration() (*tree.MethodDeclaration, error) {
+func (parsing *Parsing) parseMethodDeclaration() *tree.MethodDeclaration {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token.MethodKeyword); err != nil {
-		return nil, err
-	}
-	declaration, err := parsing.parseMethodSignature()
-	if err != nil {
-		return nil, err
-	}
-	var body tree.Node
-	if token.OperatorValue(parsing.token()) == token.ArrowOperator {
-		body, err = parsing.parseAssignedMethodExpression()
-	} else {
-		parsing.skipEndOfStatement()
-		body, err = parsing.parseMethodBody(declaration.methodName.Value)
-	}
-	if err != nil {
-		return nil, err
-	}
+	parsing.skipKeyword(token.MethodKeyword)
+	signature := parsing.parseMethodSignature()
+	parsing.currentMethodName = signature.name.Value
 	return &tree.MethodDeclaration{
-		Type:         declaration.returnTypeName,
-		Name:         declaration.methodName,
-		Body:         body,
-		Parameters:   declaration.parameters,
-		Region: parsing.createRegion(beginOffset),
-	}, nil
+		Type:       signature.returnTypeName,
+		Name:       signature.name,
+		Parameters: signature.parameters,
+		Body:       parsing.parseMethodBody(),
+		Region:     parsing.createRegion(beginOffset),
+	}
 }
 
-type methodDeclaration struct {
-	returnTypeName tree.TypeName
-	methodName     *tree.Identifier
+type methodSignature struct {
+	name           *tree.Identifier
 	parameters     tree.ParameterList
+	returnTypeName tree.TypeName
 }
 
-func (parsing *Parsing) parseMethodBody(methodName string) (node tree.Node, err error) {
-	parsing.currentMethodName = methodName
-	node, err = parsing.parseStatementBlock()
-	parsing.currentMethodName = notParsingMethod
-	return
+func (parsing *Parsing) parseMethodBody() tree.Node {
+	if token.OperatorValue(parsing.token()) == token.ArrowOperator {
+		return parsing.parseAssignedMethodBody()
+	}
+	parsing.skipEndOfStatement()
+	return parsing.parseMethodBody()
 }
 
-func (parsing *Parsing) parseMethodSignature() (declaration methodDeclaration,
-	err error) {
-	declaration.returnTypeName, err = parsing.parseOptionalReturnTypeName()
-	if err != nil {
-		return methodDeclaration{}, err
-	}
-	declaration.methodName, err = parsing.expectAnyIdentifier()
-	if err != nil {
-		return methodDeclaration{}, err
-	}
-	parsing.advance()
-	declaration.parameters, err = parsing.parseParameterList()
-	if err != nil {
-		return methodDeclaration{}, err
-	}
-	return
+func (parsing *Parsing) parseMethodBlockBody() tree.Node {
+	return parsing.parseStatementBlock()
 }
 
-func (parsing *Parsing) parseOptionalReturnTypeName() (tree.TypeName, error) {
+func (parsing *Parsing) parseMethodSignature() methodSignature {
+	return methodSignature{
+		returnTypeName: parsing.parseOptionalReturnTypeName(),
+		name:           parsing.expectAnyIdentifier(),
+		parameters:     parsing.parseParameterListWithParens(),
+	}
+}
+
+func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
 	if parsing.isLookingAtOperator(token.LeftParenOperator) {
 		return &tree.ConcreteTypeName{
-			Name:         "void",
+			Name:   "void",
 			Region: parsing.createRegion(parsing.offset()),
-		}, nil
+		}
 	}
 	return parsing.parseTypeName()
 }
 
-func (parsing *Parsing) parseAssignedMethodExpression() (tree.Node, error) {
-	if err := parsing.skipOperator(token.ArrowOperator); err != nil {
-		return nil, err
-	}
-	beginPosition := parsing.offset()
+func (parsing *Parsing) parseAssignedMethodBody() tree.Node {
+	parsing.skipOperator(token.ArrowOperator)
 	statement := parsing.parseStatement()
-	if expression, isExpression := statement.(*tree.ExpressionStatement); isExpression {
+	return replaceNodeWithReturnIfExpression(statement)
+}
+
+func replaceNodeWithReturnIfExpression(node tree.Node) tree.Node {
+	if expression, isExpression := node.(*tree.ExpressionStatement); isExpression {
 		return &tree.ReturnStatement{
-			Region: parsing.createRegion(beginPosition),
-			Value:        expression,
-		}, nil
+			Region: node.Locate(),
+			Value:  expression,
+		}
 	}
-	return statement, nil
+	return node
 }
 
-func (parsing *Parsing) parseParameterList() (parameters tree.ParameterList, err error) {
-	if err := parsing.skipOperator(token.LeftParenOperator); err != nil {
-		return nil, err
-	}
-	for {
-		if token.OperatorValue(parsing.token()) == token.RightParenOperator {
-			parsing.advance()
-			break
-		}
-		parameter, err := parsing.parseParameter()
-		if err != nil {
-			return parameters, err
-		}
-		parameters = append(parameters, parameter)
-		switch next := parsing.token(); {
-		case token.OperatorValue(next) == token.CommaOperator:
-			parsing.advance()
-			continue
-		case token.OperatorValue(next) != token.RightParenOperator:
-			parsing.advance()
-			return parameters, &UnexpectedTokenError{
-				Token:    next,
-				Expected: "end of method parameter list",
-			}
-		}
-	}
-	return parameters, nil
+func (parsing *Parsing) parseParameterListWithParens() tree.ParameterList {
+	parsing.skipOperator(token.LeftParenOperator)
+	defer parsing.skipOperator(token.RightParenOperator)
+	return parsing.parseParameterList()
 }
 
-func (parsing *Parsing) parseParameter() (*tree.Parameter, error) {
+func (parsing *Parsing) parseParameterList() (parameters tree.ParameterList) {
+	for !parsing.isAtEndOfParameterList() {
+		parameters = append(parameters, parsing.parseParameter())
+		parsing.consumeTokenAfterParameter()
+	}
+	return parameters
+}
+
+func (parsing *Parsing) consumeTokenAfterParameter() {
+	next := parsing.pullToken()
+	if token.HasOperatorValue(next, token.CommaOperator) {
+		return
+	}
+	parsing.expectEndOfParameterList()
+}
+
+func (parsing *Parsing) expectEndOfParameterList() {
+	if !parsing.isAtEndOfParameterList() {
+		parsing.throwError(&UnexpectedTokenError{
+			Token:    parsing.token(),
+			Expected: "end of method parameter list",
+		})
+	}
+}
+
+func (parsing *Parsing) isAtEndOfParameterList() bool {
+	operator := token.OperatorValue(parsing.token())
+	return operator != token.RightParenOperator
+}
+
+func (parsing *Parsing) parseParameter() *tree.Parameter {
 	beginOffset := parsing.offset()
-	typeName, err := parsing.parseTypeName()
-	if err != nil {
-		return nil, err
-	}
-	if next := parsing.token(); token.IsIdentifierToken(next) {
-		idNameBegin := parsing.offset()
-		parsing.advance()
-		return &tree.Parameter{
-			Name: &tree.Identifier{
-				Value:        next.Value(),
-				Region: parsing.createRegion(idNameBegin),
-			},
-			Type:         typeName,
-			Region: parsing.createRegion(beginOffset),
-		}, nil
-	}
-	return parsing.createTypeNamedParameter(beginOffset, typeName), nil
-}
-
-func (parsing *Parsing) createTypeNamedParameter(beginOffset input.Offset, typeName tree.TypeName) *tree.Parameter {
 	return &tree.Parameter{
-		Type: typeName,
-		Name: &tree.Identifier{
-			Value: typeName.NonGenericName(),
-		},
+		Type:   parsing.parseTypeName(),
+		Name:   parsing.parseIdentifier(),
 		Region: parsing.createRegion(beginOffset),
 	}
 }

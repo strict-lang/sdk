@@ -38,7 +38,7 @@ func (literal *StringLiteral) ToNumberLiteral() (*NumberLiteral, error) {
 		return nil, err
 	}
 	return &NumberLiteral{
-		Value:      literal.Value,
+		Value:  literal.Value,
 		Region: literal.NodeRegion,
 	}, nil
 }

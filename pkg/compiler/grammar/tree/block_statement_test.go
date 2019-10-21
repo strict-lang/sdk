@@ -12,7 +12,7 @@ func TestBlockStatement_Accept(testing *testing.T) {
 
 func TestBlockStatement_AcceptRecursive(testing *testing.T) {
 	entry := &BlockStatement{
-		Region: input.ZeroRegion,
+		Region:   input.ZeroRegion,
 		Children: []Statement{&WildcardNode{}},
 	}
 	CreateVisitorTest(entry, testing).

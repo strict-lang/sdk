@@ -9,9 +9,9 @@ import (
 //  types like maps and tuples.
 
 type GenericTypeName struct {
-	Name string
-	Generic      TypeName
-	Region input.Region
+	Name    string
+	Generic TypeName
+	Region  input.Region
 }
 
 func (name *GenericTypeName) FullName() string {
@@ -34,4 +34,3 @@ func (name *GenericTypeName) AcceptRecursive(visitor Visitor) {
 func (name *GenericTypeName) Locate() input.Region {
 	return name.Region
 }
-

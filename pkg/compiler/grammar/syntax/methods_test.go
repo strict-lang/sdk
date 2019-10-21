@@ -47,11 +47,7 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 
 	for entry, expected := range entries {
 		parser := NewTestParser(lexical.NewStringScanning(entry))
-		method, err := parser.parseMethodDeclaration()
-		if err != nil {
-			test.Errorf("unexpected error: %s", err)
-			continue
-		}
+		method := parser.parseMethodDeclaration()
 		if !compareMethods(*method, expected) {
 			test.Errorf("unexpected node value %s, expected %s", *method, expected)
 		}

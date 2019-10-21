@@ -3,8 +3,8 @@ package tree
 import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type BlockStatement struct {
-	Children     []Statement
-	Region input.Region
+	Children []Statement
+	Region   input.Region
 }
 
 func (block *BlockStatement) Accept(visitor Visitor) {

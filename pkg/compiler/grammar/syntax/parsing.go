@@ -1,6 +1,8 @@
 package syntax
 
 import (
+	"errors"
+	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/code"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
@@ -55,11 +57,11 @@ func (parsing *Parsing) parseClassDeclaration() *tree.ClassDeclaration {
 	begin := parsing.offset()
 	nodes := parsing.parseTopLevelNodes()
 	return &tree.ClassDeclaration{
-		Name:         parsing.unitName,
-		Parameters:   []tree.ClassParameter{},
-		SuperTypes:   []tree.TypeName{},
-		Children:     nodes,
-		Region: parsing.createRegion(begin),
+		Name:       parsing.unitName,
+		Parameters: []tree.ClassParameter{},
+		SuperTypes: []tree.TypeName{},
+		Children:   nodes,
+		Region:     parsing.createRegion(begin),
 	}
 }
 
@@ -70,10 +72,10 @@ func (parsing *Parsing) ParseTranslationUnit() (*tree.TranslationUnit, error) {
 	imports, _ := parsing.parseImportStatementList()
 	class := parsing.parseClassDeclaration()
 	return &tree.TranslationUnit{
-		Name:         parsing.unitName,
-		Imports:      imports,
-		Class:        class,
-		Region: parsing.createRegion(begin),
+		Name:    parsing.unitName,
+		Imports: imports,
+		Class:   class,
+		Region:  parsing.createRegion(begin),
 	}, nil
 }
 
@@ -99,6 +101,12 @@ func (parsing *Parsing) token() token.Token {
 	return parsing.tokenReader.Last()
 }
 
+func (parsing *Parsing) pullToken() token.Token {
+	token := parsing.tokenReader.Last()
+	parsing.tokenReader.Pull()
+	return token
+}
+
 func (parsing *Parsing) advance() {
 	parsing.tokenReader.Pull()
 	parsing.isAtBeginOfStatement = false
@@ -120,17 +128,28 @@ func (parsing *Parsing) isParsingMethod() bool {
 	return parsing.currentMethodName != notParsingMethod
 }
 
-func (parsing *Parsing) parseTopLevelNodes() []tree.Node {
+func (parsing *Parsing) parseTopLevelNodes() (nodes []tree.Node) {
 	beginOffset := parsing.offset()
-	block, err := parsing.parseStatementBlock()
-	if err != nil {
-		return []tree.Node{parsing.createInvalidStatement(beginOffset, err)}
-	}
+	block := parsing.parseStatementBlock()
+	go func() {
+		err := recoverError()
+		invalid := parsing.createInvalidStatement(beginOffset, err)
+		nodes = []tree.Node{invalid}
+	}()
 	return convertStatementSliceToNodeSlice(block.Children)
+}
+
+func recoverError() error {
+	thrown := recover()
+	if err, isError := thrown.(error); isError {
+		return err
+	}
+	return fmt.Errorf("%s", thrown)
 }
 
 func convertStatementSliceToNodeSlice(statements []tree.Statement) (nodes []tree.Node) {
 	for _, statement := range statements {
 		nodes = append(nodes, statement)
 	}
+	return nodes
 }

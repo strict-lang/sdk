@@ -8,7 +8,7 @@ import (
 func TestRangedLoopStatement_Accept(testing *testing.T) {
 	entry := &RangedLoopStatement{
 		Region: input.ZeroRegion,
-		Field:   &Identifier{Value: "test"},
+		Field:  &Identifier{Value: "test"},
 		Begin:  &WildcardNode{Region: input.ZeroRegion},
 		End:    &WildcardNode{Region: input.ZeroRegion},
 		Body:   &WildcardNode{Region: input.ZeroRegion},
@@ -19,7 +19,7 @@ func TestRangedLoopStatement_Accept(testing *testing.T) {
 func TestRangedLoopStatement_AcceptRecursive(testing *testing.T) {
 	entry := &RangedLoopStatement{
 		Region: input.ZeroRegion,
-		Field:   &Identifier{Value: "test"},
+		Field:  &Identifier{Value: "test"},
 		Begin:  &StringLiteral{Value: "begin"},
 		End:    &NumberLiteral{Value: "100"},
 		Body:   &WildcardNode{Region: input.ZeroRegion},

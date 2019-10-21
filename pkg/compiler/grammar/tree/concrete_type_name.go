@@ -26,4 +26,3 @@ func (concrete *ConcreteTypeName) AcceptRecursive(visitor Visitor) {
 func (concrete *ConcreteTypeName) Locate() input.Region {
 	return concrete.Region
 }
-

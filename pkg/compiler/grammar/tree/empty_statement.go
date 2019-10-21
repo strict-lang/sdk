@@ -18,4 +18,3 @@ func (statement *EmptyStatement) AcceptRecursive(visitor Visitor) {
 func (statement *EmptyStatement) Locate() input.Region {
 	return statement.Region
 }
-

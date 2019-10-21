@@ -7,10 +7,10 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 // ranged loop are numeral.
 type RangedLoopStatement struct {
 	Region input.Region
-	Field   *Identifier
-	Begin Expression
-	End     Expression
-	Body         Statement
+	Field  *Identifier
+	Begin  Expression
+	End    Expression
+	Body   Statement
 }
 
 func (loop *RangedLoopStatement) Accept(visitor Visitor) {
@@ -28,4 +28,3 @@ func (loop *RangedLoopStatement) AcceptRecursive(visitor Visitor) {
 func (loop *RangedLoopStatement) Locate() input.Region {
 	return loop.Region
 }
-

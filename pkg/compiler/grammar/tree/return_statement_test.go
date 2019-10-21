@@ -15,7 +15,7 @@ func TestReturnStatement_Accept(testing *testing.T) {
 func TestReturnStatement_AcceptRecursive_ReturningValue(testing *testing.T) {
 	entry := &ReturnStatement{
 		Region: input.ZeroRegion,
-		Value: &WildcardNode{},
+		Value:  &WildcardNode{},
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(ReturnStatementNodeKind).
@@ -24,10 +24,10 @@ func TestReturnStatement_AcceptRecursive_ReturningValue(testing *testing.T) {
 }
 
 func TestReturnStatement_AcceptRecursive_NoValue(testing *testing.T) {
-		entry := &ReturnStatement{}
-		CreateVisitorTest(entry, testing).
-			Expect(ReturnStatementNodeKind).
-			RunRecursive()
+	entry := &ReturnStatement{}
+	CreateVisitorTest(entry, testing).
+		Expect(ReturnStatementNodeKind).
+		RunRecursive()
 }
 
 func TestReturnStatement_Locate(testing *testing.T) {

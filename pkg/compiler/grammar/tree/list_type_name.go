@@ -7,7 +7,7 @@ import (
 
 type ListTypeName struct {
 	Element TypeName
-	Region input.Region
+	Region  input.Region
 }
 
 func (name *ListTypeName) FullName() string {

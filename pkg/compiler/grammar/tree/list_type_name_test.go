@@ -22,9 +22,9 @@ func TestListTypeName_AcceptRecursive(testing *testing.T) {
 }
 
 func TestListTypeName_Locate(testing *testing.T) {
- RunNodeRegionTest(testing, func(region input.Region) Node {
+	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &ListTypeName{Region: region}
- })
+	})
 }
 
 func TestListTypeName_FullName(testing *testing.T) {

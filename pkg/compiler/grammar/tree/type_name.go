@@ -5,6 +5,3 @@ type TypeName interface {
 	FullName() string
 	NonGenericName() string
 }
-
-
-

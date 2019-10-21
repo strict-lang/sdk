@@ -6,10 +6,10 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 // requiring explicit indexing. As opposed to the ranged loop, the element
 // iterated may be of any type that implements the 'Sequence' interface.
 type ForEachLoopStatement struct {
-	Region input.Region
-	Body         Statement
-	Sequence     Expression
-	Field        *Identifier
+	Region   input.Region
+	Body     Statement
+	Sequence Expression
+	Field    *Identifier
 }
 
 func (loop *ForEachLoopStatement) Accept(visitor Visitor) {

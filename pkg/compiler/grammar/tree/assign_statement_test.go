@@ -32,7 +32,7 @@ func TestAssignStatement_AcceptRecursive(testing *testing.T) {
 
 func TestAssignStatement_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
-		return	&AssignStatement{
+		return &AssignStatement{
 			Target:   &Identifier{Value: "strict"},
 			Value:    &StringLiteral{Value: "Cool"},
 			Operator: token.AssignOperator,

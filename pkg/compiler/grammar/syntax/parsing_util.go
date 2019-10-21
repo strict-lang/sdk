@@ -9,7 +9,7 @@ import (
 
 // skipOperator skips the next keyword if it the passed operator, otherwise
 // otherwise an UnexpectedTokenError is returned.
-func (parsing *Parsing) skipOperator(operator token.Operator) error {
+func (parsing *Parsing) skipOperator(operator token.Operator) {
 	if err := parsing.expectOperator(operator); err != nil {
 		return err
 	}
@@ -19,7 +19,7 @@ func (parsing *Parsing) skipOperator(operator token.Operator) error {
 
 // skipKeyword skips the next keyword if it the passed keyword, otherwise
 // otherwise an UnexpectedTokenError is returned.
-func (parsing *Parsing) skipKeyword(keyword token.Keyword) error {
+func (parsing *Parsing) skipKeyword(keyword token.Keyword) {
 	if err := parsing.expectKeyword(keyword); err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (parsing *Parsing) expectKeyword(expected token.Keyword) error {
 
 // expectAnyIdentifier expects the next token to be an identifier,
 // without regards to its value and returns an error if it fails.
-func (parsing *Parsing) expectAnyIdentifier() (*tree.Identifier, error) {
+func (parsing *Parsing) expectAnyIdentifier() *tree.Identifier {
 	current := parsing.token()
 	if !token.IsIdentifierToken(current) {
 		return nil, &UnexpectedTokenError{
@@ -62,7 +62,7 @@ func (parsing *Parsing) expectAnyIdentifier() (*tree.Identifier, error) {
 		}
 	}
 	return &tree.Identifier{
-		Value:        current.Value(),
+		Value:  current.Value(),
 		Region: parsing.createRegionFromToken(),
 	}, nil
 }
@@ -100,8 +100,12 @@ func (parsing *Parsing) reportError(err error, position input.Region) {
 	})
 }
 
-func (parsing *Parsing) createRegionFromToken() input.Region  {
-	tokenPosition := parsing.token().Position()
+func (parsing *Parsing) createRegionFromCurrentToken() input.Region {
+	return parsing.createRegionFromToken(parsing.token())
+}
+
+func (parsing *Parsing) createRegionFromToken(token token.Token) input.Region {
+	tokenPosition := token.Position()
 	return input.CreateRegion(tokenPosition.Begin(), tokenPosition.End())
 }
 
@@ -109,3 +113,4 @@ func (parsing *Parsing) createRegion(beginOffset input.Offset) input.Region {
 	return input.CreateRegion(beginOffset, parsing.offset())
 }
 
+func (parsing *Parsing) throwError(err error) {}

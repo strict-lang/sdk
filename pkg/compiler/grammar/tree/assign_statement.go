@@ -9,10 +9,10 @@ import (
 // add-assign are also represented by this Node. If the 'Target' node is a
 // FieldDeclaration, this is a field definition.
 type AssignStatement struct {
-	Target       Node
-	Value        Node
-	Operator     token.Operator
-	Region input.Region
+	Target   Node
+	Value    Node
+	Operator token.Operator
+	Region   input.Region
 }
 
 func (statement *AssignStatement) Accept(visitor Visitor) {

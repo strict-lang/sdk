@@ -6,10 +6,10 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 // input code. It can have multiple children, which are seen as the roots
 // of the actual tree. This node however, is the real unit of the tree.
 type TranslationUnit struct {
-	Name       string
-	Imports    []*ImportStatement
-	Class      *ClassDeclaration
-	Region input.Region
+	Name    string
+	Imports []*ImportStatement
+	Class   *ClassDeclaration
+	Region  input.Region
 }
 
 func (unit *TranslationUnit) Accept(visitor Visitor) {

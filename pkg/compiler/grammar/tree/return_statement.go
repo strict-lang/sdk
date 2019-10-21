@@ -8,7 +8,7 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 // the last statement in a block.
 type ReturnStatement struct {
 	Region input.Region
-	Value        Node
+	Value  Node
 }
 
 func (statement *ReturnStatement) IsReturningValue() bool {

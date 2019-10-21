@@ -2,6 +2,8 @@ package tree
 
 import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
+type CallArgumentList []*CallArgument
+
 type CallArgument struct {
 	Label  string
 	Value  Node
