@@ -30,11 +30,7 @@ func TestParseBinaryExpression(test *testing.T) {
 
 func testParsingBinaryExpression(test *testing.T, entry string) {
 	parser := NewTestParser(lexical.NewStringScanning(entry))
-	output, err := parser.parseExpression()
-	if err != nil {
-		test.Errorf("unexpected error while grammar (%s): %s", entry, err.Error())
-		return
-	}
+	output := parser.parseExpression()
 	pretty.PrintColored(output)
 }
 

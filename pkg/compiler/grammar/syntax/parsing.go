@@ -1,7 +1,6 @@
 package syntax
 
 import (
-	"errors"
 	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/code"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
@@ -41,16 +40,11 @@ type Block struct {
 	Parent *Block
 }
 
-func (parsing *Parsing) parseImportStatementList() (imports []*tree.ImportStatement, failed []tree.Node) {
+func (parsing *Parsing) parseImportStatementList() (imports []*tree.ImportStatement) {
 	for token.HasKeywordValue(parsing.token(), token.ImportKeyword) {
-		result := parsing.parseImportStatement()
-		if importStatement, isImport := result.(*tree.ImportStatement); isImport {
-			imports = append(imports, importStatement)
-		} else {
-			failed = append(failed, result)
-		}
+		imports = append(imports, parsing.parseImportStatement())
 	}
-	return
+	return imports
 }
 
 func (parsing *Parsing) parseClassDeclaration() *tree.ClassDeclaration {
@@ -69,7 +63,7 @@ func (parsing *Parsing) parseClassDeclaration() *tree.ClassDeclaration {
 // This method can only be called once on the Parsing instance.
 func (parsing *Parsing) ParseTranslationUnit() (*tree.TranslationUnit, error) {
 	begin := parsing.offset()
-	imports, _ := parsing.parseImportStatementList()
+	imports := parsing.parseImportStatementList()
 	class := parsing.parseClassDeclaration()
 	return &tree.TranslationUnit{
 		Name:    parsing.unitName,

@@ -267,24 +267,21 @@ func (parsing *Parsing) shouldParseConstructorDeclaration() bool {
 	return !token.IsIdentifierToken(parsing.peek())
 }
 
-func (parsing *Parsing) maybeParseConstructorDeclaration() (func() tree.Node, bool) {
-	return parsing.parseConstructorDeclaration, parsing.shouldParseConstructorDeclaration()
+func (parsing *Parsing) maybeParseConstructorDeclaration() (keywordStatementParser, bool) {
+	if !parsing.shouldParseConstructorDeclaration() {
+		return nil, false
+	}
+	return func(*Parsing) tree.Node {
+		return parsing.parseConstructorDeclaration()
+	}, true
 }
 
 func (parsing *Parsing) parseConstructorDeclaration() tree.Node {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token.CreateKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	parameters, err := parsing.parseParameterList()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	parsing.skipKeyword(token.CreateKeyword)
+	parameters := parsing.parseParameterList()
 	parsing.skipEndOfStatement()
-	body, err := parsing.parseStatementBlock()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	body := parsing.parseStatementBlock()
 	return &tree.ConstructorDeclaration{
 		Parameters: parameters,
 		Child:      body,
@@ -296,23 +293,20 @@ func (parsing *Parsing) parseConstructorDeclaration() tree.Node {
 func (parsing *Parsing) parseKeywordStatement(keyword token.Keyword) tree.Node {
 	function, ok := parsing.findKeywordStatementParser(keyword)
 	if ok {
-		return function()
+		return function(parsing)
 	}
-	parsing.reportError(&UnexpectedTokenError{
+	parsing.throwError(&UnexpectedTokenError{
 		Token:    parsing.token(),
 		Expected: "keyword that starts a statement",
-	}, parsing.createRegionFromToken())
-	return &tree.InvalidStatement{}
+	})
+	return nil
 }
 
 func (parsing *Parsing) parseAssignStatement(
 	operator token.Operator, leftHandSide tree.Node) (tree.Node, error) {
 
 	beginOffset := parsing.offset()
-	rightHandSide, err := parsing.parseExpression()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err), err
-	}
+	rightHandSide := parsing.parseExpression()
 	parsing.skipEndOfStatement()
 	return &tree.AssignStatement{
 		Target:   leftHandSide,
@@ -324,14 +318,9 @@ func (parsing *Parsing) parseAssignStatement(
 
 func (parsing *Parsing) parseTestStatement() tree.Node {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token.TestKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	parsing.skipKeyword(token.TestKeyword)
 	parsing.skipEndOfStatement()
-	statements, err := parsing.parseStatementBlock()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	statements := parsing.parseStatementBlock()
 	return &tree.TestStatement{
 		Region:     parsing.createRegion(beginOffset),
 		MethodName: parsing.currentMethodName,
@@ -341,13 +330,8 @@ func (parsing *Parsing) parseTestStatement() tree.Node {
 
 func (parsing *Parsing) parseAssertStatement() tree.Node {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token.AssertKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	expression, err := parsing.parseExpression()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	parsing.skipKeyword(token.AssertKeyword)
+	expression := parsing.parseExpression()
 	parsing.skipEndOfStatement()
 	return &tree.AssertStatement{
 		Region:     parsing.createRegion(beginOffset),
@@ -359,10 +343,7 @@ func (parsing *Parsing) parseAssertStatement() tree.Node {
 // statement. Instructions mostly operate on values and assign fields.
 func (parsing *Parsing) parseInstructionStatement() (tree.Node, error) {
 	beginOffset := parsing.offset()
-	leftHandSide, err := parsing.parseExpression()
-	if err != nil {
-		return nil, err
-	}
+	leftHandSide := parsing.parseExpression()
 	return parsing.parseInstructionOnExpression(beginOffset, leftHandSide)
 }
 
@@ -417,7 +398,7 @@ func (parsing *Parsing) isKeywordExpressionToken(entry token.Token) bool {
 }
 
 func (parsing *Parsing) shouldParseFieldDeclaration() bool {
-	return /* grammar.isAtBeginOfStatement && */ parsing.couldBeLookingAtTypeName()
+	return parsing.couldBeLookingAtTypeName()
 }
 
 func (parsing *Parsing) parseFieldDeclarationOrDefinition() tree.Node {
@@ -436,10 +417,7 @@ func (parsing *Parsing) parseFieldDeclarationOrDefinition() tree.Node {
 func (parsing *Parsing) completeParsingFieldDefinition(
 	beginOffset input.Offset, declaration tree.Node) tree.Node {
 
-	value, err := parsing.parseExpression()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	value := parsing.parseExpression()
 	parsing.skipEndOfStatement()
 	return &tree.AssignStatement{
 		Target:   declaration,
@@ -451,20 +429,14 @@ func (parsing *Parsing) completeParsingFieldDefinition(
 
 func (parsing *Parsing) parseFieldDeclaration() (tree.Node, error) {
 	beginOffset := parsing.offset()
-	typeName, err := parsing.parseTypeName()
-	if err != nil {
-		return nil, err
-	}
+	typeName := parsing.parseTypeName()
 	return parsing.parseFieldDeclarationWithTypeName(beginOffset, typeName)
 }
 
 func (parsing *Parsing) parseFieldDeclarationWithTypeName(
 	beginOffset input.Offset, typeName tree.TypeName) (tree.Node, error) {
 
-	fieldName, err := parsing.expectAnyIdentifier()
-	if err != nil {
-		return nil, err
-	}
+	fieldName := parsing.expectAnyIdentifier()
 	parsing.advance()
 	declaration := &tree.FieldDeclaration{
 		Name:     fieldName,
@@ -480,13 +452,8 @@ func (parsing *Parsing) parseFieldDeclarationWithTypeName(
 func (parsing *Parsing) parseFieldDefinition(
 	beginOffset input.Offset, declaration *tree.FieldDeclaration) (tree.Node, error) {
 
-	if err := parsing.skipOperator(token.AssignOperator); err != nil {
-		return nil, err
-	}
-	value, err := parsing.parseExpression()
-	if err != nil {
-		return nil, err
-	}
+	parsing.skipOperator(token.AssignOperator)
+	value := parsing.parseExpression()
 	return &tree.AssignStatement{
 		Target:   declaration,
 		Value:    value,
@@ -540,29 +507,24 @@ func (parsing *Parsing) parseFieldDeclarationOrListAccess() (tree.Node, error) {
 		return parsing.parseFieldDeclarationFromBaseTypeName(beginOffset, baseTypeOrAccessedField)
 	}
 	// This method has to be used because of selector chaining and calls.
-	operation, err := parsing.parseOperationsOnOperand(&tree.Identifier{
+	operation := parsing.parseOperationsOnOperand(&tree.Identifier{
 		Value:  baseTypeOrAccessedField.Value(),
 		Region: parsing.createRegion(beginOffset),
 	})
-	if err != nil {
-		return nil, err
-	}
 	return parsing.parseOperationOrAssign(operation)
 }
 
 func (parsing *Parsing) parseFieldDeclarationFromBaseTypeName(
 	beginOffset input.Offset, baseTypeName token.Token) (tree.Node, error) {
 
-	typeName, err := parsing.parseTypeNameFromBaseIdentifier(beginOffset, baseTypeName)
-	if err != nil {
-		return nil, err
-	}
+	typeName := parsing.parseTypeNameFromBaseIdentifier(beginOffset, baseTypeName)
 	return parsing.parseFieldDeclarationWithTypeName(beginOffset, typeName)
 }
 
 // ParseStatementSequence parses a sequence of statements. The sequence
 // is ended when the first token in a line has an indent other than the
 // value in the current blocks indent field.
+// TODO: Maybe recover from error
 func (parsing *Parsing) parseStatementSequence() (statements []tree.Statement) {
 	for {
 		expectedIndent := parsing.block.Indent
@@ -600,10 +562,10 @@ func (parsing *Parsing) parseStatementBlock() *tree.BlockStatement {
 	beginOffset := parsing.offset()
 	indent := parsing.token().Indent()
 	if indent < parsing.block.Indent {
-		return nil, &InvalidIndentationError{
+		parsing.throwError(&InvalidIndentationError{
 			Token:    parsing.token(),
 			Expected: "indent bigger than 0",
-		}
+		})
 	}
 	parsing.openBlock(indent)
 	statements := parsing.parseStatementSequence()
@@ -611,5 +573,5 @@ func (parsing *Parsing) parseStatementBlock() *tree.BlockStatement {
 	return &tree.BlockStatement{
 		Children: statements,
 		Region:   parsing.createRegion(beginOffset),
-	}, nil
+	}
 }
