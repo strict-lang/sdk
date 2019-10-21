@@ -1,7 +1,7 @@
 package session
 
 import (
-	 "gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 type AstCache struct {
@@ -9,15 +9,15 @@ type AstCache struct {
 }
 
 type entry struct {
-	unit       *syntaxtree.TranslationUnit
+	unit       *tree.TranslationUnit
 	lastUpdate int64
 }
 
-func (cache *AstCache) find(filePath string) (unit *syntaxtree.TranslationUnit, found bool) {
+func (cache *AstCache) find(filePath string) (unit *tree.TranslationUnit, found bool) {
 	return nil, false
 }
 
-func (cache *AstCache) put(filePath string, unit *syntaxtree.TranslationUnit) {
+func (cache *AstCache) put(filePath string, unit *tree.TranslationUnit) {
 }
 
 func (cache *AstCache) invalidate() {
