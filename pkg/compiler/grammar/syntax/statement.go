@@ -9,42 +9,39 @@ import (
 )
 
 // parseConditionalStatement parses a conditional statement and it's optional else-clause.
-func (parsing *Parsing) parseConditionalStatement() tree.Node {
+func (parsing *Parsing) parseConditionalStatement() *tree.ConditionalStatement {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token.IfKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	condition, err := parsing.parseExpression()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	if err = parsing.skipKeyword(token.DoKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	parsing.skipKeyword(token.IfKeyword)
+	condition := parsing.parseExpression()
+	parsing.skipKeyword(token.DoKeyword)
 	parsing.skipEndOfStatement()
-	consequence, err := parsing.parseStatementBlock()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
+	consequence := parsing.parseStatementBlock()
+	return parsing.parseElseClauseIfPresent(beginOffset, condition, consequence)
+}
+
+func (parsing *Parsing) parseElseClauseIfPresent(
+	beginOffset input.Offset,
+	condition tree.Expression,
+	consequence tree.Statement) *tree.ConditionalStatement {
+
+	if token.HasKeywordValue(parsing.token(), token.ElseKeyword) {
+		return parsing.parseConditionalStatementWithAlternative(
+			beginOffset, condition, consequence)
 	}
-	if !token.HasKeywordValue(parsing.token(), token.ElseKeyword) {
-		return &tree.ConditionalStatement{
-			Condition:   condition,
-			Consequence: consequence,
-			Region:      parsing.createRegion(beginOffset),
-		}
+	return &tree.ConditionalStatement{
+		Condition:   condition,
+		Consequence: consequence,
+		Region:      parsing.createRegion(beginOffset),
 	}
-	return parsing.parseConditionalStatementWithAlternative(
-		beginOffset, condition, consequence)
 }
 
 func (parsing *Parsing) parseConditionalStatementWithAlternative(
-	beginOffset input.Offset, condition tree.Node, consequence tree.Node) tree.Node {
+	beginOffset input.Offset,
+	condition tree.Node,
+	consequence tree.Node) *tree.ConditionalStatement {
 
 	parsing.advance()
-	alternative, err := parsing.parseElseIfOrBlock()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	alternative := parsing.parseElseIfOrBlock()
 	return &tree.ConditionalStatement{
 		Condition:   condition,
 		Consequence: consequence,
@@ -53,56 +50,42 @@ func (parsing *Parsing) parseConditionalStatementWithAlternative(
 	}
 }
 
-func (parsing *Parsing) parseElseIfOrBlock() (tree.Node, error) {
+func (parsing *Parsing) parseElseIfOrBlock() tree.Node {
 	if token.HasKeywordValue(parsing.token(), token.IfKeyword) {
-		return parsing.parseConditionalStatement(), nil
+		return parsing.parseConditionalStatement()
 	}
 	parsing.skipEndOfStatement()
 	return parsing.parseStatementBlock()
 }
 
-// parseForStatement parses a loop statement, which starts with the
+// parseLoopStatement parses a loop statement, which starts with the
 // ForKeyword. The statement may either be a FromToLoopStatement or
 // a ForEachLoopStatement.
-func (parsing *Parsing) parseForStatement() tree.Node {
+func (parsing *Parsing) parseLoopStatement() tree.Node {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token.ForKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	initializerBeginToken := parsing.token()
-	if token.IsIdentifierToken(initializerBeginToken) {
-		if token.HasKeywordValue(parsing.peek(), token.FromKeyword) {
-			return parsing.completeFromToStatement(beginOffset)
-		}
+	parsing.skipKeyword(token.ForKeyword)
+	if parsing.isLookingAtRangedLoop() {
+		return parsing.completeFromToStatement(beginOffset)
 	}
 	return parsing.completeForEachStatement(beginOffset)
+}
+
+func (parsing* Parsing) isLookingAtRangedLoop() bool {
+	return token.IsIdentifierToken(parsing.token()) &&
+		token.HasKeywordValue(parsing.peek(), token.FromKeyword)
 }
 
 // completeForEachStatement is called by the ParseForStatement method
 // after it checked for a foreach statement. At this point the last token
 // is an identifier that is the name of the foreach loops element field.
 // This method completes the loops grammar.
-func (parsing *Parsing) completeForEachStatement(beginOffset input.Offset) tree.Node {
-	field, err := parsing.expectAnyIdentifier()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	parsing.advance()
-	if err = parsing.skipKeyword(token.InKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	value, err := parsing.parseExpression()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	if err = parsing.skipKeyword(token.DoKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+func (parsing *Parsing) completeForEachStatement(beginOffset input.Offset) *tree.ForEachLoopStatement{
+	field := parsing.parseIdentifier()
+	parsing.skipKeyword(token.InKeyword)
+	value := parsing.parseExpression()
+	parsing.skipKeyword(token.DoKeyword)
 	parsing.skipEndOfStatement()
-	body, err := parsing.parseStatementBlock()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	body := parsing.parseStatementBlock()
 	return &tree.ForEachLoopStatement{
 		Field:    field,
 		Sequence: value,
@@ -115,52 +98,28 @@ func (parsing *Parsing) completeForEachStatement(beginOffset input.Offset) tree.
 // after it peeked the 'from' keyword. At this point, the last token
 // is an identifier that is the name of the loops counter field. This
 // method completes the loops grammar.
-func (parsing *Parsing) completeFromToStatement(beginOffset input.Offset) tree.Node {
-	field, err := parsing.expectAnyIdentifier()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	parsing.advance()
-	if err = parsing.skipKeyword(token.FromKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	from, err := parsing.parseExpression()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	if err = parsing.skipKeyword(token.ToKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	to, err := parsing.parseExpression()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	if err = parsing.skipKeyword(token.DoKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+func (parsing *Parsing) completeFromToStatement(beginOffset input.Offset) *tree.RangedLoopStatement {
+	field := parsing.parseIdentifier()
+	parsing.skipKeyword(token.FromKeyword)
+	begin := parsing.parseExpression()
+	parsing.skipKeyword(token.ToKeyword)
+	end := parsing.parseExpression()
+	parsing.skipKeyword(token.DoKeyword)
 	parsing.skipEndOfStatement()
-	body, err := parsing.parseStatementBlock()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	body := parsing.parseStatementBlock()
 	return &tree.RangedLoopStatement{
 		Field:  field,
-		Begin:  from,
-		End:    to,
+		Begin:  begin,
+		End:    end,
 		Body:   body,
 		Region: parsing.createRegion(beginOffset),
 	}
 }
 
-func (parsing *Parsing) parseYieldStatement() tree.Node {
+func (parsing *Parsing) parseYieldStatement() *tree.YieldStatement {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token.YieldKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	rightHandSide, err := parsing.parseExpression()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	parsing.skipKeyword(token.YieldKeyword)
+	rightHandSide := parsing.parseExpression()
 	parsing.skipEndOfStatement()
 	return &tree.YieldStatement{
 		Value:  rightHandSide,
@@ -168,56 +127,45 @@ func (parsing *Parsing) parseYieldStatement() tree.Node {
 	}
 }
 
-func (parsing *Parsing) parseReturnStatement() tree.Node {
+func (parsing *Parsing) parseReturnStatement() *tree.ReturnStatement {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token.ReturnKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	parsing.skipKeyword(token.ReturnKeyword)
+	defer parsing.skipEndOfStatement()
 	if token.IsEndOfStatementToken(parsing.token()) {
 		parsing.advance()
 		return &tree.ReturnStatement{
 			Region: parsing.createRegion(beginOffset),
 		}
 	}
-	rightHandSide, err := parsing.parseExpression()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	parsing.skipEndOfStatement()
+	rightHandSide := parsing.parseExpression()
 	return &tree.ReturnStatement{
 		Value:  rightHandSide,
 		Region: parsing.createRegion(beginOffset),
 	}
 }
 
-func (parsing *Parsing) parseNestedMethodDeclaration() tree.Node {
-	beginPosition := parsing.offset()
-	method, err := parsing.parseMethodDeclaration()
-	if err != nil {
-		return parsing.createInvalidStatement(beginPosition, err)
-	}
-	return method
+func (parsing *Parsing) parseNestedMethodDeclaration() *tree.MethodDeclaration {
+	return parsing.parseMethodDeclaration()
 }
 
-func (parsing *Parsing) parseImportStatement() tree.Node {
+func (parsing *Parsing) parseImportStatement() *tree.ImportStatement {
 	beginOffset := parsing.offset()
-	if err := parsing.skipKeyword(token.ImportKeyword); err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
+	parsing.skipKeyword(token.ImportKeyword)
 	switch next := parsing.token(); {
 	case token.IsStringLiteralToken(next):
 		return parsing.parseFileImport(beginOffset)
 	case token.IsIdentifierToken(next):
 		return parsing.parseIdentifierChainImport(beginOffset)
 	default:
-		return parsing.createInvalidStatement(beginOffset, &UnexpectedTokenError{
+		parsing.throwError(&UnexpectedTokenError{
 			Expected: "File or Class Path",
 			Token:    next,
 		})
+		return nil
 	}
 }
 
-func (parsing *Parsing) parseIdentifierChainImport(beginOffset input.Offset) tree.Node {
+func (parsing *Parsing) parseIdentifierChainImport(beginOffset input.Offset) *tree.ImportStatement {
 	var chain []string
 	for token.IsIdentifierToken(parsing.token()) {
 		chain = append(chain, parsing.token().Value())
@@ -234,7 +182,7 @@ func (parsing *Parsing) parseIdentifierChainImport(beginOffset input.Offset) tre
 	}
 }
 
-func (parsing *Parsing) parseFileImport(beginOffset input.Offset) tree.Node {
+func (parsing *Parsing) parseFileImport(beginOffset input.Offset) *tree.ImportStatement {
 	target := &tree.FileImport{Path: parsing.token().Value()}
 	parsing.advance()
 	if !token.HasKeywordValue(parsing.token(), token.AsKeyword) {
@@ -249,72 +197,67 @@ func (parsing *Parsing) parseFileImport(beginOffset input.Offset) tree.Node {
 }
 
 func (parsing *Parsing) parseFileImportWithAlias(
-	beginOffset input.Offset, target tree.ImportTarget) tree.Node {
+	beginOffset input.Offset, target tree.ImportTarget) *tree.ImportStatement {
 
-	aliasOffset := parsing.offset()
-	alias, err := parsing.parseImportAlias()
-	if err != nil {
-		return parsing.createInvalidStatement(beginOffset, err)
-	}
-	aliasEnd := parsing.offset()
+	alias := parsing.parseImportAlias()
 	parsing.skipEndOfStatement()
 	return &tree.ImportStatement{
 		Target: target,
-		Alias: &tree.Identifier{
-			Value:  alias,
-			Region: input.CreateRegion(aliasOffset, aliasEnd),
-		},
+		Alias: alias,
 		Region: parsing.createRegion(beginOffset),
 	}
 }
 
-func (parsing *Parsing) parseImportAlias() (string, error) {
-	alias := parsing.token()
-	if !token.IsIdentifierToken(alias) {
-		return "", &UnexpectedTokenError{
-			Expected: "Identifier",
-			Token:    alias,
-		}
-	}
-	parsing.advance()
-	return alias.Value(), nil
+func (parsing *Parsing) parseImportAlias() *tree.Identifier {
+	return parsing.parseIdentifier()
 }
 
 var errNoAssign = errors.New("no assign")
 
-func (parsing *Parsing) parseOptionalAssignValue() (tree.Node, error) {
-	if !token.HasOperatorValue(parsing.token(), token.AssignOperator) {
-		return nil, errNoAssign
-	}
-	parsing.advance()
+func (parsing *Parsing) parseOptionalAssignValue() tree.Expression {
+	parsing.skipOperator(token.AssignOperator)
 	return parsing.parseExpression()
+}
+
+type keywordStatementParser func(*Parsing) tree.Node
+
+var keywordStatementParserTable = map[token.Keyword] keywordStatementParser {
+	token.IfKeyword: func(parsing *Parsing) tree.Node {
+		return parsing.parseConditionalStatement()
+	},
+	token.ForKeyword: func(parsing *Parsing) tree.Node {
+		return parsing.parseLoopStatement()
+	},
+	token.YieldKeyword: func(parsing *Parsing) tree.Node {
+		return parsing.parseYieldStatement()
+	},
+	token.ReturnKeyword: func(parsing *Parsing) tree.Node {
+		return parsing.parseReturnStatement()
+	},
+	token.ImportKeyword: func(parsing *Parsing) tree.Node {
+		return parsing.parseImportStatement()
+	},
+	token.AssertKeyword: func(parsing *Parsing) tree.Node {
+		return parsing.parseAssertStatement()
+	},
+	token.TestKeyword: func(parsing *Parsing) tree.Node {
+		return parsing.parseTestStatement()
+	},
+	token.MethodKeyword: func(parsing *Parsing) tree.Node {
+		return parsing.parseMethodDeclaration()
+	},
 }
 
 // findKeywordStatementParser returns a function that parses statements based on a passed
 // keyword. Most of the keywords start a statement. The returned bool is true, if a
 // function has been found.
-func (parsing *Parsing) findKeywordStatementParser(keyword token.Keyword) (func() tree.Node, bool) {
-	switch keyword {
-	case token.IfKeyword:
-		return parsing.parseConditionalStatement, true
-	case token.ForKeyword:
-		return parsing.parseForStatement, true
-	case token.YieldKeyword:
-		return parsing.parseYieldStatement, true
-	case token.ReturnKeyword:
-		return parsing.parseReturnStatement, true
-	case token.ImportKeyword:
-		return parsing.parseImportStatement, true
-	case token.TestKeyword:
-		return parsing.parseTestStatement, true
-	case token.AssertKeyword:
-		return parsing.parseAssertStatement, true
-	case token.MethodKeyword:
-		return parsing.parseNestedMethodDeclaration, true
-	case token.CreateKeyword:
+func (parsing *Parsing) findKeywordStatementParser(
+	keyword token.Keyword) (keywordStatementParser, bool) {
+	if keyword == token.CreateKeyword {
 		return parsing.maybeParseConstructorDeclaration()
 	}
-	return nil, false
+	parser, found := keywordStatementParserTable[keyword]
+	return parser, found
 }
 
 // shouldParseConstructorDeclarations tells the parser whether it should

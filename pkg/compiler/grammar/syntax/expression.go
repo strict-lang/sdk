@@ -37,11 +37,8 @@ func (parsing *Parsing) throwInvalidOperandError() {
 }
 
 func (parsing *Parsing) parseIdentifier() *tree.Identifier {
-	identifier := parsing.pullToken()
-	return &tree.Identifier{
-		Value:  identifier.Value(),
-		Region: parsing.createRegionFromToken(identifier),
-	}
+	defer parsing.advance()
+	return parsing.expectAnyIdentifier()
 }
 
 func (parsing *Parsing) parseStringLiteral() *tree.StringLiteral {
