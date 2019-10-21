@@ -8,17 +8,17 @@ import (
 
 type AssertionMessageComputation struct {
 	buffer  strings.Builder
-	visitor *tree.Visitor
+	visitor tree.Visitor
 }
 
 func NewAssertionMessageComputation() *AssertionMessageComputation {
 	computation := &AssertionMessageComputation{}
 	visitor := tree.NewEmptyVisitor()
-	visitor.VisitBinaryExpression = computation.visitBinaryExpression
-	visitor.VisitUnaryExpression = computation.visitUnaryExpression
-	visitor.VisitIdentifier = computation.visitIdentifier
-	visitor.VisitNumberLiteral = computation.visitNumberLiteral
-	visitor.VisitStringLiteral = computation.visitStringLiteral
+	visitor.BinaryExpressionVisitor = computation.visitBinaryExpression
+	visitor.UnaryExpressionVisitor = computation.visitUnaryExpression
+	visitor.IdentifierVisitor = computation.visitIdentifier
+	visitor.NumberLiteralVisitor = computation.visitNumberLiteral
+	visitor.StringLiteralVisitor = computation.visitStringLiteral
 	computation.visitor = visitor
 	return computation
 }

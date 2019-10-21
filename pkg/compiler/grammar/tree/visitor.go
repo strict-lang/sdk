@@ -81,7 +81,7 @@ type DelegatingVisitor struct {
 	ConstructorDeclarationVisitor func(*ConstructorDeclaration)
 }
 
-func NewEmptyVisitor() Visitor {
+func NewEmptyVisitor() *DelegatingVisitor {
 	return &DelegatingVisitor{
 		ParameterVisitor:              func(*Parameter) {},
 		IdentifierVisitor:             func(*Identifier) {},

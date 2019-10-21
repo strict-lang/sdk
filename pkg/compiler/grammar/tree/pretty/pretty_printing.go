@@ -12,49 +12,47 @@ const prettyPrintIndent = "  "
 type Printing struct {
 	buffer             strings.Builder
 	indent             int
-	visitor            *tree.Visitor
+	visitor            tree.Visitor
 	colored            bool
 	noNewLineAfterNode int
 }
 
 func newPrinting() *Printing {
 	printing := &Printing{}
-	visitor := &tree.Visitor{
-		VisitParameter:              printing.printParameter,
-		VisitCallExpression:         printing.printCallExpression,
-		VisitCallArgument:           printing.printCallArgument,
-		VisitIdentifier:             printing.printIdentifier,
-		VisitListTypeName:           printing.printListTypeName,
-		VisitTestStatement:          printing.printTestStatement,
-		VisitStringLiteral:          printing.printStringLiteral,
-		VisitNumberLiteral:          printing.printNumberLiteral,
-		VisitEmptyStatement:         printing.printEmptyStatement,
-		VisitYieldStatement:         printing.printYieldStatement,
-		VisitBlockStatement:         printing.printBlockStatement,
-		VisitAssertStatement:        printing.printAssertStatement,
-		VisitUnaryExpression:        printing.printUnaryExpression,
-		VisitImportStatement:        printing.printImportStatement,
-		VisitAssignStatement:        printing.printAssignStatement,
-		VisitReturnStatement:        printing.printReturnStatement,
-		VisitTranslationUnit:        printing.printTranslationUnit,
-		VisitCreateExpression:       printing.printCreateExpression,
-		VisitInvalidStatement:       printing.printInvalidStatement,
-		VisitFieldDeclaration:       printing.printFieldDeclaration,
-		VisitClassDeclaration:       printing.printClassDeclaration,
-		VisitGenericTypeName:        printing.printGenericTypeName,
-		VisitConcreteTypeName:       printing.printConcreteTypeName,
-		VisitBinaryExpression:       printing.printBinaryExpression,
-		VisitMethodDeclaration:      printing.printMethodDeclaration,
-		VisitSelectorExpression:     printing.printSelectExpression,
-		VisitIncrementStatement:     printing.printIncrementStatement,
-		VisitDecrementStatement:     printing.printDecrementStatement,
-		VisitRangedLoopStatement:    printing.printRangedLoopStatement,
-		VisitExpressionStatement:    printing.printExpressionStatement,
-		VisitForEachLoopStatement:   printing.printForEachLoopStatement,
-		VisitConditionalStatement:   printing.printConditionalStatement,
-		VisitListSelectExpression:   printing.printListSelectExpression,
-		VisitConstructorDeclaration: printing.printConstructorDeclaration,
-	}
+	visitor := tree.NewEmptyVisitor()
+	visitor.ParameterVisitor = printing.printParameter
+	visitor.CallExpressionVisitor = printing.printCallExpression
+	visitor.CallArgumentVisitor = printing.printCallArgument
+	visitor.IdentifierVisitor = printing.printIdentifier
+	visitor.ListTypeNameVisitor = printing.printListTypeName
+	visitor.TestStatementVisitor = printing.printTestStatement
+	visitor.StringLiteralVisitor = printing.printStringLiteral
+	visitor.NumberLiteralVisitor = printing.printNumberLiteral
+	visitor.EmptyStatementVisitor = printing.printEmptyStatement
+	visitor.YieldStatementVisitor = printing.printYieldStatement
+	visitor.BlockStatementVisitor = printing.printBlockStatement
+	visitor.AssertStatementVisitor = printing.printAssertStatement
+	visitor.UnaryExpressionVisitor = printing.printUnaryExpression
+	visitor.ImportStatementVisitor = printing.printImportStatement
+	visitor.AssignStatementVisitor = printing.printAssignStatement
+	visitor.ReturnStatementVisitor = printing.printReturnStatement
+	visitor.TranslationUnitVisitor = printing.printTranslationUnit
+	visitor.CreateExpressionVisitor = printing.printCreateExpression
+	visitor.InvalidStatementVisitor = printing.printInvalidStatement
+	visitor.FieldDeclarationVisitor = printing.printFieldDeclaration
+	visitor.ClassDeclarationVisitor = printing.printClassDeclaration
+	visitor.GenericTypeNameVisitor = printing.printGenericTypeName
+	visitor.ConcreteTypeNameVisitor = printing.printConcreteTypeName
+	visitor.BinaryExpressionVisitor = printing.printBinaryExpression
+	visitor.MethodDeclarationVisitor = printing.printMethodDeclaration
+	visitor.FieldSelectExpressionVisitor = printing.printFieldSelectExpression
+	visitor.PostfixExpressionVisitor = printing.printPostfixExpression
+	visitor.RangedLoopStatementVisitor = printing.printRangedLoopStatement
+	visitor.ExpressionStatementVisitor = printing.printExpressionStatement
+	visitor.ForEachLoopStatementVisitor = printing.printForEachLoopStatement
+	visitor.ConditionalStatementVisitor = printing.printConditionalStatement
+	visitor.ListSelectExpressionVisitor = printing.printListSelectExpression
+	visitor.ConstructorDeclarationVisitor = printing.printConstructorDeclaration
 	printing.visitor = visitor
 	return printing
 }
@@ -185,7 +183,7 @@ func (printing *Printing) printNewLine() {
 }
 
 func (printing *Printing) printNode(node tree.Node) {
-	Accept(printing.visitor)
+	node.Accept(printing.visitor)
 }
 
 func (printing *Printing) printListField(node tree.Node) {
@@ -286,9 +284,9 @@ func (printing *Printing) printConditionalStatement(statement *tree.ConditionalS
 
 func (printing *Printing) printRangedLoopStatement(statement *tree.RangedLoopStatement) {
 	printing.printNodeBegin("RangedLoopStatement")
-	printing.printIndentedNodeField("valueField", statement.ValueField)
-	printing.printIndentedNodeField("initialValue", statement.InitialValue)
-	printing.printIndentedNodeField("endValue", statement.EndValue)
+	printing.printIndentedNodeField("valueField", statement.Field)
+	printing.printIndentedNodeField("initialValue", statement.Begin)
+	printing.printIndentedNodeField("endValue", statement.End)
 	printing.printIndentedNodeField("body", statement.Body)
 	printing.printNodeEnd()
 }
@@ -323,8 +321,8 @@ func (printing *Printing) printParameterList(parameters tree.ParameterList) {
 func (printing *Printing) printConstructorDeclaration(declaration *tree.ConstructorDeclaration) {
 	printing.printNodeBegin("ConstructorDeclaration")
 	printing.printParameterList(declaration.Parameters)
-	if declaration.Body != nil {
-		printing.printIndentedNodeField("body", declaration.Body)
+	if declaration.Child != nil {
+		printing.printIndentedNodeField("body", declaration.Child)
 	}
 	printing.printNodeEnd()
 }
@@ -356,19 +354,14 @@ func (printing *Printing) printEmptyStatement(statement *tree.EmptyStatement) {
 	printing.print("-")
 }
 
-func (printing *Printing) printIncrementStatement(statement *tree.IncrementStatement) {
-	printing.printNodeBegin("IncrementStatement")
+func (printing *Printing) printPostfixExpression(statement *tree.PostfixExpression) {
+	printing.printNodeBegin("PostfixExpression")
+	printing.printIndentedStringField("operator", statement.Operator.String())
 	printing.printIndentedNodeField("operand", statement.Operand)
 	printing.printNodeEnd()
 }
 
-func (printing *Printing) printDecrementStatement(statement *tree.DecrementStatement) {
-	printing.printNodeBegin("DecrementStatement")
-	printing.printIndentedNodeField("operand", statement.Operand)
-	printing.printNodeEnd()
-}
-
-func (printing *Printing) printSelectExpression(expression *tree.FieldSelectExpression) {
+func (printing *Printing) printFieldSelectExpression(expression *tree.FieldSelectExpression) {
 	printing.printNodeBegin("Select")
 	printing.printIndentedNodeField("target", expression.Target)
 	printing.printIndentedNodeField("selection", expression.Selection)
@@ -419,7 +412,7 @@ func (printing *Printing) printAssignStatement(statement *tree.AssignStatement) 
 func (printing *Printing) printTestStatement(statement *tree.TestStatement) {
 	printing.printNodeBegin("TestStatement")
 	printing.printIndentedStringField("methodName", statement.MethodName)
-	printing.printIndentedNodeField("body", statement.Statements)
+	printing.printIndentedNodeField("body", statement.Child)
 	printing.printNodeEnd()
 }
 
@@ -434,7 +427,7 @@ func (printing *Printing) printBlockStatement(statement *tree.BlockStatement) {
 func (printing *Printing) printImportStatement(statement *tree.ImportStatement) {
 	printing.printNodeBegin("ImportStatement")
 	target := statement.Target
-	targetString := fmt.Sprintf("{path: %s, moduleName: %s}", FilePath(), toModuleName())
+	targetString := fmt.Sprintf("{path: %s, moduleName: %s}", target.FilePath(), target.ToModuleName())
 	printing.printIndentedStringField("target", targetString)
 	if statement.Alias != nil {
 		printing.printIndentedNodeField("alias", statement.Alias)
@@ -444,6 +437,6 @@ func (printing *Printing) printImportStatement(statement *tree.ImportStatement) 
 
 func (printing *Printing) printCreateExpression(expression *tree.CreateExpression) {
 	printing.printNodeBegin("CreateExpression")
-	printing.printIndentedNodeField("constructor", expression.Constructor)
+	printing.printIndentedNodeField("constructor", expression.Call)
 	printing.printNodeEnd()
 }

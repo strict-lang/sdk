@@ -9,7 +9,7 @@ type ListSelectExpression struct {
 }
 
 func (expression *ListSelectExpression) Accept(visitor Visitor) {
-	VisitListSelectExpression(expression)
+	visitor.VisitListSelectExpression(expression)
 }
 
 func (expression *ListSelectExpression) AcceptRecursive(visitor Visitor) {

@@ -46,11 +46,11 @@ func (generation *Generation) returnYieldList() {
 }
 
 func (generation *Generation) GenerateRangedLoopStatement(statement *tree.RangedLoopStatement) {
-	generation.EmitFormatted("for (auto %s = ", statement.ValueField.Value)
-	generation.EmitNode(statement.InitialValue)
-	generation.EmitFormatted("; %s < ", statement.ValueField.Value)
-	generation.EmitNode(statement.EndValue)
-	generation.EmitFormatted("; %s++) ", statement.ValueField.Value)
+	generation.EmitFormatted("for (auto %s = ", statement.Field.Value)
+	generation.EmitNode(statement.Begin)
+	generation.EmitFormatted("; %s < ", statement.Field.Value)
+	generation.EmitNode(statement.End)
+	generation.EmitFormatted("; %s++) ", statement.Field.Value)
 
 	generation.EmitNode(statement.Body)
 	generation.EmitEndOfLine()
@@ -129,18 +129,10 @@ func (generation *Generation) GenerateAssertStatement(statement *tree.AssertStat
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateIncrementStatement(statement *tree.IncrementStatement) {
-	generation.EmitNode(statement.Operand)
-	generation.Emit("++;")
-	generation.EmitEndOfLine()
+func (generation *Generation) GeneratePostfixExpression(expression *tree.PostfixExpression) {
+	generation.EmitNode(expression.Operand)
+	generation.Emit(expression.Operator.String())
 }
-
-func (generation *Generation) GenerateDecrementStatement(statement *tree.DecrementStatement) {
-	generation.EmitNode(statement.Operand)
-	generation.Emit("--;")
-	generation.EmitEndOfLine()
-}
-
 func (generation *Generation) GenerateInvalidStatement(statement *tree.InvalidStatement) {
 	generation.Emit("#error Invalid node at position")
 }
@@ -148,7 +140,7 @@ func (generation *Generation) GenerateInvalidStatement(statement *tree.InvalidSt
 func (generation *Generation) GenerateEmptyStatement(statement *tree.EmptyStatement) {}
 
 func (generation *Generation) GenerateCreateExpression(create *tree.CreateExpression) {
-	generation.EmitNode(create.Constructor)
+	generation.EmitNode(create.Call)
 }
 
 func (generation *Generation) GenerateTestStatement(create *tree.TestStatement) {

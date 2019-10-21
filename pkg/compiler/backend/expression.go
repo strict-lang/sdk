@@ -36,7 +36,7 @@ func isPointerTarget(node tree.Node) bool {
 	return false
 }
 
-func (generation *Generation) GenerateSelectExpression(expression *tree.FieldSelectExpression) {
+func (generation *Generation) GenerateFieldSelectExpression(expression *tree.FieldSelectExpression) {
 	if id, ok := expression.Target.(*tree.Identifier); ok {
 		if _, moduleExists := generation.importModules[id.Value]; moduleExists {
 			generation.generateNamespaceSelector(expression)

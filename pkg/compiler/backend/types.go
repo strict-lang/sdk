@@ -27,7 +27,7 @@ func (generation *Generation) GenerateGenericTypeName(name *tree.GenericTypeName
 func (generation *Generation) GenerateListTypeName(name *tree.ListTypeName) {
 	generation.Emit(builtinTypeList)
 	generation.Emit("<")
-	generation.EmitNode(name.ElementTypeName)
+	generation.EmitNode(name.Element)
 	generation.Emit(">")
 }
 

@@ -74,8 +74,8 @@ func NewScanning(reader input.Reader) *Scanning {
 
 var _ token.Stream = &Scanning{}
 
-func NewStringScanning(input string) *Scanning {
-	return NewScanning(input.NewStringReader(input))
+func NewStringScanning(source string) *Scanning {
+	return NewScanning(input.NewStringReader(source))
 }
 
 func (scanning *Scanning) advance() {

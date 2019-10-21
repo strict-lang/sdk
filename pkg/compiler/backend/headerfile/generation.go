@@ -15,9 +15,9 @@ func NewGeneration() *Generation {
 	return &Generation{}
 }
 
-func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.Visitor) {
+func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.DelegatingVisitor) {
 	generation.generation = parent
-	visitor.VisitClassDeclaration = generation.generateClassDeclaration
+	visitor.ClassDeclarationVisitor = generation.generateClassDeclaration
 	generation.emitPragmas()
 }
 

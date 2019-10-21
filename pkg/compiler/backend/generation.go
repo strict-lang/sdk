@@ -12,7 +12,7 @@ type Generation struct {
 	output                        *strings.Builder
 	buffer                        *strings.Builder
 	method                        *MethodDefinition
-	visitor                       *tree.Visitor
+	visitor                       *tree.DelegatingVisitor
 	indent                        int8
 	appendNewLineAfterStatement   bool
 	importModules                 map[string]string

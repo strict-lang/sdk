@@ -16,12 +16,12 @@ func NewGeneration() *Generation {
 	return &Generation{}
 }
 
-func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.Visitor) {
+func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.DelegatingVisitor) {
 	generation.parent = parent
 	parent.DisableNamespaceSelectors()
 	parent.DisableStdlibClassImport()
-	visitor.VisitClassDeclaration = generation.VisitClassDeclaration
-	visitor.VisitImportStatement = generation.VisitImportStatement
+	visitor.ClassDeclarationVisitor = generation.VisitClassDeclaration
+	visitor.ImportStatementVisitor = generation.VisitImportStatement
 	generation.importArduinoHeader()
 }
 
@@ -42,25 +42,21 @@ func (generation *Generation) VisitClassDeclaration(declaration *tree.ClassDecla
 	fields, setupBody := extractFieldDeclarations(others)
 	generation.writeGlobalFieldDeclarations(fields)
 	generation.writeMethodDefinitions(methods)
-	generation.generateSetupMethod(setupBody)
+	generation.generateSetupMethod(backend.ExtractStatements(setupBody))
 }
 
-func (generation *Generation) generateSetupMethod(statements []tree.Node) {
+func (generation *Generation) generateSetupMethod(statements []tree.Statement) {
 	generation.parent.EmitNode(&tree.MethodDeclaration{
 		Name: &tree.Identifier{
 			Value:        "setup",
-			NodePosition: tree.ZeroArea{},
 		},
 		Type: &tree.ConcreteTypeName{
 			Name:         "void",
-			NodePosition: tree.ZeroArea{},
 		},
 		Parameters: []*tree.Parameter{},
 		Body: &tree.BlockStatement{
 			Children:     statements,
-			NodePosition: tree.ZeroArea{},
 		},
-		NodePosition: tree.ZeroArea{},
 	})
 }
 

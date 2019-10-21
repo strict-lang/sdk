@@ -7,7 +7,7 @@ import (
 )
 
 type TypeInference struct {
-	visitor                 *tree.Visitor
+	visitor                 tree.Visitor
 	lastResult              inferenceResult
 	classType               *Type
 	currentScope            *Scope

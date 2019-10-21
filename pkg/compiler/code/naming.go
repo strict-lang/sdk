@@ -19,23 +19,28 @@ const (
 type NamingCheck struct {
 	recorder *diagnostic.Bag
 	unit     *tree.TranslationUnit
-	visitor  *tree.Visitor
+	visitor  tree.Visitor
 }
 
-func NewNamingChecker(recorder *diagnostic.Bag, unit *tree.TranslationUnit) *NamingCheck {
+func NewNamingCheck(recorder *diagnostic.Bag, unit *tree.TranslationUnit) *NamingCheck {
 	check := &NamingCheck{
 		recorder: recorder,
 		unit:     unit,
 	}
-	check.visitor = tree.NewEmptyVisitor()
-	check.visitor.VisitParameter = check.CheckParameterNaming
-	check.visitor.VisitTranslationUnit = check.CheckTranslationUnitNaming
-	check.visitor.VisitAssignStatement = check.CheckFieldNaming
-	check.visitor.VisitMethodDeclaration = check.CheckMethodNamingAndImplicitParameters
-	check.visitor.VisitImportStatement = check.CheckImportedModuleNaming
-	check.visitor.VisitForEachLoopStatement = check.CheckForEachLoopFieldNaming
-	check.visitor.VisitRangedLoopStatement = check.CheckRangedLoopFieldNaming
+	check.visitor = createVisitorForNamingCheck(check)
 	return check
+}
+
+func createVisitorForNamingCheck(check *NamingCheck) tree.Visitor {
+	visitor := tree.NewEmptyVisitor()
+	visitor.ParameterVisitor = check.checkParameterNaming
+	visitor.TranslationUnitVisitor = check.checkTranslationUnitNaming
+	visitor.AssignStatementVisitor = check.checkFieldNaming
+	visitor.MethodDeclarationVisitor = check.checkMethodNamingAndImplicitParameters
+	visitor.ImportStatementVisitor = check.checkImportedModuleNaming
+	visitor.ForEachLoopStatementVisitor = check.checkForEachLoopFieldNaming
+	visitor.RangedLoopStatementVisitor = check.checkRangedLoopFieldNaming
+	return visitor
 }
 
 func (check *NamingCheck) Run() {
@@ -45,7 +50,7 @@ func (check *NamingCheck) Run() {
 // reportInvalidNode reports that the node has an invalid name.
 func (check *NamingCheck) reportInvalidNode(node tree.Node, message string) {
 	check.recorder.Record(diagnostic.RecordedEntry{
-		Position: node.Area(),
+		Position: node.Locate(),
 		UnitName: check.unit.Name,
 		Kind:     &diagnostic.Error,
 		Stage:    &diagnostic.SemanticAnalysis,
@@ -53,39 +58,42 @@ func (check *NamingCheck) reportInvalidNode(node tree.Node, message string) {
 	})
 }
 
-// CheckImportedModuleNaming ensures that the name of the imported module is upper camel case.
+// checkImportedModuleNaming ensures that the name of the imported module is upper camel case.
 // Either by importing a file which starts with an upper case character or by having an
 // alias that is upper camel case. Everything else results in a semantic error.
-func (check *NamingCheck) CheckImportedModuleNaming(statement *tree.ImportStatement) {
+func (check *NamingCheck) checkImportedModuleNaming(statement *tree.ImportStatement) {
 	if isUpperCamelCase(statement.ModuleName()) {
 		check.reportInvalidNode(statement, MessageInvalidModuleImport)
 	}
 }
 
-// CheckRangedLoopFieldNaming ensures that the loops value fields naming is lowerCamelCase.
-func (check *NamingCheck) CheckRangedLoopFieldNaming(loop *tree.RangedLoopStatement) {
-	if !isLowerCamelCase(loop.ValueField.Value) {
-		check.reportInvalidNode(loop.ValueField, MessageInvalidDeclarationName)
-	}
-}
-
-// CheckForEachLoopFieldNaming ensures that the loops value fields  naming is lowerCamelCase.
-func (check *NamingCheck) CheckForEachLoopFieldNaming(loop *tree.ForEachLoopStatement) {
+// checkRangedLoopFieldNaming ensures that the loops value fields naming is
+// lowerCamelCase.
+func (check *NamingCheck) checkRangedLoopFieldNaming(loop *tree.RangedLoopStatement) {
 	if !isLowerCamelCase(loop.Field.Value) {
 		check.reportInvalidNode(loop.Field, MessageInvalidDeclarationName)
 	}
 }
 
-// CheckTranslationUnitNaming ensures that the translation units name is a valid name for
+// checkForEachLoopFieldNaming ensures that the loops value fields  naming is
+// lowerCamelCase.
+func (check *NamingCheck) checkForEachLoopFieldNaming(loop *tree.ForEachLoopStatement) {
+	if !isLowerCamelCase(loop.Field.Value) {
+		check.reportInvalidNode(loop.Field, MessageInvalidDeclarationName)
+	}
+}
+
+// checkTranslationUnitNaming ensures that the translation units name is a valid name for
 // a Strict type, it has to be lowerCamelCase.
-func (check *NamingCheck) CheckTranslationUnitNaming(unit *tree.TranslationUnit) {
+func (check *NamingCheck) checkTranslationUnitNaming(unit *tree.TranslationUnit) {
 	if !isLowerCamelCase(unit.ToTypeName().NonGenericName()) {
 		check.reportInvalidNode(unit, MessageInvalidUnitName)
 	}
 }
 
-// CheckFieldNaming ensures that all fields that are ever defined have an lowerCamelCase name.
-func (check *NamingCheck) CheckFieldNaming(method *tree.AssignStatement) {
+// checkFieldNaming ensures that all fields that are ever defined have an
+// lowerCamelCase name.
+func (check *NamingCheck) checkFieldNaming(method *tree.AssignStatement) {
 	assignedField := method.Target
 	identifier, isIdentifier := assignedField.(*tree.Identifier)
 	if !isIdentifier {
@@ -96,11 +104,11 @@ func (check *NamingCheck) CheckFieldNaming(method *tree.AssignStatement) {
 	}
 }
 
-// CheckMethodNamingAndImplicitParameters ensures that a methods name is lowerCamelCase and that
+// checkMethodNamingAndImplicitParameters ensures that a methods name is lowerCamelCase and that
 // its parameters have explicit names if their type occurs more than once in the ParameterList.
 // Meaning that when the ParameterList contains two numbers: '(number, number x)', both of the
 // parameters need an explicit name: '(number x, number y)'.
-func (check *NamingCheck) CheckMethodNamingAndImplicitParameters(method *tree.MethodDeclaration) {
+func (check *NamingCheck) checkMethodNamingAndImplicitParameters(method *tree.MethodDeclaration) {
 	if !isLowerCamelCase(method.Name.Value) {
 		check.reportInvalidNode(method, MessageInvalidDeclarationName)
 	}
@@ -117,8 +125,8 @@ func (check *NamingCheck) ensureExplicitParameterNamingOnDuplicateTypes(paramete
 	}
 }
 
-// CheckParameterNaming ensures that a parameter is named lowerCamelCase.
-func (check *NamingCheck) CheckParameterNaming(parameter *tree.Parameter) {
+// checkParameterNaming ensures that a parameter is named lowerCamelCase.
+func (check *NamingCheck) checkParameterNaming(parameter *tree.Parameter) {
 	if isLowerCamelCase(parameter.Name.Value) {
 		return
 	}

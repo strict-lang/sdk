@@ -21,7 +21,7 @@ func (generation *Generation) generateImplicitImports() {
 	}
 }
 
-func (generation *Generation) GenerateMainMethod(nodes []tree.Node) {
+func (generation *Generation) GenerateMainMethod(nodes []tree.Statement) {
 	generation.Emit("int main(int argc, char **argv) ")
 	block := &tree.BlockStatement{
 		Children: nodes,

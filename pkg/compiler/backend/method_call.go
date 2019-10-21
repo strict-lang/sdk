@@ -92,18 +92,14 @@ func (generation *Generation) generateLabeledConstructorCallLambdaBody(
 		Target: &tree.FieldDeclaration{
 			Name: &tree.Identifier{
 				Value:        constructedFieldName,
-				NodePosition: tree.ZeroArea{},
 			},
 			TypeName:     typeName,
-			NodePosition: tree.ZeroArea{},
 		},
 		Value: &tree.CallExpression{
 			Target:       typeName,
 			Arguments:    others,
-			NodePosition: tree.ZeroArea{},
 		},
 		Operator:     token.AssignOperator,
-		NodePosition: tree.ZeroArea{},
 	})
 	for _, argument := range labeled {
 		generation.EmitIndent()
@@ -116,17 +112,13 @@ func (generation *Generation) emitFieldInitializationForLabeledArgument(argument
 		Target: &tree.FieldSelectExpression{
 			Target: &tree.Identifier{
 				Value:        constructedFieldName,
-				NodePosition: tree.ZeroArea{},
 			},
 			Selection: &tree.Identifier{
 				Value:        argument.Label,
-				NodePosition: tree.ZeroArea{},
 			},
-			NodePosition: nil,
 		},
 		Value:        argument.Value,
 		Operator:     token.AssignOperator,
-		NodePosition: tree.ZeroArea{},
 	})
 }
 

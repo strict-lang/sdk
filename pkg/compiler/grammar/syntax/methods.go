@@ -40,7 +40,7 @@ func (parsing *Parsing) parseMethodBlockBody() tree.Node {
 func (parsing *Parsing) parseMethodSignature() methodSignature {
 	return methodSignature{
 		returnTypeName: parsing.parseOptionalReturnTypeName(),
-		name:           parsing.expectAnyIdentifier(),
+		name:           parsing.parseIdentifier(),
 		parameters:     parsing.parseParameterListWithParens(),
 	}
 }

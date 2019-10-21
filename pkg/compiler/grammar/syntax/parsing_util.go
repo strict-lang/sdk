@@ -11,20 +11,18 @@ import (
 // otherwise an UnexpectedTokenError is returned.
 func (parsing *Parsing) skipOperator(operator token.Operator) {
 	if err := parsing.expectOperator(operator); err != nil {
-		return err
+		parsing.throwError(err)
 	}
 	parsing.advance()
-	return nil
 }
 
 // skipKeyword skips the next keyword if it the passed keyword, otherwise
 // otherwise an UnexpectedTokenError is returned.
 func (parsing *Parsing) skipKeyword(keyword token.Keyword) {
 	if err := parsing.expectKeyword(keyword); err != nil {
-		return err
+		parsing.throwError(err)
 	}
 	parsing.advance()
-	return nil
 }
 
 // expectOperator peeks the next token and expects it to be the passed operator,
@@ -56,15 +54,15 @@ func (parsing *Parsing) expectKeyword(expected token.Keyword) error {
 func (parsing *Parsing) expectAnyIdentifier() *tree.Identifier {
 	current := parsing.token()
 	if !token.IsIdentifierToken(current) {
-		return nil, &UnexpectedTokenError{
+		parsing.throwError(&UnexpectedTokenError{
 			Token:    current,
 			Expected: "any identifier",
-		}
+		})
 	}
 	return &tree.Identifier{
 		Value:  current.Value(),
-		Region: parsing.createRegionFromToken(),
-	}, nil
+		Region: parsing.createRegionFromCurrentToken(),
+	}
 }
 
 func (parsing *Parsing) isLookingAtKeyword(keyword token.Keyword) bool {

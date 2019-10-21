@@ -14,7 +14,7 @@ type ImportStatement struct {
 
 // ImportTarget is the File or package that is imported with an ImportStatement.
 type ImportTarget interface {
-	toModuleName() string
+	ToModuleName() string
 	FilePath() string
 }
 
@@ -29,15 +29,15 @@ func (statement *ImportStatement) ModuleName() string {
 	if statement.HasAlias() {
 		return statement.Alias.Value
 	}
-	return statement.Target.toModuleName()
+	return statement.Target.ToModuleName()
 }
 
 func (statement *ImportStatement) Accept(visitor Visitor) {
-	VisitImportStatement(statement)
+	visitor.VisitImportStatement(statement)
 }
 
 func (statement *ImportStatement) AcceptRecursive(visitor Visitor) {
-	VisitImportStatement(statement)
+	statement.Accept(visitor)
 }
 
 func (statement *ImportStatement) Locate() input.Region {
@@ -68,7 +68,7 @@ func writePath(parts []string, builder *strings.Builder) {
 	}
 }
 
-func (target *IdentifierChainImport) toModuleName() string {
+func (target *IdentifierChainImport) ToModuleName() string {
 	// The module is imported into an anonymous namespace
 	return ""
 }
@@ -81,7 +81,7 @@ func (target *FileImport) FilePath() string {
 	return fmt.Sprintf("<%s>", target.Path)
 }
 
-func (target *FileImport) toModuleName() string {
+func (target *FileImport) ToModuleName() string {
 	path := target.Path
 	begin := findFileNameBegin(path)
 	end := findFileNameEnd(path)

@@ -13,7 +13,7 @@ type classDefinition struct {
 	fields             []tree.Node
 	generation         *backend.Generation
 	shouldCreateInit   bool
-	declarationVisitor *tree.Visitor
+	declarationVisitor tree.Visitor
 }
 
 func newClassDefinition(
@@ -29,16 +29,17 @@ func newClassDefinition(
 		fields:             fields,
 		generation:         generation,
 		shouldCreateInit:   createInit,
-		declarationVisitor: tree.NewEmptyVisitor(),
 	}
-	initializeVisitor(definition)
+	definition.declarationVisitor = createVisitorForDefinition(definition)
 	return definition
 }
 
-func initializeVisitor(definition *classDefinition) {
-	definition.declarationVisitor.VisitMethodDeclaration = definition.writeMethodDeclaration
-	definition.declarationVisitor.VisitFieldDeclaration = definition.writeFieldDeclaration
-	definition.declarationVisitor.VisitConstructorDeclaration = definition.writeConstructorDeclaration
+func createVisitorForDefinition(definition *classDefinition) tree.Visitor {
+	visitor := tree.NewEmptyVisitor()
+	visitor.MethodDeclarationVisitor = definition.writeMethodDeclaration
+	visitor.FieldDeclarationVisitor = definition.writeFieldDeclaration
+	visitor.ConstructorDeclarationVisitor = definition.writeConstructorDeclaration
+	return visitor
 }
 
 func filterFieldDeclarations(nodes []tree.Node) (fields []tree.Node, others []tree.Node) {

@@ -19,11 +19,11 @@ func NewGeneration() *Generation {
 	return &Generation{}
 }
 
-func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.Visitor) {
+func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.DelegatingVisitor) {
 	generation.generation = parent
-	visitor.VisitClassDeclaration = generation.generateClassDeclaration
-	visitor.VisitMethodDeclaration = generation.generateMethodDeclaration
-	visitor.VisitConstructorDeclaration = generation.generateConstructorDeclaration
+	visitor.ClassDeclarationVisitor = generation.generateClassDeclaration
+	visitor.MethodDeclarationVisitor = generation.generateMethodDeclaration
+	visitor.ConstructorDeclarationVisitor = generation.generateConstructorDeclaration
 	generation.importMatchingHeader()
 }
 
@@ -38,7 +38,7 @@ func (generation *Generation) generateClassDeclaration(declaration *tree.ClassDe
 	generation.className = declaration.Name
 	members, initBody := filterDeclarations(declaration.Children)
 	if len(initBody) > 0 {
-		generation.writeInitMethod(initBody)
+		generation.writeInitMethod(backend.ExtractStatements(initBody))
 		generation.generation.EmitEndOfLine()
 		generation.hasWrittenInit = true
 	}
@@ -54,8 +54,7 @@ func (generation *Generation) generateClassDeclaration(declaration *tree.ClassDe
 func (generation *Generation) writeImplicitConstructor() {
 	generation.generateConstructorDeclaration(&tree.ConstructorDeclaration{
 		Parameters:   []*tree.Parameter{},
-		Body:         &tree.BlockStatement{},
-		NodePosition: tree.ZeroArea{},
+		Child:         &tree.BlockStatement{},
 	})
 }
 
@@ -76,10 +75,8 @@ func createInitStatement(field *tree.FieldDeclaration) tree.Node {
 		Value: &tree.CallExpression{
 			Target:       field.TypeName,
 			Arguments:    []*tree.CallArgument{},
-			NodePosition: tree.ZeroArea{},
 		},
 		Operator:     0,
-		NodePosition: nil,
 	}
 }
 
@@ -98,17 +95,17 @@ func filterDeclarations(nodes []tree.Node) (declarations []tree.Node, remainder 
 	return
 }
 
+
+
 func (generation *Generation) generateMethodDeclaration(declaration *tree.MethodDeclaration) {
 	name := fmt.Sprintf("%s::%s", generation.className, declaration.Name.Value)
 	instanceMethod := &tree.MethodDeclaration{
 		Name: &tree.Identifier{
 			Value:        name,
-			NodePosition: tree.ZeroArea{},
 		},
 		Type:         declaration.Type,
 		Parameters:   declaration.Parameters,
 		Body:         declaration.Body,
-		NodePosition: declaration.NodePosition,
 	}
 	generation.generation.GenerateMethod(instanceMethod)
 }
@@ -121,11 +118,10 @@ func (generation *Generation) generateConstructorDeclaration(declaration *tree.C
 	output.EmitParameterList(declaration.Parameters)
 	output.Emit(" ")
 	body := &tree.BlockStatement{
-		Children: []tree.Node{
+		Children: []tree.Statement{
 			generation.generateInitCall(),
-			declaration.Body,
+			declaration.Child,
 		},
-		NodePosition: tree.ZeroArea{},
 	}
 	output.EmitNode(body)
 }
@@ -135,29 +131,23 @@ func (generation *Generation) generateInitCall() tree.Node {
 		Expression: &tree.CallExpression{
 			Target: &tree.Identifier{
 				Value:        backend.InitMethodName,
-				NodePosition: tree.ZeroArea{},
 			},
 			Arguments:    []*tree.CallArgument{},
-			NodePosition: tree.ZeroArea{},
 		},
 	}
 }
 
-func (generation *Generation) writeInitMethod(body []tree.Node) {
+func (generation *Generation) writeInitMethod(body []tree.Statement) {
 	generation.generateMethodDeclaration(&tree.MethodDeclaration{
 		Name: &tree.Identifier{
 			Value:        backend.InitMethodName,
-			NodePosition: tree.ZeroArea{},
 		},
 		Type: &tree.ConcreteTypeName{
 			Name:         "void",
-			NodePosition: tree.ZeroArea{},
 		},
 		Body: &tree.BlockStatement{
 			Children:     body,
-			NodePosition: tree.ZeroArea{},
 		},
 		Parameters:   []*tree.Parameter{},
-		NodePosition: tree.ZeroArea{},
 	})
 }

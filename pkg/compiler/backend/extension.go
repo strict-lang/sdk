@@ -5,7 +5,7 @@ import (
 )
 
 type Extension interface {
-	ModifyVisitor(generation *Generation, visitor *tree.Visitor)
+	ModifyVisitor(generation *Generation, visitor *tree.DelegatingVisitor)
 }
 
 type extensionSet struct {
@@ -16,7 +16,7 @@ func NewExtensionSet(extensions ...Extension) Extension {
 	return &extensionSet{elements: extensions}
 }
 
-func (extensions *extensionSet) ModifyVisitor(generation *Generation, visitor *tree.Visitor) {
+func (extensions *extensionSet) ModifyVisitor(generation *Generation, visitor *tree.DelegatingVisitor) {
 	for _, element := range extensions.elements {
 		element.ModifyVisitor(generation, visitor)
 	}

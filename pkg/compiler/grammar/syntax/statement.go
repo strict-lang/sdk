@@ -1,7 +1,6 @@
 package syntax
 
 import (
-	"errors"
 	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
@@ -70,7 +69,7 @@ func (parsing *Parsing) parseLoopStatement() tree.Node {
 	return parsing.completeForEachStatement(beginOffset)
 }
 
-func (parsing* Parsing) isLookingAtRangedLoop() bool {
+func (parsing *Parsing) isLookingAtRangedLoop() bool {
 	return token.IsIdentifierToken(parsing.token()) &&
 		token.HasKeywordValue(parsing.peek(), token.FromKeyword)
 }
@@ -79,7 +78,7 @@ func (parsing* Parsing) isLookingAtRangedLoop() bool {
 // after it checked for a foreach statement. At this point the last token
 // is an identifier that is the name of the foreach loops element field.
 // This method completes the loops grammar.
-func (parsing *Parsing) completeForEachStatement(beginOffset input.Offset) *tree.ForEachLoopStatement{
+func (parsing *Parsing) completeForEachStatement(beginOffset input.Offset) *tree.ForEachLoopStatement {
 	field := parsing.parseIdentifier()
 	parsing.skipKeyword(token.InKeyword)
 	value := parsing.parseExpression()
@@ -203,7 +202,7 @@ func (parsing *Parsing) parseFileImportWithAlias(
 	parsing.skipEndOfStatement()
 	return &tree.ImportStatement{
 		Target: target,
-		Alias: alias,
+		Alias:  alias,
 		Region: parsing.createRegion(beginOffset),
 	}
 }
@@ -212,8 +211,6 @@ func (parsing *Parsing) parseImportAlias() *tree.Identifier {
 	return parsing.parseIdentifier()
 }
 
-var errNoAssign = errors.New("no assign")
-
 func (parsing *Parsing) parseOptionalAssignValue() tree.Expression {
 	parsing.skipOperator(token.AssignOperator)
 	return parsing.parseExpression()
@@ -221,31 +218,35 @@ func (parsing *Parsing) parseOptionalAssignValue() tree.Expression {
 
 type keywordStatementParser func(*Parsing) tree.Node
 
-var keywordStatementParserTable = map[token.Keyword] keywordStatementParser {
-	token.IfKeyword: func(parsing *Parsing) tree.Node {
-		return parsing.parseConditionalStatement()
-	},
-	token.ForKeyword: func(parsing *Parsing) tree.Node {
-		return parsing.parseLoopStatement()
-	},
-	token.YieldKeyword: func(parsing *Parsing) tree.Node {
-		return parsing.parseYieldStatement()
-	},
-	token.ReturnKeyword: func(parsing *Parsing) tree.Node {
-		return parsing.parseReturnStatement()
-	},
-	token.ImportKeyword: func(parsing *Parsing) tree.Node {
-		return parsing.parseImportStatement()
-	},
-	token.AssertKeyword: func(parsing *Parsing) tree.Node {
-		return parsing.parseAssertStatement()
-	},
-	token.TestKeyword: func(parsing *Parsing) tree.Node {
-		return parsing.parseTestStatement()
-	},
-	token.MethodKeyword: func(parsing *Parsing) tree.Node {
-		return parsing.parseMethodDeclaration()
-	},
+var keywordStatementParserTable map[token.Keyword]keywordStatementParser
+
+func init() {
+	keywordStatementParserTable = map[token.Keyword]keywordStatementParser{
+		token.IfKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseConditionalStatement()
+		},
+		token.ForKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseLoopStatement()
+		},
+		token.YieldKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseYieldStatement()
+		},
+		token.ReturnKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseReturnStatement()
+		},
+		token.ImportKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseImportStatement()
+		},
+		token.AssertKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseAssertStatement()
+		},
+		token.TestKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseTestStatement()
+		},
+		token.MethodKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseMethodDeclaration()
+		},
+	}
 }
 
 // findKeywordStatementParser returns a function that parses statements based on a passed
@@ -436,8 +437,7 @@ func (parsing *Parsing) parseFieldDeclaration() (tree.Node, error) {
 func (parsing *Parsing) parseFieldDeclarationWithTypeName(
 	beginOffset input.Offset, typeName tree.TypeName) (tree.Node, error) {
 
-	fieldName := parsing.expectAnyIdentifier()
-	parsing.advance()
+	fieldName := parsing.parseIdentifier()
 	declaration := &tree.FieldDeclaration{
 		Name:     fieldName,
 		TypeName: typeName,
