@@ -21,7 +21,7 @@ func createTestTranslationUnit() *TranslationUnit {
 			Children:   []Node{&WildcardNode{Region: input.ZeroRegion}},
 			Region:     input.ZeroRegion,
 		},
-		NodeRegion: input.Region{},
+		Region: input.Region{},
 	}
 }
 
@@ -46,7 +46,7 @@ func TestTranslationUnit_Region(testing *testing.T) {
 			Name:       "test",
 			Imports:    nil,
 			Class:      nil,
-			NodeRegion: region,
+			Region: region,
 		}
 	})
 }

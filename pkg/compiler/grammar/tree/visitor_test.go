@@ -18,12 +18,12 @@ func CreateVisitorTest(node Node, testing *testing.T) *VisitorTest {
 }
 
 func (test *VisitorTest) Run() {
-	Accept(test.visitor)
+	test.tested.Accept(test.visitor)
 	test.ensureComplete()
 }
 
 func (test *VisitorTest) RunRecursive() {
-	AcceptRecursive(test.visitor)
+	test.tested.AcceptRecursive(test.visitor)
 	test.ensureComplete()
 }
 
