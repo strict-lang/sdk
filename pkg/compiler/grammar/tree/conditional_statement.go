@@ -9,27 +9,51 @@ type ConditionalStatement struct {
 	Region      input.Region
 }
 
-func (statement *ConditionalStatement) HasAlternative() bool {
-	return statement.Alternative != nil
+func (conditional *ConditionalStatement) HasAlternative() bool {
+	return conditional.Alternative != nil
 }
 
-func (statement *ConditionalStatement) Accept(visitor Visitor) {
-	visitor.VisitConditionalStatement(statement)
+func (conditional *ConditionalStatement) Accept(visitor Visitor) {
+	visitor.VisitConditionalStatement(conditional)
 }
 
-func (statement *ConditionalStatement) AcceptRecursive(visitor Visitor) {
-	statement.Accept(visitor)
-	statement.Condition.AcceptRecursive(visitor)
-	statement.Consequence.AcceptRecursive(visitor)
-	if statement.HasAlternative() {
-		statement.Alternative.AcceptRecursive(visitor)
+func (conditional *ConditionalStatement) AcceptRecursive(visitor Visitor) {
+	conditional.Accept(visitor)
+	conditional.Condition.AcceptRecursive(visitor)
+	conditional.Consequence.AcceptRecursive(visitor)
+	if conditional.HasAlternative() {
+		conditional.Alternative.AcceptRecursive(visitor)
 	}
 }
 
-func (statement *ConditionalStatement) Locate() input.Region {
-	return statement.Region
+func (conditional *ConditionalStatement) Locate() input.Region {
+	return conditional.Region
 }
 
-func (statement *ConditionalStatement) IsModifyingControlFlow() bool {
+func (conditional *ConditionalStatement) IsModifyingControlFlow() bool {
 	return true
+}
+
+func (conditional *ConditionalStatement) Matches(node Node) bool {
+	if target, ok := node.(*ConditionalStatement); ok {
+		return conditional.matchesStatement(target)
+	}
+	return false
+}
+
+func (conditional *ConditionalStatement) matchesStatement(
+	target *ConditionalStatement) bool {
+
+	return conditional.Condition.Matches(target.Condition) &&
+		conditional.Consequence.Matches(target.Consequence) &&
+		conditional.matchesAlternative(target)
+}
+
+func (conditional *ConditionalStatement) matchesAlternative(
+	target *ConditionalStatement) bool {
+
+	if !conditional.HasAlternative() {
+		return !target.HasAlternative()
+	}
+	return conditional.Alternative.Matches(target.Alternative)
 }

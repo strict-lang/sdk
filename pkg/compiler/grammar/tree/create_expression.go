@@ -21,3 +21,11 @@ func (create *CreateExpression) AcceptRecursive(visitor Visitor) {
 func (create *CreateExpression) Locate() input.Region {
 	return create.Region
 }
+
+func (create *CreateExpression) Matches(node Node) bool {
+	if target, ok := node.(*CreateExpression); ok {
+		return create.Call.Matches(target.Call) &&
+			create.Type.Matches(target.Type)
+	}
+	return false
+}

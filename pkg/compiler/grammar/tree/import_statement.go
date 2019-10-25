@@ -12,6 +12,33 @@ type ImportStatement struct {
 	Region input.Region
 }
 
+func (statement *ImportStatement) Accept(visitor Visitor) {
+	visitor.VisitImportStatement(statement)
+}
+
+func (statement *ImportStatement) AcceptRecursive(visitor Visitor) {
+	statement.Accept(visitor)
+}
+
+func (statement *ImportStatement) Locate() input.Region {
+	return statement.Region
+}
+
+func (statement *ImportStatement) Matches(node Node) bool {
+	if target, ok := node.(*ImportStatement); ok {
+		return statement.Target == target.Target &&
+			statement.matchesAlias(target)
+	}
+	return false
+}
+
+func (statement *ImportStatement) matchesAlias(target *ImportStatement) bool {
+	if statement.Alias == nil {
+		return target.Alias == nil
+	}
+	return statement.Alias.Matches(target.Alias)
+}
+
 // ImportTarget is the File or package that is imported with an ImportStatement.
 type ImportTarget interface {
 	ToModuleName() string
@@ -30,18 +57,6 @@ func (statement *ImportStatement) ModuleName() string {
 		return statement.Alias.Value
 	}
 	return statement.Target.ToModuleName()
-}
-
-func (statement *ImportStatement) Accept(visitor Visitor) {
-	visitor.VisitImportStatement(statement)
-}
-
-func (statement *ImportStatement) AcceptRecursive(visitor Visitor) {
-	statement.Accept(visitor)
-}
-
-func (statement *ImportStatement) Locate() input.Region {
-	return statement.Region
 }
 
 type IdentifierChainImport struct {

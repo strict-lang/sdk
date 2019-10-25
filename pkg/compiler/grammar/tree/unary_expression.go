@@ -24,3 +24,11 @@ func (unary *UnaryExpression) AcceptRecursive(visitor Visitor) {
 func (unary *UnaryExpression) Locate() input.Region {
 	return unary.Region
 }
+
+func (unary *UnaryExpression) Matches(node Node) bool {
+	if target, ok := node.(*UnaryExpression); ok {
+		return unary.Operator == target.Operator &&
+			unary.Operand.Matches(target.Operand)
+	}
+	return false
+}

@@ -74,7 +74,7 @@ func TestRegion_ContainsOffset_Outside(testing *testing.T) {
 func testOffsetsNotInRegion(region Region, offsets []Offset, testing *testing.T) {
 	for _, offset := range offsets {
 		if region.ContainsOffset(offset) {
-			testing.Errorf("Expected %s not to be in Locate %s", offset, region)
+			testing.Errorf("Expected %d not to be in Locate %s", offset, region)
 		}
 	}
 }

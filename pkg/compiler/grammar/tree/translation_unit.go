@@ -34,3 +34,24 @@ func (unit *TranslationUnit) ToTypeName() TypeName {
 func (unit *TranslationUnit) Locate() input.Region {
 	return unit.Region
 }
+
+func (unit *TranslationUnit) Matches(node Node) bool {
+	if target, ok := node.(*TranslationUnit); ok {
+		return unit.Name == target.Name &&
+			unit.MatchesImports(target.Imports) &&
+			unit.Class.Matches(target.Class)
+	}
+	return false
+}
+
+func (unit *TranslationUnit) MatchesImports(imports []*ImportStatement) bool {
+	if len(unit.Imports) != len(imports) {
+		return false
+	}
+	for index := 0; index < len(imports); index++ {
+		if !unit.Imports[index].Matches(imports[index]) {
+			return false
+		}
+	}
+	return true
+}

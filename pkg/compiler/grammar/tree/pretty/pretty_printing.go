@@ -70,12 +70,24 @@ func Print(node tree.Node) {
 	fmt.Println(printing.buffer.String())
 }
 
+func Format(node tree.Node) string {
+	printing := newPrinting()
+	printing.printNode(node)
+	return printing.buffer.String()
+}
+
 // PrintColored prints a pretty representation of the AST node, that uses
 // colors to highlight the output in a way that makes it easier to read.
 func PrintColored(node tree.Node) {
 	printing := newColoredPrinting()
 	printing.printNode(node)
 	fmt.Println(printing.buffer.String())
+}
+
+func FormatColored(node tree.Node) string {
+	printing := newColoredPrinting()
+	printing.printNode(node)
+	return printing.buffer.String()
 }
 
 func (printing *Printing) print(message string) {

@@ -52,7 +52,7 @@ func (parsing *Parsing) parseClassDeclaration() *tree.ClassDeclaration {
 	nodes := parsing.parseTopLevelNodes()
 	return &tree.ClassDeclaration{
 		Name:       parsing.unitName,
-		Parameters: []tree.ClassParameter{},
+		Parameters: []*tree.ClassParameter{},
 		SuperTypes: []tree.TypeName{},
 		Children:   nodes,
 		Region:     parsing.createRegion(begin),

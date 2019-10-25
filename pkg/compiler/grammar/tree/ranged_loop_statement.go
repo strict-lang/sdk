@@ -28,3 +28,13 @@ func (loop *RangedLoopStatement) AcceptRecursive(visitor Visitor) {
 func (loop *RangedLoopStatement) Locate() input.Region {
 	return loop.Region
 }
+
+func (loop *RangedLoopStatement) Matches(node Node) bool {
+	if target, ok := node.(*RangedLoopStatement); ok {
+		return loop.Field.Matches(target.Field) &&
+			loop.Begin.Matches(target.Begin) &&
+			loop.End.Matches(target.End) &&
+			loop.Body.Matches(target.Body)
+	}
+	return false
+}

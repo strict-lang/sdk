@@ -4,7 +4,7 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type ClassDeclaration struct {
 	Name       string
-	Parameters []ClassParameter
+	Parameters []*ClassParameter
 	SuperTypes []TypeName
 	Children   []Node
 	Region     input.Region
@@ -13,6 +13,11 @@ type ClassDeclaration struct {
 type ClassParameter struct {
 	Name      string
 	SuperType TypeName
+}
+
+func (parameter *ClassParameter) Matches(target *ClassParameter) bool {
+	return parameter.Name == target.Name &&
+		parameter.SuperType.Matches(target.SuperType)
 }
 
 func (class *ClassDeclaration) Accept(visitor Visitor) {
@@ -28,4 +33,54 @@ func (class *ClassDeclaration) AcceptRecursive(visitor Visitor) {
 
 func (class *ClassDeclaration) Locate() input.Region {
 	return class.Region
+}
+
+func (class *ClassDeclaration) Matches(node Node) bool {
+	if target, ok := node.(*ClassDeclaration); ok {
+		return class.matchesClass(target)
+	}
+	return false
+}
+
+func (class *ClassDeclaration) matchesClass(target *ClassDeclaration) bool {
+	return class.Name == target.Name &&
+		class.hasParameters(target.Parameters) &&
+		class.hasSuperTypes(target.SuperTypes) &&
+		class.hasChildren(target.Children)
+}
+
+func (class *ClassDeclaration) hasParameters(parameters []*ClassParameter) bool {
+	if len(class.Parameters) != len(parameters) {
+		return false
+	}
+	for index := 0; index < len(parameters); index++ {
+		if class.Parameters[index].Matches(parameters[index]) {
+			return false
+		}
+	}
+	return true
+}
+
+func (class *ClassDeclaration) hasSuperTypes(types []TypeName) bool {
+	if len(class.SuperTypes) != len(types) {
+		return false
+	}
+	for index := 0; index < len(types); index++ {
+		if class.SuperTypes[index].Matches(types[index]) {
+			return false
+		}
+	}
+	return true
+}
+
+func (class *ClassDeclaration) hasChildren(children []Node) bool {
+	if len(class.Children) != len(children) {
+		return false
+	}
+	for index := 0; index < len(children); index++ {
+		if class.Children[index].Matches(children[index]) {
+			return false
+		}
+	}
+	return true
 }

@@ -15,16 +15,29 @@ type AssignStatement struct {
 	Region   input.Region
 }
 
-func (statement *AssignStatement) Accept(visitor Visitor) {
-	visitor.VisitAssignStatement(statement)
+func (assign *AssignStatement) Accept(visitor Visitor) {
+	visitor.VisitAssignStatement(assign)
 }
 
-func (statement *AssignStatement) AcceptRecursive(visitor Visitor) {
-	statement.Accept(visitor)
-	statement.Target.AcceptRecursive(visitor)
-	statement.Value.AcceptRecursive(visitor)
+func (assign *AssignStatement) AcceptRecursive(visitor Visitor) {
+	assign.Accept(visitor)
+	assign.Target.AcceptRecursive(visitor)
+	assign.Value.AcceptRecursive(visitor)
 }
 
-func (statement *AssignStatement) Locate() input.Region {
-	return statement.Region
+func (assign *AssignStatement) Locate() input.Region {
+	return assign.Region
+}
+
+func (assign *AssignStatement) Matches(node Node) bool {
+	if target, ok := node.(*AssignStatement); ok {
+		return assign.matchesAssign(target)
+	}
+	return false
+}
+
+func (assign *AssignStatement) matchesAssign(target *AssignStatement) bool {
+	return assign.Operator == target.Operator &&
+		assign.Target.Matches(target.Target) &&
+		assign.Value.Matches(target.Value)
 }

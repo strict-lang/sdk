@@ -3,6 +3,7 @@ package syntax
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty"
 	"testing"
 )
 
@@ -48,30 +49,11 @@ func TestParser_ParseMethodDeclaration(test *testing.T) {
 	for entry, expected := range entries {
 		parser := NewTestParser(lexical.NewStringScanning(entry))
 		method := parser.parseMethodDeclaration()
-		if !compareMethods(*method, expected) {
-			test.Errorf("unexpected node value %s, expected %s", *method, expected)
+		if method.Matches(&expected) {
+			test.Errorf(
+				"unexpected node value %s, expected %s",
+				pretty.Format(method),
+				pretty.Format(&expected))
 		}
 	}
-}
-
-func compareMethods(method tree.MethodDeclaration, expected tree.MethodDeclaration) bool {
-	if method.Name.Value != expected.Name.Value {
-		return false
-	}
-	if method.Type.FullName() != expected.Type.FullName() {
-		return false
-	}
-	if len(method.Parameters) != len(expected.Parameters) {
-		return false
-	}
-	for index, methodParameter := range method.Parameters {
-		expectedParameter := expected.Parameters[index]
-		if methodParameter.Name.Value != expectedParameter.Name.Value {
-			return false
-		}
-		if methodParameter.Type.FullName() != expectedParameter.Type.FullName() {
-			return false
-		}
-	}
-	return true
 }

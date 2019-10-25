@@ -30,3 +30,10 @@ func (name *ListTypeName) AcceptRecursive(visitor Visitor) {
 func (name *ListTypeName) Locate() input.Region {
 	return name.Region
 }
+
+func (name *ListTypeName) Matches(node Node) bool {
+	if target, ok := node.(*ListTypeName); ok {
+		return name.Element.Matches(target.Element)
+	}
+	return false
+}
