@@ -17,3 +17,10 @@ func (expression *ExpressionStatement) AcceptRecursive(visitor Visitor) {
 func (expression *ExpressionStatement) Locate() input.Region {
 	return expression.Expression.Locate()
 }
+
+func (expression *ExpressionStatement) Matches(node Node) bool {
+	if target, ok := node.(*ExpressionStatement); ok {
+		return expression.Expression.Matches(target.Expression)
+	}
+	return false
+}

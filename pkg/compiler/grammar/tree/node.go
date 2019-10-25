@@ -9,6 +9,9 @@ type Node interface {
 	Accept(visitor Visitor)
 	// AcceptRecursive makes the visitor visit this node and its children.
 	AcceptRecursive(visitor Visitor)
+	// Matches checks whether the instance matches the passed node. It does not
+	// take positions into account.
+	Matches(node Node) bool
 }
 
 // Named is implemented by all nodes that have a name.

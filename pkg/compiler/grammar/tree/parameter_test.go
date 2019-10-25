@@ -7,7 +7,7 @@ import (
 
 func TestParameter_Accept(testing *testing.T) {
 	entry := &Parameter{
-		Type:   createTestConcreteName("int"),
+		Type:   &ConcreteTypeName{Name: "int"},
 		Name:   &Identifier{Value: "sum"},
 		Region: input.ZeroRegion,
 	}
@@ -16,7 +16,7 @@ func TestParameter_Accept(testing *testing.T) {
 
 func TestParameter_AcceptRecursive(testing *testing.T) {
 	entry := &Parameter{
-		Type:   createTestConcreteName("int"),
+		Type:   &ConcreteTypeName{Name: "int"},
 		Name:   &Identifier{Value: "sum"},
 		Region: input.ZeroRegion,
 	}
@@ -29,7 +29,7 @@ func TestParameter_AcceptRecursive(testing *testing.T) {
 func TestParameter_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &Parameter{
-			Type:   createTestConcreteName("int"),
+			Type:   &ConcreteTypeName{Name: "int"},
 			Name:   &Identifier{Value: "sum"},
 			Region: region,
 		}

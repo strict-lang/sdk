@@ -28,3 +28,10 @@ func (literal *NumberLiteral) AcceptRecursive(visitor Visitor) {
 func (literal *NumberLiteral) Locate() input.Region {
 	return literal.Region
 }
+
+func (literal *NumberLiteral) Matches(node Node) bool {
+	if target, ok := node.(*NumberLiteral); ok {
+		return literal.Value == target.Value
+	}
+	return false
+}

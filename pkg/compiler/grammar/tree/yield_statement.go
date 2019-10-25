@@ -23,3 +23,10 @@ func (yield *YieldStatement) AcceptRecursive(visitor Visitor) {
 func (yield *YieldStatement) Locate() input.Region {
 	return yield.Region
 }
+
+func (yield *YieldStatement) Matches(node Node) bool {
+	if target, ok := node.(*YieldStatement); ok {
+		return yield.Value.Matches(target.Value)
+	}
+	return false
+}

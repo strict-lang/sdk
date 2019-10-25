@@ -22,3 +22,7 @@ func (node *WildcardNode) AcceptRecursive(visitor Visitor) {
 func (node *WildcardNode) Locate() input.Region {
 	return node.Region
 }
+
+func (node *WildcardNode) Matches(target Node) bool {
+	return true
+}

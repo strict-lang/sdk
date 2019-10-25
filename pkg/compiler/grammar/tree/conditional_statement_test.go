@@ -22,7 +22,7 @@ func TestConditionalStatement_AcceptRecursive_WithAlternative(testing *testing.T
 		Condition: &UnaryExpression{
 			Operator:   token.NegateOperator,
 			Operand:    &WildcardNode{Region: input.ZeroRegion},
-			NodeRegion: input.ZeroRegion,
+			Region: input.ZeroRegion,
 		},
 		Consequence: &WildcardNode{Region: input.ZeroRegion},
 		Region:      input.ZeroRegion,
@@ -40,7 +40,7 @@ func TestConditionalStatement_AcceptRecursive_WithoutAlternative(testing *testin
 		Condition: &UnaryExpression{
 			Operator:   token.NegateOperator,
 			Operand:    &WildcardNode{Region: input.ZeroRegion},
-			NodeRegion: input.ZeroRegion,
+			Region: input.ZeroRegion,
 		},
 		Consequence: &WildcardNode{Region: input.ZeroRegion},
 		Alternative: &WildcardNode{Region: input.ZeroRegion},

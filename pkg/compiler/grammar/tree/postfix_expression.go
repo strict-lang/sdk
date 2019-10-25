@@ -35,3 +35,11 @@ func (expression *PostfixExpression) AcceptRecursive(visitor Visitor) {
 func (expression *PostfixExpression) Locate() input.Region {
 	return expression.Region
 }
+
+func (expression *PostfixExpression) Matches(node Node) bool {
+	if target, ok := node.(*PostfixExpression); ok {
+		return expression.Operator == target.Operator &&
+			target.Operand.Matches(target.Operand)
+	}
+	return false
+}

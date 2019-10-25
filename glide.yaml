@@ -6,3 +6,4 @@ import:
     version: 0.0.5
   - package: github.com/tonnerre/golang-pretty
   - package: github.com/sourcegraph/go-lsp
+  - package: github.com/google/gofuzz

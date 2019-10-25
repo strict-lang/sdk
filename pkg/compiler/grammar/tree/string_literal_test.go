@@ -8,7 +8,7 @@ import (
 func createTestStringLiteral() *StringLiteral {
 	return &StringLiteral{
 		Value:      "test",
-		NodeRegion: input.CreateRegion(0, 5),
+		Region: input.CreateRegion(0, 5),
 	}
 }
 
@@ -26,7 +26,7 @@ func TestStringLiteral_Region(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &StringLiteral{
 			Value:      "test",
-			NodeRegion: region,
+			Region: region,
 		}
 	})
 }
@@ -39,7 +39,7 @@ func TestStringLiteral_ToStringLiteral(testing *testing.T) {
 		return
 	}
 	if converted.Value != entry.Value {
-		testing.Errorf("Invalid ToStringLiteral(): got % - expected %s",
+		testing.Errorf("Invalid ToStringLiteral(): got %s - expected %s",
 			entry.Value, converted.Value)
 	}
 }

@@ -26,3 +26,12 @@ func (loop *ForEachLoopStatement) AcceptRecursive(visitor Visitor) {
 func (loop *ForEachLoopStatement) Locate() input.Region {
 	return loop.Region
 }
+
+func (loop *ForEachLoopStatement) Matches(node Node) bool {
+	if target, ok := node.(*ForEachLoopStatement); ok {
+		return loop.Field.Matches(target.Field) &&
+			loop.Sequence.Matches(target.Sequence) &&
+			loop.Body.Matches(target.Body)
+	}
+	return false
+}

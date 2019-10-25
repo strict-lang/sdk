@@ -26,3 +26,10 @@ func (concrete *ConcreteTypeName) AcceptRecursive(visitor Visitor) {
 func (concrete *ConcreteTypeName) Locate() input.Region {
 	return concrete.Region
 }
+
+func (concrete *ConcreteTypeName) Matches(node Node) bool {
+	if target, ok := node.(*ConcreteTypeName); ok {
+		return concrete.Name == target. Name
+	}
+	return false
+}

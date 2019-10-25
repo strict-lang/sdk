@@ -17,7 +17,7 @@ func TestCreateExpression_Accept(testing *testing.T) {
 	entry := &CreateExpression{
 		Region: input.ZeroRegion,
 		Call:   createTestCallExpression(),
-		Type:   createTestConcreteName("String"),
+		Type:   &ConcreteTypeName{Name: "String"},
 	}
 	CreateVisitorTest(entry, testing).Expect(CreateExpressionNodeKind).Run()
 }
@@ -26,7 +26,7 @@ func TestCreateExpression_AcceptRecursive(testing *testing.T) {
 	entry := &CreateExpression{
 		Region: input.ZeroRegion,
 		Call:   createTestCallExpression(),
-		Type:   createTestConcreteName("String"),
+		Type:   &ConcreteTypeName{Name: "String"},
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(CreateExpressionNodeKind).
@@ -41,7 +41,7 @@ func TestCreateExpression_Locate(testing *testing.T) {
 		return &CreateExpression{
 			Region: region,
 			Call:   createTestCallExpression(),
-			Type:   createTestConcreteName("String"),
+			Type:   &ConcreteTypeName{Name: "String"},
 		}
 	})
 }

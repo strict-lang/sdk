@@ -19,3 +19,11 @@ func (field *FieldDeclaration) AcceptRecursive(visitor Visitor) {
 func (field *FieldDeclaration) Locate() input.Region {
 	return field.Region
 }
+
+func (field *FieldDeclaration) Matches(node Node) bool {
+	if target, ok := node.(*FieldDeclaration); ok {
+		return field.Name.Matches(target.Name) &&
+			field.TypeName.Matches(target.TypeName)
+	}
+	return false
+}

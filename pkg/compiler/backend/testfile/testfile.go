@@ -14,11 +14,11 @@ type TestFile struct {
 	generation *backend.Generation
 }
 
-func (extension *Extension) ModifyVisitor(generation *backend.Generation, visitor *tree.Visitor) {
+func (extension *Extension) ModifyVisitor(generation *backend.Generation, visitor *tree.DelegatingVisitor) {
 	testFile := &TestFile{
 		generation: generation,
 	}
-	visitor.VisitAssertStatement = testFile.emitAssertStatement
+	visitor.AssertStatementVisitor = testFile.emitAssertStatement
 }
 
 const typeTestingInstance = "testing"
