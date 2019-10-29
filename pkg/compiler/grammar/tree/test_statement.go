@@ -20,3 +20,11 @@ func (test *TestStatement) AcceptRecursive(visitor Visitor) {
 func (test *TestStatement) Locate() input.Region {
 	return test.Region
 }
+
+func (test *TestStatement) Matches(node Node) bool {
+	if target, ok := node.(*TestStatement); ok {
+		return test.MethodName == target.MethodName &&
+			test.Child.Matches(target.Child)
+	}
+	return false
+}

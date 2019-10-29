@@ -8,7 +8,7 @@ import (
 func TestClassDeclaration_Accept(testing *testing.T) {
 	entry := &ClassDeclaration{
 		Name:       "test",
-		Parameters: []ClassParameter{},
+		Parameters: []*ClassParameter{},
 		SuperTypes: []TypeName{},
 		Children:   []Node{},
 		Region:     input.ZeroRegion,
@@ -19,7 +19,7 @@ func TestClassDeclaration_Accept(testing *testing.T) {
 func TestClassDeclaration_AcceptRecursive(testing *testing.T) {
 	entry := &ClassDeclaration{
 		Name:       "test",
-		Parameters: []ClassParameter{},
+		Parameters: []*ClassParameter{},
 		SuperTypes: []TypeName{
 			&ConcreteTypeName{
 				Name:   "test",
@@ -42,7 +42,7 @@ func TestClassDeclaration_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &ClassDeclaration{
 			Name:       "test",
-			Parameters: []ClassParameter{},
+			Parameters: []*ClassParameter{},
 			SuperTypes: []TypeName{},
 			Children:   []Node{},
 			Region:     region,

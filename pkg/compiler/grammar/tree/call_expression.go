@@ -35,3 +35,23 @@ func (call *CallExpression) AcceptRecursive(visitor Visitor) {
 func (call *CallExpression) Locate() input.Region {
 	return call.Region
 }
+
+func (call *CallExpression) Matches(node Node) bool {
+	if target, ok := node.(*CallExpression); ok {
+		return call.Target.Matches(target.Target) &&
+			call.hasArguments(target.Arguments)
+	}
+	return false
+}
+
+func (call *CallExpression) hasArguments(arguments CallArgumentList) bool {
+	if len(call.Arguments) != len(arguments) {
+		return false
+	}
+	for index := 0; index < len(arguments); index++ {
+		if !call.Arguments[index].Matches(arguments[index]) {
+			return false
+		}
+	}
+	return true
+}

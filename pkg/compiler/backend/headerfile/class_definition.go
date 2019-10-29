@@ -7,7 +7,7 @@ import (
 
 type classDefinition struct {
 	name               string
-	parameters         []tree.ClassParameter
+	parameters         []*tree.ClassParameter
 	superTypes         []tree.TypeName
 	otherMembers       []tree.Node
 	fields             []tree.Node

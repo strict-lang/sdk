@@ -22,6 +22,7 @@ func TestParameter_AcceptRecursive(testing *testing.T) {
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(ParameterNodeKind).
+		Expect(IdentifierNodeKind).
 		Expect(ConcreteTypeNameNodeKind).
 		RunRecursive()
 }

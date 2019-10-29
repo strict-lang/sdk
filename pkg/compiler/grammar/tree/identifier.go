@@ -20,3 +20,10 @@ func (identifier *Identifier) AcceptRecursive(visitor Visitor) {
 func (identifier *Identifier) Locate() input.Region {
 	return identifier.Region
 }
+
+func (identifier *Identifier) Matches(node Node) bool {
+	if target, ok := node.(*Identifier); ok {
+		return identifier.Value == target.Value
+	}
+	return false
+}

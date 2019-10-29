@@ -11,9 +11,17 @@ func (expression *ExpressionStatement) Accept(visitor Visitor) {
 }
 
 func (expression *ExpressionStatement) AcceptRecursive(visitor Visitor) {
-	expression.AcceptRecursive(visitor)
+	expression.Accept(visitor)
+	expression.Expression.AcceptRecursive(visitor)
 }
 
 func (expression *ExpressionStatement) Locate() input.Region {
 	return expression.Expression.Locate()
+}
+
+func (expression *ExpressionStatement) Matches(node Node) bool {
+	if target, ok := node.(*ExpressionStatement); ok {
+		return expression.Expression.Matches(target.Expression)
+	}
+	return false
 }

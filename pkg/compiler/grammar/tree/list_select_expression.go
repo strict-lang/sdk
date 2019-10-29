@@ -30,3 +30,11 @@ func (expression *ListSelectExpression) AcceptRecursive(visitor Visitor) {
 func (expression *ListSelectExpression) Locate() input.Region {
 	return expression.Region
 }
+
+func (expression *ListSelectExpression) Matches(node Node) bool {
+	if target, ok := node.(*ListSelectExpression); ok {
+		return expression.Index.Matches(target.Index) &&
+			expression.Target.Matches(target.Target)
+	}
+	return false
+}

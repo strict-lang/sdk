@@ -18,3 +18,8 @@ func (statement *EmptyStatement) AcceptRecursive(visitor Visitor) {
 func (statement *EmptyStatement) Locate() input.Region {
 	return statement.Region
 }
+
+func (statement *EmptyStatement) Matches(node Node) bool {
+	_, sameType := node.(*EmptyStatement)
+	return sameType
+}

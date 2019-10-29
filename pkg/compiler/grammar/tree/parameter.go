@@ -14,8 +14,18 @@ func (parameter *Parameter) Accept(visitor Visitor) {
 
 func (parameter *Parameter) AcceptRecursive(visitor Visitor) {
 	parameter.Accept(visitor)
+	parameter.Name.AcceptRecursive(visitor)
+	parameter.Type.AcceptRecursive(visitor)
 }
 
 func (parameter *Parameter) Locate() input.Region {
 	return parameter.Region
+}
+
+func (parameter *Parameter) Matches(node Node) bool {
+	if target, ok := node.(*Parameter); ok {
+		return parameter.Name.Matches(target.Name) &&
+			parameter.Type.Matches(target.Type)
+	}
+	return false
 }

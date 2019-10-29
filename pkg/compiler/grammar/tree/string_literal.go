@@ -51,3 +51,10 @@ func (literal *StringLiteral) ToNumberLiteral() (*NumberLiteral, error) {
 		Region: literal.Region,
 	}, nil
 }
+
+func (literal *StringLiteral) Matches(node Node) bool {
+	if target, ok := node.(*StringLiteral); ok {
+		return literal.Value == target.Value
+	}
+	return false
+}

@@ -13,7 +13,7 @@ func TestAssignStatement_Accept(testing *testing.T) {
 		Operator: token.AssignOperator,
 		Region:   input.ZeroRegion,
 	}
-	CreateVisitorTest(entry, testing).Expect(AssertStatementNodeKind).Run()
+	CreateVisitorTest(entry, testing).Expect(AssignStatementNodeKind).Run()
 }
 
 func TestAssignStatement_AcceptRecursive(testing *testing.T) {
@@ -24,7 +24,7 @@ func TestAssignStatement_AcceptRecursive(testing *testing.T) {
 		Region:   input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).
-		Expect(AssertStatementNodeKind).
+		Expect(AssignStatementNodeKind).
 		Expect(IdentifierNodeKind).
 		Expect(WildcardNodeKind).
 		RunRecursive()
@@ -36,7 +36,7 @@ func TestAssignStatement_Locate(testing *testing.T) {
 			Target:   &Identifier{Value: "strict"},
 			Value:    &StringLiteral{Value: "Cool"},
 			Operator: token.AssignOperator,
-			Region:   input.ZeroRegion,
+			Region:   region,
 		}
 	})
 }

@@ -34,3 +34,11 @@ func (name *GenericTypeName) AcceptRecursive(visitor Visitor) {
 func (name *GenericTypeName) Locate() input.Region {
 	return name.Region
 }
+
+func (name *GenericTypeName) Matches(node Node) bool {
+	if target, ok := node.(*GenericTypeName); ok {
+		return name.Name == target.Name &&
+			name.Generic.Matches(target.Generic)
+	}
+	return false
+}

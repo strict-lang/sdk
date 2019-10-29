@@ -16,7 +16,7 @@ func createTestTranslationUnit() *TranslationUnit {
 		},
 		Class: &ClassDeclaration{
 			Name:       "Test",
-			Parameters: []ClassParameter{},
+			Parameters: []*ClassParameter{},
 			SuperTypes: []TypeName{},
 			Children:   []Node{&WildcardNode{Region: input.ZeroRegion}},
 			Region:     input.ZeroRegion,

@@ -13,9 +13,16 @@ func (assert *AssertStatement) Accept(visitor Visitor) {
 
 func (assert *AssertStatement) AcceptRecursive(visitor Visitor) {
 	assert.Accept(visitor)
-	assert.AcceptRecursive(visitor)
+	assert.Expression.AcceptRecursive(visitor)
 }
 
 func (assert *AssertStatement) Locate() input.Region {
 	return assert.Region
+}
+
+func (assert *AssertStatement) Matches(node Node) bool {
+	if target, ok := node.(*AssertStatement); ok {
+		return assert.Expression.Matches(target.Expression)
+	}
+	return false
 }

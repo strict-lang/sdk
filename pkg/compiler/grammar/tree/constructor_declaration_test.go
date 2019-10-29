@@ -32,7 +32,8 @@ func TestConstructorDeclaration_AcceptRecursive(testing *testing.T) {
 	CreateVisitorTest(region, testing).
 		Expect(ConstructorDeclarationNodeKind).
 		Expect(ParameterNodeKind).
-		Expect(ConcreteTypeNameNodeKind).
+		Expect(IdentifierNodeKind). // Of Parameter
+		Expect(ConcreteTypeNameNodeKind). // Of Parameter
 		Expect(WildcardNodeKind).
 		RunRecursive()
 }

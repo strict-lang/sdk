@@ -26,3 +26,11 @@ func (argument *CallArgument) AcceptRecursive(visitor Visitor) {
 func (argument *CallArgument) Locate() input.Region {
 	return argument.Region
 }
+
+func (argument *CallArgument) Matches(node Node) bool {
+	if target, ok := node.(*CallArgument); ok {
+		return argument.Label == target.Label &&
+			argument.Value.Matches(target.Value)
+	}
+	return false
+}

@@ -18,3 +18,8 @@ func (statement *InvalidStatement) AcceptRecursive(visitor Visitor) {
 func (statement *InvalidStatement) Locate() input.Region {
 	return statement.Region
 }
+
+func (statement *InvalidStatement) Matches(node Node) bool {
+	_, sameType := node.(*InvalidStatement)
+	return sameType
+}

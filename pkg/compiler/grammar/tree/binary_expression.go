@@ -28,10 +28,23 @@ func (binary *BinaryExpression) Accept(visitor Visitor) {
 
 func (binary *BinaryExpression) AcceptRecursive(visitor Visitor) {
 	binary.Accept(visitor)
-	binary.AcceptRecursive(visitor)
-	binary.AcceptRecursive(visitor)
+	binary.LeftOperand.AcceptRecursive(visitor)
+	binary.RightOperand.AcceptRecursive(visitor)
 }
 
 func (binary *BinaryExpression) Locate() input.Region {
 	return binary.Region
+}
+
+func (binary *BinaryExpression) Matches(node Node) bool {
+	if target, ok := node.(*BinaryExpression); ok {
+		return binary.matchesExpression(target)
+	}
+	return false
+}
+
+func (binary *BinaryExpression) matchesExpression(target *BinaryExpression) bool {
+	return binary.Operator == target.Operator &&
+		binary.LeftOperand.Matches(target.LeftOperand) &&
+		binary.RightOperand.Matches(target.RightOperand)
 }

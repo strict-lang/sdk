@@ -54,3 +54,11 @@ go_repository(
     tag = "v1.0.5",
     vcs = "git",
 )
+
+go_repository(
+    name = "com_github_google_gofuzz",
+    importpath = "github.com/google/gofuzz",
+    remote = "https://github.com/google/gofuzz.git",
+    tag = "v1.0.0",
+    vcs = "git",
+)

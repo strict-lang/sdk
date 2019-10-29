@@ -99,5 +99,6 @@ go_test(
     deps = [
         "//pkg/compiler/grammar/token:go_default_library",
         "//pkg/compiler/input:go_default_library",
+        "@com_github_google_gofuzz//:go_default_library",
     ],
 )

@@ -29,3 +29,19 @@ func (statement *ReturnStatement) AcceptRecursive(visitor Visitor) {
 func (statement *ReturnStatement) Locate() input.Region {
 	return statement.Region
 }
+
+func (statement *ReturnStatement) Matches(node Node) bool {
+	if target, ok := node.(*ReturnStatement); ok {
+		return statement.matchesReturnValue(target)
+	}
+	return false
+}
+
+func (statement *ReturnStatement) matchesReturnValue(
+	target *ReturnStatement) bool {
+
+	if statement.Value == nil {
+		return target.Value == nil
+	}
+	return statement.Value.Matches(target.Value)
+}
