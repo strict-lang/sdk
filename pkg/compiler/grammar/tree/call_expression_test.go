@@ -29,6 +29,7 @@ func TestCallExpression_AcceptRecursive(testing *testing.T) {
 		Expect(CallExpressionNodeKind).
 		Expect(WildcardNodeKind).
 		Expect(CallArgumentNodeKind).
+		Expect(WildcardNodeKind).	// From argument
 		RunRecursive()
 }
 

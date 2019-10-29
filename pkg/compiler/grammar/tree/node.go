@@ -68,6 +68,43 @@ const (
 	WildcardNodeKind
 )
 
+var nodeKindNames = map[NodeKind]string {
+	IdentifierNodeKind: "IdentifierNode",
+	StringLiteralNodeKind: "StringLiteralNode",
+	NumberLiteralNodeKind: "NumberLiteralNode",
+	FieldSelectExpressionNodeKind: "FieldSelectExpressionNode",
+	ListSelectExpressionNodeKind: "ListSelectExpressionNode",
+	BinaryExpressionNodeKind: "BinaryExpressionNode",
+	UnaryExpressionNodeKind: "UnaryExpressionNode",
+	PostfixExpressionNodeKind: "PostfixExpressionNode",
+	CreateExpressionNodeKind: "CreateExpressionNode",
+	CallArgumentNodeKind: "CallArgumentNode",
+	CallExpressionNodeKind: "CallExpressionNode",
+	ConditionalStatementNodeKind: "ConditionalStatementNode",
+	InvalidStatementNodeKind: "InvalidStatementNode",
+	YieldStatementNodeKind: "YieldStatementNode",
+	BlockStatementNodeKind: "BlockStatementNode",
+	AssertStatementNodeKind: "AssertStatementNode",
+	ReturnStatementNodeKind: "ReturnStatementNode",
+	ImportStatementNodeKind: "ImportStatementNode",
+	EmptyStatementNodeKind: "EmptyStatementNode",
+	TestStatementNodeKind: "TestStatementNode",
+	AssignStatementNodeKind: "AssignStatementNode",
+	ExpressionStatementNodeKind: "ExpressionStatementNode",
+	ForEachLoopStatementNodeKind: "ForEachLoopStatementNode",
+	RangedLoopStatementNodeKind: "RangedLoopStatementNode",
+	ParameterNodeKind: "ParameterNode",
+	FieldDeclarationNodeKind: "FieldDeclarationNode",
+	MethodDeclarationNodeKind: "MethodDeclarationNode",
+	ClassDeclarationNodeKind: "ClassDeclarationNode",
+	ConstructorDeclarationNodeKind: "ConstructorDeclarationNode",
+	ListTypeNameNodeKind: "ListTypeNameNode",
+	GenericTypeNameNodeKind: "GenericTypeNameNode",
+	ConcreteTypeNameNodeKind: "ConcreteTypeNameNode",
+	TranslationUnitNodeKind: "TranslationUnitNode",
+	WildcardNodeKind: "WildcardNode",
+}
+
 // IsExpression returns true if the kind is an expression.
 func (kind NodeKind) IsExpression() bool {
 	return kind.isInExclusiveRange(kind, expressionKindBegin, expressionKindEnd)
@@ -85,4 +122,16 @@ func (kind NodeKind) IsDeclaration() bool {
 
 func (kind NodeKind) isInExclusiveRange(tested, begin, end NodeKind) bool {
 	return tested > begin && tested < end
+}
+
+func (kind NodeKind) Name() string {
+	name, ok := nodeKindNames[kind]
+	if ok {
+		return name
+	}
+	return "invalid"
+}
+
+func (kind NodeKind) String() string {
+	return kind.Name()
 }

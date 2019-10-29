@@ -30,7 +30,7 @@ func (parsing *Parsing) parseMethodBody() tree.Node {
 		return parsing.parseAssignedMethodBody()
 	}
 	parsing.skipEndOfStatement()
-	return parsing.parseMethodBody()
+	return parsing.parseMethodBlockBody()
 }
 
 func (parsing *Parsing) parseMethodBlockBody() tree.Node {

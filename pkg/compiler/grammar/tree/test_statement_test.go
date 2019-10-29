@@ -30,7 +30,7 @@ func TestTestStatement_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &TestStatement{
 			Child:      &WildcardNode{Region: input.ZeroRegion},
-			Region:     input.ZeroRegion,
+			Region:     region,
 			MethodName: "test",
 		}
 	})

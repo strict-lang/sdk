@@ -26,6 +26,9 @@ func (class *ClassDeclaration) Accept(visitor Visitor) {
 
 func (class *ClassDeclaration) AcceptRecursive(visitor Visitor) {
 	class.Accept(visitor)
+	for _, superType := range class.SuperTypes {
+		superType.AcceptRecursive(visitor)
+	}
 	for _, child := range class.Children {
 		child.AcceptRecursive(visitor)
 	}

@@ -18,10 +18,11 @@ func (declaration *MethodDeclaration) Accept(visitor Visitor) {
 
 func (declaration *MethodDeclaration) AcceptRecursive(visitor Visitor) {
 	declaration.Accept(visitor)
+	declaration.Type.AcceptRecursive(visitor)
 	for _, parameter := range declaration.Parameters {
 		parameter.AcceptRecursive(visitor)
 	}
-	declaration.AcceptRecursive(visitor)
+	declaration.Body.AcceptRecursive(visitor)
 }
 
 func (declaration *MethodDeclaration) Locate() input.Region {

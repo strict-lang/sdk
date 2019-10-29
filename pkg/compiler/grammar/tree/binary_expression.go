@@ -19,8 +19,8 @@ func (binary *BinaryExpression) Accept(visitor Visitor) {
 
 func (binary *BinaryExpression) AcceptRecursive(visitor Visitor) {
 	binary.Accept(visitor)
-	binary.AcceptRecursive(visitor)
-	binary.AcceptRecursive(visitor)
+	binary.LeftOperand.AcceptRecursive(visitor)
+	binary.RightOperand.AcceptRecursive(visitor)
 }
 
 func (binary *BinaryExpression) Locate() input.Region {

@@ -28,6 +28,7 @@ func TestFieldDeclaration_AcceptRecursive(testing *testing.T) {
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(FieldDeclarationNodeKind).
+		Expect(IdentifierNodeKind).
 		Expect(ConcreteTypeNameNodeKind).
 		RunRecursive()
 }
@@ -40,7 +41,7 @@ func TestFieldDeclaration_Locate(testing *testing.T) {
 				Region: input.ZeroRegion,
 			},
 			TypeName: &ConcreteTypeName{Name: "Type"},
-			Region:   input.ZeroRegion,
+			Region:   region,
 		}
 	})
 }

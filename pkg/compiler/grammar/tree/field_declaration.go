@@ -14,6 +14,8 @@ func (field *FieldDeclaration) Accept(visitor Visitor) {
 
 func (field *FieldDeclaration) AcceptRecursive(visitor Visitor) {
 	field.Accept(visitor)
+	field.Name.AcceptRecursive(visitor)
+	field.TypeName.AcceptRecursive(visitor)
 }
 
 func (field *FieldDeclaration) Locate() input.Region {

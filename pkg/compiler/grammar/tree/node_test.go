@@ -28,39 +28,8 @@ func RunNodeRegionTest(testing *testing.T, entryFactory nodeFromRegion) {
 const matchTestRepeat = 10
 var randomSource = rand.NewSource(0xCAFE)
 
-func RunMatchesTest(testing *testing.T, entryFactory nodeFromRegion) {
-	random := rand.New(randomSource)
-	for count := 0; count < matchTestRepeat; count++ {
-		region := createRandomRegion(random)
-		base := entryFactory(region)
-		nonMatching := entryFactory(region)
-		expectNodesMatch(testing, base, nonMatching)
-	}
-}
-
-func RunDiffersTest(testing *testing.T, node Node, entryFactory nodeFromRegion) {
-	random := rand.New(randomSource)
-	for count := 0; count < matchTestRepeat; count++ {
-		region := createRandomRegion(random)
-		nonMatching := entryFactory(region)
-		expectNodesDontMatch(testing, node, nonMatching)
-	}
-}
-
 const fuzzingNilChance = 0.5
 const fuzzTestRepeat = 5
-
-func FuzzDiffersTest(testing *testing.T, node Node, prototype Node) {
-	fuzzer := fuzz.New().NilChance(fuzzingNilChance).NumElements(1, 1)
-	defer func() {
-		err := recover()
-		testing.Errorf("Failed fuzzing: %s", err)
-	}()
-	for count := 0; count < fuzzTestRepeat; count++ {
-		fuzzer.Fuzz(&prototype)
-		expectNodesDontMatch(testing, node, prototype)
-	}
-}
 
 func expectNodesMatch(testing *testing.T, base Node, matching Node) {
 	if !base.Matches(matching) {
@@ -78,4 +47,77 @@ func createRandomRegion(random *rand.Rand) input.Region {
 	return input.CreateRegion(
 		input.Offset(random.Int()),
 		input.Offset(random.Int()))
+}
+
+func createRandomIdentifier(random *rand.Rand) *Identifier {
+	return &Identifier{
+		Value: generateRandomIdentifierValue(random, identifierCharset),
+	}
+}
+
+func createExcludingRandomIdentifier(
+	random *rand.Rand, exclude ...string) *Identifier {
+	for {
+		generated := createRandomIdentifier(random)
+		for _, excluded := range exclude {
+			if generated.Value != excluded {
+				return generated
+			}
+		}
+	}
+}
+
+const maxRandomIdentifierLength = 18
+const minRandomIdentifierLength = 3
+const identifierCharset = "abcdefghijklmnopqrstuvwxyz"
+
+func generateRandomIdentifierValue(random *rand.Rand, charset string) string {
+	length := generateRandomIntInRange(
+		random, minRandomIdentifierLength, maxRandomIdentifierLength)
+
+	return generateRandomString(random, length, charset)
+}
+
+func generateRandomString(random *rand.Rand, length int, charset string) string {
+	characters := make([]byte, length)
+	for index := 0; index < length; index++ {
+		characters[index] = charset[random.Intn(len(charset))]
+	}
+	return string(characters)
+}
+
+func generateRandomIntInRange(random *rand.Rand, begin, end int) int {
+	return begin + random.Intn(end - begin)
+}
+
+type MatchTest struct {
+	base Node
+	testing *testing.T
+}
+
+func CreateMatchTest(testing *testing.T, base Node) *MatchTest {
+	return &MatchTest{
+		base:    base,
+		testing: testing,
+	}
+}
+
+type randomNodeFactory func(*rand.Rand) Node
+
+func (test *MatchTest) Matches(factory randomNodeFactory) *MatchTest {
+	random := rand.New(randomSource)
+	for count := 0; count < matchTestRepeat; count++ {
+		nonMatching := factory(random)
+		expectNodesMatch(test.testing, test.base, nonMatching)
+	}
+	return test
+}
+
+func (test *MatchTest) Differs(factory randomNodeFactory) *MatchTest {
+	random := rand.New(randomSource)
+	for count := 0; count < matchTestRepeat; count++ {
+		nonMatching := factory(random)
+		expectNodesDontMatch(test.testing, test.base, nonMatching)
+	}
+	return test
 }

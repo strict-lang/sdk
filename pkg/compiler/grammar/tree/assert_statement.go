@@ -13,7 +13,7 @@ func (assert *AssertStatement) Accept(visitor Visitor) {
 
 func (assert *AssertStatement) AcceptRecursive(visitor Visitor) {
 	assert.Accept(visitor)
-	assert.AcceptRecursive(visitor)
+	assert.Expression.AcceptRecursive(visitor)
 }
 
 func (assert *AssertStatement) Locate() input.Region {

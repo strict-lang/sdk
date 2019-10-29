@@ -35,6 +35,6 @@ func TestRangedLoopStatement_AcceptRecursive(testing *testing.T) {
 
 func TestRangedLoopStatement_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
-		return &RangedLoopStatement{Region: input.ZeroRegion}
+		return &RangedLoopStatement{Region: region}
 	})
 }
