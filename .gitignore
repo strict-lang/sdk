@@ -11,6 +11,8 @@ build_target
 
 build/
 
+/bazel-*
+
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
