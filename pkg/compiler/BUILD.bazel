@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "compilation.go",
+        "compile.go",
+        "source.go",
+    ],
+    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/backend:go_default_library",
+        "//pkg/compiler/backend/arduino:go_default_library",
+        "//pkg/compiler/backend/headerfile:go_default_library",
+        "//pkg/compiler/backend/sourcefile:go_default_library",
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/lexical:go_default_library",
+        "//pkg/compiler/grammar/syntax:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/input:go_default_library",
+    ],
+)
