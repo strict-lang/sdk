@@ -6,6 +6,15 @@ type CreateExpression struct {
 	Region input.Region
 	Call   *CallExpression
 	Type   TypeName
+	resolvedType resolvedType
+}
+
+func (create *CreateExpression) Resolve(descriptor TypeDescriptor) {
+	create.resolvedType.setDescriptor(descriptor)
+}
+
+func (create *CreateExpression) GetResolvedType() (TypeDescriptor, bool) {
+	return create.resolvedType.getDescriptor()
 }
 
 func (create *CreateExpression) Accept(visitor Visitor) {

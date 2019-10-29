@@ -1,4 +1,4 @@
-#include "strict/strict.hh"
+#include "strict.hh"
 
 #include <cstdarg>
 #include <cstdio>

@@ -1,3 +1,5 @@
 package code
 
-type Namespace struct{}
+type Namespace struct {
+	Class
+}

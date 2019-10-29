@@ -1,9 +1,0 @@
-package: gitlab.com/Strict-lang/sdk
-import:
-  - package: github.com/fatih/color
-    version: v1.7.0
-  - package: github.com/spf13/cobra
-    version: 0.0.5
-  - package: github.com/tonnerre/golang-pretty
-  - package: github.com/sourcegraph/go-lsp
-  - package: github.com/google/gofuzz

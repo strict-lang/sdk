@@ -1,0 +1,29 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "attribute.go",
+        "builtins.go",
+        "inference.go",
+        "lint.go",
+        "namespace.go",
+        "naming.go",
+        "scope.go",
+        "typed_member.go",
+        "types.go",
+    ],
+    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/code",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/token:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["scope_test.go"],
+    embed = [":go_default_library"],
+)
