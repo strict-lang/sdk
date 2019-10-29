@@ -1,7 +1,6 @@
 package tree
 
 import (
-	"github.com/google/gofuzz"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"math/rand"
 	"testing"

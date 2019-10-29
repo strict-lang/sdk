@@ -9,6 +9,15 @@ type CallExpression struct {
 	// the method. The arguments types are checked during type checking.
 	Arguments CallArgumentList
 	Region    input.Region
+	resolvedType resolvedType
+}
+
+func (call *CallExpression) Resolve(descriptor TypeDescriptor) {
+	call.resolvedType.setDescriptor(descriptor)
+}
+
+func (call *CallExpression) GetResolvedType() (TypeDescriptor, bool) {
+	return call.resolvedType.getDescriptor()
 }
 
 func (call *CallExpression) Accept(visitor Visitor) {

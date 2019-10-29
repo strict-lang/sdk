@@ -14,14 +14,14 @@ var defaultImplicitConversionTargets = []TypeDescriptor{
 	typeDescriptorAny, typeDescriptorNumber,
 }
 
-type Type struct {
+type Class struct {
 	Name                      string
 	Methods                   map[string]*TypedMethod
 	Descriptor                TypeDescriptor
 	ParameterCount            int
 	ImplicitConversionTargets []TypeDescriptor
-	SuperType                 *Type
-	SuperInterfaces           []*Type
+	SuperType                 *Class
+	SuperInterfaces           []*Class
 }
 
 // Is returns whether this is the target type or a subtype of the target type.
@@ -32,11 +32,11 @@ type Type struct {
 //
 // If this method returns true, instances of this type can be used as arguments,
 // assignments, etc for fields of the target type.
-func (type_ *Type) Is(target Type) bool {
-	if type_.IsExact(target) || type_.SuperType.Is(target) {
+func (class *Class) Is(target Class) bool {
+	if class.IsExact(target) || class.SuperType.Is(target) {
 		return true
 	}
-	for _, superInterface := range type_.SuperInterfaces {
+	for _, superInterface := range class.SuperInterfaces {
 		if superInterface.Is(target) {
 			return true
 		}
@@ -44,15 +44,19 @@ func (type_ *Type) Is(target Type) bool {
 	return false
 }
 
-func (type_ *Type) IsExact(target Type) bool {
-	return type_.Descriptor == target.Descriptor
+// IsExact returns whether the target is the exact same class as this.
+// It does not return true for supertypes, as opposed to Is(Class).
+func (class *Class) IsExact(target Class) bool {
+	return class.Descriptor == target.Descriptor
 }
 
-func (type_ *Type) IsImplicitlyConvertibleTo(targetDescriptor TypeDescriptor) bool {
+// IsImplicitlyConvertibleTo returns whether the class can be implicitly
+// converted to the target descriptor.
+func (class *Class) IsImplicitlyConvertibleTo(targetDescriptor TypeDescriptor) bool {
 	if targetDescriptor == typeDescriptorAny {
 		return true
 	}
-	for _, validTarget := range type_.ImplicitConversionTargets {
+	for _, validTarget := range class.ImplicitConversionTargets {
 		if targetDescriptor == validTarget {
 			return true
 		}
@@ -60,20 +64,22 @@ func (type_ *Type) IsImplicitlyConvertibleTo(targetDescriptor TypeDescriptor) bo
 	return false
 }
 
-func (type_ *Type) HasMethodWithName(name string) bool {
-	if _, hasMethod := type_.Methods[name]; !hasMethod {
-		return type_.SuperType.HasMethodWithName(name)
+// HasMethodWithName returns true if the class has a method with the passed name.
+func (class *Class) HasMethodWithName(name string) bool {
+	if _, hasMethod := class.Methods[name]; !hasMethod {
+		return class.SuperType.HasMethodWithName(name)
 	}
 	return true
 }
 
-func (type_ *Type) LookupMethod(name string) (method *TypedMethod, ok bool) {
-	if method, ok = type_.Methods[name]; !ok {
-		return type_.SuperType.LookupMethod(name)
+// LookupMethod searches for a method with the passed name.
+func (class *Class) LookupMethod(name string) (method *TypedMethod, ok bool) {
+	if method, ok = class.Methods[name]; !ok {
+		return class.SuperType.LookupMethod(name)
 	}
 	return
 }
 
-func (type_ *Type) IsParameterized() bool {
-	return type_.ParameterCount != 0
+func (class *Class) IsParameterized() bool {
+	return class.ParameterCount != 0
 }

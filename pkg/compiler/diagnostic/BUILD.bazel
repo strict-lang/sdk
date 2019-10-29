@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "color.go",
+        "diagnostics.go",
+        "entry.go",
+        "kind.go",
+        "printer.go",
+        "recorder.go",
+        "stage.go",
+    ],
+    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/input:go_default_library",
+        "@com_github_fatih_color//:go_default_library",
+    ],
+)

@@ -6,6 +6,15 @@ type ListSelectExpression struct {
 	Index  Node
 	Target Node
 	Region input.Region
+	resolvedType resolvedType
+}
+
+func (expression *ListSelectExpression) Resolve(descriptor TypeDescriptor) {
+	expression.resolvedType.setDescriptor(descriptor)
+}
+
+func (expression *ListSelectExpression) GetResolvedType() (TypeDescriptor, bool) {
+	return expression.resolvedType.getDescriptor()
 }
 
 func (expression *ListSelectExpression) Accept(visitor Visitor) {

@@ -11,6 +11,15 @@ type BinaryExpression struct {
 	RightOperand Node
 	Operator     token.Operator
 	Region       input.Region
+	resolvedType resolvedType
+}
+
+func (binary *BinaryExpression) GetResolvedType() (TypeDescriptor, bool) {
+	return binary.resolvedType.getDescriptor()
+}
+
+func (binary *BinaryExpression) Resolve(descriptor TypeDescriptor) {
+	binary.resolvedType.setDescriptor(descriptor)
 }
 
 func (binary *BinaryExpression) Accept(visitor Visitor) {

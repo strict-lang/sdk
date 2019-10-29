@@ -4,13 +4,17 @@ type MethodDescriptor string
 
 type TypedMethod struct {
 	Name       string
-	ReturnType *Type
+	ReturnType *Class
 	Parameters []TypedMethod
+}
+
+func (method *TypedMethod) Match() {
+
 }
 
 type TypedMethodParameter struct {
 	Name string
-	Type *Type
+	Type *Class
 }
 
 type TypedInstanceField struct {

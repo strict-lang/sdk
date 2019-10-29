@@ -9,14 +9,14 @@ import (
 type TypeInference struct {
 	visitor                 tree.Visitor
 	lastResult              inferenceResult
-	classType               *Type
+	classType               *Class
 	currentScope            *Scope
-	currentCallInstanceType *Type
+	currentCallInstanceType *Class
 	lastIdentifier          *tree.Identifier
 }
 
 type inferenceResult struct {
-	type_   *Type
+	type_   *Class
 	success bool
 }
 
@@ -25,7 +25,7 @@ func (inference *TypeInference) inferNode(node tree.Node) inferenceResult {
 	return inference.lastResult
 }
 
-func (inference *TypeInference) emitType(emitted *Type) {
+func (inference *TypeInference) emitType(emitted *Class) {
 	inference.lastResult = inferenceResult{
 		type_:   emitted,
 		success: true,
@@ -39,7 +39,7 @@ func (inference *TypeInference) emitError() {
 	}
 }
 
-var unaryOperationType = map[token.Operator]*Type{
+var unaryOperationType = map[token.Operator]*Class{
 	token.NegateOperator: builtinTypes.boolType,
 }
 
@@ -56,19 +56,19 @@ func (inference *TypeInference) visitUnaryExpression(expression *tree.UnaryExpre
 	inference.emitType(operationType)
 }
 
-func fixedTypeOperation(type_ *Type) func(*Type) *Type {
-	return func(*Type) *Type {
+func fixedTypeOperation(type_ *Class) func(*Class) *Class {
+	return func(*Class) *Class {
 		return type_
 	}
 }
 
-func identityTypeOperation() func(*Type) *Type {
-	return func(type_ *Type) *Type {
+func identityTypeOperation() func(*Class) *Class {
+	return func(type_ *Class) *Class {
 		return type_
 	}
 }
 
-var binaryOperationType = map[token.Operator]func(*Type) *Type{
+var binaryOperationType = map[token.Operator]func(*Class) *Class{
 	token.SmallerOperator:       fixedTypeOperation(builtinTypes.boolType),
 	token.GreaterOperator:       fixedTypeOperation(builtinTypes.boolType),
 	token.EqualsOperator:        fixedTypeOperation(builtinTypes.boolType),
@@ -97,7 +97,7 @@ func (inference *TypeInference) visitBinaryExpression(expression *tree.BinaryExp
 	inference.emitType(operationTypeFunc(leftHandSideType.type_))
 }
 
-func (inference *TypeInference) methodCallInstance() *Type {
+func (inference *TypeInference) methodCallInstance() *Class {
 	if inference.currentCallInstanceType == nil {
 		return inference.classType
 	} else {

@@ -1,0 +1,43 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "errors.go",
+        "expression.go",
+        "factory.go",
+        "methods.go",
+        "parsing.go",
+        "parsing_util.go",
+        "statement.go",
+        "types.go",
+    ],
+    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/code:go_default_library",
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/token:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/input:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "expression_test.go",
+        "methods_test.go",
+        "parsing_test.go",
+        "statement_test.go",
+        "types_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/lexical:go_default_library",
+        "//pkg/compiler/grammar/token:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/grammar/tree/pretty:go_default_library",
+    ],
+)

@@ -17,7 +17,17 @@ type PostfixExpression struct {
 	Operator token.Operator
 	// InputRegion is the area of code covered by the node.
 	Region input.Region
+	resolvedType resolvedType
 }
+
+func (expression *PostfixExpression) Resolve(descriptor TypeDescriptor) {
+	expression.resolvedType.setDescriptor(descriptor)
+}
+
+func (expression *PostfixExpression) GetResolvedType() (TypeDescriptor, bool) {
+	return expression.resolvedType.getDescriptor()
+}
+
 
 // Accept lets the visitor visit this expression.
 func (expression *PostfixExpression) Accept(visitor Visitor) {

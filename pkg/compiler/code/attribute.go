@@ -15,7 +15,7 @@ type Attribute struct {
 	link       interface{}
 }
 
-func NewTypeAttribute(identifier string, linkedType *Type) *Attribute {
+func NewTypeAttribute(identifier string, linkedType *Class) *Attribute {
 	return &Attribute{
 		Identifier: identifier,
 		Kind:       TypeAttribute,
@@ -23,8 +23,8 @@ func NewTypeAttribute(identifier string, linkedType *Type) *Attribute {
 	}
 }
 
-func (attribute *Attribute) LinkedType() (linkedType *Type, exists bool) {
-	linkedType, exists = attribute.link.(*Type)
+func (attribute *Attribute) LinkedType() (linkedType *Class, exists bool) {
+	linkedType, exists = attribute.link.(*Class)
 	return
 }
 

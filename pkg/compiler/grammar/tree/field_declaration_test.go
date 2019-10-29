@@ -23,7 +23,7 @@ func TestFieldDeclaration_AcceptRecursive(testing *testing.T) {
 			Value:  "test",
 			Region: input.ZeroRegion,
 		},
-		TypeName: &ConcreteTypeName{Name: "Type"},
+		TypeName: &ConcreteTypeName{Name: "Class"},
 		Region:   input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).
@@ -40,7 +40,7 @@ func TestFieldDeclaration_Locate(testing *testing.T) {
 				Value:  "test",
 				Region: input.ZeroRegion,
 			},
-			TypeName: &ConcreteTypeName{Name: "Type"},
+			TypeName: &ConcreteTypeName{Name: "Class"},
 			Region:   region,
 		}
 	})
