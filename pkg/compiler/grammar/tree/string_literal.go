@@ -12,6 +12,15 @@ type StringLiteral struct {
 	// Region is the region of the input that contain the literal.
 	// It contains the leading and trailing characters.
 	Region input.Region
+	resolvedType resolvedType
+}
+
+func (expression *StringLiteral) Resolve(descriptor TypeDescriptor) {
+	expression.resolvedType.setDescriptor(descriptor)
+}
+
+func (expression *StringLiteral) GetResolvedType() (TypeDescriptor, bool) {
+	return expression.resolvedType.getDescriptor()
 }
 
 func (literal *StringLiteral) Accept(visitor Visitor) {
