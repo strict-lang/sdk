@@ -1,6 +1,8 @@
 package tree
 
-import "testing"
+import (
+	"testing"
+)
 
 type VisitorTest struct {
 	visitor       Visitor
@@ -10,11 +12,12 @@ type VisitorTest struct {
 }
 
 func CreateVisitorTest(node Node, testing *testing.T) *VisitorTest {
-	return &VisitorTest{
-		visitor: NewEmptyVisitor(),
+	test := &VisitorTest{
 		tested:  node,
 		testing: testing,
 	}
+	test.visitor = test.createVisitor()
+	return test
 }
 
 func (test *VisitorTest) Run() {
@@ -35,6 +38,9 @@ func (test *VisitorTest) Expect(kind NodeKind) *VisitorTest {
 func (test *VisitorTest) ensureComplete() {
 	if len(test.expectedKinds) != 0 {
 		test.testing.Error("Not every expected NodeKind has been visited")
+		for _, remaining := range test.expectedKinds {
+			test.testing.Errorf("- %s has not been visisted", remaining)
+		}
 	}
 }
 
@@ -43,18 +49,22 @@ func (test *VisitorTest) popExpectedNodeKind() (NodeKind, bool) {
 	if expectedKindsCount == 0 {
 		return invalidKind, false
 	}
-	next := test.expectedKinds[expectedKindsCount-1]
-	test.expectedKinds = test.expectedKinds[:expectedKindsCount-1]
+	next := test.expectedKinds[0]
+	test.expectedKinds = test.expectedKinds[1:expectedKindsCount]
 	return next, true
 }
 
 func (test *VisitorTest) reportNodeEncounter(kind NodeKind) {
 	expected, isExpectingNode := test.popExpectedNodeKind()
 	if !isExpectingNode {
-		test.testing.Error("Got more nodes than expected")
+		test.testing.Error("Visited more nodes than expected")
+		return
 	}
 	if expected != kind {
-		test.testing.Error("Got invalid node")
+		test.testing.Errorf(`Visited unexpected node.
+  Expected: %s
+  Received: %s
+`, expected, kind)
 	}
 }
 

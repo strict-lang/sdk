@@ -19,40 +19,42 @@ type Printing struct {
 
 func newPrinting() *Printing {
 	printing := &Printing{}
-	visitor := tree.NewEmptyVisitor()
-	visitor.ParameterVisitor = printing.printParameter
-	visitor.CallExpressionVisitor = printing.printCallExpression
-	visitor.CallArgumentVisitor = printing.printCallArgument
-	visitor.IdentifierVisitor = printing.printIdentifier
-	visitor.ListTypeNameVisitor = printing.printListTypeName
-	visitor.TestStatementVisitor = printing.printTestStatement
-	visitor.StringLiteralVisitor = printing.printStringLiteral
-	visitor.NumberLiteralVisitor = printing.printNumberLiteral
-	visitor.EmptyStatementVisitor = printing.printEmptyStatement
-	visitor.YieldStatementVisitor = printing.printYieldStatement
-	visitor.BlockStatementVisitor = printing.printBlockStatement
-	visitor.AssertStatementVisitor = printing.printAssertStatement
-	visitor.UnaryExpressionVisitor = printing.printUnaryExpression
-	visitor.ImportStatementVisitor = printing.printImportStatement
-	visitor.AssignStatementVisitor = printing.printAssignStatement
-	visitor.ReturnStatementVisitor = printing.printReturnStatement
-	visitor.TranslationUnitVisitor = printing.printTranslationUnit
-	visitor.CreateExpressionVisitor = printing.printCreateExpression
-	visitor.InvalidStatementVisitor = printing.printInvalidStatement
-	visitor.FieldDeclarationVisitor = printing.printFieldDeclaration
-	visitor.ClassDeclarationVisitor = printing.printClassDeclaration
-	visitor.GenericTypeNameVisitor = printing.printGenericTypeName
-	visitor.ConcreteTypeNameVisitor = printing.printConcreteTypeName
-	visitor.BinaryExpressionVisitor = printing.printBinaryExpression
-	visitor.MethodDeclarationVisitor = printing.printMethodDeclaration
-	visitor.FieldSelectExpressionVisitor = printing.printFieldSelectExpression
-	visitor.PostfixExpressionVisitor = printing.printPostfixExpression
-	visitor.RangedLoopStatementVisitor = printing.printRangedLoopStatement
-	visitor.ExpressionStatementVisitor = printing.printExpressionStatement
-	visitor.ForEachLoopStatementVisitor = printing.printForEachLoopStatement
-	visitor.ConditionalStatementVisitor = printing.printConditionalStatement
-	visitor.ListSelectExpressionVisitor = printing.printListSelectExpression
-	visitor.ConstructorDeclarationVisitor = printing.printConstructorDeclaration
+	visitor := &tree.DelegatingVisitor{
+		ParameterVisitor: printing.printParameter,
+		CallExpressionVisitor: printing.printCallExpression,
+		CallArgumentVisitor: printing.printCallArgument,
+		IdentifierVisitor: printing.printIdentifier,
+		ListTypeNameVisitor: printing.printListTypeName,
+		TestStatementVisitor: printing.printTestStatement,
+		StringLiteralVisitor: printing.printStringLiteral,
+		NumberLiteralVisitor: printing.printNumberLiteral,
+		EmptyStatementVisitor: printing.printEmptyStatement,
+		YieldStatementVisitor: printing.printYieldStatement,
+		BlockStatementVisitor: printing.printBlockStatement,
+		AssertStatementVisitor: printing.printAssertStatement,
+		UnaryExpressionVisitor: printing.printUnaryExpression,
+		ImportStatementVisitor: printing.printImportStatement,
+		AssignStatementVisitor: printing.printAssignStatement,
+		ReturnStatementVisitor: printing.printReturnStatement,
+		TranslationUnitVisitor: printing.printTranslationUnit,
+		CreateExpressionVisitor: printing.printCreateExpression,
+		InvalidStatementVisitor: printing.printInvalidStatement,
+		FieldDeclarationVisitor: printing.printFieldDeclaration,
+		ClassDeclarationVisitor: printing.printClassDeclaration,
+		GenericTypeNameVisitor: printing.printGenericTypeName,
+		ConcreteTypeNameVisitor: printing.printConcreteTypeName,
+		BinaryExpressionVisitor: printing.printBinaryExpression,
+		MethodDeclarationVisitor: printing.printMethodDeclaration,
+		FieldSelectExpressionVisitor: printing.printFieldSelectExpression,
+		PostfixExpressionVisitor: printing.printPostfixExpression,
+		RangedLoopStatementVisitor: printing.printRangedLoopStatement,
+		ExpressionStatementVisitor: printing.printExpressionStatement,
+		ForEachLoopStatementVisitor: printing.printForEachLoopStatement,
+		ConditionalStatementVisitor: printing.printConditionalStatement,
+		ListSelectExpressionVisitor: printing.printListSelectExpression,
+		ConstructorDeclarationVisitor: printing.printConstructorDeclaration,
+		WildcardNodeVisitor: printing.printWildcardNode,
+	}
 	printing.visitor = visitor
 	return printing
 }
@@ -195,6 +197,14 @@ func (printing *Printing) printNewLine() {
 }
 
 func (printing *Printing) printNode(node tree.Node) {
+	if node == nil {
+		if printing.colored {
+			printing.print(color.RedString("!!!nil"))
+		} else {
+			printing.print("!!!nil")
+		}
+		return
+	}
 	node.Accept(printing.visitor)
 }
 
@@ -328,6 +338,10 @@ func (printing *Printing) printParameterList(parameters tree.ParameterList) {
 		printing.printListField(parameter)
 	}
 	printing.printListFieldEnd()
+}
+
+func (printing *Printing) printWildcardNode(node *tree.WildcardNode) {
+	printing.printFieldName("*")
 }
 
 func (printing *Printing) printConstructorDeclaration(declaration *tree.ConstructorDeclaration) {

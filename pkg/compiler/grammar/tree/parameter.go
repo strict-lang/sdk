@@ -14,6 +14,8 @@ func (parameter *Parameter) Accept(visitor Visitor) {
 
 func (parameter *Parameter) AcceptRecursive(visitor Visitor) {
 	parameter.Accept(visitor)
+	parameter.Name.AcceptRecursive(visitor)
+	parameter.Type.AcceptRecursive(visitor)
 }
 
 func (parameter *Parameter) Locate() input.Region {

@@ -78,12 +78,12 @@ func TestConditionalStatement_HasAlternative_WithoutAlternative(testing *testing
 	}
 }
 
-func TestConditionalStatement_Region(testing *testing.T) {
+func TestConditionalStatement_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &ConditionalStatement{
 			Condition:   &WildcardNode{Region: input.ZeroRegion},
 			Consequence: &WildcardNode{Region: input.ZeroRegion},
-			Region:      input.Region{},
+			Region:      region,
 		}
 	})
 }

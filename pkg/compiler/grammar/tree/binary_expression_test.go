@@ -36,7 +36,7 @@ func TestBinaryExpression_Locate(testing *testing.T) {
 			LeftOperand:  &WildcardNode{Region: input.ZeroRegion},
 			RightOperand: &WildcardNode{Region: input.ZeroRegion},
 			Operator:     token.AddOperator,
-			Region:       input.ZeroRegion,
+			Region:       region,
 		}
 	})
 }
