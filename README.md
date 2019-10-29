@@ -5,11 +5,22 @@
 Strict is a statically typed multi-paradigm programming language that is
 compiled to SIR.
 
-### Installing
+### Building from source
 
-Pick the install guide that matches your operating system:
-- [Windows Install Guide](/docs/install_windows.md)
-- [Linux Install Guide](/docs/install_linux.md)
+You need Bazel in order to build the SDK. 
+https://docs.bazel.build/versions/master/install.html 
+
+When having installed bazel, run following code in the root directory.
+
+`bazel build ...`
+
+To test the built source code, run the following:
+
+`bazel test ...`
+
+You can also directly run the strict program with bazel:
+`bazel run //cmd/strict:strict`
+
 
 ### Compiling and Running your first Strict program
 
