@@ -62,3 +62,12 @@ go_repository(
     tag = "v1.0.0",
     vcs = "git",
 )
+
+# Only for cobra builds on windows
+go_repository(
+    name = "com_github_inconshreveable_mousetrap",
+    importpath = "github.com/inconshreveable/mousetrap",
+    remote = "https://github.com/inconshreveable/mousetrap.git",
+    tag = "v1.0.0",
+    vcs = "git",
+)
