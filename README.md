@@ -10,7 +10,8 @@ compiled to SIR.
 You need Bazel in order to build the SDK. 
 https://docs.bazel.build/versions/master/install.html 
 
-When having installed bazel, run following code in the root directory.
+After bazel has been installed, run following commands in the root directory.
+*If you are building on windows, you will have to run them from a bash command line.*
 
 `bazel build ...`
 
