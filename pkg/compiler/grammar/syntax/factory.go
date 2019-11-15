@@ -46,10 +46,12 @@ func (factory *Factory) WithDiagnosticBag(recorder *diagnostic.Bag) *Factory {
 // are recorded by the 'recorder'.
 func (factory *Factory) NewParser() *Parsing {
 	parser := &Parsing{
-		rootScope:   code2.NewRootScope(),
-		tokenReader: factory.tokens,
-		recorder:    factory.bag,
-		unitName:    factory.unitName,
+		rootScope:      code2.NewRootScope(),
+		tokenReader:    factory.tokens,
+		recorder:       factory.bag,
+		unitName:       factory.unitName,
+		structureStack: newRecordingStructureStack(),
+		currentMethod: notParsingMethod,
 	}
 	parser.openBlock(token.NoIndent)
 	parser.advance()

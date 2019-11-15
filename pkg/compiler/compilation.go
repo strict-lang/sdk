@@ -63,7 +63,7 @@ func (compilation *Compilation) parse() ParseResult {
 		WithDiagnosticBag(diagnosticBag).
 		WithUnitName(compilation.Name)
 
-	unit, err := parserFactory.NewParser().ParseTranslationUnit()
+	unit, err := parserFactory.NewParser().Parse()
 	offsetConverter := tokenReader.NewLineMap().PositionAtOffset
 	diagnostics := diagnosticBag.CreateDiagnostics(offsetConverter)
 	return ParseResult{

@@ -23,24 +23,49 @@ func NewTestParserAndDiagnosticBag(tokens token.Stream) (*Parsing, *diagnostic.B
 		NewParser(), bag
 }
 
-func TestParseTopLevelStatements(test *testing.T) {
-	const entry = `
-method decreaseWeights()
-  inputNeurons[0].Weights -= trainingLambda
-  inputNeurons[1].Weights -= trainingLambda
-`
-	tokens := lexical.NewStringScanning(entry)
-	parser, bag := NewTestParserAndDiagnosticBag(tokens)
-	unit, err := parser.ParseTranslationUnit()
-	if err != nil {
-		test.Error(err)
-	}
-	diagnostics := bag.CreateDiagnostics(tokens.NewLineMap().PositionAtOffset)
-	diagnostics.PrintEntries(diagnostic.NewFmtPrinter())
-	pretty.PrintColored(unit)
+type testParsingFunction = func(*Parsing) tree.Node
+
+type ParserTestEntry struct {
+	Input          string
+	ExpectedOutput tree.Node
 }
 
-type testParsingFunction = func(*Parsing) tree.Node
+// ExpectAllResults tests multiple entries using the same function.
+func ExpectAllResults(
+	testing *testing.T,
+	entries []ParserTestEntry,
+	parsingFunction testParsingFunction) {
+
+	for _, entry := range entries {
+		ExpectResult(testing, entry.Input, entry.ExpectedOutput, parsingFunction)
+	}
+}
+
+func isUnexpectedTokenError(err error) bool {
+	_, matches := err.(*UnexpectedTokenError)
+	return matches
+}
+
+func ExpectError(
+	testing *testing.T,
+	input string,
+	parsingFunction testParsingFunction,
+	matcher func (err error) bool) {
+
+	tokens := lexical.NewStringScanning(input)
+	parser := NewTestParser(tokens)
+	defer func() {
+		if failure := recover(); failure != nil {
+			err := extractErrorFromPanic(failure)
+			if !matcher(err) {
+				testing.Errorf("unexpected error: %s", err)
+			}
+		} else {
+			testing.Error("no error was reported")
+		}
+	}()
+	parsingFunction(parser)
+}
 
 func ExpectResult(
 	testing *testing.T,
@@ -50,14 +75,14 @@ func ExpectResult(
 
 	tokens := lexical.NewStringScanning(input)
 	parser, bag := NewTestParserAndDiagnosticBag(tokens)
-	result := parsingFunction(parser)
 	defer func() {
 		if failure := recover(); failure != nil {
 			diagnostics := bag.CreateDiagnostics(tokens.NewLineMap().PositionAtOffset)
 			diagnostics.PrintEntries(diagnostic.NewFmtPrinter())
-			testing.Errorf("Could not parse test input: %s", failure)
+			testing.Errorf("%s", failure)
 		}
 	}()
+	result := parsingFunction(parser)
 	if result == nil {
 		testing.Error("Result is nil")
 		return
@@ -65,6 +90,32 @@ func ExpectResult(
 	if !result.Matches(expected) {
 		testing.Error(createUnexpectedTreeErrorMessage(input, expected, result))
 	}
+	expectEmptyStructureStack(testing, parser)
+}
+
+func expectEmptyStructureStack(testing *testing.T, parsing *Parsing) {
+	if parsing.structureStack.isEmpty() {
+		return
+	}
+	message := strings.Builder{}
+	message.WriteString(`
+There are remaining structures on the parsings structure-stack.
+This indicates that the parser has begun to parse one or more structures, that have not
+been completed. This should not happen and is the result of a bug/missing completion in the code.
+Following structures were added but never removed from the stack (starting at the top element):
+
+`)
+	for _, remaining := range parsing.structureStack.listRemainingElementsOrdered() {
+		item := fmt.Sprintf(" - %s\n", remaining.nodeKind)
+		message.WriteString(item)
+	}
+	message.WriteString(`
+Following list shows the structure-stack's history. It contains all
+elements that have been pushed to and popped from the stack:
+
+`)
+	message.WriteString(parsing.structureStack.createHistoryDump())
+	testing.Error(message.String())
 }
 
 const testFormatIndent = 2

@@ -24,6 +24,7 @@ type NodeKind int
 
 const (
 	invalidKind NodeKind = iota
+	UnknownNodeKind
 	expressionKindBegin
 	IdentifierNodeKind
 	StringLiteralNodeKind
@@ -60,6 +61,7 @@ const (
 	ConstructorDeclarationNodeKind
 	declarationKindEnd
 	typeNameKindBegin
+	TypeNameNodeGroup // Used only in parsing
 	ListTypeNameNodeKind
 	GenericTypeNameNodeKind
 	ConcreteTypeNameNodeKind
@@ -68,41 +70,43 @@ const (
 	WildcardNodeKind
 )
 
-var nodeKindNames = map[NodeKind]string {
-	IdentifierNodeKind: "IdentifierNode",
-	StringLiteralNodeKind: "StringLiteralNode",
-	NumberLiteralNodeKind: "NumberLiteralNode",
-	FieldSelectExpressionNodeKind: "FieldSelectExpressionNode",
-	ListSelectExpressionNodeKind: "ListSelectExpressionNode",
-	BinaryExpressionNodeKind: "BinaryExpressionNode",
-	UnaryExpressionNodeKind: "UnaryExpressionNode",
-	PostfixExpressionNodeKind: "PostfixExpressionNode",
-	CreateExpressionNodeKind: "CreateExpressionNode",
-	CallArgumentNodeKind: "CallArgumentNode",
-	CallExpressionNodeKind: "CallExpressionNode",
-	ConditionalStatementNodeKind: "ConditionalStatementNode",
-	InvalidStatementNodeKind: "InvalidStatementNode",
-	YieldStatementNodeKind: "YieldStatementNode",
-	BlockStatementNodeKind: "BlockStatementNode",
-	AssertStatementNodeKind: "AssertStatementNode",
-	ReturnStatementNodeKind: "ReturnStatementNode",
-	ImportStatementNodeKind: "ImportStatementNode",
-	EmptyStatementNodeKind: "EmptyStatementNode",
-	TestStatementNodeKind: "TestStatementNode",
-	AssignStatementNodeKind: "AssignStatementNode",
-	ExpressionStatementNodeKind: "ExpressionStatementNode",
-	ForEachLoopStatementNodeKind: "ForEachLoopStatementNode",
-	RangedLoopStatementNodeKind: "RangedLoopStatementNode",
-	ParameterNodeKind: "ParameterNode",
-	FieldDeclarationNodeKind: "FieldDeclarationNode",
-	MethodDeclarationNodeKind: "MethodDeclarationNode",
-	ClassDeclarationNodeKind: "ClassDeclarationNode",
-	ConstructorDeclarationNodeKind: "ConstructorDeclarationNode",
-	ListTypeNameNodeKind: "ListTypeNameNode",
-	GenericTypeNameNodeKind: "GenericTypeNameNode",
-	ConcreteTypeNameNodeKind: "ConcreteTypeNameNode",
-	TranslationUnitNodeKind: "TranslationUnitNode",
-	WildcardNodeKind: "WildcardNode",
+var nodeKindNames = map[NodeKind]string{
+	UnknownNodeKind:                "Unknown",
+	IdentifierNodeKind:             "Identifier",
+	StringLiteralNodeKind:          "StringLiteral",
+	NumberLiteralNodeKind:          "NumberLiteral",
+	FieldSelectExpressionNodeKind:  "FieldSelectExpression",
+	ListSelectExpressionNodeKind:   "ListSelectExpression",
+	BinaryExpressionNodeKind:       "BinaryExpression",
+	UnaryExpressionNodeKind:        "UnaryExpression",
+	PostfixExpressionNodeKind:      "PostfixExpression",
+	CreateExpressionNodeKind:       "CreateExpression",
+	CallArgumentNodeKind:           "CallArgument",
+	CallExpressionNodeKind:         "CallExpression",
+	ConditionalStatementNodeKind:   "ConditionalStatement",
+	InvalidStatementNodeKind:       "InvalidStatement",
+	YieldStatementNodeKind:         "YieldStatement",
+	BlockStatementNodeKind:         "BlockStatement",
+	AssertStatementNodeKind:        "AssertStatement",
+	ReturnStatementNodeKind:        "ReturnStatement",
+	ImportStatementNodeKind:        "ImportStatement",
+	EmptyStatementNodeKind:         "EmptyStatement",
+	TestStatementNodeKind:          "TestStatement",
+	AssignStatementNodeKind:        "AssignStatement",
+	ExpressionStatementNodeKind:    "ExpressionStatement",
+	ForEachLoopStatementNodeKind:   "ForEachLoopStatement",
+	RangedLoopStatementNodeKind:    "RangedLoopStatement",
+	ParameterNodeKind:              "Parameter",
+	FieldDeclarationNodeKind:       "FieldDeclaration",
+	MethodDeclarationNodeKind:      "MethodDeclaration",
+	ClassDeclarationNodeKind:       "ClassDeclaration",
+	ConstructorDeclarationNodeKind: "ConstructorDeclaration",
+	TypeNameNodeGroup:              "TypeName",
+	ListTypeNameNodeKind:           "ListTypeName",
+	GenericTypeNameNodeKind:        "GenericTypeName",
+	ConcreteTypeNameNodeKind:       "ConcreteTypeName",
+	TranslationUnitNodeKind:        "TranslationUnit",
+	WildcardNodeKind:               "Wildcard",
 }
 
 // IsExpression returns true if the kind is an expression.

@@ -24,7 +24,6 @@ func (declaration *ConstructorDeclaration) Locate() input.Region {
 	return declaration.Region
 }
 
-
 func (declaration *ConstructorDeclaration) Matches(node Node) bool {
 	if target, ok := node.(*ConstructorDeclaration); ok {
 		return declaration.Parameters.Matches(target.Parameters) &&

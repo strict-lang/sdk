@@ -3,9 +3,9 @@ package tree
 import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type ListSelectExpression struct {
-	Index  Node
-	Target Node
-	Region input.Region
+	Index        Node
+	Target       Node
+	Region       input.Region
 	resolvedType resolvedType
 }
 

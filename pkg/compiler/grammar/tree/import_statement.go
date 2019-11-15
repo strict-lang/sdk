@@ -26,7 +26,7 @@ func (statement *ImportStatement) Locate() input.Region {
 
 func (statement *ImportStatement) Matches(node Node) bool {
 	if target, ok := node.(*ImportStatement); ok {
-		return statement.Target == target.Target &&
+		return statement.Target.Matches(target.Target) &&
 			statement.matchesAlias(target)
 	}
 	return false
@@ -43,6 +43,7 @@ func (statement *ImportStatement) matchesAlias(target *ImportStatement) bool {
 type ImportTarget interface {
 	ToModuleName() string
 	FilePath() string
+	Matches(ImportTarget) bool
 }
 
 // HasAlias returns true if the import has an alias clause. Alias clauses can
@@ -61,6 +62,25 @@ func (statement *ImportStatement) ModuleName() string {
 
 type IdentifierChainImport struct {
 	Chain []string
+}
+
+func (target *IdentifierChainImport) Matches(entry ImportTarget) bool {
+	if chainImport, isChainImport := entry.(*IdentifierChainImport); isChainImport {
+		return isStringArrayEqual(target.Chain, chainImport.Chain)
+	}
+	return false
+}
+
+func isStringArrayEqual(left []string, right []string) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for index, element := range left {
+		if element != right[index] {
+			return false
+		}
+	}
+	return true
 }
 
 func (target *IdentifierChainImport) FilePath() string {
@@ -92,8 +112,15 @@ type FileImport struct {
 	Path string
 }
 
+func (target *FileImport) Matches(entry ImportTarget) bool {
+	if fileImport, isFileImport := entry.(*FileImport); isFileImport {
+		return fileImport.Path == target.Path
+	}
+	return false
+}
+
 func (target *FileImport) FilePath() string {
-	return fmt.Sprintf("<%s>", target.Path)
+	return fmt.Sprintf("%s", target.Path)
 }
 
 func (target *FileImport) ToModuleName() string {

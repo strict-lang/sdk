@@ -48,14 +48,14 @@ func (generation *Generation) VisitClassDeclaration(declaration *tree.ClassDecla
 func (generation *Generation) generateSetupMethod(statements []tree.Statement) {
 	generation.parent.EmitNode(&tree.MethodDeclaration{
 		Name: &tree.Identifier{
-			Value:        "setup",
+			Value: "setup",
 		},
 		Type: &tree.ConcreteTypeName{
-			Name:         "void",
+			Name: "void",
 		},
 		Parameters: []*tree.Parameter{},
 		Body: &tree.BlockStatement{
-			Children:     statements,
+			Children: statements,
 		},
 	})
 }

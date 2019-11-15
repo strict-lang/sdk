@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
@@ -52,6 +53,7 @@ func (parsing *Parsing) expectKeyword(expected token.Keyword) error {
 // expectAnyIdentifier expects the next token to be an identifier,
 // without regards to its value and returns an error if it fails.
 func (parsing *Parsing) expectAnyIdentifier() *tree.Identifier {
+	parsing.beginStructure(tree.IdentifierNodeKind)
 	current := parsing.token()
 	if !token.IsIdentifierToken(current) {
 		parsing.throwError(&UnexpectedTokenError{
@@ -61,7 +63,7 @@ func (parsing *Parsing) expectAnyIdentifier() *tree.Identifier {
 	}
 	return &tree.Identifier{
 		Value:  current.Value(),
-		Region: parsing.createRegionFromCurrentToken(),
+		Region: parsing.completeStructure(tree.IdentifierNodeKind),
 	}
 }
 
@@ -73,10 +75,11 @@ func (parsing *Parsing) isLookingAtOperator(operator token.Operator) bool {
 	return token.HasOperatorValue(parsing.peek(), operator)
 }
 
-func (parsing *Parsing) createInvalidStatement(beginOffset input.Offset, err error) tree.Statement {
-	parsing.reportError(err, parsing.createRegion(beginOffset))
+func (parsing *Parsing) completeInvalidStructure(err error) tree.Statement {
+	region := parsing.completeStructure(tree.WildcardNodeKind)
+	parsing.reportError(err, region)
 	return &tree.InvalidStatement{
-		Region: parsing.createRegion(beginOffset),
+		Region: region,
 	}
 }
 
@@ -98,17 +101,26 @@ func (parsing *Parsing) reportError(err error, position input.Region) {
 	})
 }
 
-func (parsing *Parsing) createRegionFromCurrentToken() input.Region {
-	return parsing.createRegionFromToken(parsing.token())
+type Error struct {
+	Structure tree.NodeKind
+	Position  input.Region
+	Cause     error
 }
 
-func (parsing *Parsing) createRegionFromToken(token token.Token) input.Region {
-	tokenPosition := token.Position()
-	return input.CreateRegion(tokenPosition.Begin(), tokenPosition.End())
+func (err *Error) String() string {
+	return fmt.Sprintf("failed parsing %s: %s",
+		err.Structure.Name(),
+		err.Cause.Error())
 }
 
-func (parsing *Parsing) createRegion(beginOffset input.Offset) input.Region {
-	return input.CreateRegion(beginOffset, parsing.offset())
+func (parsing *Parsing) throwError(cause error) {
+	structure, err := parsing.structureStack.pop()
+	if err != nil {
+		structure = structureStackElement{nodeKind: tree.UnknownNodeKind}
+	}
+	panic(&Error{
+		Structure: structure.nodeKind,
+		Position:  input.CreateRegion(structure.beginOffset, parsing.offset()),
+		Cause:     cause,
+	})
 }
-
-func (parsing *Parsing) throwError(err error) {}

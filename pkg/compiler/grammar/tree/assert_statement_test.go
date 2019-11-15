@@ -38,16 +38,16 @@ func TestAssertStatement_Locate(testing *testing.T) {
 
 func TestAssertStatement_Matches(testing *testing.T) {
 	CreateMatchTest(testing, &AssertStatement{
-			Expression: &Identifier{Value: "true"},
+		Expression: &Identifier{Value: "true"},
 	}).Matches(func(random *rand.Rand) Node {
 		return &AssertStatement{
 			Expression: &Identifier{Value: "true"},
-			Region: createRandomRegion(random),
+			Region:     createRandomRegion(random),
 		}
 	}).Differs(func(random *rand.Rand) Node {
 		return &AssertStatement{
 			Expression: createExcludingRandomIdentifier(random, "true"),
-			Region: createRandomRegion(random),
+			Region:     createRandomRegion(random),
 		}
 	})
 }

@@ -8,7 +8,7 @@ import (
 func TestMethodDeclaration_Accept(testing *testing.T) {
 	entry := &MethodDeclaration{
 		Name:       &Identifier{Value: "Test"},
-		Type:       &ConcreteTypeName{Name:"void"},
+		Type:       &ConcreteTypeName{Name: "void"},
 		Parameters: ParameterList{},
 		Body:       &WildcardNode{Region: input.ZeroRegion},
 		Region:     input.ZeroRegion,
@@ -40,7 +40,7 @@ func TestMethodDeclaration_AcceptRecursive(testing *testing.T) {
 		Expect(MethodDeclarationNodeKind).
 		Expect(ConcreteTypeNameNodeKind).
 		Expect(ParameterNodeKind).
-		Expect(IdentifierNodeKind). // Of Parameter
+		Expect(IdentifierNodeKind).       // Of Parameter
 		Expect(ConcreteTypeNameNodeKind). // of Parameter
 		Expect(WildcardNodeKind).
 		RunRecursive()

@@ -22,13 +22,13 @@ func newClassDefinition(
 	fields, otherMembers := filterFieldDeclarations(declaration.Children)
 	createInit := len(fields) > 0
 	definition := &classDefinition{
-		name:               declaration.Name,
-		parameters:         declaration.Parameters,
-		superTypes:         declaration.SuperTypes,
-		otherMembers:       otherMembers,
-		fields:             fields,
-		generation:         generation,
-		shouldCreateInit:   createInit,
+		name:             declaration.Name,
+		parameters:       declaration.Parameters,
+		superTypes:       declaration.SuperTypes,
+		otherMembers:     otherMembers,
+		fields:           fields,
+		generation:       generation,
+		shouldCreateInit: createInit,
 	}
 	definition.declarationVisitor = createVisitorForDefinition(definition)
 	return definition

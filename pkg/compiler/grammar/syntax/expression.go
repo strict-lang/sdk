@@ -13,7 +13,43 @@ import (
 )
 
 func (parsing *Parsing) parseExpression() tree.Node {
-	return parsing.parseBinaryExpression(token.LowPrecedence + 1)
+	return parsing.parseAnyExpression()
+}
+
+func (parsing *Parsing) parseConditionalExpression() tree.Expression {
+	return parsing.parseBinaryExpression(token.InitialConditionalPrecedence)
+}
+
+func (parsing *Parsing) parseAnyExpression() tree.Expression {
+	return parsing.parseBinaryExpression(token.InitialPrecedence)
+}
+
+// ParseUnaryExpression parses a unary expression. Unary expressions are
+// operations with only one operand (arity of one). An example of a unary
+// expression is the negation '!(expression)'. The single operand may be
+// any kind of expression, including another unary expression.
+func (parsing *Parsing) parseUnaryExpression() tree.Node {
+	parsing.beginStructure(tree.UnaryExpressionNodeKind)
+	// TODO: Write tests to find out if other methods change the kind
+	defer parsing.completeStructure(tree.UnaryExpressionNodeKind)
+	operatorToken := parsing.token()
+	if token.KeywordValue(operatorToken) == token.CreateKeyword {
+		return parsing.parseCreateExpression()
+	}
+	if !token.IsOperatorOrOperatorKeywordToken(operatorToken) {
+		return parsing.parseOperation()
+	}
+	operator := token.OperatorValue(operatorToken)
+	if !operator.IsUnaryOperator() {
+		return parsing.parseOperation()
+	}
+	parsing.advance()
+	operand := parsing.parseUnaryExpression()
+	return &tree.UnaryExpression{
+		Operator: operator,
+		Operand:  operand,
+		Region:   parsing.createRegionOfCurrentStructure(),
+	}
 }
 
 func (parsing *Parsing) parseOperand() tree.Node {
@@ -42,18 +78,20 @@ func (parsing *Parsing) parseIdentifier() *tree.Identifier {
 }
 
 func (parsing *Parsing) parseStringLiteral() *tree.StringLiteral {
+	parsing.beginStructure(tree.StringLiteralNodeKind)
 	literalToken := parsing.pullToken()
 	return &tree.StringLiteral{
 		Value:  literalToken.Value(),
-		Region: parsing.createRegionFromToken(literalToken),
+		Region: parsing.completeStructure(tree.StringLiteralNodeKind),
 	}
 }
 
 func (parsing *Parsing) parseNumberLiteral() *tree.NumberLiteral {
+	parsing.beginStructure(tree.IdentifierNodeKind)
 	literalToken := parsing.pullToken()
 	return &tree.NumberLiteral{
 		Value:  literalToken.Value(),
-		Region: parsing.createRegionFromToken(literalToken),
+		Region: parsing.completeStructure(tree.IdentifierNodeKind),
 	}
 }
 
@@ -82,15 +120,13 @@ func (parsing *Parsing) parseOperation() tree.Node {
 	return parsing.parseOperationsOnOperand(operand)
 }
 
-func (parsing *Parsing) parseOperationOrAssign(
-	node tree.Node) (tree.Node, error) {
-
+func (parsing *Parsing) parseOperationOrAssign(node tree.Node) tree.Node {
 	if token.IsOperatorToken(parsing.token()) {
 		operator := token.OperatorValue(parsing.token())
 		parsing.advance()
-		return parsing.parseAssignStatement(operator, node)
+		return parsing.completeAssignStatement(operator, node)
 	}
-	return node, nil
+	return node
 }
 
 func (parsing *Parsing) parseOperationsOnOperand(operand tree.Node) tree.Node {
@@ -118,14 +154,14 @@ func (parsing *Parsing) parseOperationOnOperand(operand tree.Node) (node tree.No
 }
 
 func (parsing *Parsing) parseListSelectExpression(target tree.Node) *tree.ListSelectExpression {
-	beginOffset := parsing.offset()
+	parsing.beginStructure(tree.ListSelectExpressionNodeKind)
 	parsing.skipOperator(token.LeftBracketOperator)
 	index := parsing.parseExpression()
 	parsing.expectEndOfListSelect()
 	return &tree.ListSelectExpression{
 		Index:  index,
 		Target: target,
-		Region: parsing.createRegion(beginOffset),
+		Region: parsing.completeStructure(tree.ListSelectExpressionNodeKind),
 	}
 }
 
@@ -139,48 +175,13 @@ func (parsing *Parsing) expectEndOfListSelect() {
 }
 
 func (parsing *Parsing) parseFieldSelectExpression(target tree.Node) *tree.FieldSelectExpression {
-	beginOffset := parsing.offset()
+	parsing.beginStructure(tree.FieldSelectExpressionNodeKind)
 	parsing.skipOperator(token.DotOperator)
 	field := parsing.parseOperand()
 	return &tree.FieldSelectExpression{
 		Target:    target,
 		Selection: field,
-		Region:    parsing.createRegion(beginOffset),
-	}
-}
-
-// ParseBinaryExpression parses a binary expression. Binary expressions are
-// operations with two operands. Strict uses the infix notation, therefor
-// binary expressions have a left-hand-side and right-hand-side operand and
-// the operator in between. The operands can be any kind of expression.
-// Example: 'a + b' or '(1 + 2) + 3'
-func (parsing *Parsing) parseBinaryExpression(requiredPrecedence token.Precedence) tree.Node {
-	expression, _ := parsing.parseBinaryExpressionRecursive(requiredPrecedence)
-	return expression
-}
-
-func (parsing *Parsing) parseBinaryExpressionRecursive(
-	requiredPrecedence token.Precedence) (tree.Node, bool) {
-
-	beginOffset := parsing.offset()
-	leftHandSide := parsing.parseUnaryExpression()
-	for {
-		operator := parsing.token()
-		precedence := token.PrecedenceOfAny(operator)
-		if precedence < requiredPrecedence {
-			return leftHandSide, false
-		}
-		parsing.advance()
-		rightHandSide, success := parsing.parseBinaryExpressionRecursive(precedence + 1)
-		if !success {
-			return leftHandSide, true
-		}
-		leftHandSide = &tree.BinaryExpression{
-			Operator:     token.OperatorValue(operator),
-			LeftOperand:  leftHandSide,
-			RightOperand: rightHandSide,
-			Region:       parsing.createRegion(beginOffset),
-		}
+		Region:    parsing.completeStructure(tree.FieldSelectExpressionNodeKind),
 	}
 }
 
@@ -191,56 +192,30 @@ func (parsing *Parsing) parseConstructorCall() (*tree.CallExpression, tree.TypeN
 }
 
 func (parsing *Parsing) parseCreateExpression() tree.Node {
-	beginOffset := parsing.offset()
+	parsing.beginStructure(tree.CreateExpressionNodeKind)
 	parsing.skipKeyword(token.CreateKeyword)
 	constructor, typeName := parsing.parseConstructorCall()
 	return &tree.CreateExpression{
 		Call:   constructor,
 		Type:   typeName,
-		Region: parsing.createRegion(beginOffset),
-	}
-}
-
-// ParseUnaryExpression parses a unary expression. Unary expressions are
-// operations with only one operand (arity of one). An example of a unary
-// expression is the negation '!(expression)'. The single operand may be
-// any kind of expression, including another unary expression.
-func (parsing *Parsing) parseUnaryExpression() tree.Node {
-	beginOffset := parsing.offset()
-	operatorToken := parsing.token()
-	if token.KeywordValue(operatorToken) == token.CreateKeyword {
-		return parsing.parseCreateExpression()
-	}
-	if !token.IsOperatorOrOperatorKeywordToken(operatorToken) {
-		return parsing.parseOperation()
-	}
-	operator := token.OperatorValue(operatorToken)
-	if !operator.IsUnaryOperator() {
-		return parsing.parseOperation()
-	}
-	parsing.advance()
-	operand := parsing.parseUnaryExpression()
-	return &tree.UnaryExpression{
-		Operator: operator,
-		Operand:  operand,
-		Region:   parsing.createRegion(beginOffset),
+		Region: parsing.completeStructure(tree.CreateExpressionNodeKind),
 	}
 }
 
 // ParseMethodCall parses the call to a method.
 func (parsing *Parsing) parseCallOnNode(method tree.Node) *tree.CallExpression {
-	beginOffset := parsing.offset()
+	parsing.beginStructure(tree.CallExpressionNodeKind)
 	parsing.skipOperator(token.LeftParenOperator)
 	arguments := parsing.parseArgumentList()
 	return &tree.CallExpression{
 		Arguments: arguments,
 		Target:    method,
-		Region:    parsing.createRegion(beginOffset),
+		Region:    parsing.completeStructure(tree.CallExpressionNodeKind),
 	}
 }
 
 func (parsing *Parsing) parseCallArgument() *tree.CallArgument {
-	beginOffset := parsing.offset()
+	parsing.beginStructure(tree.CallArgumentNodeKind)
 	var argument tree.CallArgument
 	if token.IsIdentifierToken(parsing.token()) &&
 		token.HasOperatorValue(parsing.peek(), token.AssignOperator) {
@@ -250,7 +225,7 @@ func (parsing *Parsing) parseCallArgument() *tree.CallArgument {
 	}
 	value := parsing.parseExpression()
 	argument.Value = value
-	argument.Region = parsing.createRegion(beginOffset)
+	argument.Region = parsing.completeStructure(tree.CallArgumentNodeKind)
 	return &argument
 }
 
@@ -272,7 +247,12 @@ func (parsing *Parsing) parseNonEmptyArgumentList() (arguments tree.CallArgument
 }
 
 func (parsing *Parsing) consumeTokenAfterArgument() {
-	if !token.HasOperatorValue(parsing.pullToken(), token.CommaOperator) {
+	operator := token.OperatorValue(parsing.token())
+	if operator == token.CommaOperator {
+		parsing.advance()
+		return
+	}
+	if operator != token.RightParenOperator {
 		parsing.throwExpectedEndOfMethodCallError()
 	}
 }

@@ -11,7 +11,7 @@ type StringLiteral struct {
 	Value string
 	// Region is the region of the input that contain the literal.
 	// It contains the leading and trailing characters.
-	Region input.Region
+	Region       input.Region
 	resolvedType resolvedType
 }
 

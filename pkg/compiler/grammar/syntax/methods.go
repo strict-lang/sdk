@@ -3,20 +3,42 @@ package syntax
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
+const voidReturnType = `void`
+
+type parsedMethod struct {
+	name string
+	isVoid bool
+}
+
 func (parsing *Parsing) parseMethodDeclaration() *tree.MethodDeclaration {
-	beginOffset := parsing.offset()
+	parsing.beginStructure(tree.MethodDeclarationNodeKind)
 	parsing.skipKeyword(token.MethodKeyword)
 	signature := parsing.parseMethodSignature()
-	parsing.currentMethodName = signature.name.Value
+	parsing.updateCurrentMethod(signature)
 	return &tree.MethodDeclaration{
 		Type:       signature.returnTypeName,
 		Name:       signature.name,
 		Parameters: signature.parameters,
 		Body:       parsing.parseMethodBody(),
-		Region:     parsing.createRegion(beginOffset),
+		Region:     parsing.completeStructure(tree.MethodDeclarationNodeKind),
 	}
+}
+
+func (parsing *Parsing) updateCurrentMethod(signature methodSignature) {
+	parsing.currentMethod = parsedMethod{
+		name:   signature.name.Value,
+		isVoid: isVoidType(signature.returnTypeName),
+	}
+}
+
+func isVoidType(name tree.TypeName) bool {
+	if concrete, isConcrete := name.(*tree.ConcreteTypeName); isConcrete {
+		return concrete.Name == voidReturnType
+	}
+	return false
 }
 
 type methodSignature struct {
@@ -49,7 +71,7 @@ func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
 	if parsing.isLookingAtOperator(token.LeftParenOperator) {
 		return &tree.ConcreteTypeName{
 			Name:   "void",
-			Region: parsing.createRegion(parsing.offset()),
+			Region: input.CreateRegion(parsing.offset(), parsing.offset()),
 		}
 	}
 	return parsing.parseTypeName()
@@ -58,17 +80,24 @@ func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
 func (parsing *Parsing) parseAssignedMethodBody() tree.Node {
 	parsing.skipOperator(token.ArrowOperator)
 	statement := parsing.parseStatement()
-	return replaceNodeWithReturnIfExpression(statement)
+	return parsing.replaceNodeWithReturnIfExpression(statement)
 }
 
-func replaceNodeWithReturnIfExpression(node tree.Node) tree.Node {
+func (parsing *Parsing) replaceNodeWithReturnIfExpression(node tree.Node) tree.Node {
+	if parsing.isReturningVoid() {
+		return node
+	}
 	if expression, isExpression := node.(*tree.ExpressionStatement); isExpression {
 		return &tree.ReturnStatement{
 			Region: node.Locate(),
-			Value:  expression,
+			Value:  expression.Expression,
 		}
 	}
 	return node
+}
+
+func (parsing *Parsing) isReturningVoid() bool {
+	return parsing.currentMethod.isVoid
 }
 
 func (parsing *Parsing) parseParameterListWithParens() tree.ParameterList {
@@ -86,8 +115,8 @@ func (parsing *Parsing) parseParameterList() (parameters tree.ParameterList) {
 }
 
 func (parsing *Parsing) consumeTokenAfterParameter() {
-	next := parsing.pullToken()
-	if token.HasOperatorValue(next, token.CommaOperator) {
+	if token.HasOperatorValue(parsing.token(), token.CommaOperator) {
+		parsing.advance()
 		return
 	}
 	parsing.expectEndOfParameterList()
@@ -99,19 +128,20 @@ func (parsing *Parsing) expectEndOfParameterList() {
 			Token:    parsing.token(),
 			Expected: "end of method parameter list",
 		})
+		return
 	}
 }
 
 func (parsing *Parsing) isAtEndOfParameterList() bool {
 	operator := token.OperatorValue(parsing.token())
-	return operator != token.RightParenOperator
+	return operator == token.RightParenOperator
 }
 
 func (parsing *Parsing) parseParameter() *tree.Parameter {
-	beginOffset := parsing.offset()
+	parsing.beginStructure(tree.ParameterNodeKind)
 	return &tree.Parameter{
 		Type:   parsing.parseTypeName(),
 		Name:   parsing.parseIdentifier(),
-		Region: parsing.createRegion(beginOffset),
+		Region: parsing.completeStructure(tree.ParameterNodeKind),
 	}
 }
