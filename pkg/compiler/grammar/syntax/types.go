@@ -21,65 +21,80 @@ func (parsing *Parsing) couldBeLookingAtTypeName() bool {
 // parseTypeName is a recursive method that parses type names. When calling
 // this method, the types primary name is the value of the 'last' token.
 func (parsing *Parsing) parseTypeName() tree.TypeName {
-	beginOffset := parsing.offset()
-	typeName := parsing.token()
-	parsing.advance()
-	return parsing.parseTypeNameFromBaseIdentifier(beginOffset, typeName)
+	parsing.beginStructure(tree.TypeNameNodeGroup)
+	base := parsing.parseIdentifier()
+	return parsing.parseTypeNameFromBaseIdentifier(base.Value)
 }
 
-func (parsing *Parsing) parseTypeNameFromBaseIdentifier(
-	beginOffset input.Offset, typeName token.Token) tree.TypeName {
+func (parsing *Parsing) parseTypeNameFromBaseIdentifier(base string) tree.TypeName {
+	typeName := parsing.parseIncompleteGenericOrConcreteType(base)
+	if token.HasOperatorValue(parsing.token(), token.LeftBracketOperator) {
+		return parsing.parseListTypeName(typeName)
+	}
+	parsing.completeStructure(tree.WildcardNodeKind)
+	return typeName
+}
 
-	if !token.IsIdentifierToken(typeName) {
+func (parsing *Parsing) expectBaseName(name token.Token) {
+	if !token.IsIdentifierToken(name) {
 		parsing.throwError(&UnexpectedTokenError{
-			Token:    typeName,
+			Token:    name,
 			Expected: "TypeName",
 		})
 	}
-	operator := token.OperatorValue(parsing.token())
-	if operator == token.SmallerOperator {
-		return parsing.parseGenericTypeName(beginOffset, typeName.Value())
-	}
-	concrete := &tree.ConcreteTypeName{
-		Name:   typeName.Value(),
-		Region: parsing.createRegion(beginOffset),
-	}
-	if operator == token.LeftBracketOperator {
-		return parsing.parseListTypeName(beginOffset, concrete)
-	}
-	return concrete
 }
 
-func (parsing *Parsing) parseGenericTypeName(
-	beginOffset input.Offset, base string) tree.TypeName {
+func (parsing *Parsing) parseIncompleteGenericOrConcreteType(base string) tree.TypeName {
+	if token.HasOperatorValue(parsing.token(), token.SmallerOperator) {
+		return parsing.parseIncompleteGenericTypeName(base)
+	} else {
+		return parsing.parseIncompleteConcreteTypeName(base)
+	}
+}
 
+func (parsing *Parsing) parseIncompleteConcreteTypeName(base string) tree.TypeName {
+	parsing.updateTopStructureKind(tree.ConcreteTypeNameNodeKind)
+	return &tree.ConcreteTypeName{
+		Name:   base,
+		Region: parsing.createRegionOfCurrentStructure(),
+	}
+}
+
+func (parsing *Parsing) parseIncompleteGenericTypeName(base string) tree.TypeName {
+	parsing.updateTopStructureKind(tree.GenericTypeNameNodeKind)
 	parsing.skipOperator(token.SmallerOperator)
 	generic := parsing.parseTypeName()
-	closingOperator := parsing.token()
-	if token.OperatorValue(closingOperator) != token.GreaterOperator {
-		parsing.throwError(&UnexpectedTokenError{
-			Token:    closingOperator,
-			Expected: token.GreaterOperator.String(),
-		})
-	}
-	parsing.advance()
+	parsing.skipEndOfGenericTypeName()
 	return &tree.GenericTypeName{
 		Name:    base,
 		Generic: generic,
-		Region:  parsing.createRegion(beginOffset),
+		Region:  parsing.createRegionOfCurrentStructure(),
 	}
 }
 
-func (parsing *Parsing) parseListTypeName(
-	beginOffset input.Offset, base tree.TypeName) tree.TypeName {
+func (parsing *Parsing) skipEndOfGenericTypeName() {
+	end := parsing.pullToken()
+	if token.OperatorValue(end) != token.GreaterOperator {
+		parsing.throwError(&UnexpectedTokenError{
+			Token:    end,
+			Expected: token.GreaterOperator.String(),
+		})
+	}
+}
+
+func (parsing *Parsing) parseListTypeName(base tree.TypeName) tree.TypeName {
 	parsing.skipOperator(token.LeftBracketOperator)
 	parsing.skipOperator(token.RightBracketOperator)
-	typeName := &tree.ListTypeName{
-		Element: base,
-		Region:  parsing.createRegion(beginOffset),
-	}
 	if token.HasOperatorValue(parsing.token(), token.LeftBracketOperator) {
-		return parsing.parseListTypeName(beginOffset, typeName)
+		beginOffset := parsing.peekStructure().beginOffset
+		return parsing.parseListTypeName(&tree.ListTypeName{
+			Element: base,
+			Region:  input.CreateRegion(beginOffset, parsing.offset()),
+		})
 	}
-	return typeName
+	return &tree.ListTypeName{
+		Element: base,
+		// TODO: This should be at the call-site
+		Region: parsing.completeStructure(tree.WildcardNodeKind),
+	}
 }

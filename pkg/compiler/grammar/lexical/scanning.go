@@ -204,14 +204,20 @@ func (scanning *Scanning) SkipComment() {
 	}
 }
 
+func (scanning *Scanning) isLookingAtComment() bool {
+	return scanning.char() == '/' && scanning.peekChar() == '/'
+}
+
 func (scanning *Scanning) nextNonEndOfFile() token.Token {
+	if scanning.isLookingAtComment() {
+		scanning.SkipComment()
+		return scanning.nextNonEndOfFile()
+	}
+	return scanning.scanToken()
+}
+
+func (scanning *Scanning) scanToken() token.Token {
 	switch next := scanning.char(); {
-	case next == '/':
-		if scanning.peekChar() == '/' {
-			scanning.SkipComment()
-			return scanning.nextNonEndOfFile()
-		}
-		fallthrough
 	case next == '\n' || next == '\r':
 		scanning.advance()
 		return scanning.nextNonEndOfFile()

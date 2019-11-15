@@ -53,8 +53,8 @@ func (generation *Generation) generateClassDeclaration(declaration *tree.ClassDe
 
 func (generation *Generation) writeImplicitConstructor() {
 	generation.generateConstructorDeclaration(&tree.ConstructorDeclaration{
-		Parameters:   []*tree.Parameter{},
-		Child:         &tree.BlockStatement{},
+		Parameters: []*tree.Parameter{},
+		Child:      &tree.BlockStatement{},
 	})
 }
 
@@ -73,10 +73,10 @@ func createInitStatement(field *tree.FieldDeclaration) tree.Node {
 	return &tree.AssignStatement{
 		Target: field.Name,
 		Value: &tree.CallExpression{
-			Target:       field.TypeName,
-			Arguments:    []*tree.CallArgument{},
+			Target:    field.TypeName,
+			Arguments: []*tree.CallArgument{},
 		},
-		Operator:     0,
+		Operator: 0,
 	}
 }
 
@@ -95,17 +95,15 @@ func filterDeclarations(nodes []tree.Node) (declarations []tree.Node, remainder 
 	return
 }
 
-
-
 func (generation *Generation) generateMethodDeclaration(declaration *tree.MethodDeclaration) {
 	name := fmt.Sprintf("%s::%s", generation.className, declaration.Name.Value)
 	instanceMethod := &tree.MethodDeclaration{
 		Name: &tree.Identifier{
-			Value:        name,
+			Value: name,
 		},
-		Type:         declaration.Type,
-		Parameters:   declaration.Parameters,
-		Body:         declaration.Body,
+		Type:       declaration.Type,
+		Parameters: declaration.Parameters,
+		Body:       declaration.Body,
 	}
 	generation.generation.GenerateMethod(instanceMethod)
 }
@@ -130,9 +128,9 @@ func (generation *Generation) generateInitCall() tree.Node {
 	return &tree.ExpressionStatement{
 		Expression: &tree.CallExpression{
 			Target: &tree.Identifier{
-				Value:        backend.InitMethodName,
+				Value: backend.InitMethodName,
 			},
-			Arguments:    []*tree.CallArgument{},
+			Arguments: []*tree.CallArgument{},
 		},
 	}
 }
@@ -140,14 +138,14 @@ func (generation *Generation) generateInitCall() tree.Node {
 func (generation *Generation) writeInitMethod(body []tree.Statement) {
 	generation.generateMethodDeclaration(&tree.MethodDeclaration{
 		Name: &tree.Identifier{
-			Value:        backend.InitMethodName,
+			Value: backend.InitMethodName,
 		},
 		Type: &tree.ConcreteTypeName{
-			Name:         "void",
+			Name: "void",
 		},
 		Body: &tree.BlockStatement{
-			Children:     body,
+			Children: body,
 		},
-		Parameters:   []*tree.Parameter{},
+		Parameters: []*tree.Parameter{},
 	})
 }

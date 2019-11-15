@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
+        "binary_expression.go",
         "errors.go",
         "expression.go",
         "factory.go",
@@ -10,6 +11,7 @@ go_library(
         "parsing.go",
         "parsing_util.go",
         "statement.go",
+        "structure_stack.go",
         "types.go",
     ],
     importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax",

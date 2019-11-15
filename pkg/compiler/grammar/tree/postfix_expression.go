@@ -16,7 +16,7 @@ type PostfixExpression struct {
 	// Operator is the type of operation that is applied to the operand.
 	Operator token.Operator
 	// InputRegion is the area of code covered by the node.
-	Region input.Region
+	Region       input.Region
 	resolvedType resolvedType
 }
 
@@ -27,7 +27,6 @@ func (expression *PostfixExpression) Resolve(descriptor TypeDescriptor) {
 func (expression *PostfixExpression) GetResolvedType() (TypeDescriptor, bool) {
 	return expression.resolvedType.getDescriptor()
 }
-
 
 // Accept lets the visitor visit this expression.
 func (expression *PostfixExpression) Accept(visitor Visitor) {

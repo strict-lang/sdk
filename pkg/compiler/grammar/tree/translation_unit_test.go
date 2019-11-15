@@ -43,10 +43,10 @@ func TestTranslationUnit_AcceptRecursive(testing *testing.T) {
 func TestTranslationUnit_Region(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &TranslationUnit{
-			Name:       "test",
-			Imports:    nil,
-			Class:      nil,
-			Region: region,
+			Name:    "test",
+			Imports: nil,
+			Class:   nil,
+			Region:  region,
 		}
 	})
 }

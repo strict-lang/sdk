@@ -25,6 +25,7 @@ func RunNodeRegionTest(testing *testing.T, entryFactory nodeFromRegion) {
 }
 
 const matchTestRepeat = 10
+
 var randomSource = rand.NewSource(0xCAFE)
 
 const fuzzingNilChance = 0.5
@@ -86,11 +87,11 @@ func generateRandomString(random *rand.Rand, length int, charset string) string 
 }
 
 func generateRandomIntInRange(random *rand.Rand, begin, end int) int {
-	return begin + random.Intn(end - begin)
+	return begin + random.Intn(end-begin)
 }
 
 type MatchTest struct {
-	base Node
+	base    Node
 	testing *testing.T
 }
 

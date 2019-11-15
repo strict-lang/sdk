@@ -13,6 +13,6 @@ type Stream interface {
 	// no next token, an EndOfFile token is returned. Subsequent calls to Peek will
 	// always return the same token until Pull() is called.
 	Peek() Token
-	// Current returns the most recently pulled token.
+	// Last returns the most recently pulled token.
 	Last() Token
 }

@@ -7,8 +7,8 @@ type CallExpression struct {
 	Target Node
 	// An array of expression nodes that are the arguments passed to
 	// the method. The arguments types are checked during type checking.
-	Arguments CallArgumentList
-	Region    input.Region
+	Arguments    CallArgumentList
+	Region       input.Region
 	resolvedType resolvedType
 }
 

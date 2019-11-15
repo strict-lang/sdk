@@ -1,25 +1,40 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
-	"strings"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"testing"
 )
 
-func TestParser_ParseTypeName(test *testing.T) {
-	entries := []string{
-		"number",
-		"string",
-		"list<number>",
-		"list<list<number>>",
-		"list < number >",
-	}
-
-	for _, entry := range entries {
-		parser := NewTestParser(lexical.NewStringScanning(entry))
-		name := parser.parseTypeName()
-		if name.FullName() != strings.Replace(entry, " ", "", 10) {
-			test.Errorf("unexpected name %s, expected %s", name.FullName(), entry)
-		}
-	}
+func TestParsing_ParseTypeName(testing *testing.T) {
+	ExpectAllResults(testing,
+		[]ParserTestEntry{
+			{
+				Input: `int`,
+				ExpectedOutput: &tree.ConcreteTypeName{
+					Name: "int",
+				},
+			},
+			{
+				Input: `list<int>`,
+				ExpectedOutput: &tree.GenericTypeName{
+					Name: `list`,
+					Generic: &tree.ConcreteTypeName{
+						Name: `int`,
+					},
+				},
+			},
+			{
+				Input: `list<int[]>`,
+				ExpectedOutput: &tree.GenericTypeName{
+					Name: `list`,
+					Generic: &tree.ListTypeName{
+						Element: &tree.ConcreteTypeName{
+							Name: `int`,
+						},
+					},
+				},
+			},
+		}, func(parsing *Parsing) tree.Node {
+			return parsing.parseTypeName()
+		})
 }
