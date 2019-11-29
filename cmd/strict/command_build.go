@@ -46,11 +46,11 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		TargetArduino: targetArduino,
 	}
 	result := compiler.Compile()
+	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command})
 	if result.Error != nil {
-		command.PrintErrf("Failed to compile the file: %s\n", result.Error)
+		command.PrintErrf("The compilation has failed: %s\n", result.Error)
 		return
 	}
-	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command})
 	if err = writeGeneratedSources(result); err != nil {
 		command.PrintErrf("Failed to write generated code; %s\n", err.Error())
 		return

@@ -51,7 +51,7 @@ func (factory *Factory) NewParser() *Parsing {
 		recorder:       factory.bag,
 		unitName:       factory.unitName,
 		structureStack: newRecordingStructureStack(),
-		currentMethod: notParsingMethod,
+		currentMethod:  notParsingMethod,
 	}
 	parser.openBlock(token.NoIndent)
 	parser.advance()

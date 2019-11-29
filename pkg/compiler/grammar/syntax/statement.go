@@ -1,7 +1,7 @@
 package syntax
 
 import (
-	"fmt"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
@@ -156,9 +156,12 @@ func (parsing *Parsing) parseImportStatement() *tree.ImportStatement {
 	case token.IsIdentifierToken(next):
 		return parsing.completeIdentifierChainImport()
 	default:
-		parsing.throwError(&UnexpectedTokenError{
-			Expected: "File or Class Path",
-			Token:    next,
+		parsing.throwError(&diagnostic.RichError{
+			Error: &diagnostic.UnexpectedTokenError{
+				Expected: "file or path to class",
+				Received: next.Value(),
+			},
+			CommonReasons: []string{"The import target is invalid"},
 		})
 		return nil
 	}
@@ -294,9 +297,11 @@ func (parsing *Parsing) parseKeywordStatement(keyword token.Keyword) tree.Node {
 	if ok {
 		return function(parsing)
 	}
-	parsing.throwError(&UnexpectedTokenError{
-		Token:    parsing.token(),
-		Expected: "keyword that starts a statement",
+	parsing.throwError(&diagnostic.RichError{
+		Error: &diagnostic.UnexpectedTokenError{
+			Expected: "begin of statement",
+			Received: parsing.token().Value(),
+		},
 	})
 	return nil
 }
@@ -480,8 +485,17 @@ func (parsing *Parsing) parseStatement() tree.Node {
 	case token.IsLiteralToken(current):
 		return parsing.parseInstructionStatement()
 	default:
-		parsing.throwError(fmt.Errorf("expected begin of statement or expression but got: %s", current))
+		parsing.throwError(newUnexpectedTokenError(current))
 		return nil
+	}
+}
+
+func newUnexpectedTokenError(token token.Token) *diagnostic.RichError {
+	return &diagnostic.RichError{
+		Error: &diagnostic.UnexpectedTokenError{
+			Expected: "begin of statement",
+			Received: token.Value(),
+		},
 	}
 }
 
@@ -539,7 +553,7 @@ func (parsing *Parsing) parseStatementSequence() (statements []tree.Statement) {
 			continue
 		}
 		if current.Indent() > expectedIndent {
-			parsing.throwError(fmt.Errorf("indent level of %d", expectedIndent))
+			parsing.throwError(newInvalidIndentError(expectedIndent, current.Indent()))
 			break
 		}
 		if current.Indent() < expectedIndent {
@@ -554,15 +568,25 @@ func (parsing *Parsing) parseStatementSequence() (statements []tree.Statement) {
 	return statements
 }
 
+func newInvalidIndentError(expected, received token.Indent) *diagnostic.RichError {
+	return &diagnostic.RichError{
+		Error: &diagnostic.InvalidIndentationError{
+			Expected: string(expected),
+			Received: int(received),
+		},
+		CommonReasons: []string{
+			"Tabs and spaces are mixed",
+			"Code is not properly formatted",
+		},
+	}
+}
+
 // ParseStatementBlock parses a block of statements.
 func (parsing *Parsing) parseStatementBlock() *tree.BlockStatement {
 	parsing.beginStructure(tree.BlockStatementNodeKind)
 	indent := parsing.token().Indent()
 	if indent < parsing.block.Indent {
-		parsing.throwError(&InvalidIndentationError{
-			Token:    parsing.token(),
-			Expected: "indent bigger than 0",
-		})
+		parsing.throwError(newZeroIndentError())
 	}
 	parsing.openBlock(indent)
 	statements := parsing.parseStatementSequence()
@@ -570,5 +594,14 @@ func (parsing *Parsing) parseStatementBlock() *tree.BlockStatement {
 	return &tree.BlockStatement{
 		Children: statements,
 		Region:   parsing.completeStructure(tree.BlockStatementNodeKind),
+	}
+}
+
+func newZeroIndentError() *diagnostic.RichError {
+	return &diagnostic.RichError{
+		Error: &diagnostic.InvalidIndentationError{
+			Expected: "higher than 0",
+			Received: 0,
+		},
 	}
 }

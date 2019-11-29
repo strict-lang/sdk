@@ -7,7 +7,7 @@ import (
 )
 
 type AssertionMessageComputation struct {
-	buffer  strings.Builder
+	buffer  *strings.Builder
 	visitor tree.Visitor
 }
 
@@ -20,6 +20,7 @@ func NewAssertionMessageComputation() *AssertionMessageComputation {
 	visitor.NumberLiteralVisitor = computation.visitNumberLiteral
 	visitor.StringLiteralVisitor = computation.visitStringLiteral
 	computation.visitor = visitor
+	computation.buffer = &strings.Builder{}
 	return computation
 }
 
@@ -38,23 +39,23 @@ func (computation *AssertionMessageComputation) GenerateNode(node tree.Node) {
 }
 
 func (computation *AssertionMessageComputation) visitBinaryExpression(expression *tree.BinaryExpression) {
-	computation.buffer.WriteString("( ")
+	computation.buffer.WriteString("(")
 	computation.GenerateNode(expression.LeftOperand)
 	computation.buffer.WriteString(" ")
 	message := translateComparisonOperatorToErrorMessage(expression.Operator)
 	computation.buffer.WriteString(message)
 	computation.buffer.WriteString(" ")
 	computation.GenerateNode(expression.RightOperand)
-	computation.buffer.WriteString(") ")
+	computation.buffer.WriteString(")")
 }
 
 func (computation *AssertionMessageComputation) visitUnaryExpression(expression *tree.UnaryExpression) {
-	computation.buffer.WriteString("( ")
+	computation.buffer.WriteString("(")
 	computation.GenerateNode(expression.Operand)
 	computation.buffer.WriteString(" ")
 	message := translateUnaryOperatorToErrorMessage(expression.Operator)
 	computation.buffer.WriteString(message)
-	computation.buffer.WriteString(" ) ")
+	computation.buffer.WriteString(")")
 }
 
 func (computation *AssertionMessageComputation) visitIdentifier(identifier *tree.Identifier) {

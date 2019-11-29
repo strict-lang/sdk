@@ -107,7 +107,7 @@ func TestParsing_ParseListSelectExpression(testing *testing.T) {
 			{
 				Input: `list[indexes[0]]`,
 				ExpectedOutput: &tree.ListSelectExpression{
-					Index:  &tree.ListSelectExpression{
+					Index: &tree.ListSelectExpression{
 						Index:  &tree.NumberLiteral{Value: `0`},
 						Target: &tree.Identifier{Value: `indexes`},
 					},
@@ -117,7 +117,7 @@ func TestParsing_ParseListSelectExpression(testing *testing.T) {
 			{
 				Input: `GetList()[0]`,
 				ExpectedOutput: &tree.ListSelectExpression{
-					Index:  &tree.NumberLiteral{Value: `0`},
+					Index: &tree.NumberLiteral{Value: `0`},
 					Target: &tree.CallExpression{
 						Target: &tree.Identifier{Value: `GetList`},
 					},
@@ -135,7 +135,7 @@ func TestParsing_ParseCallExpression(testing *testing.T) {
 			{
 				Input: `Chain().Call()`,
 				ExpectedOutput: &tree.CallExpression{
-					Target:    &tree.FieldSelectExpression{
+					Target: &tree.FieldSelectExpression{
 						Target: &tree.CallExpression{
 							Target: &tree.Identifier{Value: `Chain`},
 						},
@@ -146,7 +146,7 @@ func TestParsing_ParseCallExpression(testing *testing.T) {
 			{
 				Input: `list[0]()`,
 				ExpectedOutput: &tree.CallExpression{
-					Target:    &tree.ListSelectExpression{
+					Target: &tree.ListSelectExpression{
 						Index:  &tree.NumberLiteral{Value: `0`},
 						Target: &tree.Identifier{Value: `list`},
 					},
@@ -155,7 +155,7 @@ func TestParsing_ParseCallExpression(testing *testing.T) {
 			{
 				Input: `call(argument=0)`,
 				ExpectedOutput: &tree.CallExpression{
-					Target:    &tree.Identifier{Value: `call`},
+					Target: &tree.Identifier{Value: `call`},
 					Arguments: tree.CallArgumentList{
 						&tree.CallArgument{
 							Label: `argument`,
@@ -167,7 +167,7 @@ func TestParsing_ParseCallExpression(testing *testing.T) {
 			{
 				Input: `call(argument=0, 1)`,
 				ExpectedOutput: &tree.CallExpression{
-					Target:    &tree.Identifier{Value: `call`},
+					Target: &tree.Identifier{Value: `call`},
 					Arguments: tree.CallArgumentList{
 						&tree.CallArgument{
 							Label: `argument`,

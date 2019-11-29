@@ -9,6 +9,7 @@ type Line struct {
 	Offset Offset
 	Length Offset
 	Index  LineIndex
+	Text   string
 }
 
 type Position struct {

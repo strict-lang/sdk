@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
@@ -37,9 +38,11 @@ func (parsing *Parsing) parseTypeNameFromBaseIdentifier(base string) tree.TypeNa
 
 func (parsing *Parsing) expectBaseName(name token.Token) {
 	if !token.IsIdentifierToken(name) {
-		parsing.throwError(&UnexpectedTokenError{
-			Token:    name,
-			Expected: "TypeName",
+		parsing.throwError(&diagnostic.RichError{
+			Error: &diagnostic.UnexpectedTokenError{
+				Expected: "name of type",
+				Received: name.Value(),
+			},
 		})
 	}
 }
@@ -73,13 +76,7 @@ func (parsing *Parsing) parseIncompleteGenericTypeName(base string) tree.TypeNam
 }
 
 func (parsing *Parsing) skipEndOfGenericTypeName() {
-	end := parsing.pullToken()
-	if token.OperatorValue(end) != token.GreaterOperator {
-		parsing.throwError(&UnexpectedTokenError{
-			Token:    end,
-			Expected: token.GreaterOperator.String(),
-		})
-	}
+	parsing.skipOperator(token.GreaterOperator)
 }
 
 func (parsing *Parsing) parseListTypeName(base tree.TypeName) tree.TypeName {
@@ -94,7 +91,6 @@ func (parsing *Parsing) parseListTypeName(base tree.TypeName) tree.TypeName {
 	}
 	return &tree.ListTypeName{
 		Element: base,
-		// TODO: This should be at the call-site
 		Region: parsing.completeStructure(tree.WildcardNodeKind),
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 )
 
-var operatorTable = OperatorTable{
+var operatorTable = operatorOptionTable{
 	'+': {
 		singleChar: token.AddOperator,
 		'=':        token.AddAssignOperator,
