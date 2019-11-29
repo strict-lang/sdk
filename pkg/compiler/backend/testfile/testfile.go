@@ -14,11 +14,17 @@ type TestFile struct {
 	generation *backend.Generation
 }
 
+func NewGeneration() *Extension {
+	return &Extension{}
+}
+
 func (extension *Extension) ModifyVisitor(generation *backend.Generation, visitor *tree.DelegatingVisitor) {
 	testFile := &TestFile{
 		generation: generation,
 	}
 	visitor.AssertStatementVisitor = testFile.emitAssertStatement
+	visitor.TestStatementVisitor = testFile.emitTestDefinition
+	visitor.MethodDeclarationVisitor = testFile.emitMethodDeclaration
 }
 
 const typeTestingInstance = "testing"
@@ -29,14 +35,19 @@ func (testFile *TestFile) emitAssertStatement(statement *tree.AssertStatement) {
 	generation := testFile.generation
 	generation.Emit("if (!(")
 	generation.EmitNode(statement.Expression)
-	generation.Emit(") {")
+	generation.Emit(")) {\n")
 	generation.IncreaseIndent()
 	generation.EmitIndent()
 	testFile.emitFailedAssertion(statement)
-	generation.EmitEndOfLine()
+	generation.Emit("\n")
 	generation.DecreaseIndent()
+	generation.EmitIndent()
 	generation.Emit("}")
-	generation.EmitEndOfLine()
+}
+
+func (testFile *TestFile) emitTestDefinition(node *tree.TestStatement) {
+	test := NewTestDefinition(node, testFile.generation)
+	test.Emit()
 }
 
 func (testFile *TestFile) emitFailedAssertion(statement *tree.AssertStatement) {
@@ -45,6 +56,18 @@ func (testFile *TestFile) emitFailedAssertion(statement *tree.AssertStatement) {
 		methodTestingInstance, failureMessage)
 	if returnOnFailure {
 		testFile.generation.Emit("return;")
+	}
+}
+
+func (testFile *TestFile) emitMethodDeclaration(method *tree.MethodDeclaration) {
+	block, isBlock := method.Body.(*tree.BlockStatement)
+	if !isBlock {
+		return
+	}
+	for _, statement := range block.Children {
+		if test, isTest := statement.(*tree.TestStatement); isTest {
+			testFile.generation.EmitNode(test)
+		}
 	}
 }
 
@@ -57,11 +80,11 @@ func generateAssertionFailureMessage(expression tree.Node) string {
 type TestDefinition struct {
 	testedMethodName string
 	testMethodName   string
-	node             tree.TestStatement
+	node             *tree.TestStatement
 	generation       *backend.Generation
 }
 
-func NewTestDefinition(node tree.TestStatement, generation *backend.Generation) *TestDefinition {
+func NewTestDefinition(node *tree.TestStatement, generation *backend.Generation) *TestDefinition {
 	return &TestDefinition{
 		testedMethodName: node.MethodName,
 		testMethodName:   produceTestMethodName(node.MethodName),
@@ -72,11 +95,19 @@ func NewTestDefinition(node tree.TestStatement, generation *backend.Generation) 
 
 func (node *TestDefinition) Emit() {
 	generation := node.generation
-	generation.EmitFormatted("void %s(%s *testing::Testing) {", typeTestingInstance, node.testMethodName)
+	generation.EmitFormatted(
+		"void %s(testing::Testing* %s) {",
+		node.testMethodName,
+		typeTestingInstance)
 	generation.IncreaseIndent()
+	generation.EmitEndOfLine()
 	generation.EmitIndent()
 	node.emitMethodTestingRAII()
+	generation.EmitIndent()
+	generation.EmitNode(node.node.Child)
 	generation.DecreaseIndent()
+	generation.EmitEndOfLine()
+	generation.EmitIndent()
 	generation.Emit("}")
 }
 

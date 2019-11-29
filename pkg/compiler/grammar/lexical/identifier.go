@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	// ErrInvalidIdentifier is returned when an identifier can not be scanned.
-	ErrInvalidIdentifier = errors.New("invalid identifier")
+	// errInvalidIdentifier is returned when an identifier can not be scanned.
+	errInvalidIdentifier = errors.New("invalid identifier")
 )
 
 func isIdentifierBegin(char input.Char) bool {
@@ -23,7 +23,7 @@ func isIdentifierChar(char input.Char) bool {
 func (scanning *Scanning) gatherIdentifier() (string, error) {
 	leading, ok := scanning.scanMatching(isIdentifierBegin)
 	if !ok {
-		return "", ErrInvalidIdentifier
+		return "", errInvalidIdentifier
 	}
 	remaining, ok := scanning.scanAllMatching(isIdentifierChar)
 	if !ok {
@@ -32,8 +32,8 @@ func (scanning *Scanning) gatherIdentifier() (string, error) {
 	return string(leading) + remaining, nil
 }
 
-// tryToScanIdentifier tries to scanning an identifier and records an error, if it fails.
-func (scanning *Scanning) ScanIdentifier() token.Token {
+// scanIdentifier tries to scanning an identifier and records an error, if it fails.
+func (scanning *Scanning) scanIdentifier() token.Token {
 	identifier, err := scanning.gatherIdentifier()
 	position := scanning.currentPosition()
 	if err != nil {
@@ -43,7 +43,7 @@ func (scanning *Scanning) ScanIdentifier() token.Token {
 	return token.NewIdentifierToken(identifier, position, scanning.indent)
 }
 
-func (scanning *Scanning) ScanIdentifierOrKeyword() token.Token {
+func (scanning *Scanning) scanIdentifierOrKeyword() token.Token {
 	identifier, err := scanning.gatherIdentifier()
 	if err != nil {
 		scanning.reportError(err)

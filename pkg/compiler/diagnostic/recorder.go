@@ -9,6 +9,7 @@ type RecordedEntry struct {
 	Stage    *Stage
 	Message  string
 	UnitName string
+	Error    *RichError
 	Position RecordedPosition
 }
 
@@ -42,10 +43,12 @@ func (recorder *Bag) CreateDiagnostics(converter OffsetConversionFunction) *Diag
 				LineIndex: position.Line.Index,
 				Column:    position.Column,
 			},
+			Source:   position.Line.Text,
 			UnitName: recorded.UnitName,
 			Kind:     recorded.Kind,
 			Message:  recorded.Message,
 			Stage:    recorded.Stage,
+			Error:    recorded.Error,
 		}
 		kindName := entry.Kind.Name
 		current := mappedEntries[kindName]

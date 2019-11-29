@@ -3,8 +3,6 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
-        "errors.go",
-        "escaped_chars.go",
         "identifier.go",
         "keyword.go",
         "number.go",
@@ -12,7 +10,6 @@ go_library(
         "operator_table.go",
         "recording_source_reader.go",
         "scanning.go",
-        "scanning_util.go",
         "text.go",
     ],
     importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical",

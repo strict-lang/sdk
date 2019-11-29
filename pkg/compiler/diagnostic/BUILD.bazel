@@ -9,11 +9,13 @@ go_library(
         "kind.go",
         "printer.go",
         "recorder.go",
+        "rich_error.go",
         "stage.go",
     ],
     importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/compiler/grammar/tree:go_default_library",
         "//pkg/compiler/input:go_default_library",
         "@com_github_fatih_color//:go_default_library",
     ],

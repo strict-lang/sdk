@@ -254,3 +254,137 @@ func (visitor *DelegatingVisitor) VisitConstructorDeclaration(node *ConstructorD
 func (visitor *DelegatingVisitor) VisitPostfixExpression(node *PostfixExpression) {
 	visitor.PostfixExpressionVisitor(node)
 }
+
+type nodeReporter interface {
+	reportNodeEncounter(kind NodeKind)
+}
+
+func NewReportingVisitor(reporter nodeReporter) Visitor {
+	return &DelegatingVisitor{
+		ParameterVisitor: func(*Parameter) {
+			reporter.reportNodeEncounter(ParameterNodeKind)
+		},
+		IdentifierVisitor: func(*Identifier) {
+			reporter.reportNodeEncounter(IdentifierNodeKind)
+		},
+		CallArgumentVisitor: func(*CallArgument) {
+			reporter.reportNodeEncounter(CallArgumentNodeKind)
+		},
+		ListTypeNameVisitor: func(*ListTypeName) {
+			reporter.reportNodeEncounter(ListTypeNameNodeKind)
+		},
+		TestStatementVisitor: func(*TestStatement) {
+			reporter.reportNodeEncounter(TestStatementNodeKind)
+		},
+		StringLiteralVisitor: func(*StringLiteral) {
+			reporter.reportNodeEncounter(StringLiteralNodeKind)
+		},
+		NumberLiteralVisitor: func(*NumberLiteral) {
+			reporter.reportNodeEncounter(NumberLiteralNodeKind)
+		},
+		CallExpressionVisitor: func(*CallExpression) {
+			reporter.reportNodeEncounter(CallExpressionNodeKind)
+		},
+		EmptyStatementVisitor: func(*EmptyStatement) {
+			reporter.reportNodeEncounter(EmptyStatementNodeKind)
+		},
+		YieldStatementVisitor: func(*YieldStatement) {
+			reporter.reportNodeEncounter(YieldStatementNodeKind)
+		},
+		BlockStatementVisitor: func(*BlockStatement) {
+			reporter.reportNodeEncounter(BlockStatementNodeKind)
+		},
+		AssertStatementVisitor: func(*AssertStatement) {
+			reporter.reportNodeEncounter(AssertStatementNodeKind)
+		},
+		UnaryExpressionVisitor: func(*UnaryExpression) {
+			reporter.reportNodeEncounter(UnaryExpressionNodeKind)
+		},
+		ImportStatementVisitor: func(*ImportStatement) {
+			reporter.reportNodeEncounter(ImportStatementNodeKind)
+		},
+		AssignStatementVisitor: func(*AssignStatement) {
+			reporter.reportNodeEncounter(AssignStatementNodeKind)
+		},
+		ReturnStatementVisitor: func(*ReturnStatement) {
+			reporter.reportNodeEncounter(ReturnStatementNodeKind)
+		},
+		TranslationUnitVisitor: func(*TranslationUnit) {
+			reporter.reportNodeEncounter(TranslationUnitNodeKind)
+		},
+		CreateExpressionVisitor: func(*CreateExpression) {
+			reporter.reportNodeEncounter(CreateExpressionNodeKind)
+		},
+		InvalidStatementVisitor: func(*InvalidStatement) {
+			reporter.reportNodeEncounter(InvalidStatementNodeKind)
+		},
+		FieldDeclarationVisitor: func(*FieldDeclaration) {
+			reporter.reportNodeEncounter(FieldDeclarationNodeKind)
+		},
+		GenericTypeNameVisitor: func(*GenericTypeName) {
+			reporter.reportNodeEncounter(GenericTypeNameNodeKind)
+		},
+		ConcreteTypeNameVisitor: func(*ConcreteTypeName) {
+			reporter.reportNodeEncounter(ConcreteTypeNameNodeKind)
+		},
+		ClassDeclarationVisitor: func(*ClassDeclaration) {
+			reporter.reportNodeEncounter(ClassDeclarationNodeKind)
+		},
+		BinaryExpressionVisitor: func(*BinaryExpression) {
+			reporter.reportNodeEncounter(BinaryExpressionNodeKind)
+		},
+		MethodDeclarationVisitor: func(*MethodDeclaration) {
+			reporter.reportNodeEncounter(MethodDeclarationNodeKind)
+		},
+		RangedLoopStatementVisitor: func(*RangedLoopStatement) {
+			reporter.reportNodeEncounter(RangedLoopStatementNodeKind)
+		},
+		ExpressionStatementVisitor: func(*ExpressionStatement) {
+			reporter.reportNodeEncounter(ExpressionStatementNodeKind)
+		},
+		ForEachLoopStatementVisitor: func(*ForEachLoopStatement) {
+			reporter.reportNodeEncounter(ForEachLoopStatementNodeKind)
+		},
+		ConditionalStatementVisitor: func(*ConditionalStatement) {
+			reporter.reportNodeEncounter(ConditionalStatementNodeKind)
+		},
+		ListSelectExpressionVisitor: func(*ListSelectExpression) {
+			reporter.reportNodeEncounter(ListSelectExpressionNodeKind)
+		},
+		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {
+			reporter.reportNodeEncounter(ConstructorDeclarationNodeKind)
+		},
+		FieldSelectExpressionVisitor: func(*FieldSelectExpression) {
+			reporter.reportNodeEncounter(FieldSelectExpressionNodeKind)
+		},
+		PostfixExpressionVisitor: func(*PostfixExpression) {
+			reporter.reportNodeEncounter(PostfixExpressionNodeKind)
+		},
+		WildcardNodeVisitor: func(*WildcardNode) {
+			reporter.reportNodeEncounter(WildcardNodeKind)
+		},
+	}
+}
+
+type Counter struct {
+	nodes   map[NodeKind]int
+	visitor Visitor
+}
+
+func NewCounter() *Counter {
+	counter := &Counter{nodes: map[NodeKind]int{}}
+	counter.visitor = NewReportingVisitor(counter)
+	return counter
+}
+
+func (counter *Counter) reportNodeEncounter(kind NodeKind) {
+	counter.nodes[kind] = counter.nodes[kind] + 1
+}
+
+func (counter *Counter) Count(node Node) {
+	node.AcceptRecursive(counter.visitor)
+}
+
+func (counter *Counter) Get(kind NodeKind) int {
+	return counter.nodes[kind]
+}

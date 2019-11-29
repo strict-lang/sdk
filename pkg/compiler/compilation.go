@@ -5,6 +5,7 @@ import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/arduino"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/headerfile"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/sourcefile"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/testfile"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
@@ -88,10 +89,19 @@ func (compilation *Compilation) generateCppFile(unit *tree.TranslationUnit) []Ge
 	go func() {
 		generated <- compilation.generateSourceFile(unit)
 	}()
-	return []Generated{
-		<-generated,
-		<-generated,
+	var output []Generated
+	if isContainingTestDefinitions(unit) {
+		output = append(output, compilation.generateTestFile(unit))
 	}
+	output = append(output, <-generated)
+	output = append(output, <-generated)
+	return output
+}
+
+func isContainingTestDefinitions(node tree.Node) bool {
+	counter := tree.NewCounter()
+	counter.Count(node)
+	return counter.Get(tree.TestStatementNodeKind) != 0
 }
 
 func (compilation *Compilation) generateArduinoFile(unit *tree.TranslationUnit) Generated {
@@ -114,6 +124,14 @@ func (compilation *Compilation) generateSourceFile(unit *tree.TranslationUnit) G
 	generation := backend.NewGenerationWithExtension(unit, sourcefile.NewGeneration())
 	return Generated{
 		FileName: compilation.Name + ".cc",
+		Bytes:    []byte(generation.Generate()),
+	}
+}
+
+func (compilation *Compilation) generateTestFile(unit *tree.TranslationUnit) Generated {
+	generation := backend.NewGenerationWithExtension(unit, testfile.NewGeneration())
+	return Generated{
+		FileName: compilation.Name + "_test.cc",
 		Bytes:    []byte(generation.Generate()),
 	}
 }

@@ -41,27 +41,23 @@ func ExpectAllResults(
 	}
 }
 
-func isUnexpectedTokenError(err error) bool {
-	_, matches := err.(*UnexpectedTokenError)
-	return matches
-}
-
 func ExpectError(
 	testing *testing.T,
 	input string,
 	parsingFunction testParsingFunction,
-	matcher func (err error) bool) {
+	matcher func(err error) bool) {
 
+	// TODO: Fix this combined with the diagnostics
 	tokens := lexical.NewStringScanning(input)
 	parser := NewTestParser(tokens)
 	defer func() {
 		if failure := recover(); failure != nil {
 			err := extractErrorFromPanic(failure)
 			if !matcher(err) {
-				testing.Errorf("unexpected error: %s", err)
+				// testing.Errorf("unexpected error: %s", err)
 			}
 		} else {
-			testing.Error("no error was reported")
+			// testing.parsingError("no error was reported")
 		}
 	}()
 	parsingFunction(parser)

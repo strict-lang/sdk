@@ -7,16 +7,16 @@ import (
 )
 
 var (
-	ErrNoSuchOperator = errors.New("there is no such operator")
+	errNoSuchOperator = errors.New("there is no such operator")
 )
 
-type OperatorOptions map[input.Char]token.Operator
-type OperatorTable map[input.Char]OperatorOptions
+type operatorOptions map[input.Char]token.Operator
+type operatorOptionTable map[input.Char]operatorOptions
 
 const singleChar = input.Char(0)
 
-func singleOperatorOption(operator token.Operator) OperatorOptions {
-	return OperatorOptions{singleChar: operator}
+func singleOperatorOption(operator token.Operator) operatorOptions {
+	return operatorOptions{singleChar: operator}
 }
 
 func isKnownOperator(char input.Char) bool {
@@ -24,7 +24,7 @@ func isKnownOperator(char input.Char) bool {
 	return ok
 }
 
-func (scanning *Scanning) ScanOperator() token.Token {
+func (scanning *Scanning) scanOperator() token.Token {
 	operator, err := scanning.gatherOperator()
 	if err != nil {
 		scanning.reportError(err)
@@ -48,14 +48,16 @@ func (scanning *Scanning) operatorGathered(operator token.Operator) {
 
 func (scanning Scanning) gatherOperator() (token.Operator, error) {
 	char := scanning.char()
-	options, ok := operatorOptionsOfChar(char)
+	options, ok := listOperatorOptions(char)
 	if !ok || len(options) == 0 {
-		return token.InvalidOperator, ErrNoSuchOperator
+		return token.InvalidOperator, errNoSuchOperator
 	}
 	return scanning.findOperatorOption(options, scanning.char())
 }
 
-func (scanning *Scanning) findOperatorOption(options OperatorOptions, char input.Char) (token.Operator, error) {
+func (scanning *Scanning) findOperatorOption(
+	options operatorOptions, char input.Char) (token.Operator, error) {
+
 	operator, ok := options[scanning.peekChar()]
 	if ok {
 		scanning.advance()
@@ -64,13 +66,13 @@ func (scanning *Scanning) findOperatorOption(options OperatorOptions, char input
 	}
 	singleOperator, ok := options[singleChar]
 	if !ok {
-		return token.InvalidOperator, ErrNoSuchOperator
+		return token.InvalidOperator, errNoSuchOperator
 	}
 	scanning.advance()
 	return singleOperator, nil
 }
 
-func operatorOptionsOfChar(char input.Char) (OperatorOptions, bool) {
+func listOperatorOptions(char input.Char) (operatorOptions, bool) {
 	options, ok := operatorTable[char]
 	return options, ok
 }

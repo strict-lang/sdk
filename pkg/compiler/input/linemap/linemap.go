@@ -12,9 +12,10 @@ type LineMap struct {
 }
 
 type lineEntry struct {
-	length input.Offset
-	index  input.LineIndex
-	offset input.Offset
+	length  input.Offset
+	index   input.LineIndex
+	offset  input.Offset
+	content string
 }
 
 func (lines *LineMap) LineAtOffset(offset input.Offset) input.LineIndex {
@@ -74,6 +75,7 @@ func (lines *LineMap) LineAtIndex(lineIndex input.LineIndex) input.Line {
 		Offset: entry.offset,
 		Index:  entry.index + 1,
 		Length: entry.length,
+		Text:   entry.content,
 	}
 }
 

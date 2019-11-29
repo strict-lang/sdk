@@ -11,11 +11,12 @@ type Builder struct {
 	offsets []input.Offset
 }
 
-func (builder *Builder) Append(offset, length input.Offset) {
+func (builder *Builder) Append(text string, offset, length input.Offset) {
 	entry := lineEntry{
-		offset: offset,
-		index:  builder.index,
-		length: length,
+		offset:  offset,
+		index:   builder.index,
+		length:  length,
+		content: text,
 	}
 	builder.offset = offset
 	builder.index++

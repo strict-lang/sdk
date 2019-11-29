@@ -15,7 +15,7 @@ func TestGatherKnownKeywords(test *testing.T) {
 		scanner := NewStringScanning(entryName)
 		scanned, err := scanner.gatherKeyword()
 		if err != nil {
-			if err == ErrNoSuchKeyword {
+			if err == errNoSuchKeyword {
 				test.Errorf("scanning did not recognize keyword %s", entryName)
 				return
 			}
@@ -52,7 +52,7 @@ func TestGatherInvalidKeywords(test *testing.T) {
 			test.Errorf("scanning scanned invalid keyword %s", entry)
 			return
 		}
-		if err != ErrNoSuchKeyword {
+		if err != errNoSuchKeyword {
 			test.Errorf("unexpected error %s", err.Error())
 		}
 	}

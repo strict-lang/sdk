@@ -20,7 +20,7 @@ method List<int> range(int begin, int end)
 					Name: &tree.Identifier{Value: `range`},
 					Type: &tree.GenericTypeName{
 						Name:    "List",
-						Generic: &tree.ConcreteTypeName{Name: `int`,},
+						Generic: &tree.ConcreteTypeName{Name: `int`},
 					},
 					Parameters: tree.ParameterList{
 						&tree.Parameter{
@@ -126,15 +126,15 @@ method int add(int left, int right) => left + right
 method greet() => log("Hello")
 `,
 				ExpectedOutput: &tree.MethodDeclaration{
-					Name: &tree.Identifier{Value: `greet`},
-					Type: &tree.ConcreteTypeName{Name: `void`},
+					Name:       &tree.Identifier{Value: `greet`},
+					Type:       &tree.ConcreteTypeName{Name: `void`},
 					Parameters: tree.ParameterList{},
 					Body: &tree.ExpressionStatement{
 						Expression: &tree.CallExpression{
 							Target: &tree.Identifier{Value: `log`},
 							Arguments: tree.CallArgumentList{
 								&tree.CallArgument{
-									Value:  &tree.StringLiteral{Value: `Hello`},
+									Value: &tree.StringLiteral{Value: `Hello`},
 								},
 							},
 						},
@@ -164,5 +164,3 @@ func TestParsing_InvalidMethodDeclaration(testing *testing.T) {
 			return strings.HasSuffix(err.Error(), "expected ) but got: 'eof'")
 		})
 }
-
-

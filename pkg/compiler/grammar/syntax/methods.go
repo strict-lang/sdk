@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
@@ -9,7 +10,7 @@ import (
 const voidReturnType = `void`
 
 type parsedMethod struct {
-	name string
+	name   string
 	isVoid bool
 }
 
@@ -124,11 +125,16 @@ func (parsing *Parsing) consumeTokenAfterParameter() {
 
 func (parsing *Parsing) expectEndOfParameterList() {
 	if !parsing.isAtEndOfParameterList() {
-		parsing.throwError(&UnexpectedTokenError{
-			Token:    parsing.token(),
-			Expected: "end of method parameter list",
+		parsing.throwError(&diagnostic.RichError{
+			Error: &diagnostic.UnexpectedTokenError{
+				Expected: ")",
+				Received: parsing.token().Value(),
+			},
+			CommonReasons: []string{
+				"The ParameterList is left open",
+				"A Parameter declaration is invalid",
+			},
 		})
-		return
 	}
 }
 

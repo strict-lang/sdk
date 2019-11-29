@@ -3,20 +3,40 @@ package lexical
 import (
 	"errors"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"strings"
 )
 
 const textCharacterLimit = 1024
 
 var (
-	ErrNoLeadingQuoteInString = errors.New("string literals does not begin with a quote")
-	ErrStringContainsLineFeed = errors.New("string literal contains linefeed")
-	ErrInvalidEscapedChar     = errors.New("literal contains invalid escaped char")
+	errNoLeadingQuoteInString = errors.New("string literals does not begin with a quote")
+	errStringContainsLineFeed = errors.New("string literal contains linefeed")
+	errInvalidEscapedChar     = errors.New("literal contains invalid escaped char")
 )
+
+var escapedCharacters = map[rune]rune{
+	't':  '\t',
+	'n':  '\n',
+	'f':  '\f',
+	'r':  '\r',
+	'b':  '\b',
+	'\'': '\'',
+	'"':  '"',
+	'\\': '\\',
+	'0':  rune(0),
+}
+
+func findEscapedCharacter(char input.Char) (input.Char, bool) {
+	if escaped, ok := escapedCharacters[rune(char)]; ok {
+		return input.Char(escaped), true
+	}
+	return input.EndOfFile, false
+}
 
 func (scanning *Scanning) gatherStringLiteral() (string, error) {
 	if !scanning.tryToSkip('"') {
-		return "", ErrNoLeadingQuoteInString
+		return "", errNoLeadingQuoteInString
 	}
 	var builder strings.Builder
 	for count := 0; count < textCharacterLimit; count++ {
@@ -25,10 +45,10 @@ func (scanning *Scanning) gatherStringLiteral() (string, error) {
 			scanning.advance()
 			return builder.String(), nil
 		case '\n':
-			return "", ErrStringContainsLineFeed
+			return "", errStringContainsLineFeed
 		case '\\':
 			if _, ok := findEscapedCharacter(scanning.peekChar()); !ok {
-				return "", ErrInvalidEscapedChar
+				return "", errInvalidEscapedChar
 			}
 			builder.WriteRune('\\')
 			scanning.advance()
@@ -39,7 +59,7 @@ func (scanning *Scanning) gatherStringLiteral() (string, error) {
 	return builder.String(), nil
 }
 
-func (scanning *Scanning) ScanStringLiteral() token.Token {
+func (scanning *Scanning) scanStringLiteral() token.Token {
 	literal, err := scanning.gatherStringLiteral()
 	position := scanning.currentPosition()
 	if err != nil {

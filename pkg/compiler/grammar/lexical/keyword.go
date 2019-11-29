@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	// ErrNoSuchKeyword is returned by the ScanKeyword() method when
+	// ErrNoSuchKeyword is returned by the scanKeyword() method when
 	// a scanned identifier could not be found in the keyword-name-table.
-	ErrNoSuchKeyword = errors.New("unknown keyword")
+	errNoSuchKeyword = errors.New("unknown keyword")
 )
 
 func (scanning *Scanning) ScanKeyword() token.Token {
@@ -20,7 +20,7 @@ func (scanning *Scanning) ScanKeyword() token.Token {
 	return token.NewKeywordToken(keyword, scanning.currentPosition(), scanning.indent)
 }
 
-// ScanKeyword scans a KeywordToken from the stream of characters.
+// scanKeyword scans a KeywordToken from the stream of characters.
 func (scanning *Scanning) gatherKeyword() (token.Keyword, error) {
 	identifier, err := scanning.gatherIdentifier()
 	if err != nil {
@@ -29,7 +29,7 @@ func (scanning *Scanning) gatherKeyword() (token.Keyword, error) {
 	if keyword, ok := token.KeywordByName(identifier); ok {
 		return keyword, nil
 	}
-	return token.InvalidKeyword, ErrNoSuchKeyword
+	return token.InvalidKeyword, errNoSuchKeyword
 }
 
 func (scanning *Scanning) createInvalidKeyword(text string) token.Token {

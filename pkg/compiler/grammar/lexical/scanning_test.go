@@ -14,7 +14,7 @@ func TestScannerEndOfStatementInsertion(test *testing.T) {
 
 	for entry, expectedCount := range entries {
 		scanner := NewStringScanning(entry)
-		tokens := ScanAllTokens(scanner)
+		tokens := scanRemaining(scanner)
 		count := countEndOfStatements(tokens)
 		if count != expectedCount {
 			test.Errorf("%s has %d EndOfFile tokens, expected %d", entry, count, expectedCount)
@@ -41,7 +41,7 @@ func TestIndentation(test *testing.T) {
 	}
 	for entry, indent := range entries {
 		scanner := NewStringScanning(entry)
-		tokens := ScanAllTokens(scanner)
+		tokens := scanRemaining(scanner)
 		for _, scanned := range tokens {
 			if scanned.Indent() != indent {
 				if token.IsEndOfStatementToken(scanned) {
