@@ -19,6 +19,7 @@ func CreateGenericCppVisitor(generation *Generation) *tree.DelegatingVisitor {
 	visitor.ClassDeclarationVisitor = generation.GenerateClassDeclaration
 	visitor.MethodDeclarationVisitor = generation.GenerateMethod
 	visitor.IdentifierVisitor = generation.GenerateIdentifier
+	visitor.BreakStatementVisitor = generation.GenerateBreakStatement
 	visitor.CallArgumentVisitor = func(*tree.CallArgument) {}
 	visitor.CallExpressionVisitor = generation.GenerateCallExpression
 	visitor.StringLiteralVisitor = generation.GenerateStringLiteral

@@ -147,7 +147,29 @@ func (parsing *Parsing) parseParameter() *tree.Parameter {
 	parsing.beginStructure(tree.ParameterNodeKind)
 	return &tree.Parameter{
 		Type:   parsing.parseTypeName(),
-		Name:   parsing.parseIdentifier(),
+		Name:   parsing.parseParameterName(),
 		Region: parsing.completeStructure(tree.ParameterNodeKind),
 	}
 }
+
+func (parsing *Parsing) parseParameterName() *tree.Identifier {
+	currentToken := parsing.token()
+	if token.IsIdentifierToken(currentToken) {
+		return parsing.parseIdentifier()
+	}
+	parsing.throwError(newMissingParameterNameError())
+	return nil
+}
+
+func newMissingParameterNameError() *diagnostic.RichError {
+	return &diagnostic.RichError{
+		Error:         &diagnostic.SpecificError{
+			Message: "Name of the parameter is missing",
+		},
+		CommonReasons: []string{
+			"The parameters type was not specified prior to the name",
+		},
+	}
+}
+
+

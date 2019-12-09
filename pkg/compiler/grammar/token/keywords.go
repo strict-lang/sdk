@@ -17,6 +17,7 @@ const (
 	ElseKeyword
 	YieldKeyword
 	ReturnKeyword
+	BreakKeyword
 	ImportKeyword
 	FromKeyword
 	ToKeyword
@@ -33,6 +34,7 @@ const (
 
 var keywordNameTable = map[Keyword]string{
 	MethodKeyword: "method",
+	BreakKeyword:  "break",
 	ReturnKeyword: "return",
 	ImportKeyword: "import",
 	TypeKeyword:   "type",

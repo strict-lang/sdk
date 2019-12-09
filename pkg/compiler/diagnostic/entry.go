@@ -15,21 +15,51 @@ type Entry struct {
 }
 
 type Position struct {
-	Column    input.Offset
-	LineIndex input.LineIndex
+	Begin input.Position
+	End input.Position
 }
 
+func (position Position) isSpanningMultipleLines() bool {
+	return position.Begin.Line.Index != position.End.Line.Index
+}
+
+func (position Position) endColumn() input.Offset {
+	if position.isSpanningMultipleLines() {
+		return position.Begin.Line.Length
+	}
+	return position.End.Column
+}
+
+func (position Position) selectedSource() (begin, end input.Offset){
+	begin = position.Begin.Column
+	end = position.endColumn() - 1
+	return
+}
+
+
 func (entry Entry) PrintColored(printer Printer) {
-	line := entry.Position.LineIndex
+	line := entry.Position.Begin.Line.Index
 
 	highlight := entry.Kind.Color.SprintFunc()
 	underscore := underlinedColor.SprintFunc()
 
-	printer.PrintFormatted("%s at line %s in %s",
-		highlight(entry.Kind.Name), highlight(line), highlight(entry.UnitName))
+	printer.PrintFormatted("%s at line %s in %s %s %s\n",
+		highlight(entry.Kind.Name),
+		highlight(line),
+		highlight(entry.UnitName),
+		highlight("at"),
+		underscore(entry.Source))
 
-	printer.PrintFormatted("\n  %s %s\n", highlight("at"), underscore(entry.Source))
 	entry.printError(printer)
+}
+
+func (entry Entry) formatSource() string {
+	begin, end := entry.Position.selectedSource()
+	full := entry.Position.Begin.Line.Text
+	text := full[begin:end]
+	prefix := full[0:begin]
+	suffix := full[end:]
+	return prefix + "<" + text + ">" + suffix
 }
 
 func (entry Entry) printError(printer Printer) {
@@ -46,6 +76,7 @@ type errorPrinter struct {
 }
 
 func (printer *errorPrinter) printRichError(error *RichError) {
+	printer.output.Print("\t")
 	error.Error.Accept(printer)
 	printer.printCommonReasons(error)
 }
@@ -62,14 +93,14 @@ func (printer *errorPrinter) printCommonReasons(error *RichError) {
 }
 
 func (printer *errorPrinter) printSingleCommonReason(reason string) {
-	printer.output.PrintLine("\nThis error typically occurs when:")
-	printer.output.PrintLine("  " + reason)
+	printer.output.PrintLine("\n\tThis error typically occurs when:")
+	printer.output.PrintLine("\t  " + reason)
 }
 
 func (printer *errorPrinter) printMultipleCommonReasons(reasons []string) {
-	printer.output.PrintLine("This error is typically a result of one or more of the following:")
+	printer.output.PrintLine("\n\tThis error is typically a result of one or more of the following:")
 	for _, reason := range reasons {
-		printer.output.PrintFormatted(" - %s\n", reason)
+		printer.output.PrintFormatted("\t - %s\n", reason)
 	}
 }
 
@@ -88,4 +119,8 @@ func (printer *errorPrinter) VisitInvalidIndentation(error *InvalidIndentationEr
 	printer.output.PrintFormatted("Expected indentation of %s but got %s",
 		printer.color(error.Expected),
 		printer.color(error.Received))
+}
+
+func (printer *errorPrinter) VisitSpecificError(error *SpecificError) {
+	printer.output.Print(error.Message)
 }

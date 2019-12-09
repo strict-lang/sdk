@@ -319,8 +319,8 @@ func (parsing *Parsing) throwError(cause *diagnostic.RichError) {
 	structure, err := parsing.structureStack.pop()
 	if err != nil {
 		structure = structureStackElement{nodeKind: tree.UnknownNodeKind}
+		log.Print("Could not pop structure stack")
 	}
-
 	region := input.CreateRegion(structure.beginOffset, parsing.offset())
 	parsing.reportError(cause, region)
 	panic(&parsingError{

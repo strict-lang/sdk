@@ -18,6 +18,7 @@ type Visitor interface {
 	VisitCallExpression(*CallExpression)
 	VisitEmptyStatement(*EmptyStatement)
 	VisitYieldStatement(*YieldStatement)
+	VisitBreakStatement(*BreakStatement)
 	VisitBlockStatement(*BlockStatement)
 	VisitWildcardNode(node *WildcardNode)
 	VisitAssertStatement(*AssertStatement)
@@ -55,6 +56,7 @@ type DelegatingVisitor struct {
 	CallExpressionVisitor         func(*CallExpression)
 	EmptyStatementVisitor         func(*EmptyStatement)
 	WildcardNodeVisitor           func(*WildcardNode)
+	BreakStatementVisitor         func(*BreakStatement)
 	YieldStatementVisitor         func(*YieldStatement)
 	BlockStatementVisitor         func(*BlockStatement)
 	AssertStatementVisitor        func(*AssertStatement)
@@ -94,6 +96,7 @@ func NewEmptyVisitor() *DelegatingVisitor {
 		EmptyStatementVisitor:         func(*EmptyStatement) {},
 		YieldStatementVisitor:         func(*YieldStatement) {},
 		WildcardNodeVisitor:           func(*WildcardNode) {},
+		BreakStatementVisitor:         func(*BreakStatement) {},
 		BlockStatementVisitor:         func(*BlockStatement) {},
 		AssertStatementVisitor:        func(*AssertStatement) {},
 		UnaryExpressionVisitor:        func(*UnaryExpression) {},
@@ -255,6 +258,10 @@ func (visitor *DelegatingVisitor) VisitPostfixExpression(node *PostfixExpression
 	visitor.PostfixExpressionVisitor(node)
 }
 
+func (visitor *DelegatingVisitor) VisitBreakStatement(node *BreakStatement) {
+	visitor.BreakStatementVisitor(node)
+}
+
 type nodeReporter interface {
 	reportNodeEncounter(kind NodeKind)
 }
@@ -284,6 +291,9 @@ func NewReportingVisitor(reporter nodeReporter) Visitor {
 		},
 		CallExpressionVisitor: func(*CallExpression) {
 			reporter.reportNodeEncounter(CallExpressionNodeKind)
+		},
+		BreakStatementVisitor: func(*BreakStatement) {
+			reporter.reportNodeEncounter(BreakStatementNodeKind)
 		},
 		EmptyStatementVisitor: func(*EmptyStatement) {
 			reporter.reportNodeEncounter(EmptyStatementNodeKind)
