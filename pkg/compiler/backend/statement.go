@@ -21,6 +21,10 @@ const (
 	yieldGeneratorName = "yield"
 )
 
+func (generation *Generation) GenerateBreakStatement(statement *tree.BreakStatement) {
+	generation.Emit("break;")
+}
+
 func (generation *Generation) GenerateYieldStatement(statement *tree.YieldStatement) {
 	generation.method.addToPrologue(yieldGeneratorName, generation.declareYieldList)
 	generation.method.addToEpilogue(yieldGeneratorName, generation.returnYieldList)

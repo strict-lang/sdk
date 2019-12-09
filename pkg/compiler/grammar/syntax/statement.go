@@ -126,6 +126,15 @@ func (parsing *Parsing) parseYieldStatement() *tree.YieldStatement {
 	}
 }
 
+func (parsing *Parsing) parseBreakStatement() *tree.BreakStatement {
+	parsing.beginStructure(tree.BreakStatementNodeKind)
+	parsing.skipKeyword(token.BreakKeyword)
+	parsing.skipEndOfStatement()
+	return &tree.BreakStatement{
+		Region: parsing.completeStructure(tree.BreakStatementNodeKind),
+	}
+}
+
 func (parsing *Parsing) parseReturnStatement() *tree.ReturnStatement {
 	parsing.beginStructure(tree.ReturnStatementNodeKind)
 	parsing.skipKeyword(token.ReturnKeyword)
@@ -231,6 +240,9 @@ func init() {
 		},
 		token.YieldKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseYieldStatement()
+		},
+		token.BreakKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseBreakStatement()
 		},
 		token.ReturnKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseReturnStatement()

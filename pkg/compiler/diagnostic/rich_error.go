@@ -15,6 +15,7 @@ type ErrorVisitor interface {
 	VisitUnexpectedToken(*UnexpectedTokenError)
 	VisitInvalidStatement(*InvalidStatementError)
 	VisitInvalidIndentation(*InvalidIndentationError)
+	VisitSpecificError(*SpecificError)
 }
 
 type UnexpectedTokenError struct {
@@ -41,4 +42,12 @@ type InvalidIndentationError struct {
 
 func (error *InvalidIndentationError) Accept(visitor ErrorVisitor) {
 	visitor.VisitInvalidIndentation(error)
+}
+
+type SpecificError struct {
+	Message string
+}
+
+func (error *SpecificError) Accept(visitor ErrorVisitor) {
+	visitor.VisitSpecificError(error)
 }

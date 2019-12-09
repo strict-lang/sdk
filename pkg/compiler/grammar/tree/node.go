@@ -41,6 +41,7 @@ const (
 	statementKindBegin
 	ConditionalStatementNodeKind
 	InvalidStatementNodeKind
+	BreakStatementNodeKind
 	YieldStatementNodeKind
 	BlockStatementNodeKind
 	AssertStatementNodeKind
@@ -91,6 +92,7 @@ var nodeKindNames = map[NodeKind]string{
 	ReturnStatementNodeKind:        "ReturnStatement",
 	ImportStatementNodeKind:        "ImportStatement",
 	EmptyStatementNodeKind:         "EmptyStatement",
+	BreakStatementNodeKind:         "BreakStatement",
 	TestStatementNodeKind:          "TestStatement",
 	AssignStatementNodeKind:        "AssignStatement",
 	ExpressionStatementNodeKind:    "ExpressionStatement",
