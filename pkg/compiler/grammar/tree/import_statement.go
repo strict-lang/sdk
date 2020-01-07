@@ -10,6 +10,15 @@ type ImportStatement struct {
 	Target ImportTarget
 	Alias  *Identifier
 	Region input.Region
+	Parent Node
+}
+
+func (statement *ImportStatement) EnclosingNode() (Node, bool) {
+  return statement.Parent, statement.Parent != nil
+}
+
+func (statement *ImportStatement) SetEnclosingNode(target Node) {
+  statement.Parent = target
 }
 
 func (statement *ImportStatement) Accept(visitor Visitor) {

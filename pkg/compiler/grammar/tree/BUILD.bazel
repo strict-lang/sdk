@@ -16,6 +16,7 @@ go_library(
         "constructor_declaration.go",
         "create_expression.go",
         "empty_statement.go",
+        "enclosing_node.go",
         "expression.go",
         "expression_statement.go",
         "field_declaration.go",

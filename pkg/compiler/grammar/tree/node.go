@@ -12,6 +12,10 @@ type Node interface {
 	// Matches checks whether the instance matches the passed node. It does not
 	// take positions into account.
 	Matches(node Node) bool
+	// Enclosing returns the node that encloses the passed node. In the case
+	// of parameters this is the method they belong to.
+	EnclosingNode() (node Node, exists bool)
+	SetEnclosingNode(target Node)
 }
 
 // Named is implemented by all nodes that have a name.

@@ -10,6 +10,15 @@ type CallExpression struct {
 	Arguments    CallArgumentList
 	Region       input.Region
 	resolvedType resolvedType
+	Parent Node
+}
+
+func (call *CallExpression) SetEnclosingNode(target Node) {
+  call.Parent = target
+}
+
+func (call *CallExpression) EnclosingNode() (Node, bool) {
+  return call.Parent, call.Parent != nil
 }
 
 func (call *CallExpression) Resolve(descriptor TypeDescriptor) {

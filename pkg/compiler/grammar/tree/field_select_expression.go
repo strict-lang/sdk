@@ -8,6 +8,15 @@ type FieldSelectExpression struct {
 	Target    StoredExpression
 	Selection Expression
 	Region    input.Region
+	Parent Node
+}
+
+func (expression *FieldSelectExpression) SetEnclosingNode(target Node) {
+  expression.Parent = target
+}
+
+func (expression *FieldSelectExpression) EnclosingNode() (Node, bool) {
+  return expression.Parent, expression.Parent != nil
 }
 
 func (expression *FieldSelectExpression) Accept(visitor Visitor) {

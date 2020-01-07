@@ -4,6 +4,15 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type ExpressionStatement struct {
 	Expression Node
+	Parent Node
+}
+
+func (expression *ExpressionStatement) SetEnclosingNode(target Node) {
+  expression.Parent = target
+}
+
+func (expression *ExpressionStatement) EnclosingNode() (Node, bool) {
+  return expression.Parent, expression.Parent != nil
 }
 
 func (expression *ExpressionStatement) Accept(visitor Visitor) {

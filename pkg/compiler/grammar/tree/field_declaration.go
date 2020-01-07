@@ -6,6 +6,15 @@ type FieldDeclaration struct {
 	Name     *Identifier
 	TypeName TypeName
 	Region   input.Region
+	Parent   Node
+}
+
+func (field *FieldDeclaration) SetEnclosingNode(target Node) {
+  field.Parent = target
+}
+
+func (field *FieldDeclaration) EnclosingNode() (Node, bool) {
+  return field.Parent, field.Parent != nil
 }
 
 func (field *FieldDeclaration) Accept(visitor Visitor) {

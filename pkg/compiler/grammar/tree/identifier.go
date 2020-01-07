@@ -6,6 +6,15 @@ type Identifier struct {
 	Value        string
 	Region       input.Region
 	resolvedType resolvedType
+	Parent Node
+}
+
+func (identifier *Identifier) SetEnclosingNode(target Node) {
+  identifier.Parent = target
+}
+
+func (identifier *Identifier) EnclosingNode() (Node, bool) {
+  return identifier.Parent, identifier.Parent != nil
 }
 
 func (identifier *Identifier) Accept(visitor Visitor) {

@@ -10,6 +10,15 @@ type MethodDeclaration struct {
 	Parameters ParameterList
 	Body       Node
 	Region     input.Region
+	Parent  Node
+}
+
+func (declaration *MethodDeclaration) SetEnclosingNode(target Node) {
+  declaration.Parent = target
+}
+
+func (declaration *MethodDeclaration) EnclosingNode() (Node, bool) {
+  return declaration.Parent, declaration.Parent != nil
 }
 
 func (declaration *MethodDeclaration) Accept(visitor Visitor) {

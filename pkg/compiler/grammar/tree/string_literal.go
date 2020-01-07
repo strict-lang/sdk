@@ -13,14 +13,23 @@ type StringLiteral struct {
 	// It contains the leading and trailing characters.
 	Region       input.Region
 	resolvedType resolvedType
+	Parent Node
 }
 
-func (expression *StringLiteral) Resolve(descriptor TypeDescriptor) {
-	expression.resolvedType.setDescriptor(descriptor)
+func (literal *StringLiteral) SetEnclosingNode(target Node) {
+  literal.Parent = target
 }
 
-func (expression *StringLiteral) GetResolvedType() (TypeDescriptor, bool) {
-	return expression.resolvedType.getDescriptor()
+func (literal *StringLiteral) EnclosingNode() (Node, bool) {
+  return literal.Parent, literal.Parent != nil
+}
+
+func (literal *StringLiteral) Resolve(descriptor TypeDescriptor) {
+	literal.resolvedType.setDescriptor(descriptor)
+}
+
+func (literal *StringLiteral) GetResolvedType() (TypeDescriptor, bool) {
+	return literal.resolvedType.getDescriptor()
 }
 
 func (literal *StringLiteral) Accept(visitor Visitor) {

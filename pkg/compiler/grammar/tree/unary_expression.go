@@ -10,6 +10,15 @@ type UnaryExpression struct {
 	Operator token.Operator
 	Operand  Expression
 	Region   input.Region
+	Parent   Node
+}
+
+func (unary *UnaryExpression) SetEnclosingNode(target Node) {
+  unary.Parent = target
+}
+
+func (unary *UnaryExpression) EnclosingNode() (Node, bool) {
+  return unary.Parent, unary.Parent != nil
 }
 
 func (unary *UnaryExpression) Accept(visitor Visitor) {

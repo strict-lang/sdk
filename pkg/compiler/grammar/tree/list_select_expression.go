@@ -7,6 +7,15 @@ type ListSelectExpression struct {
 	Target       Node
 	Region       input.Region
 	resolvedType resolvedType
+	Parent Node
+}
+
+func (expression *ListSelectExpression) SetEnclosingNode(target Node) {
+  expression.Parent = target
+}
+
+func (expression *ListSelectExpression) EnclosingNode() (Node, bool) {
+  return expression.Parent, expression.Parent != nil
 }
 
 func (expression *ListSelectExpression) Resolve(descriptor TypeDescriptor) {

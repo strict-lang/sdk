@@ -6,6 +6,15 @@ type ConstructorDeclaration struct {
 	Parameters ParameterList
 	Child      Node
 	Region     input.Region
+	Parent Node
+}
+
+func (declaration *ConstructorDeclaration) SetEnclosingNode(target Node) {
+  declaration.Parent = target
+}
+
+func (declaration *ConstructorDeclaration) EnclosingNode() (Node, bool) {
+  return declaration.Parent, declaration.Parent != nil
 }
 
 func (declaration *ConstructorDeclaration) Accept(visitor Visitor) {

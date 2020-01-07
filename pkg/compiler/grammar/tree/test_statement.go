@@ -6,6 +6,15 @@ type TestStatement struct {
 	MethodName string
 	Child      Node
 	Region     input.Region
+	Parent Node
+}
+
+func (test *TestStatement) SetEnclosingNode(target Node) {
+  test.Parent = target
+}
+
+func (test *TestStatement) EnclosingNode() (Node, bool) {
+  return test.Parent, test.Parent != nil
 }
 
 func (test *TestStatement) Accept(visitor Visitor) {

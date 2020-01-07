@@ -13,6 +13,15 @@ type AssignStatement struct {
 	Value    Node
 	Operator token.Operator
 	Region   input.Region
+	Parent   Node
+}
+
+func (assign *AssignStatement) SetEnclosingNode(target Node) {
+  assign.Parent = target
+}
+
+func (assign *AssignStatement) EnclosingNode() (Node, bool) {
+  return assign.Parent, assign.Parent != nil
 }
 
 func (assign *AssignStatement) Accept(visitor Visitor) {

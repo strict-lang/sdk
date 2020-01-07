@@ -12,6 +12,15 @@ type GenericTypeName struct {
 	Name    string
 	Generic TypeName
 	Region  input.Region
+	Parent Node
+}
+
+func (name *GenericTypeName) SetEnclosingNode(target Node) {
+  name.Parent = target
+}
+
+func (name *GenericTypeName) EnclosingNode() (Node, bool) {
+  return name.Parent, name.Parent != nil
 }
 
 func (name *GenericTypeName) FullName() string {

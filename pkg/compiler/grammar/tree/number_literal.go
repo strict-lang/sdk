@@ -8,9 +8,18 @@ import (
 type NumberLiteral struct {
 	Value  string
 	Region input.Region
+	Parent Node
 }
 
 const floatBitSize = 64
+
+func (literal *NumberLiteral) SetEnclosingNode(target Node) {
+  literal.Parent = target
+}
+
+func (literal *NumberLiteral) EnclosingNode() (Node, bool) {
+  return literal.Parent, literal.Parent != nil
+}
 
 func (literal *NumberLiteral) IsFloat() bool {
 	_, err := strconv.ParseFloat(literal.Value, floatBitSize)

@@ -8,6 +8,15 @@ type CallArgument struct {
 	Label  string
 	Value  Node
 	Region input.Region
+	Parent Node
+}
+
+func (argument *CallArgument) SetEnclosingNode(target Node) {
+  argument.Parent = target
+}
+
+func (argument *CallArgument) EnclosingNode() (Node, bool) {
+  return argument.Parent, argument.Parent != nil
 }
 
 func (argument *CallArgument) IsLabeled() bool {
