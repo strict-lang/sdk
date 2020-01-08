@@ -11,7 +11,6 @@ go_library(
         "lint.go",
         "namespace.go",
         "naming.go",
-        "parent_assignment.go",
         "scope.go",
         "typed_member.go",
         "types.go",
@@ -22,7 +21,6 @@ go_library(
         "//pkg/compiler/diagnostic:go_default_library",
         "//pkg/compiler/grammar/token:go_default_library",
         "//pkg/compiler/grammar/tree:go_default_library",
-        "//pkg/compiler/pass:go_default_library",
     ],
 )
 
