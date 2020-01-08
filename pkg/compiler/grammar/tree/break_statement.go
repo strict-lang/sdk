@@ -5,6 +5,15 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 type BreakStatement struct {
 	Region     input.Region
 	Expression Node
+	Parent     Node
+}
+
+func (statement *BreakStatement) SetEnclosingNode(target Node) {
+  statement.Parent = target
+}
+
+func (statement *BreakStatement) EnclosingNode() (Node, bool) {
+  return statement.Parent, statement.Parent != nil
 }
 
 func (statement *BreakStatement) Accept(visitor Visitor) {

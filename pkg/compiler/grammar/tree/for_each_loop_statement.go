@@ -10,6 +10,15 @@ type ForEachLoopStatement struct {
 	Body     Statement
 	Sequence Expression
 	Field    *Identifier
+	Parent Node
+}
+
+func (loop *ForEachLoopStatement) SetEnclosingNode(target Node) {
+  loop.Parent = target
+}
+
+func (loop *ForEachLoopStatement) EnclosingNode() (Node, bool) {
+  return loop.Parent, loop.Parent != nil
 }
 
 func (loop *ForEachLoopStatement) Accept(visitor Visitor) {

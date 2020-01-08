@@ -9,6 +9,15 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 type ReturnStatement struct {
 	Region input.Region
 	Value  Node
+	Parent Node
+}
+
+func (statement *ReturnStatement) SetEnclosingNode(target Node) {
+  statement.Parent = target
+}
+
+func (statement *ReturnStatement) EnclosingNode() (Node, bool) {
+  return statement.Parent, statement.Parent != nil
 }
 
 func (statement *ReturnStatement) IsReturningValue() bool {

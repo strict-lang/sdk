@@ -12,6 +12,12 @@ type TranslationUnit struct {
 	Region  input.Region
 }
 
+func (*TranslationUnit) SetEnclosingNode(Node) { }
+
+func (unit *TranslationUnit) EnclosingNode() (Node, bool) {
+	return nil, false
+}
+
 func (unit *TranslationUnit) Accept(visitor Visitor) {
 	visitor.VisitTranslationUnit(unit)
 }

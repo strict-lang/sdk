@@ -12,6 +12,15 @@ type BinaryExpression struct {
 	Operator     token.Operator
 	Region       input.Region
 	resolvedType resolvedType
+	Parent       Node
+}
+
+func (binary *BinaryExpression) SetEnclosingNode(target Node) {
+  binary.Parent = target
+}
+
+func (binary *BinaryExpression) EnclosingNode() (Node, bool) {
+  return binary.Parent, binary.Parent != nil
 }
 
 func (binary *BinaryExpression) GetResolvedType() (TypeDescriptor, bool) {

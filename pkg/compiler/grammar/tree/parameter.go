@@ -6,6 +6,15 @@ type Parameter struct {
 	Type   TypeName
 	Name   *Identifier
 	Region input.Region
+	Parent Node
+}
+
+func (parameter *Parameter) SetEnclosingNode(target Node) {
+  parameter.Parent = target
+}
+
+func (parameter *Parameter) EnclosingNode() (Node, bool) {
+  return parameter.Parent, parameter.Parent != nil
 }
 
 func (parameter *Parameter) Accept(visitor Visitor) {

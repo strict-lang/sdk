@@ -7,6 +7,15 @@ type CreateExpression struct {
 	Call         *CallExpression
 	Type         TypeName
 	resolvedType resolvedType
+	Parent Node
+}
+
+func (create *CreateExpression) SetEnclosingNode(target Node) {
+  create.Parent = target
+}
+
+func (create *CreateExpression) EnclosingNode() (Node, bool) {
+  return create.Parent, create.Parent != nil
 }
 
 func (create *CreateExpression) Resolve(descriptor TypeDescriptor) {

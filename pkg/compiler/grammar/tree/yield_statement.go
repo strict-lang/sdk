@@ -9,6 +9,15 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 type YieldStatement struct {
 	Region input.Region
 	Value  Expression
+	Parent Node
+}
+
+func (yield *YieldStatement) SetEnclosingNode(target Node) {
+  yield.Parent = target
+}
+
+func (yield *YieldStatement) EnclosingNode() (Node, bool) {
+  return yield.Parent, yield.Parent != nil
 }
 
 func (yield *YieldStatement) Accept(visitor Visitor) {

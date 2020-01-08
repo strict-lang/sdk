@@ -5,6 +5,15 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 type BlockStatement struct {
 	Children []Statement
 	Region   input.Region
+	Parent   Node
+}
+
+func (block *BlockStatement) SetEnclosingNode(target Node) {
+  block.Parent = target
+}
+
+func (block *BlockStatement) EnclosingNode() (Node, bool) {
+  return block.Parent, block.Parent != nil
 }
 
 func (block *BlockStatement) Accept(visitor Visitor) {

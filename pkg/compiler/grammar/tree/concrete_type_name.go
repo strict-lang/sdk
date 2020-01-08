@@ -5,6 +5,15 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 type ConcreteTypeName struct {
 	Name   string
 	Region input.Region
+	Parent Node
+}
+
+func (concrete *ConcreteTypeName) SetEnclosingNode(target Node) {
+  concrete.Parent = target
+}
+
+func (concrete *ConcreteTypeName) EnclosingNode() (Node, bool) {
+  return concrete.Parent, concrete.Parent != nil
 }
 
 func (concrete *ConcreteTypeName) NonGenericName() string {

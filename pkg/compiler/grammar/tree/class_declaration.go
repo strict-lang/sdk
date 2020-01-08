@@ -8,16 +8,34 @@ type ClassDeclaration struct {
 	SuperTypes []TypeName
 	Children   []Node
 	Region     input.Region
+	Parent Node
 }
 
 type ClassParameter struct {
 	Name      string
 	SuperType TypeName
+	Parent Node
+}
+
+func (parameter *ClassParameter) SetEnclosingNode(target Node) {
+  parameter.Parent = target
+}
+
+func (parameter *ClassParameter) EnclosingNode() (Node, bool) {
+  return parameter.Parent, parameter.Parent != nil
 }
 
 func (parameter *ClassParameter) Matches(target *ClassParameter) bool {
 	return parameter.Name == target.Name &&
 		parameter.SuperType.Matches(target.SuperType)
+}
+
+func (class *ClassDeclaration) SetEnclosingNode(target Node) {
+  class.Parent = target
+}
+
+func (class *ClassDeclaration) EnclosingNode() (Node, bool) {
+  return class.Parent, class.Parent != nil
 }
 
 func (class *ClassDeclaration) Accept(visitor Visitor) {

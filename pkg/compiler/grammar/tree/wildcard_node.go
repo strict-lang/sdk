@@ -9,6 +9,15 @@ type WildcardNode struct {
 	Statement
 	Expression
 	Region input.Region
+	Parent Node
+}
+
+func (node *WildcardNode) SetEnclosingNode(target Node) {
+  node.Parent = target
+}
+
+func (node *WildcardNode) EnclosingNode() (Node, bool) {
+  return node.Parent, node.Parent != nil
 }
 
 func (node *WildcardNode) Accept(visitor Visitor) {

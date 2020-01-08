@@ -5,6 +5,15 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 // EmptyStatement is a statement that does not execute any instructions.
 type EmptyStatement struct {
 	Region input.Region
+	Parent Node
+}
+
+func (statement *EmptyStatement) SetEnclosingNode(target Node) {
+  statement.Parent = target
+}
+
+func (statement *EmptyStatement) EnclosingNode() (Node, bool) {
+  return statement.Parent, statement.Parent != nil
 }
 
 func (statement *EmptyStatement) Accept(visitor Visitor) {
