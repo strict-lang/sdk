@@ -1,6 +1,9 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+)
 
 // WildcardNode is a node that can be used as a leaf node for other nodes.
 // It is only used for testing. Wildcards do not have children and are not
@@ -10,6 +13,15 @@ type WildcardNode struct {
 	Expression
 	Region input.Region
 	Parent Node
+	scope  scope.Scope
+}
+
+func (node *WildcardNode) UpdateScope(target scope.Scope) {
+  node.scope = target
+}
+
+func (node *WildcardNode) Scope() scope.Scope {
+  return node.scope
 }
 
 func (node *WildcardNode) SetEnclosingNode(target Node) {

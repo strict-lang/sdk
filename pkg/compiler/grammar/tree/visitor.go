@@ -302,7 +302,7 @@ func NewReportingVisitor(reporter nodeReporter) Visitor {
 			reporter.reportNodeEncounter(YieldStatementNodeKind)
 		},
 		BlockStatementVisitor: func(*StatementBlock) {
-			reporter.reportNodeEncounter(BlockStatementNodeKind)
+			reporter.reportNodeEncounter(StatementBlockNodeKind)
 		},
 		AssertStatementVisitor: func(*AssertStatement) {
 			reporter.reportNodeEncounter(AssertStatementNodeKind)

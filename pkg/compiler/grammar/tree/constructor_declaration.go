@@ -1,12 +1,24 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+)
 
 type ConstructorDeclaration struct {
 	Parameters ParameterList
 	Body       *StatementBlock
 	Region     input.Region
+	scope  scope.Scope
 	Parent Node
+}
+
+func (declaration *ConstructorDeclaration) UpdateScope(target scope.Scope) {
+  declaration.scope = target
+}
+
+func (declaration *ConstructorDeclaration) Scope() scope.Scope {
+  return declaration.scope
 }
 
 func (declaration *ConstructorDeclaration) SetEnclosingNode(target Node) {

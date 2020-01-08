@@ -11,7 +11,7 @@ var _ Statement = &ConditionalStatement{}
 func TestConditionalStatement_Accept(testing *testing.T) {
 	entry := &ConditionalStatement{
 		Condition:   &WildcardNode{},
-		Consequence: &WildcardNode{},
+		Consequence: &StatementBlock{},
 		Region:      input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).Expect(ConditionalStatementNodeKind).Run()
@@ -24,14 +24,14 @@ func TestConditionalStatement_AcceptRecursive_WithAlternative(testing *testing.T
 			Operand:  &WildcardNode{Region: input.ZeroRegion},
 			Region:   input.ZeroRegion,
 		},
-		Consequence: &WildcardNode{Region: input.ZeroRegion},
+		Consequence: &StatementBlock{Region: input.ZeroRegion},
 		Region:      input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(ConditionalStatementNodeKind).
 		Expect(UnaryExpressionNodeKind).
 		Expect(WildcardNodeKind).
-		Expect(WildcardNodeKind).
+		Expect(StatementBlockNodeKind).
 		RunRecursive()
 }
 
@@ -42,24 +42,24 @@ func TestConditionalStatement_AcceptRecursive_WithoutAlternative(testing *testin
 			Operand:  &WildcardNode{Region: input.ZeroRegion},
 			Region:   input.ZeroRegion,
 		},
-		Consequence: &WildcardNode{Region: input.ZeroRegion},
-		Alternative: &WildcardNode{Region: input.ZeroRegion},
+		Consequence: &StatementBlock{Region: input.ZeroRegion},
+		Alternative: &StatementBlock{Region: input.ZeroRegion},
 		Region:      input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(ConditionalStatementNodeKind).
 		Expect(UnaryExpressionNodeKind).
 		Expect(WildcardNodeKind).
-		Expect(WildcardNodeKind).
-		Expect(WildcardNodeKind).
+		Expect(StatementBlockNodeKind).
+		Expect(StatementBlockNodeKind).
 		RunRecursive()
 }
 
 func TestConditionalStatement_HasAlternative_WithAlternative(testing *testing.T) {
 	entry := &ConditionalStatement{
 		Condition:   &WildcardNode{Region: input.ZeroRegion},
-		Alternative: &WildcardNode{Region: input.ZeroRegion},
-		Consequence: &WildcardNode{Region: input.ZeroRegion},
+		Alternative: &StatementBlock{Region: input.ZeroRegion},
+		Consequence: &StatementBlock{Region: input.ZeroRegion},
 		Region:      input.ZeroRegion,
 	}
 	if !entry.HasAlternative() {
@@ -70,7 +70,7 @@ func TestConditionalStatement_HasAlternative_WithAlternative(testing *testing.T)
 func TestConditionalStatement_HasAlternative_WithoutAlternative(testing *testing.T) {
 	entry := &ConditionalStatement{
 		Condition:   &WildcardNode{Region: input.ZeroRegion},
-		Consequence: &WildcardNode{Region: input.ZeroRegion},
+		Consequence: &StatementBlock{Region: input.ZeroRegion},
 		Region:      input.ZeroRegion,
 	}
 	if entry.HasAlternative() {
@@ -82,7 +82,7 @@ func TestConditionalStatement_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &ConditionalStatement{
 			Condition:   &WildcardNode{Region: input.ZeroRegion},
-			Consequence: &WildcardNode{Region: input.ZeroRegion},
+			Consequence: &StatementBlock{Region: input.ZeroRegion},
 			Region:      region,
 		}
 	})

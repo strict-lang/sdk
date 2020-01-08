@@ -104,7 +104,7 @@ func (node *TestDefinition) Emit() {
 	generation.EmitIndent()
 	node.emitMethodTestingRAII()
 	generation.EmitIndent()
-	generation.EmitNode(node.node.Child)
+	generation.EmitNode(node.node.Body)
 	generation.DecreaseIndent()
 	generation.EmitEndOfLine()
 	generation.EmitIndent()

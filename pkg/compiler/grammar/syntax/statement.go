@@ -599,7 +599,7 @@ func newInvalidIndentError(expected, received token.Indent) *diagnostic.RichErro
 
 // ParseStatementBlock parses a block of statements.
 func (parsing *Parsing) parseStatementBlock() *tree.StatementBlock {
-	parsing.beginStructure(tree.BlockStatementNodeKind)
+	parsing.beginStructure(tree.StatementBlockNodeKind)
 	indent := parsing.token().Indent()
 	if indent < parsing.block.Indent {
 		parsing.throwError(newZeroIndentError())
@@ -609,7 +609,7 @@ func (parsing *Parsing) parseStatementBlock() *tree.StatementBlock {
 	parsing.closeBlock()
 	return &tree.StatementBlock{
 		Children: statements,
-		Region:   parsing.completeStructure(tree.BlockStatementNodeKind),
+		Region:   parsing.completeStructure(tree.StatementBlockNodeKind),
 	}
 }
 

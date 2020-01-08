@@ -347,8 +347,8 @@ func (printing *Printing) printWildcardNode(node *tree.WildcardNode) {
 func (printing *Printing) printConstructorDeclaration(declaration *tree.ConstructorDeclaration) {
 	printing.printNodeBegin("ConstructorDeclaration")
 	printing.printParameterList(declaration.Parameters)
-	if declaration.Child != nil {
-		printing.printIndentedNodeField("body", declaration.Child)
+	if declaration.Body != nil {
+		printing.printIndentedNodeField("body", declaration.Body)
 	}
 	printing.printNodeEnd()
 }
@@ -438,7 +438,7 @@ func (printing *Printing) printAssignStatement(statement *tree.AssignStatement) 
 func (printing *Printing) printTestStatement(statement *tree.TestStatement) {
 	printing.printNodeBegin("TestStatement")
 	printing.printIndentedStringField("methodName", statement.MethodName)
-	printing.printIndentedNodeField("body", statement.Child)
+	printing.printIndentedNodeField("body", statement.Body)
 	printing.printNodeEnd()
 }
 

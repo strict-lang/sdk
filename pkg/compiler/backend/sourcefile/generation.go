@@ -54,7 +54,7 @@ func (generation *Generation) generateClassDeclaration(declaration *tree.ClassDe
 func (generation *Generation) writeImplicitConstructor() {
 	generation.generateConstructorDeclaration(&tree.ConstructorDeclaration{
 		Parameters: []*tree.Parameter{},
-		Child:      &tree.StatementBlock{},
+		Body:      &tree.StatementBlock{},
 	})
 }
 
@@ -118,7 +118,7 @@ func (generation *Generation) generateConstructorDeclaration(declaration *tree.C
 	body := &tree.StatementBlock{
 		Children: []tree.Statement{
 			generation.generateInitCall(),
-			declaration.Child,
+			declaration.Body,
 		},
 	}
 	output.EmitNode(body)

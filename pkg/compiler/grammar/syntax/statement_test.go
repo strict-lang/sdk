@@ -51,19 +51,23 @@ else
 							},
 						},
 					},
-					Alternative: &tree.ConditionalStatement{
-						Condition: &tree.Identifier{Value: `true`},
-						Consequence: &tree.StatementBlock{
-							Children: []tree.Statement{
-								&tree.ReturnStatement{
-									Value: &tree.NumberLiteral{Value: `2`},
+					Alternative: &tree.StatementBlock{
+						Children: []tree.Statement{
+							&tree.ConditionalStatement{
+								Condition: &tree.Identifier{Value: `true`},
+								Consequence: &tree.StatementBlock{
+									Children: []tree.Statement{
+										&tree.ReturnStatement{
+											Value: &tree.NumberLiteral{Value: `2`},
+										},
+									},
 								},
-							},
-						},
-						Alternative: &tree.StatementBlock{
-							Children: []tree.Statement{
-								&tree.ReturnStatement{
-									Value: &tree.NumberLiteral{Value: `1`},
+								Alternative: &tree.StatementBlock{
+									Children: []tree.Statement{
+										&tree.ReturnStatement{
+											Value: &tree.NumberLiteral{Value: `1`},
+										},
+									},
 								},
 							},
 						},
