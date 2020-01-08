@@ -11,7 +11,7 @@ func TestRangedLoopStatement_Accept(testing *testing.T) {
 		Field:  &Identifier{Value: "test"},
 		Begin:  &WildcardNode{Region: input.ZeroRegion},
 		End:    &WildcardNode{Region: input.ZeroRegion},
-		Body:   &WildcardNode{Region: input.ZeroRegion},
+		Body:   &StatementBlock{Region: input.ZeroRegion},
 	}
 	CreateVisitorTest(entry, testing).Expect(RangedLoopStatementNodeKind).Run()
 }
@@ -22,14 +22,14 @@ func TestRangedLoopStatement_AcceptRecursive(testing *testing.T) {
 		Field:  &Identifier{Value: "test"},
 		Begin:  &StringLiteral{Value: "begin"},
 		End:    &NumberLiteral{Value: "100"},
-		Body:   &WildcardNode{Region: input.ZeroRegion},
+		Body:   &StatementBlock{Region: input.ZeroRegion},
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(RangedLoopStatementNodeKind).
 		Expect(IdentifierNodeKind).
 		Expect(StringLiteralNodeKind).
 		Expect(NumberLiteralNodeKind).
-		Expect(WildcardNodeKind).
+		Expect(StatementBlockNodeKind).
 		RunRecursive()
 }
 

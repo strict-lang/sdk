@@ -6,24 +6,24 @@ import (
 )
 
 func TestBlockStatement_Accept(testing *testing.T) {
-	entry := &BlockStatement{Region: input.ZeroRegion}
-	CreateVisitorTest(entry, testing).Expect(BlockStatementNodeKind).Run()
+	entry := &StatementBlock{Region: input.ZeroRegion}
+	CreateVisitorTest(entry, testing).Expect(StatementBlockNodeKind).Run()
 }
 
 func TestBlockStatement_AcceptRecursive(testing *testing.T) {
-	entry := &BlockStatement{
+	entry := &StatementBlock{
 		Region:   input.ZeroRegion,
 		Children: []Statement{&WildcardNode{}},
 	}
 	CreateVisitorTest(entry, testing).
-		Expect(BlockStatementNodeKind).
+		Expect(StatementBlockNodeKind).
 		Expect(WildcardNodeKind).
 		RunRecursive()
 }
 
 func TestBlockStatement_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
-		return &BlockStatement{
+		return &StatementBlock{
 			Children: []Statement{},
 			Region:   region,
 		}

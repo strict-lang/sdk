@@ -32,13 +32,13 @@ method List<int> range(int begin, int end)
 							Name: &tree.Identifier{Value: `end`},
 						},
 					},
-					Body: &tree.BlockStatement{
+					Body: &tree.StatementBlock{
 						Children: []tree.Statement{
 							&tree.RangedLoopStatement{
 								Field: &tree.Identifier{Value: `number`},
 								Begin: &tree.Identifier{Value: `begin`},
 								End:   &tree.Identifier{Value: `end`},
-								Body: &tree.BlockStatement{
+								Body: &tree.StatementBlock{
 									Children: []tree.Statement{
 										&tree.YieldStatement{
 											Value: &tree.Identifier{Value: `number`},
@@ -68,12 +68,12 @@ method printList(List<int> numbers)
 							Name: &tree.Identifier{Value: `numbers`},
 						},
 					},
-					Body: &tree.BlockStatement{
+					Body: &tree.StatementBlock{
 						Children: []tree.Statement{
 							&tree.ForEachLoopStatement{
 								Field:    &tree.Identifier{Value: `number`},
 								Sequence: &tree.Identifier{Value: `numbers`},
-								Body: &tree.BlockStatement{
+								Body: &tree.StatementBlock{
 									Children: []tree.Statement{
 										&tree.ExpressionStatement{
 											Expression: &tree.CallExpression{

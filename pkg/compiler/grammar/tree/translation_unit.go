@@ -1,6 +1,9 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+)
 
 // TranslationUnit represents a unit of translation, a file containing Strict
 // input code. It can have multiple children, which are seen as the roots
@@ -10,6 +13,15 @@ type TranslationUnit struct {
 	Imports []*ImportStatement
 	Class   *ClassDeclaration
 	Region  input.Region
+	scope   scope.Scope
+}
+
+func (unit *TranslationUnit) UpdateScope(target scope.Scope) {
+  unit.scope = target
+}
+
+func (unit *TranslationUnit) Scope() scope.Scope {
+  return unit.scope
 }
 
 func (*TranslationUnit) SetEnclosingNode(Node) { }

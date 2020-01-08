@@ -60,7 +60,7 @@ func (testFile *TestFile) emitFailedAssertion(statement *tree.AssertStatement) {
 }
 
 func (testFile *TestFile) emitMethodDeclaration(method *tree.MethodDeclaration) {
-	block, isBlock := method.Body.(*tree.BlockStatement)
+	block, isBlock := method.Body.(*tree.StatementBlock)
 	if !isBlock {
 		return
 	}
@@ -104,7 +104,7 @@ func (node *TestDefinition) Emit() {
 	generation.EmitIndent()
 	node.emitMethodTestingRAII()
 	generation.EmitIndent()
-	generation.EmitNode(node.node.Child)
+	generation.EmitNode(node.node.Body)
 	generation.DecreaseIndent()
 	generation.EmitEndOfLine()
 	generation.EmitIndent()

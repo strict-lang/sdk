@@ -19,7 +19,7 @@ type Visitor interface {
 	VisitEmptyStatement(*EmptyStatement)
 	VisitYieldStatement(*YieldStatement)
 	VisitBreakStatement(*BreakStatement)
-	VisitBlockStatement(*BlockStatement)
+	VisitBlockStatement(*StatementBlock)
 	VisitWildcardNode(node *WildcardNode)
 	VisitAssertStatement(*AssertStatement)
 	VisitUnaryExpression(*UnaryExpression)
@@ -58,7 +58,7 @@ type DelegatingVisitor struct {
 	WildcardNodeVisitor           func(*WildcardNode)
 	BreakStatementVisitor         func(*BreakStatement)
 	YieldStatementVisitor         func(*YieldStatement)
-	BlockStatementVisitor         func(*BlockStatement)
+	BlockStatementVisitor         func(*StatementBlock)
 	AssertStatementVisitor        func(*AssertStatement)
 	UnaryExpressionVisitor        func(*UnaryExpression)
 	ImportStatementVisitor        func(*ImportStatement)
@@ -97,7 +97,7 @@ func NewEmptyVisitor() *DelegatingVisitor {
 		YieldStatementVisitor:         func(*YieldStatement) {},
 		WildcardNodeVisitor:           func(*WildcardNode) {},
 		BreakStatementVisitor:         func(*BreakStatement) {},
-		BlockStatementVisitor:         func(*BlockStatement) {},
+		BlockStatementVisitor:         func(*StatementBlock) {},
 		AssertStatementVisitor:        func(*AssertStatement) {},
 		UnaryExpressionVisitor:        func(*UnaryExpression) {},
 		ImportStatementVisitor:        func(*ImportStatement) {},
@@ -162,7 +162,7 @@ func (visitor *DelegatingVisitor) VisitYieldStatement(node *YieldStatement) {
 	visitor.YieldStatementVisitor(node)
 }
 
-func (visitor *DelegatingVisitor) VisitBlockStatement(node *BlockStatement) {
+func (visitor *DelegatingVisitor) VisitBlockStatement(node *StatementBlock) {
 	visitor.BlockStatementVisitor(node)
 }
 
@@ -301,8 +301,8 @@ func NewReportingVisitor(reporter nodeReporter) Visitor {
 		YieldStatementVisitor: func(*YieldStatement) {
 			reporter.reportNodeEncounter(YieldStatementNodeKind)
 		},
-		BlockStatementVisitor: func(*BlockStatement) {
-			reporter.reportNodeEncounter(BlockStatementNodeKind)
+		BlockStatementVisitor: func(*StatementBlock) {
+			reporter.reportNodeEncounter(StatementBlockNodeKind)
 		},
 		AssertStatementVisitor: func(*AssertStatement) {
 			reporter.reportNodeEncounter(AssertStatementNodeKind)

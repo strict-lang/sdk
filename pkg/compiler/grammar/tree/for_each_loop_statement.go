@@ -7,7 +7,7 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 // iterated may be of any type that implements the 'Sequence' interface.
 type ForEachLoopStatement struct {
 	Region   input.Region
-	Body     Statement
+	Body     *StatementBlock
 	Sequence Expression
 	Field    *Identifier
 	Parent Node

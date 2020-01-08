@@ -10,7 +10,7 @@ type RangedLoopStatement struct {
 	Field  *Identifier
 	Begin  Expression
 	End    Expression
-	Body   Statement
+	Body   *StatementBlock
 	Parent Node
 }
 

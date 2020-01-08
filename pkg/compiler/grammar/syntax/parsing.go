@@ -185,7 +185,7 @@ func (parsing *Parsing) isParsingMethod() bool {
 }
 
 func (parsing *Parsing) parseTopLevelNodes() (nodes []tree.Node) {
-	parsing.beginStructure(tree.BlockStatementNodeKind)
+	parsing.beginStructure(tree.StatementBlockNodeKind)
 	block := parsing.parseStatementBlock()
 	defer func() {
 		if failure := recover(); failure != nil {
@@ -194,7 +194,7 @@ func (parsing *Parsing) parseTopLevelNodes() (nodes []tree.Node) {
 			nodes = []tree.Node{invalid}
 		}
 	}()
-	parsing.completeStructure(tree.BlockStatementNodeKind)
+	parsing.completeStructure(tree.StatementBlockNodeKind)
 	return convertStatementSliceToNodeSlice(block.Children)
 }
 

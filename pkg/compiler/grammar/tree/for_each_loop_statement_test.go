@@ -8,7 +8,7 @@ import (
 func TestForEachLoopStatement_Accept(testing *testing.T) {
 	entry := &ForEachLoopStatement{
 		Region:   input.ZeroRegion,
-		Body:     &WildcardNode{Region: input.ZeroRegion},
+		Body:     &StatementBlock{Region: input.ZeroRegion},
 		Sequence: &WildcardNode{Region: input.ZeroRegion},
 		Field:    &Identifier{Value: "field"},
 	}
@@ -18,7 +18,7 @@ func TestForEachLoopStatement_Accept(testing *testing.T) {
 func TestForEachLoopStatement_AcceptRecursive(testing *testing.T) {
 	entry := &ForEachLoopStatement{
 		Region:   input.ZeroRegion,
-		Body:     &WildcardNode{Region: input.ZeroRegion},
+		Body:     &StatementBlock{Region: input.ZeroRegion},
 		Sequence: &StringLiteral{Value: "strict"},
 		Field:    &Identifier{Value: "field"},
 	}
@@ -26,7 +26,7 @@ func TestForEachLoopStatement_AcceptRecursive(testing *testing.T) {
 		Expect(ForEachLoopStatementNodeKind).
 		Expect(IdentifierNodeKind).
 		Expect(StringLiteralNodeKind).
-		Expect(WildcardNodeKind).
+		Expect(StatementBlockNodeKind).
 		RunRecursive()
 }
 

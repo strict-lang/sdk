@@ -93,7 +93,7 @@ func (generation *Generation) GenerateAssignStatement(statement *tree.AssignStat
 	generation.EmitEndOfLine()
 }
 
-func (generation *Generation) GenerateBlockStatement(block *tree.BlockStatement) {
+func (generation *Generation) GenerateBlockStatement(block *tree.StatementBlock) {
 	generation.Emit("{\n")
 	generation.IncreaseIndent()
 	shouldAppendEndOfLineAtBegin := generation.appendNewLineAfterStatement

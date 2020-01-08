@@ -1,6 +1,9 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+)
 
 type ClassDeclaration struct {
 	Name       string
@@ -9,12 +12,21 @@ type ClassDeclaration struct {
 	Children   []Node
 	Region     input.Region
 	Parent Node
+	scope scope.Scope
 }
 
 type ClassParameter struct {
 	Name      string
 	SuperType TypeName
 	Parent Node
+}
+
+func (class *ClassDeclaration) UpdateScope(target scope.Scope) {
+  class.scope = target
+}
+
+func (class *ClassDeclaration) Scope() scope.Scope {
+  return class.scope
 }
 
 func (parameter *ClassParameter) SetEnclosingNode(target Node) {

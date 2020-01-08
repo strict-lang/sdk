@@ -20,7 +20,7 @@ if 1 < 2 do
 						RightOperand: &tree.NumberLiteral{Value: `2`},
 						Operator:     token.SmallerOperator,
 					},
-					Consequence: &tree.BlockStatement{
+					Consequence: &tree.StatementBlock{
 						Children: []tree.Statement{
 							&tree.ReturnStatement{
 								Value: &tree.NumberLiteral{Value: `3`},
@@ -44,26 +44,30 @@ else
 						RightOperand: &tree.NumberLiteral{Value: `2`},
 						Operator:     token.SmallerOperator,
 					},
-					Consequence: &tree.BlockStatement{
+					Consequence: &tree.StatementBlock{
 						Children: []tree.Statement{
 							&tree.ReturnStatement{
 								Value: &tree.NumberLiteral{Value: `3`},
 							},
 						},
 					},
-					Alternative: &tree.ConditionalStatement{
-						Condition: &tree.Identifier{Value: `true`},
-						Consequence: &tree.BlockStatement{
-							Children: []tree.Statement{
-								&tree.ReturnStatement{
-									Value: &tree.NumberLiteral{Value: `2`},
+					Alternative: &tree.StatementBlock{
+						Children: []tree.Statement{
+							&tree.ConditionalStatement{
+								Condition: &tree.Identifier{Value: `true`},
+								Consequence: &tree.StatementBlock{
+									Children: []tree.Statement{
+										&tree.ReturnStatement{
+											Value: &tree.NumberLiteral{Value: `2`},
+										},
+									},
 								},
-							},
-						},
-						Alternative: &tree.BlockStatement{
-							Children: []tree.Statement{
-								&tree.ReturnStatement{
-									Value: &tree.NumberLiteral{Value: `1`},
+								Alternative: &tree.StatementBlock{
+									Children: []tree.Statement{
+										&tree.ReturnStatement{
+											Value: &tree.NumberLiteral{Value: `1`},
+										},
+									},
 								},
 							},
 						},
