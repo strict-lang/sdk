@@ -9,7 +9,7 @@ type StatementBlock struct {
 }
 
 func (block *StatementBlock) SetEnclosingNode(target Node) {
-  block.Parent = target
+	block.Parent = target
 }
 
 func (block *StatementBlock) EnclosingNode() (Node, bool) {

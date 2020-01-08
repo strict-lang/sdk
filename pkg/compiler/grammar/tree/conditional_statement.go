@@ -4,8 +4,8 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type ConditionalStatement struct {
 	Condition   Expression
-	Alternative Statement
-	Consequence Statement
+	Alternative *StatementBlock
+	Consequence *StatementBlock
 	Region      input.Region
 	Parent Node
 }

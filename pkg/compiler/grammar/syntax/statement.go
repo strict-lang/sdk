@@ -20,7 +20,7 @@ func (parsing *Parsing) parseConditionalStatement() *tree.ConditionalStatement {
 
 func (parsing *Parsing) parseElseClauseIfPresent(
 	condition tree.Expression,
-	consequence tree.Statement) *tree.ConditionalStatement {
+	consequence *tree.StatementBlock) *tree.ConditionalStatement {
 
 	if token.HasKeywordValue(parsing.token(), token.ElseKeyword) {
 		return parsing.parseConditionalStatementWithAlternative(
@@ -35,7 +35,7 @@ func (parsing *Parsing) parseElseClauseIfPresent(
 
 func (parsing *Parsing) parseConditionalStatementWithAlternative(
 	condition tree.Node,
-	consequence tree.Node) *tree.ConditionalStatement {
+	consequence *tree.StatementBlock) *tree.ConditionalStatement {
 
 	parsing.advance()
 	alternative := parsing.parseElseIfOrBlock()
@@ -47,9 +47,13 @@ func (parsing *Parsing) parseConditionalStatementWithAlternative(
 	}
 }
 
-func (parsing *Parsing) parseElseIfOrBlock() tree.Node {
+func (parsing *Parsing) parseElseIfOrBlock() *tree.StatementBlock {
 	if token.HasKeywordValue(parsing.token(), token.IfKeyword) {
-		return parsing.parseConditionalStatement()
+		statement := parsing.parseConditionalStatement()
+		return &tree.StatementBlock{
+			Children: []tree.Statement{statement},
+			Region:   statement.Region,
+		}
 	}
 	parsing.skipEndOfStatement()
 	return parsing.parseStatementBlock()
@@ -297,8 +301,8 @@ func (parsing *Parsing) parseConstructorDeclaration() tree.Node {
 	parsing.skipEndOfStatement()
 	body := parsing.parseStatementBlock()
 	return &tree.ConstructorDeclaration{
+		Body:       body,
 		Parameters: parameters,
-		Child:      body,
 		Region:     parsing.completeStructure(tree.ConstructorDeclarationNodeKind),
 	}
 }
@@ -340,7 +344,7 @@ func (parsing *Parsing) parseTestStatement() tree.Node {
 	return &tree.TestStatement{
 		Region:     parsing.completeStructure(tree.TestStatementNodeKind),
 		MethodName: parsing.currentMethod.name,
-		Child:      statements,
+		Body:      statements,
 	}
 }
 

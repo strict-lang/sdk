@@ -21,6 +21,14 @@ type ClassParameter struct {
 	Parent Node
 }
 
+func (class *ClassDeclaration) UpdateScope(target scope.Scope) {
+  class.scope = target
+}
+
+func (class *ClassDeclaration) Scope() scope.Scope {
+  return class.scope
+}
+
 func (parameter *ClassParameter) SetEnclosingNode(target Node) {
   parameter.Parent = target
 }

@@ -1,10 +1,12 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+)
 
 type TestStatement struct {
 	MethodName string
-	Child      Node
+	Body       *StatementBlock
 	Region     input.Region
 	Parent Node
 }
@@ -23,7 +25,7 @@ func (test *TestStatement) Accept(visitor Visitor) {
 
 func (test *TestStatement) AcceptRecursive(visitor Visitor) {
 	test.Accept(visitor)
-	test.Child.AcceptRecursive(visitor)
+	test.Body.AcceptRecursive(visitor)
 }
 
 func (test *TestStatement) Locate() input.Region {
@@ -33,7 +35,7 @@ func (test *TestStatement) Locate() input.Region {
 func (test *TestStatement) Matches(node Node) bool {
 	if target, ok := node.(*TestStatement); ok {
 		return test.MethodName == target.MethodName &&
-			test.Child.Matches(target.Child)
+			test.Body.Matches(target.Body)
 	}
 	return false
 }
