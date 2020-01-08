@@ -442,8 +442,8 @@ func (printing *Printing) printTestStatement(statement *tree.TestStatement) {
 	printing.printNodeEnd()
 }
 
-func (printing *Printing) printBlockStatement(statement *tree.BlockStatement) {
-	printing.printNodeBegin("BlockStatement")
+func (printing *Printing) printBlockStatement(statement *tree.StatementBlock) {
+	printing.printNodeBegin("StatementBlock")
 	for _, child := range statement.Children {
 		printing.printListField(child)
 	}

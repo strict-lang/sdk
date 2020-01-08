@@ -60,7 +60,7 @@ func (testFile *TestFile) emitFailedAssertion(statement *tree.AssertStatement) {
 }
 
 func (testFile *TestFile) emitMethodDeclaration(method *tree.MethodDeclaration) {
-	block, isBlock := method.Body.(*tree.BlockStatement)
+	block, isBlock := method.Body.(*tree.StatementBlock)
 	if !isBlock {
 		return
 	}

@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "local_scope.go",
+        "scope.go",
+        "symbol.go",
+    ],
+    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/scope",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/input:go_default_library",
+        "//pkg/compiler/typing:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "local_scope_test.go",
+        "symbol_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = ["//pkg/compiler/input:go_default_library"],
+)

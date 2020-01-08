@@ -37,6 +37,7 @@ go_library(
         "ranged_loop_statement.go",
         "resolved_type.go",
         "return_statement.go",
+        "scope_owner_node.go",
         "statement.go",
         "string_literal.go",
         "test_statement.go",
@@ -52,6 +53,7 @@ go_library(
     deps = [
         "//pkg/compiler/grammar/token:go_default_library",
         "//pkg/compiler/input:go_default_library",
+        "//pkg/compiler/scope:go_default_library",
     ],
 )
 

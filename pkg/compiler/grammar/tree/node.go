@@ -91,7 +91,7 @@ var nodeKindNames = map[NodeKind]string{
 	ConditionalStatementNodeKind:   "ConditionalStatement",
 	InvalidStatementNodeKind:       "InvalidStatement",
 	YieldStatementNodeKind:         "YieldStatement",
-	BlockStatementNodeKind:         "BlockStatement",
+	BlockStatementNodeKind:         "StatementBlock",
 	AssertStatementNodeKind:        "AssertStatement",
 	ReturnStatementNodeKind:        "ReturnStatement",
 	ImportStatementNodeKind:        "ImportStatement",

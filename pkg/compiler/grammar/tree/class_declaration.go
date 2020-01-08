@@ -1,6 +1,9 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+)
 
 type ClassDeclaration struct {
 	Name       string
@@ -9,6 +12,7 @@ type ClassDeclaration struct {
 	Children   []Node
 	Region     input.Region
 	Parent Node
+	scope scope.Scope
 }
 
 type ClassParameter struct {

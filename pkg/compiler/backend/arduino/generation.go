@@ -54,7 +54,7 @@ func (generation *Generation) generateSetupMethod(statements []tree.Statement) {
 			Name: "void",
 		},
 		Parameters: []*tree.Parameter{},
-		Body: &tree.BlockStatement{
+		Body: &tree.StatementBlock{
 			Children: statements,
 		},
 	})

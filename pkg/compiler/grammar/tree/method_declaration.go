@@ -1,6 +1,9 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+)
 
 type ParameterList []*Parameter
 
@@ -11,6 +14,15 @@ type MethodDeclaration struct {
 	Body       Node
 	Region     input.Region
 	Parent  Node
+	scope   scope.Scope
+}
+
+func (declaration *MethodDeclaration) UpdateScope(target scope.Scope) {
+  declaration.scope = target
+}
+
+func (declaration *MethodDeclaration) Scope() scope.Scope {
+  return declaration.scope
 }
 
 func (declaration *MethodDeclaration) SetEnclosingNode(target Node) {

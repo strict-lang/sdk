@@ -64,10 +64,10 @@ func (definition *MethodDefinition) generateDeclaration() string {
 
 func (definition *MethodDefinition) generateBody() string {
 	definition.buffer.Reset()
-	// Do not use the normal BlockStatement visitor for BlockStatement definition in
+	// Do not use the normal StatementBlock visitor for StatementBlock definition in
 	// a method body. It will generate open and close brackets and this will produce
 	// faulty code, if a prologue or epilogue is generated.
-	if block, ok := definition.declaration.Body.(*tree.BlockStatement); ok {
+	if block, ok := definition.declaration.Body.(*tree.StatementBlock); ok {
 		for _, child := range block.Children {
 			definition.generation.EmitNode(child)
 		}
