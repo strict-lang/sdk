@@ -8,5 +8,8 @@ go_library(
     ],
     importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/pass",
     visibility = ["//visibility:public"],
-    deps = ["//pkg/compiler/grammar/tree:go_default_library"],
+    deps = [
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+    ],
 )

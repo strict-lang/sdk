@@ -3,26 +3,36 @@ package analysis
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 	"log"
 )
 
-func (resolution *ScopeResolution) createScopeResolutionVisitor() tree.Visitor {
-	return &tree.DelegatingVisitor{
-		BlockStatementVisitor:         resolution.createBlockStatementScope,
-		TranslationUnitVisitor:        resolution.createTranslationUnitScope,
-		ClassDeclarationVisitor:       resolution.createClassDeclarationScope,
-		MethodDeclarationVisitor:      resolution.createMethodDeclarationScope,
-		ConstructorDeclarationVisitor: resolution.createConstructorDeclarationScope,
-	}
-}
-
-type ScopeResolution struct {
+type ScopeResolutionPass struct {
 	diagnostics  *diagnostic.Bag
 	localIdCount int
 }
 
-func (*ScopeResolution) createMethodDeclarationScope(method *tree.MethodDeclaration) {
+func (pass *ScopeResolutionPass) Run(context *passes.Context) {
+	visitor := pass.createScopeResolutionVisitor()
+	context.Unit.AcceptRecursive(visitor)
+}
+
+func (pass *ScopeResolutionPass) Dependencies() passes.Set {
+	return passes.Set{}
+}
+
+func (pass *ScopeResolutionPass) createScopeResolutionVisitor() tree.Visitor {
+	visitor := tree.NewEmptyVisitor()
+	visitor.BlockStatementVisitor = pass.createBlockStatementScope
+	visitor.TranslationUnitVisitor = pass.createTranslationUnitScope
+	visitor.ClassDeclarationVisitor = pass.createClassDeclarationScope
+	visitor.MethodDeclarationVisitor = pass.createMethodDeclarationScope
+	visitor.ConstructorDeclarationVisitor = pass.createConstructorDeclarationScope
+	return visitor
+}
+
+func (*ScopeResolutionPass) createMethodDeclarationScope(method *tree.MethodDeclaration) {
 	surroundingScope := requireNearestScope(method)
 	localScope := scope.NewLocalScope(
 		scope.Id(method.Name.Value),
@@ -31,45 +41,45 @@ func (*ScopeResolution) createMethodDeclarationScope(method *tree.MethodDeclarat
 	method.UpdateScope(localScope)
 }
 
-func (resolution *ScopeResolution) createBlockStatementScope(
+func (pass *ScopeResolutionPass) createBlockStatementScope(
 	block *tree.StatementBlock) {
 
 	surroundingScope := requireNearestScope(block)
 	localScope := scope.NewLocalScope(
-		resolution.nextLocalIdSuffix(),
+		pass.nextLocalIdSuffix(),
 		block.Region,
 		surroundingScope)
 	block.UpdateScope(localScope)
 }
 
-func (resolution *ScopeResolution) createTranslationUnitScope(
+func (pass *ScopeResolutionPass) createTranslationUnitScope(
 	unit *tree.TranslationUnit) {}
 
-func (resolution *ScopeResolution) createClassDeclarationScope(
+func (pass *ScopeResolutionPass) createClassDeclarationScope(
 	class *tree.ClassDeclaration) {
 
 	surroundingScope := requireNearestScope(class)
 	localScope := scope.NewLocalScope(
-		resolution.nextLocalIdSuffix(),
+		pass.nextLocalIdSuffix(),
 		class.Region,
 		surroundingScope)
 	class.UpdateScope(localScope)
 }
 
-func (resolution *ScopeResolution) createConstructorDeclarationScope(
+func (pass *ScopeResolutionPass) createConstructorDeclarationScope(
 	constructor *tree.ConstructorDeclaration) {
 
 	surroundingScope := requireNearestScope(constructor)
 	localScope := scope.NewLocalScope(
-		resolution.nextLocalIdSuffix(),
+		pass.nextLocalIdSuffix(),
 		constructor.Region,
 		surroundingScope)
 	constructor.UpdateScope(localScope)
 }
 
-func (resolution *ScopeResolution) nextLocalIdSuffix() scope.Id {
-	resolution.localIdCount++
-	return scope.Id(resolution.localIdCount)
+func (pass *ScopeResolutionPass) nextLocalIdSuffix() scope.Id {
+	pass.localIdCount++
+	return scope.Id(pass.localIdCount)
 }
 
 func requireNearestScope(node tree.Node) scope.Scope {

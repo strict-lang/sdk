@@ -1,21 +1,22 @@
 package analysis
-
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 )
 
-func assignParentRecursively(context *pass.Context) {
+type ParentAssignPass struct {}
+
+func (assign *ParentAssignPass) Run(context *pass.Context) {
+	assignmentVisitor := createAssignmentVisitor()
 	context.Unit.AcceptRecursive(assignmentVisitor)
 }
 
-func NewParentAssignmentPass() *pass.Pass {
-	return pass.NewPass().
-		RunWith(assignParentRecursively).
-		Create()
+func (assign *ParentAssignPass) Dependencies() pass.Set {
+	return pass.EmptySet
 }
 
-var assignmentVisitor = &tree.DelegatingVisitor{
+func createAssignmentVisitor() tree.Visitor {
+return  &tree.DelegatingVisitor{
 	ParameterVisitor: func(parameter *tree.Parameter) {
 		parameter.Type.SetEnclosingNode(parameter)
 		parameter.Name.SetEnclosingNode(parameter)
@@ -39,8 +40,8 @@ var assignmentVisitor = &tree.DelegatingVisitor{
 		expression.Target.SetEnclosingNode(expression)
 	},
 	EmptyStatementVisitor: func(statement *tree.EmptyStatement) {},
-	WildcardNodeVisitor:   func(node *tree.WildcardNode) {},
-	BreakStatementVisitor: func(statement *tree.BreakStatement) {},
+	WildcardNodeVisitor: func(node *tree.WildcardNode) {},
+	BreakStatementVisitor: func(statement *tree.BreakStatement) {	},
 	YieldStatementVisitor: func(statement *tree.YieldStatement) {
 		statement.Value.SetEnclosingNode(statement)
 	},
@@ -142,4 +143,5 @@ var assignmentVisitor = &tree.DelegatingVisitor{
 			parameter.SetEnclosingNode(declaration)
 		}
 	},
+}
 }

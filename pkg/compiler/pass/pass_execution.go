@@ -6,11 +6,11 @@ import (
 )
 
 type Execution struct {
-	target *Pass
+	target Pass
 	context *Context
 }
 
-func NewExecution(target *Pass, unit *tree.TranslationUnit) *Execution {
+func NewExecution(target Pass, unit *tree.TranslationUnit) *Execution {
 	return &Execution{
 		target: target,
 		context: &Context{
@@ -30,20 +30,20 @@ func (execution *Execution) Run() error {
 	return nil
 }
 
-func (execution *Execution) orderPendingPasses() ([]*Pass, error) {
+func (execution *Execution) orderPendingPasses() ([]Pass, error) {
 	graph := execution.createDependencyGraph()
 	return graph.sortTopologically()
 }
 
 func (execution *Execution) createDependencyGraph() *dependencyGraph {
 	graph := newDependencyGraph()
-	execution.traversePassDependencies(func(pass *Pass, dependency *Pass) {
+	execution.traversePassDependencies(func(pass Pass, dependency Pass) {
 		graph.insert(pass, dependency)
 	})
 	return graph
 }
 
-type dependencyRelationVisitor func(pass *Pass, dependency *Pass)
+type dependencyRelationVisitor func(pass Pass, dependency Pass)
 
 func (execution *Execution) traversePassDependencies(
 	visitor dependencyRelationVisitor) {
@@ -53,16 +53,16 @@ func (execution *Execution) traversePassDependencies(
 }
 
 func (execution *Execution) traversePassDependenciesRecursive(
-	pass *Pass, visitor dependencyRelationVisitor) {
+	pass Pass, visitor dependencyRelationVisitor) {
 
-	for _, dependency := range pass.Dependencies {
+	for _, dependency := range pass.Dependencies() {
 		visitor(pass, dependency)
 		execution.traversePassDependenciesRecursive(pass, visitor)
 	}
 }
 
 type dependencyGraph struct {
-	edges map[*Pass] []*Pass
+	edges map[Pass] []Pass
 	elementCount int
 }
 
@@ -70,7 +70,7 @@ func newDependencyGraph() *dependencyGraph {
 	return &dependencyGraph{}
 }
 
-func (graph *dependencyGraph) insert(dependant *Pass, dependency *Pass) {
+func (graph *dependencyGraph) insert(dependant Pass, dependency Pass) {
 	current := graph.listDependenciesFor(dependant)
 	if dependencies, updated := appendToSet(current, dependency); updated {
 		graph.elementCount++
@@ -78,7 +78,7 @@ func (graph *dependencyGraph) insert(dependant *Pass, dependency *Pass) {
 	}
 }
 
-func appendToSet(set []*Pass, element *Pass) (result []*Pass, updated bool) {
+func appendToSet(set []Pass, element Pass) (result []Pass, updated bool) {
 	for _, entry := range set {
 		if entry == element {
 			return set, false
@@ -87,14 +87,14 @@ func appendToSet(set []*Pass, element *Pass) (result []*Pass, updated bool) {
 	return append(set, element), true
 }
 
-func (graph *dependencyGraph) listDependenciesFor(pass *Pass) []*Pass {
+func (graph *dependencyGraph) listDependenciesFor(pass Pass) []Pass {
 	if dependencies, isRegistered := graph.edges[pass]; isRegistered {
 		return dependencies
 	}
-	return []*Pass{}
+	return []Pass{}
 }
 
-func (graph *dependencyGraph) isCircular(node *Pass, dependency *Pass) bool {
+func (graph *dependencyGraph) isCircular(node Pass, dependency Pass) bool {
 	dependencyDependencies := graph.listDependenciesFor(dependency)
 	for _, entry := range dependencyDependencies {
 		if entry == node {
@@ -104,11 +104,11 @@ func (graph *dependencyGraph) isCircular(node *Pass, dependency *Pass) bool {
 	return false
 }
 
-func newCircularDependencyError(node *Pass, dependency *Pass) error {
+func newCircularDependencyError(node Pass, dependency Pass) error {
 	return fmt.Errorf("circular dependencies: %v, %v", node, dependency)
 }
 
-func (graph *dependencyGraph) sortTopologically() ([]*Pass, error) {
+func (graph *dependencyGraph) sortTopologically() ([]Pass, error) {
 	for node, dependencies := range graph.edges {
 		for _, dependency := range dependencies {
 			if graph.isCircular(node, dependency) {
@@ -116,5 +116,5 @@ func (graph *dependencyGraph) sortTopologically() ([]*Pass, error) {
 			}
 		}
 	}
-	return []*Pass{}, nil
+	return []Pass{}, nil
 }

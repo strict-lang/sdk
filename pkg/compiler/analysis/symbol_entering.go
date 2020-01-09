@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
 )
@@ -14,6 +15,24 @@ type SymbolEnterPass struct {
 	diagnostics *diagnostic.Bag
 	currentClass *tree.ClassDeclaration
 	currentUnit *tree.TranslationUnit
+}
+
+func (pass *SymbolEnterPass) Run(context *passes.Context) {
+	visitor := pass.createVisitor()
+	context.Unit.AcceptRecursive(visitor)
+}
+
+func (pass *SymbolEnterPass) Dependencies() passes.Set {
+	return passes.Set{}
+}
+
+func (pass *SymbolEnterPass) createVisitor() tree.Visitor {
+	visitor := tree.NewEmptyVisitor()
+	visitor.TranslationUnitVisitor = pass.visitTranslationUnit
+	visitor.ClassDeclarationVisitor = pass.visitClassDeclaration
+	visitor.MethodDeclarationVisitor = pass.visitMethodDeclaration
+	visitor.FieldDeclarationVisitor = pass.visitFieldDeclaration
+	return visitor
 }
 
 func (pass *SymbolEnterPass) visitTranslationUnit(unit *tree.TranslationUnit) {
