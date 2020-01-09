@@ -1,8 +1,8 @@
 package pass
 
 import (
+	"errors"
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 type Execution struct {
@@ -10,12 +10,10 @@ type Execution struct {
 	context *Context
 }
 
-func NewExecution(target Pass, unit *tree.TranslationUnit) *Execution {
+func NewExecution(target Pass, context *Context) *Execution {
 	return &Execution{
 		target: target,
-		context: &Context{
-			Unit:unit,
-		},
+		context: context,
 	}
 }
 
@@ -31,90 +29,140 @@ func (execution *Execution) Run() error {
 }
 
 func (execution *Execution) orderPendingPasses() ([]Pass, error) {
-	graph := execution.createDependencyGraph()
-	return graph.sortTopologically()
+  order, err := execution.createDependencyOrder()
+  if err != nil {
+  	return nil, err
+  }
+	return order.compute()
 }
 
-func (execution *Execution) createDependencyGraph() *dependencyGraph {
-	graph := newDependencyGraph()
-	execution.traversePassDependencies(func(pass Pass, dependency Pass) {
-		graph.insert(pass, dependency)
+func (execution *Execution) createDependencyOrder() (dependencyOrder, error) {
+	table := execution.populatePassEntryTable()
+	if err := translatePassesToGraphEntries(table); err != nil {
+		return dependencyOrder{}, err
+	}
+	entries := extractValues(table)
+	return dependencyOrder{entries: entries}, nil
+}
+
+func extractValues(table map[Pass] *graphEntry) (values []*graphEntry) {
+	for _, value := range table {
+		values = append(values, value)
+	}
+	return values
+}
+
+func (execution *Execution) populatePassEntryTable() map[Pass] *graphEntry {
+	entries := map[Pass] *graphEntry{}
+	execution.traversePassDependencies(func(pass Pass, dependencies []Pass) {
+		entries[pass] = &graphEntry{pass: pass}
 	})
-	return graph
+	return entries
 }
 
-type dependencyRelationVisitor func(pass Pass, dependency Pass)
+func translatePassesToGraphEntries(entries map[Pass] *graphEntry) error {
+	for _, entry := range entries {
+		if err := translateDependencies(entry, entries); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
-func (execution *Execution) traversePassDependencies(
-	visitor dependencyRelationVisitor) {
+func translateDependencies(
+	entry *graphEntry, entries map[Pass] *graphEntry) error {
 
-	execution.traversePassDependenciesRecursive(
-		execution.target, visitor)
+	for _, dependency := range entry.pass.Dependencies() {
+		if dependencyEntry, exists := entries[dependency]; exists {
+			entry.dependencies = append(entry.dependencies, dependencyEntry)
+		} else {
+			return fmt.Errorf("graph entry for %s doesn't exist", dependency)
+		}
+	}
+	return nil
+}
+
+type dependencyVisitor func(pass Pass, dependencies []Pass)
+
+func (execution *Execution) traversePassDependencies(visitor dependencyVisitor) {
+	execution.traversePassDependenciesRecursive(execution.target, visitor)
 }
 
 func (execution *Execution) traversePassDependenciesRecursive(
-	pass Pass, visitor dependencyRelationVisitor) {
+	pass Pass, visitor dependencyVisitor) {
 
+	visitor(pass, pass.Dependencies())
 	for _, dependency := range pass.Dependencies() {
-		visitor(pass, dependency)
-		execution.traversePassDependenciesRecursive(pass, visitor)
+		visitor(dependency, dependency.Dependencies())
 	}
 }
 
-type dependencyGraph struct {
-	edges map[Pass] []Pass
-	elementCount int
+type dependencyOrder struct {
+	entries []*graphEntry
+	output []Pass
 }
 
-func newDependencyGraph() *dependencyGraph {
-	return &dependencyGraph{}
+type graphEntry struct {
+	pass Pass
+	dependencies []*graphEntry
+	executed bool
 }
 
-func (graph *dependencyGraph) insert(dependant Pass, dependency Pass) {
-	current := graph.listDependenciesFor(dependant)
-	if dependencies, updated := appendToSet(current, dependency); updated {
-		graph.elementCount++
-		graph.edges[dependant] = dependencies
+func (order *dependencyOrder) insert(entry *graphEntry) {
+	if !order.contains(entry.pass) {
+		order.entries = append(order.entries, entry)
 	}
 }
 
-func appendToSet(set []Pass, element Pass) (result []Pass, updated bool) {
-	for _, entry := range set {
-		if entry == element {
-			return set, false
-		}
-	}
-	return append(set, element), true
-}
-
-func (graph *dependencyGraph) listDependenciesFor(pass Pass) []Pass {
-	if dependencies, isRegistered := graph.edges[pass]; isRegistered {
-		return dependencies
-	}
-	return []Pass{}
-}
-
-func (graph *dependencyGraph) isCircular(node Pass, dependency Pass) bool {
-	dependencyDependencies := graph.listDependenciesFor(dependency)
-	for _, entry := range dependencyDependencies {
-		if entry == node {
+func (order *dependencyOrder) contains(pass Pass) bool {
+	for _, entry := range order.entries {
+		if entry.pass == pass {
 			return true
 		}
 	}
 	return false
 }
 
-func newCircularDependencyError(node Pass, dependency Pass) error {
-	return fmt.Errorf("circular dependencies: %v, %v", node, dependency)
+func (order *dependencyOrder) compute() (output []Pass, err error) {
+	if order.output == nil || len(order.output) == 0 {
+		err = order.computeOutput()
+	}
+	return order.output, err
 }
 
-func (graph *dependencyGraph) sortTopologically() ([]Pass, error) {
-	for node, dependencies := range graph.edges {
-		for _, dependency := range dependencies {
-			if graph.isCircular(node, dependency) {
-				return nil, newCircularDependencyError(node, dependency)
-			}
+func (order *dependencyOrder) computeOutput() error {
+	order.output = make([]Pass, len(order.entries))
+	for index := range order.output {
+		if err := order.computeIndex(index); err != nil {
+			return err
 		}
 	}
-	return []Pass{}, nil
+	return nil
+}
+
+func (order *dependencyOrder) computeIndex(index int) error {
+	if next, ok := order.nextElementToExecute(); ok {
+		next.executed = true
+		order.output[index] = next.pass
+		return nil
+	}
+	return errors.New("could not sort pass order")
+}
+
+func (order *dependencyOrder) nextElementToExecute() (*graphEntry, bool) {
+	for _, entry := range order.entries {
+		if !entry.executed && entry.canBeExecuted() {
+			return entry, true
+		}
+	}
+	return nil, false
+}
+
+func (entry *graphEntry) canBeExecuted() bool {
+	for _, dependency  := range entry.dependencies {
+		if !dependency.executed {
+			return false
+		}
+	}
+	return true
 }
