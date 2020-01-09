@@ -3,6 +3,7 @@ package analysis
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 )
 
@@ -13,6 +14,8 @@ const (
 	MessageImplicitParameterName  = "Parameters need explicit names if their type occurs more" +
 		"than once in the parameter list"
 )
+
+const NamingCheckPassId = "NamingCheckPass"
 
 // NamingCheckPass is traversing the tree and ensures that the names of all declared declaration
 // follows the naming rules. As opposed to many languages, Strict opposes strong rules on the
@@ -28,8 +31,8 @@ func (pass *NamingCheckPass) Run(context *passes.Context) {
 	context.Unit.AcceptRecursive(visitor)
 }
 
-func (pass *NamingCheckPass) Dependencies() passes.Set {
-	return passes.Set{}
+func (pass *NamingCheckPass) Dependencies(*isolate.Isolate) passes.Set {
+	return passes.EmptySet
 }
 
 func (pass *NamingCheckPass) createVisitor() tree.Visitor {

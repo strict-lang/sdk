@@ -1,6 +1,7 @@
 package pass
 
 import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	"testing"
 )
 
@@ -14,7 +15,7 @@ func (pass *testPass) Run(context *Context) {
 	pass.output.value = append(pass.output.value, pass.value)
 }
 
-func (pass *testPass) Dependencies() Set {
+func (pass *testPass) Dependencies(*isolate.Isolate) Set {
 	return pass.dependencies
 }
 

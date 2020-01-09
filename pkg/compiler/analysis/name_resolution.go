@@ -2,9 +2,12 @@ package analysis
 
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 )
+
+const NameResolutionPassId = "NameResolutionPass"
 
 type NameResolutionPass struct {
 }
@@ -14,8 +17,8 @@ func (pass *NameResolutionPass) Run(context *passes.Context) {
 	context.Unit.AcceptRecursive(visitor)
 }
 
-func (pass *NameResolutionPass) Dependencies() passes.Set {
-	return passes.Set{}
+func (pass *NameResolutionPass) Dependencies(isolate *isolate.Isolate) passes.Set {
+	return passes.ListInIsolate(isolate, ScopeResolutionPassId, SymbolEnterPassId)
 }
 
 func (pass *NameResolutionPass) createVisitor() tree.Visitor {

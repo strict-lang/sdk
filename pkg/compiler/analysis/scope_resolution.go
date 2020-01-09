@@ -3,10 +3,13 @@ package analysis
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 	"log"
 )
+
+const ScopeResolutionPassId = "ScopeResolutionPass"
 
 type ScopeResolutionPass struct {
 	diagnostics  *diagnostic.Bag
@@ -18,8 +21,8 @@ func (pass *ScopeResolutionPass) Run(context *passes.Context) {
 	context.Unit.AcceptRecursive(visitor)
 }
 
-func (pass *ScopeResolutionPass) Dependencies() passes.Set {
-	return passes.Set{}
+func (pass *ScopeResolutionPass) Dependencies(isolate *isolate.Isolate) passes.Set {
+	return passes.ListInIsolate(isolate, ParentAssignPassId)
 }
 
 func (pass *ScopeResolutionPass) createScopeResolutionVisitor() tree.Visitor {

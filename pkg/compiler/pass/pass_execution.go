@@ -38,7 +38,7 @@ func (execution *Execution) orderPendingPasses() ([]Pass, error) {
 
 func (execution *Execution) createDependencyOrder() (dependencyOrder, error) {
 	table := execution.populatePassEntryTable()
-	if err := translatePassesToGraphEntries(table); err != nil {
+	if err := execution.translatePassesToGraphEntries(table); err != nil {
 		return dependencyOrder{}, err
 	}
 	entries := extractValues(table)
@@ -60,19 +60,22 @@ func (execution *Execution) populatePassEntryTable() map[Pass] *graphEntry {
 	return entries
 }
 
-func translatePassesToGraphEntries(entries map[Pass] *graphEntry) error {
+func (execution *Execution) translatePassesToGraphEntries(
+	entries map[Pass] *graphEntry) error {
+
 	for _, entry := range entries {
-		if err := translateDependencies(entry, entries); err != nil {
+		if err := execution.translateDependencies(entry, entries); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func translateDependencies(
+func (execution *Execution) translateDependencies(
 	entry *graphEntry, entries map[Pass] *graphEntry) error {
 
-	for _, dependency := range entry.pass.Dependencies() {
+	isolate := execution.context.Isolate
+	for _, dependency := range entry.pass.Dependencies(isolate) {
 		if dependencyEntry, exists := entries[dependency]; exists {
 			entry.dependencies = append(entry.dependencies, dependencyEntry)
 		} else {
@@ -91,9 +94,10 @@ func (execution *Execution) traversePassDependencies(visitor dependencyVisitor) 
 func (execution *Execution) traversePassDependenciesRecursive(
 	pass Pass, visitor dependencyVisitor) {
 
-	visitor(pass, pass.Dependencies())
-	for _, dependency := range pass.Dependencies() {
-		visitor(dependency, dependency.Dependencies())
+	isolate := execution.context.Isolate
+	visitor(pass, pass.Dependencies(isolate))
+	for _, dependency := range pass.Dependencies(isolate) {
+		visitor(dependency, dependency.Dependencies(isolate))
 	}
 }
 

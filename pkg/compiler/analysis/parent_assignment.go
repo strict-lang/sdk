@@ -1,8 +1,11 @@
 package analysis
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 )
+
+const ParentAssignPassId = "ParentAssignPass"
 
 type ParentAssignPass struct {}
 
@@ -11,7 +14,7 @@ func (assign *ParentAssignPass) Run(context *pass.Context) {
 	context.Unit.AcceptRecursive(assignmentVisitor)
 }
 
-func (assign *ParentAssignPass) Dependencies() pass.Set {
+func (assign *ParentAssignPass) Dependencies(*isolate.Isolate) pass.Set {
 	return pass.EmptySet
 }
 

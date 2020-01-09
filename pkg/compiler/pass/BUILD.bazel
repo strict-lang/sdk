@@ -11,6 +11,7 @@ go_library(
     deps = [
         "//pkg/compiler/diagnostic:go_default_library",
         "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/isolate:go_default_library",
     ],
 )
 
@@ -18,4 +19,5 @@ go_test(
     name = "go_default_test",
     srcs = ["pass_execution_test.go"],
     embed = [":go_default_library"],
+    deps = ["//pkg/compiler/isolate:go_default_library"],
 )

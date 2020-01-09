@@ -4,10 +4,13 @@ import (
 	"errors"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
 )
+
+const SymbolEnterPassId = "SymbolEnterPass"
 
 // SymbolEnterPass enters symbols into the scope that they are defined in.
 // It also ensures that there are no duplicates.
@@ -19,11 +22,12 @@ type SymbolEnterPass struct {
 
 func (pass *SymbolEnterPass) Run(context *passes.Context) {
 	visitor := pass.createVisitor()
+	pass.diagnostics = context.Diagnostic
 	context.Unit.AcceptRecursive(visitor)
 }
 
-func (pass *SymbolEnterPass) Dependencies() passes.Set {
-	return passes.Set{}
+func (pass *SymbolEnterPass) Dependencies(isolate *isolate.Isolate) passes.Set {
+	return passes.ListInIsolate(isolate, ScopeResolutionPassId)
 }
 
 func (pass *SymbolEnterPass) createVisitor() tree.Visitor {
