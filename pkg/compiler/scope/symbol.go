@@ -64,6 +64,19 @@ func (field *Field) DeclarationOffset() input.Offset {
 	return field.declarationOffset
 }
 
+type Namespace struct {
+	PackageName string
+	Scope Scope
+}
+
+func (namespace *Namespace) Name() string {
+	return namespace.PackageName
+}
+
+func (namespace *Namespace) DeclarationOffset() input.Offset {
+	return 0
+}
+
 func AsMethodSymbol(symbol Symbol) (*Method, bool) {
 	method, ok := symbol.(*Method)
 	return method, ok
