@@ -2,8 +2,8 @@ package tree
 
 type Expression interface {
 	Node
-	// ResolveType(descriptor TypeDescriptor)
-	// GetResolvedType() (TypeDescriptor, bool)
+	// SetResolvedType(descriptor TypeDescriptor)
+	// ResolvedType() (TypeDescriptor, bool)
 }
 
 type StoredExpression interface {
