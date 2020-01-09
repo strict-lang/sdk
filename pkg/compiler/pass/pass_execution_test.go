@@ -39,7 +39,10 @@ func TestExecution_Run(testing *testing.T) {
 		value: 3,
 		dependencies: Set{first, second},
 	}
-	execution := NewExecution(third, &Context{})
+
+	execution := NewExecution(third, &Context{
+		Isolate: isolate.SingleThreaded(),
+	})
 	if err := execution.Run(); err != nil {
 		testing.Error(err)
 	}

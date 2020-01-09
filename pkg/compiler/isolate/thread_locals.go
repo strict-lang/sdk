@@ -12,3 +12,9 @@ func (table *ThreadLocalPropertyTable) Lookup(name string) (interface{}, bool) {
 	value, ok := table.properties[name]
 	return value, ok
 }
+
+func NewThreadLocalPropertyTable() *ThreadLocalPropertyTable {
+	return &ThreadLocalPropertyTable{
+		properties: map[string]interface{}{},
+	}
+}
