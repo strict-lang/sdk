@@ -42,3 +42,7 @@ func (expression *FieldSelectExpression) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (expression *FieldSelectExpression) findLastIdentifier() (*Identifier, bool) {
+	return nil, false
+}

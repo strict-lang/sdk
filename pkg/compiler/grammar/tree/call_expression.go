@@ -1,6 +1,8 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+)
 
 type CallExpression struct {
 	// Target is the procedure that is called.
@@ -11,6 +13,13 @@ type CallExpression struct {
 	Region       input.Region
 	resolvedType resolvedType
 	Parent Node
+	name cachedName
+}
+
+type cachedName struct {
+	value *Identifier
+	found bool
+	searched bool
 }
 
 func (call *CallExpression) SetEnclosingNode(target Node) {
@@ -63,4 +72,40 @@ func (call *CallExpression) hasArguments(arguments CallArgumentList) bool {
 		}
 	}
 	return true
+}
+
+func (call *CallExpression) TargetName() *Identifier {
+	call.maybeTryToResolveName()
+	return call.name.value
+}
+
+func (call *CallExpression) IsNamedCall() bool {
+	call.maybeTryToResolveName()
+	return call.name.found
+}
+
+func (call *CallExpression) maybeTryToResolveName() {
+	if !call.name.searched {
+		call.resolveName()
+		call.name.searched = true
+	}
+}
+
+func (call *CallExpression) resolveName() {
+	visitor := call.createNameResolveVisitor()
+	call.Target.Accept(visitor)
+}
+
+func (call *CallExpression) createNameResolveVisitor() Visitor {
+	return &DelegatingVisitor{
+		IdentifierVisitor: func(identifier *Identifier) {
+			call.name.found = true
+			call.name.value = identifier
+		},
+		FieldSelectExpressionVisitor: func(expression *FieldSelectExpression) {
+			identifier, found := expression.findLastIdentifier()
+			call.name.found = found
+			call.name.value = identifier
+		},
+	}
 }

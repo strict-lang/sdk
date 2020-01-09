@@ -187,6 +187,30 @@ func (pass *SymbolEnterPass) createClassReplacement(
 	}
 }
 
+func (pass *SymbolEnterPass) visitFieldDeclaration(
+	declaration *tree.FieldDeclaration) {
+
+	if isVariable(declaration) {
+		pass.enterVariable(declaration)
+	} else {
+		pass.enterMemberField(declaration)
+	}
+}
+
+func isVariable(declaration *tree.FieldDeclaration) bool {
+	return tree.IsInsideOfMethod(declaration)
+}
+
+func (pass *SymbolEnterPass) enterMemberField(
+	field *tree.FieldDeclaration) {
+
+}
+
+func (pass *SymbolEnterPass) enterVariable(
+	variable *tree.FieldDeclaration) {
+
+}
+
 func (pass *SymbolEnterPass) ensureNameDoesNotExist(
 	name string, node tree.Node, surroundingScope scope.Scope) bool {
 

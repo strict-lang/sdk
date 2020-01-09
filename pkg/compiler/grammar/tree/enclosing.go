@@ -24,6 +24,16 @@ func ResolveNearestMutableScope(node Node) (scope.MutableScope, bool) {
 	return nil, false
 }
 
+func IsInsideOfMethod(node Node) bool {
+	currentParent, _ := node.EnclosingNode()
+	for currentParent != nil {
+		if _, isMethod := currentParent.(*MethodDeclaration); isMethod {
+			return true
+		}
+	}
+	return false
+}
+
 func mutableScopeOfNode(node Node) (scope.MutableScope, bool) {
 	if scopeOwner, ok := node.(ScopeOwner); ok {
 		someScope := scopeOwner.Scope()
