@@ -2,8 +2,14 @@ package scope
 
 import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
-
 type Id string
+
+type Scope interface {
+	Id() Id
+	Lookup(point ReferencePoint) EntrySet
+	Search(filter symbolFilter) EntrySet
+	Contains(point ReferencePoint) bool
+}
 
 type ReferencePoint struct {
 	name           string
@@ -29,13 +35,6 @@ func (set EntrySet) IsEmpty() bool {
 
 type symbolFilter func(Symbol) bool
 
-type Scope interface {
-	Id() Id
-	Lookup(point ReferencePoint) EntrySet
-	Search(filter symbolFilter) EntrySet
-	Contains(point ReferencePoint) bool
-}
-
 type symbolFactory func() (Symbol, bool)
 
 type MutableScope interface {
@@ -43,10 +42,6 @@ type MutableScope interface {
 
 	Insert(symbol Symbol)
 	LookupOrInsert(point ReferencePoint, factory symbolFactory) EntrySet
-}
-
-type NamedScope struct {
-
 }
 
 func NewReferencePoint(name string) ReferencePoint {
@@ -64,39 +59,6 @@ func NewReferencePointWithPosition(
 		position:       position,
 		ignorePosition: false,
 	}
-}
-
-
-type EmptyScope struct {
-	id Id
-}
-
-func NewEmptyScope(id Id) Scope {
-	return &EmptyScope{id: id}
-}
-
-func (scope *EmptyScope) Id() Id {
-	return scope.id
-}
-
-func (scope *EmptyScope) Insert(symbol Symbol) {}
-
-func (scope *EmptyScope) LookupOrInsert(
-	point ReferencePoint, factory symbolFactory) EntrySet {
-
-	return EntrySet{}
-}
-
-func (scope *EmptyScope) Lookup(point ReferencePoint) EntrySet {
-	return EntrySet{}
-}
-
-func (scope *EmptyScope) Contains(point ReferencePoint) bool {
-	return false
-}
-
-func (scope *EmptyScope) Search(filter symbolFilter) EntrySet {
-	return EntrySet{}
 }
 
 func LookupClass(scope Scope, point ReferencePoint) (*Class, bool) {

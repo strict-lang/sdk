@@ -100,7 +100,7 @@ func (scope *LocalScope) LookupOrInsert(
 	return EntrySet{}
 }
 
-// Lookup searches for all symbols that match the ReferencePoint's DeclarationName and can be
+// Lookup searches for all symbols that match the point name and can be
 // accessed from the point's position (given that the position is not ignored).
 func (scope *LocalScope) Lookup(point ReferencePoint) EntrySet {
 	parentEntries := scope.parent.Lookup(point)
@@ -112,9 +112,10 @@ func (scope *LocalScope) Lookup(point ReferencePoint) EntrySet {
 }
 
 func (scope *LocalScope) lookupOwn(point ReferencePoint) EntrySet {
-	symbol := scope.entries[point.name]
-	if point.ignorePosition || canSeeEntry(point, symbol) {
-		return EntrySet{symbol}
+	if symbol, ok := scope.entries[point.name]; ok {
+		if point.ignorePosition || canSeeEntry(point, symbol) {
+			return EntrySet{symbol}
+		}
 	}
 	return EntrySet{}
 }
