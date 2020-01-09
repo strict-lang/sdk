@@ -3,7 +3,9 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
+        "empty_scope.go",
         "local_scope.go",
+        "outer_scope.go",
         "scope.go",
         "symbol.go",
     ],
@@ -19,6 +21,7 @@ go_test(
     name = "go_default_test",
     srcs = [
         "local_scope_test.go",
+        "outer_scope_test.go",
         "symbol_test.go",
     ],
     embed = [":go_default_library"],

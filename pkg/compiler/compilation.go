@@ -101,7 +101,7 @@ func (compilation *Compilation) generateCppFile(unit *tree.TranslationUnit) []Ge
 func isContainingTestDefinitions(node tree.Node) bool {
 	counter := tree.NewCounter()
 	counter.Count(node)
-	return counter.Get(tree.TestStatementNodeKind) != 0
+	return counter.ValueFor(tree.TestStatementNodeKind) != 0
 }
 
 func (compilation *Compilation) generateArduinoFile(unit *tree.TranslationUnit) Generated {

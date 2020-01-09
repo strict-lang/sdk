@@ -25,7 +25,7 @@ const (
 // if the parent is a shadowing LocalScope, that shadows variable x' and the child
 // also shadows variable x', then a method would contain x' two times.
 // In practice, we only use shadowing scopes when creating the method scope, in order
-// to have parameters that share a name with a classes attribute.
+// to have parameters that share a DeclarationName with a classes attribute.
 type LocalScope struct {
 	id              Id
 	parent          Scope
@@ -41,7 +41,7 @@ func NewShadowingLocalScope(
 	parent Scope) MutableScope {
 
 	return &LocalScope{
-		id:              id,
+		id:              parent.Id().NewChildId(id),
 		parent:          parent,
 		region:          region,
 		entries:         map[string]Entry{},
@@ -75,7 +75,7 @@ func (scope *LocalScope) Id() Id {
 	return scope.id
 }
 
-// Inserts a symbol into the local scope, if the symbol has not yet been
+// Inserts a Symbol into the local scope, if the Symbol has not yet been
 // defined or may shadow a previous definition.
 func (scope *LocalScope) Insert(symbol Symbol) {
 	point := createReferencePointFromSymbol(symbol)
@@ -100,7 +100,7 @@ func (scope *LocalScope) LookupOrInsert(
 	return EntrySet{}
 }
 
-// Lookup searches for all symbols that match the ReferencePoint's name and can be
+// Lookup searches for all symbols that match the point name and can be
 // accessed from the point's position (given that the position is not ignored).
 func (scope *LocalScope) Lookup(point ReferencePoint) EntrySet {
 	parentEntries := scope.parent.Lookup(point)
@@ -112,14 +112,15 @@ func (scope *LocalScope) Lookup(point ReferencePoint) EntrySet {
 }
 
 func (scope *LocalScope) lookupOwn(point ReferencePoint) EntrySet {
-	symbol := scope.entries[point.name]
-	if point.ignorePosition || canSeeEntry(point, symbol) {
-		return EntrySet{symbol}
+	if symbol, ok := scope.entries[point.name]; ok {
+		if point.ignorePosition || canSeeEntry(point, symbol) {
+			return EntrySet{symbol}
+		}
 	}
 	return EntrySet{}
 }
 
-// Shadows a symbol that has been found in the parent scope, if the current
+// Shadows a Symbol that has been found in the parent scope, if the current
 // scope does not already contain it and shadowing is allowed.
 func (scope *LocalScope) maybeShadow(point ReferencePoint, symbol Symbol) {
 	if !scope.containsDirectly(point) && scope.canShadow() {
@@ -133,7 +134,7 @@ func (scope *LocalScope) canShadow() bool {
 
 func (scope* LocalScope) createEntry(symbol Symbol) Entry {
 	return Entry{
-		symbol:   symbol,
+		Symbol:   symbol,
 		position: symbol.DeclarationOffset(),
 		scopeId:  scope.id,
 	}
@@ -150,7 +151,7 @@ func (scope *LocalScope) containsDirectly(point ReferencePoint) bool {
 	return ok
 }
 
-// Returns whether the local scope has a symbol that both matches the name
+// Returns whether the local scope has a Symbol that both matches the DeclarationName
 // of the reference point and has been declared before the point. This is
 // done when entities are looked up who's location and order is of semantic
 // relevance. Examples are variables: If a variable x' accesses y' and both
@@ -168,7 +169,7 @@ func canSeeEntry(point ReferencePoint, entry Entry) bool {
 }
 
 // Contains returns whether the scope contains any symbols matching
-// the point's name, that can also be accessed from the points position
+// the point's DeclarationName, that can also be accessed from the points position
 // (given that the position is not ignored).
 func (scope *LocalScope) Contains(point ReferencePoint) bool {
 	if scope.parent.Contains(point) {
@@ -191,7 +192,7 @@ func (scope *LocalScope) Search(filter symbolFilter) EntrySet {
 
 func (scope *LocalScope) searchOwn(filter symbolFilter) (result EntrySet) {
 	for _, entry := range scope.entries {
-		if filter(entry.symbol) {
+		if filter(entry.Symbol) {
 			result = append(result, entry)
 		}
 	}

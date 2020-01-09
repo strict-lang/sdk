@@ -1,0 +1,36 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "name_resolution.go",
+        "name_validation.go",
+        "parent_assignment.go",
+        "passes.go",
+        "scope_creation.go",
+        "symbol_entering.go",
+    ],
+    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/analysis",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/isolate:go_default_library",
+        "//pkg/compiler/pass:go_default_library",
+        "//pkg/compiler/scope:go_default_library",
+        "//pkg/compiler/typing:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["name_resolution_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/token:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/isolate:go_default_library",
+        "//pkg/compiler/pass:go_default_library",
+    ],
+)

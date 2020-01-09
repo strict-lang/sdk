@@ -1,21 +1,33 @@
-package code
-
+package analysis
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 )
 
-func assignParentRecursively(context *pass.Context) {
+const ParentAssignPassId = "ParentAssignPass"
+
+func init() {
+	registerPassInstance(&ParentAssignPass{})
+}
+
+type ParentAssignPass struct {}
+
+func (assign *ParentAssignPass) Run(context *pass.Context) {
+	assignmentVisitor := createAssignmentVisitor()
 	context.Unit.AcceptRecursive(assignmentVisitor)
 }
 
-func NewParentAssignmentPass() *pass.Pass {
-	return pass.NewPass().
-		RunWith(assignParentRecursively).
-		Create()
+func (assign *ParentAssignPass) Dependencies(*isolate.Isolate) pass.Set {
+	return pass.EmptySet
 }
 
-var assignmentVisitor = &tree.DelegatingVisitor{
+func (assign *ParentAssignPass) Id() pass.Id {
+	return ParentAssignPassId
+}
+
+func createAssignmentVisitor() tree.Visitor {
+return  &tree.DelegatingVisitor{
 	ParameterVisitor: func(parameter *tree.Parameter) {
 		parameter.Type.SetEnclosingNode(parameter)
 		parameter.Name.SetEnclosingNode(parameter)
@@ -28,7 +40,7 @@ var assignmentVisitor = &tree.DelegatingVisitor{
 		name.Element.SetEnclosingNode(name)
 	},
 	TestStatementVisitor: func(statement *tree.TestStatement) {
-		statement.Child.SetEnclosingNode(statement)
+		statement.Body.SetEnclosingNode(statement)
 	},
 	StringLiteralVisitor: func(literal *tree.StringLiteral) {},
 	NumberLiteralVisitor: func(literal *tree.NumberLiteral) {},
@@ -44,7 +56,7 @@ var assignmentVisitor = &tree.DelegatingVisitor{
 	YieldStatementVisitor: func(statement *tree.YieldStatement) {
 		statement.Value.SetEnclosingNode(statement)
 	},
-	BlockStatementVisitor: func(statement *tree.BlockStatement) {
+	BlockStatementVisitor: func(statement *tree.StatementBlock) {
 		for _, child := range statement.Children {
 			child.SetEnclosingNode(statement)
 		}
@@ -137,9 +149,10 @@ var assignmentVisitor = &tree.DelegatingVisitor{
 		expression.Selection.SetEnclosingNode(expression)
 	},
 	ConstructorDeclarationVisitor: func(declaration *tree.ConstructorDeclaration) {
-		declaration.Child.SetEnclosingNode(declaration)
+		declaration.Body.SetEnclosingNode(declaration)
 		for _, parameter := range declaration.Parameters {
 			parameter.SetEnclosingNode(declaration)
 		}
 	},
+}
 }

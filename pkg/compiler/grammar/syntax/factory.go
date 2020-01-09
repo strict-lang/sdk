@@ -1,7 +1,6 @@
 package syntax
 
 import (
-	code2 "gitlab.com/strict-lang/sdk/pkg/compiler/code"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 )
@@ -46,7 +45,6 @@ func (factory *Factory) WithDiagnosticBag(recorder *diagnostic.Bag) *Factory {
 // are recorded by the 'recorder'.
 func (factory *Factory) NewParser() *Parsing {
 	parser := &Parsing{
-		rootScope:      code2.NewRootScope(),
 		tokenReader:    factory.tokens,
 		recorder:       factory.bag,
 		unitName:       factory.unitName,

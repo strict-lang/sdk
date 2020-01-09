@@ -1,42 +1,46 @@
 package pass
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
+)
 
 type Context struct {
 	Unit *tree.TranslationUnit
+	Diagnostic *diagnostic.Bag
+	Isolate *isolate.Isolate
 }
 
 type Id string
 
-type Pass struct {
-	Run func(context *Context)
-	Dependencies []*Pass
+type Pass interface {
+	Id() Id
+	Run(context *Context)
+	Dependencies(isolate *isolate.Isolate) Set
 }
 
-type Builder struct {
-	dependencies []*Pass
-	runner func(context *Context)
-}
+type Set []Pass
 
-func NewPass() *Builder {
-	return &Builder{}
-}
+var EmptySet = Set{}
 
-func (builder *Builder) AddDependency(dependency *Pass) *Builder {
-	builder.dependencies = append(builder.dependencies, dependency)
-	return builder
-}
-
-func (builder *Builder) RunWith(runner func(context *Context)) *Builder {
-	builder.runner = runner
-	return builder
-}
-
-func (builder *Builder) Create() *Pass {
-	copiedDependencies := make([]*Pass, len(builder.dependencies))
-	copy(copiedDependencies, builder.dependencies)
-	return &Pass{
-		Run: builder.runner,
-		Dependencies: copiedDependencies,
+func ListInIsolate(isolate *isolate.Isolate, names ...string) Set {
+	var passes []Pass
+	for _, name := range names {
+		if pass, ok := findPassInProperties(name, isolate.Properties); ok {
+			passes = append(passes, pass)
+		}
 	}
+	return passes
+}
+
+func findPassInProperties(
+	name string, table *isolate.ThreadLocalPropertyTable) (Pass, bool) {
+
+	if value, ok := table.Lookup(name); ok {
+		pass, isPass := value.(Pass)
+		return pass, isPass
+	}
+	return nil, false
+
 }

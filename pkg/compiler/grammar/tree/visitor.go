@@ -395,6 +395,6 @@ func (counter *Counter) Count(node Node) {
 	node.AcceptRecursive(counter.visitor)
 }
 
-func (counter *Counter) Get(kind NodeKind) int {
+func (counter *Counter) ValueFor(kind NodeKind) int {
 	return counter.nodes[kind]
 }

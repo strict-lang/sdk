@@ -11,15 +11,16 @@ type Symbol interface {
 }
 
 type Method struct {
-	name string
+	DeclarationName   string
 	declarationOffset input.Offset
 
 	ReturnType typing.Class
+	// Parameters are lazily added
 	Parameters []*Field
 }
 
 func (method *Method) Name() string {
-	return method.name
+	return method.DeclarationName
 }
 
 func (method *Method) DeclarationOffset() input.Offset {
@@ -27,13 +28,13 @@ func (method *Method) DeclarationOffset() input.Offset {
 }
 
 type Class struct {
-	name string
-	class typing.Class
+	DeclarationName   string
+	ActualClass       typing.Class
 	declarationOffset input.Offset
 }
 
 func (class *Class) Name() string {
-	return class.name
+	return class.DeclarationName
 }
 
 func (class *Class) DeclarationOffset() input.Offset {
@@ -41,16 +42,39 @@ func (class *Class) DeclarationOffset() input.Offset {
 }
 
 type Field struct {
-	name string
+	DeclarationName string
 	declarationOffset input.Offset
+	Class *Class
+	Kind FieldKind
 }
 
+type FieldKind int
+
+const (
+	ParameterField FieldKind = iota
+	VariableField
+	MemberField
+)
+
 func (field *Field) Name() string {
-	return field.name
+	return field.DeclarationName
 }
 
 func (field *Field) DeclarationOffset() input.Offset {
 	return field.declarationOffset
+}
+
+type Namespace struct {
+	PackageName string
+	Scope Scope
+}
+
+func (namespace *Namespace) Name() string {
+	return namespace.PackageName
+}
+
+func (namespace *Namespace) DeclarationOffset() input.Offset {
+	return 0
 }
 
 func AsMethodSymbol(symbol Symbol) (*Method, bool) {
