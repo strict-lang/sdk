@@ -17,6 +17,10 @@ const (
 
 const NamingCheckPassId = "NamingCheckPass"
 
+func init() {
+	registerPassInstance(NamingCheckPassId, &NamingCheckPass{})
+}
+
 // NamingCheckPass is traversing the tree and ensures that the names of all declared declaration
 // follows the naming rules. As opposed to many languages, Strict opposes strong rules on the
 // names of identifiers. Names may also influence the semantics.

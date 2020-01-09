@@ -6,3 +6,6 @@ package isolate
 type Isolate struct {
 	Properties *ThreadLocalPropertyTable
 }
+
+func RegisterConfigurator(configurator func(*Isolate)) {
+}

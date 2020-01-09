@@ -11,6 +11,10 @@ import (
 
 const ScopeResolutionPassId = "ScopeResolutionPass"
 
+func init() {
+	registerPassInstance(ScopeResolutionPassId, &ScopeResolutionPass{})
+}
+
 type ScopeResolutionPass struct {
 	diagnostics  *diagnostic.Bag
 	localIdCount int

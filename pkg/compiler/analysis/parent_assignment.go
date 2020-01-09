@@ -7,6 +7,10 @@ import (
 
 const ParentAssignPassId = "ParentAssignPass"
 
+func init() {
+	registerPassInstance(ParentAssignPassId, &ParentAssignPass{})
+}
+
 type ParentAssignPass struct {}
 
 func (assign *ParentAssignPass) Run(context *pass.Context) {

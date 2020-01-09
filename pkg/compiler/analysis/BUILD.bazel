@@ -6,6 +6,7 @@ go_library(
         "name_resolution.go",
         "name_validation.go",
         "parent_assignment.go",
+        "passes.go",
         "scope_resolution.go",
         "symbol_entering.go",
     ],

@@ -9,6 +9,10 @@ import (
 
 const NameResolutionPassId = "NameResolutionPass"
 
+func init() {
+	registerPassInstance(NameResolutionPassId, &NameResolutionPass{})
+}
+
 type NameResolutionPass struct {
 }
 

@@ -12,6 +12,10 @@ import (
 
 const SymbolEnterPassId = "SymbolEnterPass"
 
+func init() {
+	registerPassInstance(SymbolEnterPassId, &SymbolEnterPass{})
+}
+
 // SymbolEnterPass enters symbols into the scope that they are defined in.
 // It also ensures that there are no duplicates.
 type SymbolEnterPass struct {
