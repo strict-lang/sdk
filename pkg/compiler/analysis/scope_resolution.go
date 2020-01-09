@@ -1,4 +1,4 @@
-package code
+package analysis
 
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
@@ -18,7 +18,7 @@ func (resolution *ScopeResolution) createScopeResolutionVisitor() tree.Visitor {
 }
 
 type ScopeResolution struct {
-	diagnostics *diagnostic.Bag
+	diagnostics  *diagnostic.Bag
 	localIdCount int
 }
 
@@ -43,7 +43,7 @@ func (resolution *ScopeResolution) createBlockStatementScope(
 }
 
 func (resolution *ScopeResolution) createTranslationUnitScope(
-	unit *tree.TranslationUnit) { }
+	unit *tree.TranslationUnit) {}
 
 func (resolution *ScopeResolution) createClassDeclarationScope(
 	class *tree.ClassDeclaration) {
@@ -73,9 +73,25 @@ func (resolution *ScopeResolution) nextLocalIdSuffix() scope.Id {
 }
 
 func requireNearestScope(node tree.Node) scope.Scope {
-	surroundingScope, exists := tree.ResolveNearestScope(node)
-	if !exists {
-		log.Fatalf("surrounding scope does not exists: %v", node)
+	if surroundingScope, ok := tree.ResolveNearestScope(node); ok {
+		return surroundingScope
 	}
-	return surroundingScope
+	log.Fatalf("surrounding scope does not exist: %v", node)
+	return nil
+}
+
+func requireNearestMutableScope(node tree.Node) scope.MutableScope {
+	if surroundingScope, ok := tree.ResolveNearestMutableScope(node); ok {
+		return surroundingScope
+	}
+	log.Fatalf("surrounding mutable scope does not exist: %v", node)
+	return nil
+}
+
+func ensureScopeIsMutable(anyScope scope.Scope) scope.MutableScope {
+	if mutable, ok := anyScope.(scope.MutableScope); ok {
+		return mutable
+	}
+	log.Fatal("scope is not mutable")
+	return nil
 }

@@ -12,7 +12,7 @@ type ReferencePoint struct {
 }
 
 type Entry struct {
-	symbol   Symbol
+	Symbol   Symbol
 	position input.Offset
 	scopeId  Id
 }
@@ -97,4 +97,13 @@ func (scope *EmptyScope) Contains(point ReferencePoint) bool {
 
 func (scope *EmptyScope) Search(filter symbolFilter) EntrySet {
 	return EntrySet{}
+}
+
+func LookupClass(scope Scope, point ReferencePoint) (*Class, bool) {
+	if entries := scope.Lookup(point); !entries.IsEmpty() {
+		first := entries.First().Symbol
+		class, isClass := first.(*Class)
+		return class, isClass
+	}
+	return nil, false
 }

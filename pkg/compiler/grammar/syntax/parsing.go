@@ -18,7 +18,7 @@ var notParsingMethod = parsedMethod{name: `!none`}
 // checks that could be considered semantic.
 type Parsing struct {
 	tokenReader token.Stream
-	rootScope   *code.Scope
+	rootScope   *analysis.Scope
 	recorder    *diagnostic.Bag
 	block       *Block
 	unitName    string
@@ -38,7 +38,7 @@ type Parsing struct {
 // It helps the grammar to scanning code blocks and know where a block ends.
 type Block struct {
 	Indent token.Indent
-	Scope  *code.Scope
+	Scope  *analysis.Scope
 	Parent *Block
 }
 
@@ -89,7 +89,7 @@ func (parsing *Parsing) parseTranslationUnit() *tree.TranslationUnit {
 // creates a new scope for that block that is a child-scope of the parsers
 // last block. Only statements with the blocks indent may go into the block.
 func (parsing *Parsing) openBlock(indent token.Indent) {
-	var blockScope *code.Scope
+	var blockScope *analysis.Scope
 	if parsing.block == nil {
 		blockScope = parsing.rootScope.NewChild()
 	} else {

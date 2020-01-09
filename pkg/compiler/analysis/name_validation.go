@@ -1,4 +1,4 @@
-package code
+package analysis
 
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"

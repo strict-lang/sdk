@@ -1,4 +1,4 @@
-package code
+package analysis
 
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
@@ -39,8 +39,8 @@ var assignmentVisitor = &tree.DelegatingVisitor{
 		expression.Target.SetEnclosingNode(expression)
 	},
 	EmptyStatementVisitor: func(statement *tree.EmptyStatement) {},
-	WildcardNodeVisitor: func(node *tree.WildcardNode) {},
-	BreakStatementVisitor: func(statement *tree.BreakStatement) {	},
+	WildcardNodeVisitor:   func(node *tree.WildcardNode) {},
+	BreakStatementVisitor: func(statement *tree.BreakStatement) {},
 	YieldStatementVisitor: func(statement *tree.YieldStatement) {
 		statement.Value.SetEnclosingNode(statement)
 	},
