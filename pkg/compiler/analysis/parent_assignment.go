@@ -28,7 +28,7 @@ var assignmentVisitor = &tree.DelegatingVisitor{
 		name.Element.SetEnclosingNode(name)
 	},
 	TestStatementVisitor: func(statement *tree.TestStatement) {
-		statement.Child.SetEnclosingNode(statement)
+		statement.Body.SetEnclosingNode(statement)
 	},
 	StringLiteralVisitor: func(literal *tree.StringLiteral) {},
 	NumberLiteralVisitor: func(literal *tree.NumberLiteral) {},
@@ -44,7 +44,7 @@ var assignmentVisitor = &tree.DelegatingVisitor{
 	YieldStatementVisitor: func(statement *tree.YieldStatement) {
 		statement.Value.SetEnclosingNode(statement)
 	},
-	BlockStatementVisitor: func(statement *tree.BlockStatement) {
+	BlockStatementVisitor: func(statement *tree.StatementBlock) {
 		for _, child := range statement.Children {
 			child.SetEnclosingNode(statement)
 		}
@@ -137,7 +137,7 @@ var assignmentVisitor = &tree.DelegatingVisitor{
 		expression.Selection.SetEnclosingNode(expression)
 	},
 	ConstructorDeclarationVisitor: func(declaration *tree.ConstructorDeclaration) {
-		declaration.Child.SetEnclosingNode(declaration)
+		declaration.Body.SetEnclosingNode(declaration)
 		for _, parameter := range declaration.Parameters {
 			parameter.SetEnclosingNode(declaration)
 		}
