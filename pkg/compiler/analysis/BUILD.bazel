@@ -7,6 +7,7 @@ go_library(
         "name_validation.go",
         "parent_assignment.go",
         "scope_resolution.go",
+        "symbol_entering.go",
     ],
     importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/analysis",
     visibility = ["//visibility:public"],

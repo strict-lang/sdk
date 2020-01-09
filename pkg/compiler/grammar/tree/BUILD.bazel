@@ -56,6 +56,7 @@ go_library(
         "//pkg/compiler/grammar/token:go_default_library",
         "//pkg/compiler/input:go_default_library",
         "//pkg/compiler/scope:go_default_library",
+        "//pkg/compiler/typing:go_default_library",
     ],
 )
 
