@@ -4,6 +4,13 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type Id string
 
+func (id Id) NewChildId(child Id) Id {
+	if id == "" {
+		return child
+	}
+	return id + "." + child
+}
+
 type Scope interface {
 	Id() Id
 	Lookup(point ReferencePoint) EntrySet

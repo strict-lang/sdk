@@ -15,6 +15,7 @@ type Context struct {
 type Id string
 
 type Pass interface {
+	Id() Id
 	Run(context *Context)
 	Dependencies(isolate *isolate.Isolate) Set
 }
@@ -24,7 +25,7 @@ type Set []Pass
 var EmptySet = Set{}
 
 func ListInIsolate(isolate *isolate.Isolate, names ...string) Set {
-	passes := make(Set, len(names))
+	var passes []Pass
 	for _, name := range names {
 		if pass, ok := findPassInProperties(name, isolate.Properties); ok {
 			passes = append(passes, pass)

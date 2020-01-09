@@ -10,11 +10,10 @@ import (
 const NameResolutionPassId = "NameResolutionPass"
 
 func init() {
-	registerPassInstance(NameResolutionPassId, &NameResolutionPass{})
+	registerPassInstance(&NameResolutionPass{})
 }
 
-type NameResolutionPass struct {
-}
+type NameResolutionPass struct {}
 
 func (pass *NameResolutionPass) Run(context *passes.Context) {
 	visitor := pass.createVisitor()
@@ -22,7 +21,11 @@ func (pass *NameResolutionPass) Run(context *passes.Context) {
 }
 
 func (pass *NameResolutionPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ScopeResolutionPassId, SymbolEnterPassId)
+	return passes.ListInIsolate(isolate, ScopeCreationPassId, SymbolEnterPassId)
+}
+
+func (pass *NameResolutionPass) Id() passes.Id {
+	return NameResolutionPassId
 }
 
 func (pass *NameResolutionPass) createVisitor() tree.Visitor {

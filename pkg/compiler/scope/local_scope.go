@@ -41,7 +41,7 @@ func NewShadowingLocalScope(
 	parent Scope) MutableScope {
 
 	return &LocalScope{
-		id:              id,
+		id:              parent.Id().NewChildId(id),
 		parent:          parent,
 		region:          region,
 		entries:         map[string]Entry{},

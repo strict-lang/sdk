@@ -8,7 +8,7 @@ import (
 const ParentAssignPassId = "ParentAssignPass"
 
 func init() {
-	registerPassInstance(ParentAssignPassId, &ParentAssignPass{})
+	registerPassInstance(&ParentAssignPass{})
 }
 
 type ParentAssignPass struct {}
@@ -20,6 +20,10 @@ func (assign *ParentAssignPass) Run(context *pass.Context) {
 
 func (assign *ParentAssignPass) Dependencies(*isolate.Isolate) pass.Set {
 	return pass.EmptySet
+}
+
+func (assign *ParentAssignPass) Id() pass.Id {
+	return ParentAssignPassId
 }
 
 func createAssignmentVisitor() tree.Visitor {

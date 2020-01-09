@@ -18,7 +18,7 @@ const (
 const NamingCheckPassId = "NamingCheckPass"
 
 func init() {
-	registerPassInstance(NamingCheckPassId, &NamingCheckPass{})
+	registerPassInstance(&NamingCheckPass{})
 }
 
 // NamingCheckPass is traversing the tree and ensures that the names of all declared declaration
@@ -37,6 +37,10 @@ func (pass *NamingCheckPass) Run(context *passes.Context) {
 
 func (pass *NamingCheckPass) Dependencies(*isolate.Isolate) passes.Set {
 	return passes.EmptySet
+}
+
+func (pass *NamingCheckPass) Id() passes.Id {
+	return NamingCheckPassId
 }
 
 func (pass *NamingCheckPass) createVisitor() tree.Visitor {

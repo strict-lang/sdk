@@ -5,8 +5,9 @@ import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 )
 
-func registerPassInstance(id string, instance pass.Pass) {
+func registerPassInstance(instance pass.Pass) {
 	isolate.RegisterConfigurator(func(isolate *isolate.Isolate) {
-		isolate.Properties.Insert(id, instance)
+		name := string(instance.Id())
+		isolate.Properties.Insert(name, instance)
 	})
 }

@@ -45,23 +45,23 @@ func (execution *Execution) createDependencyOrder() (dependencyOrder, error) {
 	return dependencyOrder{entries: entries}, nil
 }
 
-func extractValues(table map[Pass] *graphEntry) (values []*graphEntry) {
+func extractValues(table map[Id] *graphEntry) (values []*graphEntry) {
 	for _, value := range table {
 		values = append(values, value)
 	}
 	return values
 }
 
-func (execution *Execution) populatePassEntryTable() map[Pass] *graphEntry {
-	entries := map[Pass] *graphEntry{}
+func (execution *Execution) populatePassEntryTable() map[Id] *graphEntry {
+	entries := map[Id] *graphEntry{}
 	execution.traversePassDependencies(func(pass Pass, dependencies []Pass) {
-		entries[pass] = &graphEntry{pass: pass}
+		entries[pass.Id()] = &graphEntry{pass: pass}
 	})
 	return entries
 }
 
 func (execution *Execution) translatePassesToGraphEntries(
-	entries map[Pass] *graphEntry) error {
+	entries map[Id] *graphEntry) error {
 
 	for _, entry := range entries {
 		if err := execution.translateDependencies(entry, entries); err != nil {
@@ -72,14 +72,14 @@ func (execution *Execution) translatePassesToGraphEntries(
 }
 
 func (execution *Execution) translateDependencies(
-	entry *graphEntry, entries map[Pass] *graphEntry) error {
+	entry *graphEntry, entries map[Id] *graphEntry) error {
 
 	isolate := execution.context.Isolate
 	for _, dependency := range entry.pass.Dependencies(isolate) {
-		if dependencyEntry, exists := entries[dependency]; exists {
+		if dependencyEntry, exists := entries[dependency.Id()]; exists {
 			entry.dependencies = append(entry.dependencies, dependencyEntry)
 		} else {
-			return fmt.Errorf("graph entry for %s doesn't exist", dependency)
+			return fmt.Errorf("graph entry for %v doesn't exist", dependency.Id())
 		}
 	}
 	return nil
@@ -97,7 +97,7 @@ func (execution *Execution) traversePassDependenciesRecursive(
 	isolate := execution.context.Isolate
 	visitor(pass, pass.Dependencies(isolate))
 	for _, dependency := range pass.Dependencies(isolate) {
-		visitor(dependency, dependency.Dependencies(isolate))
+		execution.traversePassDependenciesRecursive(dependency, visitor)
 	}
 }
 

@@ -13,7 +13,7 @@ import (
 const SymbolEnterPassId = "SymbolEnterPass"
 
 func init() {
-	registerPassInstance(SymbolEnterPassId, &SymbolEnterPass{})
+	registerPassInstance(&SymbolEnterPass{})
 }
 
 // SymbolEnterPass enters symbols into the scope that they are defined in.
@@ -31,7 +31,11 @@ func (pass *SymbolEnterPass) Run(context *passes.Context) {
 }
 
 func (pass *SymbolEnterPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ScopeResolutionPassId)
+	return passes.ListInIsolate(isolate, ScopeCreationPassId)
+}
+
+func (pass *SymbolEnterPass) Id() passes.Id {
+	return SymbolEnterPassId
 }
 
 func (pass *SymbolEnterPass) createVisitor() tree.Visitor {
@@ -170,7 +174,8 @@ func (pass *SymbolEnterPass) newMethodSymbol(
 
 	class := pass.requireClass(method.Type, surroundingScope)
 	return &scope.Method{
-		ReturnType: class,
+		DeclarationName: method.Name.Value,
+		ReturnType:      class,
 	}
 }
 

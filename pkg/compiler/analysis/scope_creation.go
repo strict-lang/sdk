@@ -9,27 +9,31 @@ import (
 	"log"
 )
 
-const ScopeResolutionPassId = "ScopeResolutionPass"
+const ScopeCreationPassId = "ScopeCreationPass"
 
 func init() {
-	registerPassInstance(ScopeResolutionPassId, &ScopeResolutionPass{})
+	registerPassInstance(&ScopeCreationPass{})
 }
 
-type ScopeResolutionPass struct {
+type ScopeCreationPass struct {
 	diagnostics  *diagnostic.Bag
 	localIdCount int
 }
 
-func (pass *ScopeResolutionPass) Run(context *passes.Context) {
+func (pass *ScopeCreationPass) Run(context *passes.Context) {
 	visitor := pass.createScopeResolutionVisitor()
 	context.Unit.AcceptRecursive(visitor)
 }
 
-func (pass *ScopeResolutionPass) Dependencies(isolate *isolate.Isolate) passes.Set {
+func (pass *ScopeCreationPass) Dependencies(isolate *isolate.Isolate) passes.Set {
 	return passes.ListInIsolate(isolate, ParentAssignPassId)
 }
 
-func (pass *ScopeResolutionPass) createScopeResolutionVisitor() tree.Visitor {
+func (pass *ScopeCreationPass) Id() passes.Id {
+	return ScopeCreationPassId
+}
+
+func (pass *ScopeCreationPass) createScopeResolutionVisitor() tree.Visitor {
 	visitor := tree.NewEmptyVisitor()
 	visitor.BlockStatementVisitor = pass.createBlockStatementScope
 	visitor.TranslationUnitVisitor = pass.createTranslationUnitScope
@@ -39,7 +43,7 @@ func (pass *ScopeResolutionPass) createScopeResolutionVisitor() tree.Visitor {
 	return visitor
 }
 
-func (*ScopeResolutionPass) createMethodDeclarationScope(method *tree.MethodDeclaration) {
+func (*ScopeCreationPass) createMethodDeclarationScope(method *tree.MethodDeclaration) {
 	surroundingScope := requireNearestScope(method)
 	localScope := scope.NewLocalScope(
 		scope.Id(method.Name.Value),
@@ -48,7 +52,7 @@ func (*ScopeResolutionPass) createMethodDeclarationScope(method *tree.MethodDecl
 	method.UpdateScope(localScope)
 }
 
-func (pass *ScopeResolutionPass) createBlockStatementScope(
+func (pass *ScopeCreationPass) createBlockStatementScope(
 	block *tree.StatementBlock) {
 
 	surroundingScope := requireNearestScope(block)
@@ -59,21 +63,26 @@ func (pass *ScopeResolutionPass) createBlockStatementScope(
 	block.UpdateScope(localScope)
 }
 
-func (pass *ScopeResolutionPass) createTranslationUnitScope(
-	unit *tree.TranslationUnit) {}
+func (pass *ScopeCreationPass) createTranslationUnitScope(
+	unit *tree.TranslationUnit) {
 
-func (pass *ScopeResolutionPass) createClassDeclarationScope(
+	root := scope.NewEmptyScope("")
+	id := scope.Id(unit.Name)
+	unit.UpdateScope(scope.NewOuterScope(id, root))
+	unit.Name = "Changed"
+}
+
+func (pass *ScopeCreationPass) createClassDeclarationScope(
 	class *tree.ClassDeclaration) {
 
 	surroundingScope := requireNearestScope(class)
-	localScope := scope.NewLocalScope(
+	localScope := scope.NewOuterScope(
 		pass.nextLocalIdSuffix(),
-		class.Region,
 		surroundingScope)
 	class.UpdateScope(localScope)
 }
 
-func (pass *ScopeResolutionPass) createConstructorDeclarationScope(
+func (pass *ScopeCreationPass) createConstructorDeclarationScope(
 	constructor *tree.ConstructorDeclaration) {
 
 	surroundingScope := requireNearestScope(constructor)
@@ -84,7 +93,7 @@ func (pass *ScopeResolutionPass) createConstructorDeclarationScope(
 	constructor.UpdateScope(localScope)
 }
 
-func (pass *ScopeResolutionPass) nextLocalIdSuffix() scope.Id {
+func (pass *ScopeCreationPass) nextLocalIdSuffix() scope.Id {
 	pass.localIdCount++
 	return scope.Id(pass.localIdCount)
 }
@@ -109,6 +118,6 @@ func ensureScopeIsMutable(anyScope scope.Scope) scope.MutableScope {
 	if mutable, ok := anyScope.(scope.MutableScope); ok {
 		return mutable
 	}
-	log.Fatal("scope is not mutable")
+	log.Fatalf("scope is not mutable: %v", anyScope)
 	return nil
 }

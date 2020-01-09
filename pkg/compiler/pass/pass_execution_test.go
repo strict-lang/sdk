@@ -1,9 +1,14 @@
 package pass
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	"testing"
 )
+
+type sharedSlice struct {
+	value []int
+}
 
 type testPass struct {
 	output *sharedSlice
@@ -19,8 +24,8 @@ func (pass *testPass) Dependencies(*isolate.Isolate) Set {
 	return pass.dependencies
 }
 
-type sharedSlice struct {
-	value []int
+func (pass *testPass) Id() Id {
+	return Id(fmt.Sprintf("test-%d",  pass.value))
 }
 
 func TestExecution_Run(testing *testing.T) {
