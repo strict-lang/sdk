@@ -28,5 +28,10 @@ func ParseFile(unitName string, file *os.File) ParseResult {
 		Source: &FileSource{File: file},
 		Name:   unitName,
 	}
-	return compilation.parse()
+	syntaxParseResult := compilation.parse()
+	return ParseResult{
+		Unit:        syntaxParseResult.TranslationUnit,
+		Diagnostics: syntaxParseResult.Diagnostics,
+		Error:       syntaxParseResult.Error,
+	}
 }

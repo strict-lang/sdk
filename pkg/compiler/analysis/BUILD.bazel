@@ -9,6 +9,7 @@ go_library(
         "passes.go",
         "scope_creation.go",
         "symbol_entering.go",
+        "type_resolution.go",
     ],
     importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/analysis",
     visibility = ["//visibility:public"],
@@ -28,8 +29,7 @@ go_test(
     embed = [":go_default_library"],
     deps = [
         "//pkg/compiler/diagnostic:go_default_library",
-        "//pkg/compiler/grammar/token:go_default_library",
-        "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/grammar/syntax:go_default_library",
         "//pkg/compiler/isolate:go_default_library",
         "//pkg/compiler/pass:go_default_library",
     ],
