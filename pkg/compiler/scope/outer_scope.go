@@ -7,8 +7,13 @@ type OuterScope struct {
 }
 
 func NewOuterScope(id Id, parent Scope) MutableScope {
+	childId := parent.Id().NewChildId(id)
+	return NewOuterScopeWithRootId(childId, parent)
+}
+
+func NewOuterScopeWithRootId(id Id, parent Scope) MutableScope {
 	return &OuterScope{
-		id:      parent.Id().NewChildId(id),
+		id:      id,
 		parent:  parent,
 		entries: map[string] Entry{},
 	}

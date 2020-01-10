@@ -7,7 +7,6 @@ import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/sourcefile"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/testfile"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
@@ -48,30 +47,15 @@ func (compilation *Compilation) Compile() Result {
 		}
 	}
 	return Result{
-		GeneratedFiles: compilation.generateOutput(parseResult.Unit),
+		GeneratedFiles: compilation.generateOutput(parseResult.TranslationUnit),
 		Diagnostics:    parseResult.Diagnostics,
 		Error:          nil,
-		UnitName:       parseResult.Unit.Name,
+		UnitName:       parseResult.TranslationUnit.Name,
 	}
 }
 
-func (compilation *Compilation) parse() ParseResult {
-	diagnosticBag := diagnostic.NewBag()
-	sourceReader := compilation.Source.newSourceReader()
-	tokenReader := lexical.NewScanning(sourceReader)
-	parserFactory := syntax.NewDefaultFactory().
-		WithTokenStream(tokenReader).
-		WithDiagnosticBag(diagnosticBag).
-		WithUnitName(compilation.Name)
-
-	unit, err := parserFactory.NewParser().Parse()
-	offsetConverter := tokenReader.NewLineMap().PositionAtOffset
-	diagnostics := diagnosticBag.CreateDiagnostics(offsetConverter)
-	return ParseResult{
-		Unit:        unit,
-		Diagnostics: diagnostics,
-		Error:       err,
-	}
+func (compilation *Compilation) parse() syntax.Result {
+	return syntax.Parse(compilation.Name, compilation.Source.newSourceReader())
 }
 
 func (compilation *Compilation) generateOutput(unit *tree.TranslationUnit) []Generated {

@@ -52,9 +52,7 @@ func (*ScopeCreationPass) createMethodDeclarationScope(method *tree.MethodDeclar
 	method.UpdateScope(localScope)
 }
 
-func (pass *ScopeCreationPass) createBlockStatementScope(
-	block *tree.StatementBlock) {
-
+func (pass *ScopeCreationPass) createBlockStatementScope(block *tree.StatementBlock) {
 	surroundingScope := requireNearestScope(block)
 	localScope := scope.NewLocalScope(
 		pass.nextLocalIdSuffix(),
@@ -63,13 +61,11 @@ func (pass *ScopeCreationPass) createBlockStatementScope(
 	block.UpdateScope(localScope)
 }
 
-func (pass *ScopeCreationPass) createTranslationUnitScope(
-	unit *tree.TranslationUnit) {
-
-	root := scope.NewEmptyScope("")
+func (pass *ScopeCreationPass) createTranslationUnitScope(unit *tree.TranslationUnit) {
 	id := scope.Id(unit.Name)
-	unit.UpdateScope(scope.NewOuterScope(id, root))
-	unit.Name = "Changed"
+	builtinScope := scope.NewBuiltinScope()
+	unitScope := scope.NewOuterScopeWithRootId(id, builtinScope)
+	unit.UpdateScope(unitScope)
 }
 
 func (pass *ScopeCreationPass) createClassDeclarationScope(

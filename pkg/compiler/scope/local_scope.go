@@ -104,9 +104,12 @@ func (scope *LocalScope) LookupOrInsert(
 // accessed from the point's position (given that the position is not ignored).
 func (scope *LocalScope) Lookup(point ReferencePoint) EntrySet {
 	parentEntries := scope.parent.Lookup(point)
-	if len(parentEntries) != 0 && scope.canShadow() {
-		ownEntries := scope.lookupOwn(point)
-		return append(parentEntries, ownEntries...)
+	if len(parentEntries) != 0 {
+		if scope.canShadow() {
+			ownEntries := scope.lookupOwn(point)
+			return append(parentEntries, ownEntries...)
+		}
+		return parentEntries
 	}
 	return scope.lookupOwn(point)
 }

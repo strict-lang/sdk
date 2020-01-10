@@ -115,6 +115,7 @@ func (pass *SymbolEnterPass) newClassSymbol(
 func (pass *SymbolEnterPass) visitMethodDeclaration(
 	declaration *tree.MethodDeclaration) {
 
+	declaration.Name.MarkAsPartOfDeclaration()
 	parameterSymbols := pass.enterMethodParameters(declaration)
 	if symbol, ok := pass.enterMethodToSurroundingScope(declaration); ok {
 		symbol.Parameters = parameterSymbols
@@ -136,6 +137,7 @@ func (pass *SymbolEnterPass) enterMethodParameter(
 	parameter *tree.Parameter,
 	methodScope scope.MutableScope) *scope.Field {
 
+	parameter.Name.MarkAsPartOfDeclaration()
 	symbol := pass.newFieldSymbolFromParameter(parameter, methodScope)
 	if pass.ensureNameDoesNotExist(parameter.Name.Value, parameter, methodScope) {
 		methodScope.Insert(symbol)
@@ -222,6 +224,7 @@ func (pass *SymbolEnterPass) createClassReplacement(
 func (pass *SymbolEnterPass) visitFieldDeclaration(
 	declaration *tree.FieldDeclaration) {
 
+	declaration.Name.MarkAsPartOfDeclaration()
 	if isVariable(declaration) {
 		pass.enterVariable(declaration)
 	} else {
