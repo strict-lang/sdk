@@ -1,6 +1,7 @@
 package analysis
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
@@ -13,7 +14,7 @@ func init() {
 	registerPassInstance(&NameResolutionPass{})
 }
 
-type NameResolutionPass struct {}
+type NameResolutionPass struct{}
 
 func (pass *NameResolutionPass) Run(context *passes.Context) {
 	visitor := pass.createVisitor()
@@ -35,24 +36,20 @@ func (pass *NameResolutionPass) createVisitor() tree.Visitor {
 	return visitor
 }
 
-func (pass *NameResolutionPass) visitIdentifier(
-	identifier *tree.Identifier) {
-
+func (pass *NameResolutionPass) visitIdentifier(identifier *tree.Identifier) {
 	if !identifier.IsBound() && !identifier.IsPartOfDeclaration() {
 		pass.bindIdentifier(identifier)
 	}
 }
 
-func (pass *NameResolutionPass) bindIdentifier(
-	identifier *tree.Identifier) {
-
+func (pass *NameResolutionPass) bindIdentifier(identifier *tree.Identifier) {
 	surroundingScope := requireNearestScope(identifier)
 	point := identifier.ReferencePoint()
 	if entries := surroundingScope.Lookup(point); !entries.IsEmpty() {
 		symbol := entries.First().Symbol
 		identifier.Bind(symbol)
 	} else {
-
+		fmt.Println("Unknown Symbol")
 	}
 }
 
@@ -72,7 +69,7 @@ func (pass *NameResolutionPass) visitFieldSelect(
 
 type chainResolution struct {
 	currentScope scope.Scope
-	currentNode tree.Node
+	currentNode  tree.Node
 }
 
 func (resolution *chainResolution) bindAll() {

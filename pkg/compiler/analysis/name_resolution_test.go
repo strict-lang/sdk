@@ -1,52 +1,29 @@
 package analysis
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"testing"
 )
 
-var testCode = &tree.TranslationUnit{
-	Name:    "Test",
-	Imports: []*tree.ImportStatement{},
-	Class:   &tree.ClassDeclaration{
-		Name:       "Test",
-		Children:   []tree.Node{
-			&tree.MethodDeclaration{
-				Name:       &tree.Identifier{Value: "add"},
-				Type:       &tree.ConcreteTypeName{Name: "int"},
-				Parameters: tree.ParameterList{
-					&tree.Parameter{
-						Type:   &tree.ConcreteTypeName{Name: "int"},
-						Name:   &tree.Identifier{Value: "left"},
-					},
-					&tree.Parameter{
-						Type:   &tree.ConcreteTypeName{Name: "int"},
-						Name:   &tree.Identifier{Value: "right"},
-					},
-				},
-				Body:       &tree.StatementBlock{
-					Children: []tree.Statement{
-						&tree.ReturnStatement{
-							Value:  &tree.BinaryExpression{
-								LeftOperand:  &tree.Identifier{Value:  "left"},
-								RightOperand: &tree.Identifier{Value: "right"},
-								Operator:     token.AddOperator,
-							},
-						},
-					},
-				},
-			},
-		},
-	},
-}
+var testUnit = syntax.ParseString("Test",
+	`
+method Number add(Number left, Number right)
+  return left + right
+
+method Number addPositive(Number left, Number right)
+  if left < 0 or right < 0 do
+    return 0
+  return add(left, right)
+
+`).TranslationUnit
 
 func TestNameResolutionPass(testing *testing.T) {
 	context := &passes.Context{
-		Unit:       testCode,
+		Unit:       testUnit,
 		Diagnostic: diagnostic.NewBag(),
 		Isolate:    isolate.SingleThreaded(),
 	}
@@ -54,4 +31,5 @@ func TestNameResolutionPass(testing *testing.T) {
 	if err := execution.Run(); err != nil {
 		testing.Error(err)
 	}
+	fmt.Printf("%#v\n",context.Unit)
 }

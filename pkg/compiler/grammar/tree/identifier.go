@@ -23,6 +23,10 @@ func (identifier *Identifier) IsPartOfDeclaration() bool {
 	return identifier.inDeclaration
 }
 
+func (identifier *Identifier) MarkAsPartOfDeclaration() {
+	identifier.inDeclaration = true
+}
+
 func (identifier *Identifier) Bind(target scope.Symbol) {
 	identifier.binding = target
 }
