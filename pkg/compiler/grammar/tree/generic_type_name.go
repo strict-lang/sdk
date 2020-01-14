@@ -27,7 +27,7 @@ func (name *GenericTypeName) FullName() string {
 	return fmt.Sprintf("%s<%s>", name.Name, name.Generic.FullName())
 }
 
-func (name *GenericTypeName) NonGenericName() string {
+func (name *GenericTypeName) BaseName() string {
 	return name.Name
 }
 

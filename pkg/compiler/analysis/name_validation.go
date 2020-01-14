@@ -94,7 +94,7 @@ func (pass *NamingCheckPass) checkForEachLoopFieldNaming(loop *tree.ForEachLoopS
 // checkTranslationUnitNaming ensures that the translation units name is a valid name for
 // a Strict type, it has to be lowerCamelCase.
 func (pass *NamingCheckPass) checkTranslationUnitNaming(unit *tree.TranslationUnit) {
-	if !isLowerCamelCase(unit.ToTypeName().NonGenericName()) {
+	if !isLowerCamelCase(unit.ToTypeName().BaseName()) {
 		pass.reportInvalidNode(unit, MessageInvalidUnitName)
 	}
 }
@@ -126,10 +126,10 @@ func (pass *NamingCheckPass) checkMethodNamingAndImplicitParameters(method *tree
 func (pass *NamingCheckPass) ensureExplicitParameterNamingOnDuplicateTypes(parameters tree.ParameterList) {
 	parameterTypeNames := map[string]bool{}
 	for _, parameter := range parameters {
-		if parameterTypeNames[parameter.Type.NonGenericName()] {
+		if parameterTypeNames[parameter.Type.BaseName()] {
 			pass.reportInvalidNode(parameter, MessageImplicitParameterName)
 		}
-		parameterTypeNames[parameter.Type.NonGenericName()] = true
+		parameterTypeNames[parameter.Type.BaseName()] = true
 	}
 }
 

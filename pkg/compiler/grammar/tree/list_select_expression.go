@@ -1,6 +1,9 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+)
 
 type ListSelectExpression struct {
 	Index        Node
@@ -18,12 +21,12 @@ func (expression *ListSelectExpression) EnclosingNode() (Node, bool) {
   return expression.Parent, expression.Parent != nil
 }
 
-func (expression *ListSelectExpression) Resolve(descriptor TypeDescriptor) {
-	expression.resolvedType.setDescriptor(descriptor)
+func (expression *ListSelectExpression) ResolveType(class *scope.Class) {
+  expression.resolvedType.resolve(class)
 }
 
-func (expression *ListSelectExpression) GetResolvedType() (TypeDescriptor, bool) {
-	return expression.resolvedType.getDescriptor()
+func (expression *ListSelectExpression) ResolvedType() (*scope.Class, bool) {
+  return expression.resolvedType.class()
 }
 
 func (expression *ListSelectExpression) Accept(visitor Visitor) {

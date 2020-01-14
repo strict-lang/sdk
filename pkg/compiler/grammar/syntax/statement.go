@@ -34,7 +34,7 @@ func (parsing *Parsing) parseElseClauseIfPresent(
 }
 
 func (parsing *Parsing) parseConditionalStatementWithAlternative(
-	condition tree.Node,
+	condition tree.Expression,
 	consequence *tree.StatementBlock) *tree.ConditionalStatement {
 
 	parsing.advance()
@@ -263,6 +263,15 @@ func init() {
 		token.MethodKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseMethodDeclaration()
 		},
+		token.LetKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseLetBinding()
+		},
+		token.ImplementKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseImplementStatement()
+		},
+		token.GenericKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseGenericStatement()
+		},
 	}
 }
 
@@ -294,17 +303,59 @@ func (parsing *Parsing) maybeParseConstructorDeclaration() (keywordStatementPars
 	}, true
 }
 
-func (parsing *Parsing) parseConstructorDeclaration() tree.Node {
-	parsing.beginStructure(tree.ConstructorDeclarationNodeKind)
-	parsing.skipKeyword(token.CreateKeyword)
-	parameters := parsing.parseParameterList()
+func (parsing *Parsing) parseLetBinding() tree.Node {
+	parsing.beginStructure(tree.LetBindingNodeKind)
+	parsing.expectKeyword(token.LetKeyword)
+	name := parsing.parseIdentifier()
+	parsing.expectOperator(token.AssignOperator)
+	value := parsing.parseExpression()
 	parsing.skipEndOfStatement()
-	body := parsing.parseStatementBlock()
-	return &tree.ConstructorDeclaration{
-		Body:       body,
-		Parameters: parameters,
-		Region:     parsing.completeStructure(tree.ConstructorDeclarationNodeKind),
+	return &tree.LetBinding{
+		Region:     parsing.completeStructure(tree.LetBindingNodeKind),
+		Name:       name,
+		Expression: value,
 	}
+}
+
+func (parsing *Parsing) parseImplementStatement() tree.Node {
+	parsing.beginStructure(tree.ImplementStatementNodeKind)
+	parsing.expectKeyword(token.ImplementKeyword)
+	trait := parsing.parseTypeName()
+	parsing.skipEndOfStatement()
+	return &tree.ImplementStatement{
+		Region: parsing.completeStructure(tree.ImplementStatementNodeKind),
+		Trait:  trait,
+	}
+}
+
+func (parsing *Parsing) parseGenericStatement() tree.Node {
+	parsing.beginStructure(tree.GenericStatementNodeKind)
+	parsing.expectKeyword(token.GenericKeyword)
+	name := parsing.parseIdentifier()
+	constraints := parsing.parseGenericConstraints()
+	parsing.skipEndOfStatement()
+	return &tree.GenericStatement{
+		Region: parsing.completeStructure(tree.GenericStatementNodeKind),
+		Name: name,
+		Constraints: constraints,
+	}
+}
+
+func (parsing *Parsing) parseGenericConstraints() []tree.TypeName {
+	if !parsing.isLookingAtKeyword(token.IsKeyword) {
+		return []tree.TypeName{}
+	}
+	parsing.skipKeyword(token.IsKeyword)
+	return parsing.parseTypeNameList()
+}
+
+func (parsing *Parsing) parseTypeNameList() (names []tree.TypeName) {
+	names = append(names, parsing.parseTypeName())
+	for parsing.isLookingAtOperator(token.CommaOperator) {
+		parsing.skipOperator(token.CommaOperator)
+		names = append(names, parsing.parseTypeName())
+	}
+	return names
 }
 
 // parseKeywordStatement parses a statement that starts with a keyword.
@@ -321,7 +372,18 @@ func (parsing *Parsing) parseKeywordStatement(keyword token.Keyword) tree.Node {
 	})
 	return nil
 }
-
+func (parsing *Parsing) parseConstructorDeclaration() tree.Node {
+	parsing.beginStructure(tree.ConstructorDeclarationNodeKind)
+	parsing.skipKeyword(token.CreateKeyword)
+	parameters := parsing.parseParameterList()
+	parsing.skipEndOfStatement()
+	body := parsing.parseStatementBlock()
+	return &tree.ConstructorDeclaration{
+		Body:       body,
+		Parameters: parameters,
+		Region:     parsing.completeStructure(tree.ConstructorDeclarationNodeKind),
+	}
+}
 func (parsing *Parsing) completeAssignStatement(
 	operator token.Operator, leftHandSide tree.Node) tree.Node {
 
@@ -368,14 +430,14 @@ func (parsing *Parsing) parseInstructionStatement() tree.Node {
 }
 
 func (parsing *Parsing) completeInstructionOnNode(
-	leftHandSide tree.Expression) tree.Expression {
+	leftHandSide tree.Expression) tree.Node {
 
 	switch operator := token.OperatorValue(parsing.token()); {
 	case operator.IsAssign():
 		parsing.advance()
 		return parsing.completeAssignStatement(operator, leftHandSide)
 	case operator == token.IncrementOperator:
-	case operator == token.DecrementOperator:
+	case operator == token.DecrementOperator: // TODO: Parse `exists`
 		return parsing.completePostfixExpressionOnNode(leftHandSide)
 	}
 	parsing.advance()

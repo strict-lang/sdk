@@ -2,6 +2,7 @@ package tree
 
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 	"strconv"
 )
 
@@ -24,12 +25,12 @@ func (literal *StringLiteral) EnclosingNode() (Node, bool) {
   return literal.Parent, literal.Parent != nil
 }
 
-func (literal *StringLiteral) Resolve(descriptor TypeDescriptor) {
-	literal.resolvedType.setDescriptor(descriptor)
+func (literal *StringLiteral) ResolveType(class *scope.Class) {
+  literal.resolvedType.resolve(class)
 }
 
-func (literal *StringLiteral) GetResolvedType() (TypeDescriptor, bool) {
-	return literal.resolvedType.getDescriptor()
+func (literal *StringLiteral) ResolvedType() (*scope.Class, bool) {
+  return literal.resolvedType.class()
 }
 
 func (literal *StringLiteral) Accept(visitor Visitor) {

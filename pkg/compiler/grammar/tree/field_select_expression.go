@@ -2,6 +2,7 @@ package tree
 
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
 type FieldSelectExpression struct {
@@ -9,6 +10,7 @@ type FieldSelectExpression struct {
 	Selection Expression
 	Region    input.Region
 	Parent Node
+	resolvedType resolvedType
 }
 
 func (expression *FieldSelectExpression) SetEnclosingNode(target Node) {
@@ -17,6 +19,14 @@ func (expression *FieldSelectExpression) SetEnclosingNode(target Node) {
 
 func (expression *FieldSelectExpression) EnclosingNode() (Node, bool) {
   return expression.Parent, expression.Parent != nil
+}
+
+func (expression *FieldSelectExpression) ResolveType(class *scope.Class) {
+  expression.resolvedType.resolve(class)
+}
+
+func (expression *FieldSelectExpression) ResolvedType() (*scope.Class, bool) {
+  return expression.resolvedType.class()
 }
 
 func (expression *FieldSelectExpression) Accept(visitor Visitor) {

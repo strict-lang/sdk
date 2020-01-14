@@ -2,6 +2,7 @@ package tree
 
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
 type CallExpression struct {
@@ -30,12 +31,12 @@ func (call *CallExpression) EnclosingNode() (Node, bool) {
   return call.Parent, call.Parent != nil
 }
 
-func (call *CallExpression) Resolve(descriptor TypeDescriptor) {
-	call.resolvedType.setDescriptor(descriptor)
+func (call *CallExpression) ResolveType(class *scope.Class) {
+  call.resolvedType.resolve(class)
 }
 
-func (call *CallExpression) GetResolvedType() (TypeDescriptor, bool) {
-	return call.resolvedType.getDescriptor()
+func (call *CallExpression) ResolvedType() (*scope.Class, bool) {
+  return call.resolvedType.class()
 }
 
 func (call *CallExpression) Accept(visitor Visitor) {

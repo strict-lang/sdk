@@ -16,7 +16,7 @@ func (concrete *ConcreteTypeName) EnclosingNode() (Node, bool) {
   return concrete.Parent, concrete.Parent != nil
 }
 
-func (concrete *ConcreteTypeName) NonGenericName() string {
+func (concrete *ConcreteTypeName) BaseName() string {
 	return concrete.Name
 }
 
