@@ -50,3 +50,7 @@ func (create *CreateExpression) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (create *CreateExpression) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteCreateExpression(create)
+}

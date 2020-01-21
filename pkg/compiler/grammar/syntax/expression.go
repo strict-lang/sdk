@@ -211,7 +211,9 @@ func (parsing *Parsing) parseOperationOnOperand(
 	return nil, true
 }
 
-func (parsing *Parsing) parseListSelectExpression(target tree.Node) *tree.ListSelectExpression {
+func (parsing *Parsing) parseListSelectExpression(
+	target tree.Expression) *tree.ListSelectExpression {
+
 	parsing.beginStructure(tree.ListSelectExpressionNodeKind)
 	parsing.skipOperator(token.LeftBracketOperator)
 	index := parsing.parseExpression()
@@ -253,9 +255,12 @@ func (parsing *Parsing) parseFieldSelectExpression(target tree.Expression) *tree
 	}
 }
 
+// TODO: Get rid of special syntax for constructor calls.
 func (parsing *Parsing) parseConstructorCall() (*tree.CallExpression, tree.TypeName) {
 	typeName := parsing.parseTypeName()
-	methodCall := parsing.parseCallOnNode(typeName)
+	methodCall := parsing.parseCallOnNode(&tree.Identifier{
+		Value: typeName.BaseName(),
+	})
 	return methodCall, typeName
 }
 
@@ -271,7 +276,7 @@ func (parsing *Parsing) parseCreateExpression() tree.Expression{
 }
 
 // ParseMethodCall parses the call to a method.
-func (parsing *Parsing) parseCallOnNode(method tree.Node) *tree.CallExpression {
+func (parsing *Parsing) parseCallOnNode(method tree.Expression) *tree.CallExpression {
 	parsing.beginStructure(tree.CallExpressionNodeKind)
 	parsing.skipOperator(token.LeftParenOperator)
 	arguments := parsing.parseArgumentList()

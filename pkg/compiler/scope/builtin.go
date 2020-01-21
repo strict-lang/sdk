@@ -6,12 +6,24 @@ const builtinScopeId = Id("builtin")
 
 var emptyScope = NewEmptyScope("")
 
+var Builtins = struct {
+	Number *Class
+	Float *Class
+	Boolean *Class
+	String *Class
+}{
+	Number: createNumberType(),
+	Float: createFloatType(),
+	Boolean: createBooleanType(),
+	String: createStringType(),
+}
+
 var builtinScope = func() Scope {
 	scope := NewOuterScope(builtinScopeId, emptyScope)
-	scope.Insert(createNumberType())
-	scope.Insert(createFloatType())
-	scope.Insert(createBooleanType())
-	scope.Insert(createStringType())
+	scope.Insert(Builtins.Number)
+	scope.Insert(Builtins.Float)
+	scope.Insert(Builtins.Boolean)
+	scope.Insert(Builtins.String)
 	return scope
 }()
 

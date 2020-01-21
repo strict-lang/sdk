@@ -56,3 +56,16 @@ func (expression *FieldSelectExpression) Matches(node Node) bool {
 func (expression *FieldSelectExpression) findLastIdentifier() (*Identifier, bool) {
 	return nil, false
 }
+
+func (expression *FieldSelectExpression) TransformExpressions(
+	transformer ExpressionTransformer) {
+
+	expression.Target = expression.Target.Transform(transformer)
+	expression.Selection = expression.Selection.Transform(transformer)
+}
+
+func (expression *FieldSelectExpression) Transform(
+	transformer ExpressionTransformer) Expression {
+
+	return transformer.RewriteFieldSelectExpression(expression)
+}

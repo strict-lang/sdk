@@ -66,3 +66,9 @@ func (conditional *ConditionalStatement) matchesAlternative(
 	}
 	return conditional.Alternative.Matches(target.Alternative)
 }
+
+func (conditional *ConditionalStatement) TransformExpressions(
+	transformer ExpressionTransformer) {
+
+	conditional.Condition = conditional.Condition.Transform(transformer)
+}

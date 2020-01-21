@@ -4,7 +4,6 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type BreakStatement struct {
 	Region     input.Region
-	Expression Node
 	Parent     Node
 }
 

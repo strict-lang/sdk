@@ -73,3 +73,7 @@ func (identifier *Identifier) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (identifier *Identifier) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteIdentifier(identifier)
+}

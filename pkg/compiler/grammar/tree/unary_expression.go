@@ -51,3 +51,11 @@ func (unary *UnaryExpression) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (unary *UnaryExpression) TransformExpressions(transformer ExpressionTransformer) {
+	unary.Operand = unary.Operand.Transform(transformer)
+}
+
+func (unary *UnaryExpression) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteUnaryExpression(unary)
+}

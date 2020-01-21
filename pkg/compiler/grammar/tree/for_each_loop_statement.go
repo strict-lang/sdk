@@ -44,3 +44,7 @@ func (loop *ForEachLoopStatement) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (loop *ForEachLoopStatement) TransformExpressions(transformer ExpressionTransformer) {
+	loop.Sequence = loop.Sequence.Transform(transformer)
+}

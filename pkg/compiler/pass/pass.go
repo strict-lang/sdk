@@ -42,5 +42,11 @@ func findPassInProperties(
 		return pass, isPass
 	}
 	return nil, false
+}
 
+func Register(pass Pass) {
+	isolate.RegisterConfigurator(func(isolate *isolate.Isolate) {
+		name := string(pass.Id())
+		isolate.Properties.Insert(name, pass)
+	})
 }

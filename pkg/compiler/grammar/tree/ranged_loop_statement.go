@@ -47,3 +47,8 @@ func (loop *RangedLoopStatement) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (loop *RangedLoopStatement) TransformExpressions(transformer ExpressionTransformer) {
+	loop.Begin = loop.Begin.Transform(transformer)
+	loop.End = loop.End.Transform(transformer)
+}

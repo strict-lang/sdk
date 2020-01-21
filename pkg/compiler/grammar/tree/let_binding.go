@@ -55,3 +55,11 @@ func (binding *LetBinding) matchesBinding(target *LetBinding) bool {
 	return binding.Name.Matches(target.Name)  &&
 		binding.Expression.Matches(target.Expression)
 }
+
+func (binding *LetBinding) TransformExpressions(transformer ExpressionTransformer) {
+	binding.Expression = binding.Expression.Transform(transformer)
+}
+
+func (binding *LetBinding) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteLetBinding(binding)
+}

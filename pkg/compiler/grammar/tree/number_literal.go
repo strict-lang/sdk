@@ -54,3 +54,7 @@ func (literal *NumberLiteral) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (literal *NumberLiteral) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteNumberLiteral(literal)
+}

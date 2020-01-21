@@ -39,3 +39,7 @@ func (yield *YieldStatement) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (yield *YieldStatement) TransformExpressions(transformer ExpressionTransformer) {
+	yield.Value = yield.Value.Transform(transformer)
+}

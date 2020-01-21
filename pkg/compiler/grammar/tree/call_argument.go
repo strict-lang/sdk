@@ -1,12 +1,15 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+)
 
 type CallArgumentList []*CallArgument
 
 type CallArgument struct {
 	Label  string
-	Value  Node
+	Value  Expression
 	Region input.Region
 	Parent Node
 }
@@ -42,4 +45,20 @@ func (argument *CallArgument) Matches(node Node) bool {
 			argument.Value.Matches(target.Value)
 	}
 	return false
+}
+
+func (argument *CallArgument) ResolvedType() (*scope.Class, bool) {
+	return argument.Value.ResolvedType()
+}
+
+func (argument *CallArgument) ResolveType(class *scope.Class) {
+	argument.Value.ResolveType(class)
+}
+
+func (argument *CallArgument) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteCallArgument(argument)
+}
+
+func (argument *CallArgument) TransformExpressions(transformer ExpressionTransformer) {
+	argument.Value = argument.Value.Transform(transformer)
 }

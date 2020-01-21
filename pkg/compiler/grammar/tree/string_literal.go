@@ -68,3 +68,7 @@ func (literal *StringLiteral) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (literal *StringLiteral) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteStringLiteral(literal)
+}

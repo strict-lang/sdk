@@ -7,7 +7,7 @@ import (
 
 type CallExpression struct {
 	// Target is the procedure that is called.
-	Target Node
+	Target Expression
 	// An array of expression nodes that are the arguments passed to
 	// the method. The arguments types are checked during type checking.
 	Arguments    CallArgumentList
@@ -109,4 +109,12 @@ func (call *CallExpression) createNameResolveVisitor() Visitor {
 			call.name.value = identifier
 		},
 	}
+}
+
+func (call* CallExpression) TransformExpressions(transformer ExpressionTransformer) {
+	call.Target = call.Target.Transform(transformer)
+}
+
+func (call *CallExpression) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteCallExpression(call)
 }

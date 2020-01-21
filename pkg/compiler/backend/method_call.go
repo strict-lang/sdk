@@ -96,7 +96,10 @@ func (generation *Generation) generateLabeledConstructorCallLambdaBody(
 			TypeName: typeName,
 		},
 		Value: &tree.CallExpression{
-			Target:    typeName,
+			Target:    &tree.Identifier{
+				Value: typeName.BaseName(),
+				Region: typeName.Locate(),
+			},
 			Arguments: others,
 		},
 		Operator: token.AssignOperator,

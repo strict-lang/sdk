@@ -3,7 +3,7 @@ package tree
 import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type ExpressionStatement struct {
-	Expression Node
+	Expression Expression
 	Parent Node
 }
 
@@ -33,4 +33,8 @@ func (expression *ExpressionStatement) Matches(node Node) bool {
 		return expression.Expression.Matches(target.Expression)
 	}
 	return false
+}
+
+func (expression *ExpressionStatement) TransformExpressions(transformer ExpressionTransformer) {
+	expression.Expression = expression.Expression.Transform(transformer)
 }

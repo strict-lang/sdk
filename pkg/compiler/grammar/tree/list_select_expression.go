@@ -6,8 +6,8 @@ import (
 )
 
 type ListSelectExpression struct {
-	Index        Node
-	Target       Node
+	Index        Expression
+	Target       Expression
 	Region       input.Region
 	resolvedType resolvedType
 	Parent Node
@@ -49,4 +49,17 @@ func (expression *ListSelectExpression) Matches(node Node) bool {
 			expression.Target.Matches(target.Target)
 	}
 	return false
+}
+
+func (expression *ListSelectExpression) TransformExpressions(
+	transformer ExpressionTransformer) {
+
+	expression.Index = expression.Index.Transform(transformer)
+	expression.Target = expression.Target.Transform(transformer)
+}
+
+func (expression *ListSelectExpression) Transform(
+	transformer ExpressionTransformer) Expression {
+
+	return transformer.RewriteListSelectExpression(expression)
 }

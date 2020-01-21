@@ -73,7 +73,9 @@ func createInitStatement(field *tree.FieldDeclaration) tree.Node {
 	return &tree.AssignStatement{
 		Target: field.Name,
 		Value: &tree.CallExpression{
-			Target:    field.TypeName,
+			Target:    &tree.Identifier{
+				Value: field.TypeName.BaseName(),
+			},
 			Arguments: []*tree.CallArgument{},
 		},
 		Operator: 0,

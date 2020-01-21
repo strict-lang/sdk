@@ -62,3 +62,15 @@ func (expression *PostfixExpression) Matches(node Node) bool {
 	}
 	return false
 }
+
+func (expression *PostfixExpression) TransformExpressions(
+	transformer ExpressionTransformer) {
+
+	expression.Operand = expression.Operand.Transform(transformer)
+}
+
+func (expression *PostfixExpression) Transform(
+	transformer ExpressionTransformer) Expression {
+
+	return transformer.RewritePostfixExpression(expression)
+}
