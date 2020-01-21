@@ -43,6 +43,7 @@ const (
 	LeftBracketOperator
 	RightBracketOperator
 	SemicolonOperator
+	QuestionMarkOperator
 	CommaOperator
 	DotOperator
 )
@@ -52,6 +53,7 @@ const InvalidOperatorName = "invalid"
 var operatorNames = map[Operator]string{
 	InvalidOperator:       InvalidOperatorName,
 	AddOperator:           "+",
+	QuestionMarkOperator:  "?",
 	SubOperator:           "-",
 	MulOperator:           "*",
 	DivOperator:           "/",

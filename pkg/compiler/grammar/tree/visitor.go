@@ -10,6 +10,7 @@ package tree
 type Visitor interface {
 	VisitParameter(*Parameter)
 	VisitIdentifier(*Identifier)
+	VisitLetBinding(*LetBinding)
 	VisitCallArgument(*CallArgument)
 	VisitListTypeName(*ListTypeName)
 	VisitTestStatement(*TestStatement)
@@ -31,11 +32,14 @@ type Visitor interface {
 	VisitInvalidStatement(*InvalidStatement)
 	VisitFieldDeclaration(*FieldDeclaration)
 	VisitGenericTypeName(*GenericTypeName)
+	VisitOptionalTypeName(*OptionalTypeName)
 	VisitConcreteTypeName(*ConcreteTypeName)
 	VisitClassDeclaration(*ClassDeclaration)
 	VisitBinaryExpression(*BinaryExpression)
+	VisitGenericStatement(*GenericStatement)
 	VisitMethodDeclaration(*MethodDeclaration)
 	VisitPostfixExpression(*PostfixExpression)
+	VisitImplementStatement(*ImplementStatement)
 	VisitRangedLoopStatement(*RangedLoopStatement)
 	VisitExpressionStatement(*ExpressionStatement)
 	VisitForEachLoopStatement(*ForEachLoopStatement)
@@ -48,6 +52,7 @@ type Visitor interface {
 type DelegatingVisitor struct {
 	ParameterVisitor              func(*Parameter)
 	IdentifierVisitor             func(*Identifier)
+	LetBindingVisitor             func(*LetBinding)
 	CallArgumentVisitor           func(*CallArgument)
 	ListTypeNameVisitor           func(*ListTypeName)
 	TestStatementVisitor          func(*TestStatement)
@@ -65,11 +70,14 @@ type DelegatingVisitor struct {
 	AssignStatementVisitor        func(*AssignStatement)
 	ReturnStatementVisitor        func(*ReturnStatement)
 	TranslationUnitVisitor        func(*TranslationUnit)
+	GenericStatementVisitor func(*GenericStatement)
 	CreateExpressionVisitor       func(*CreateExpression)
 	InvalidStatementVisitor       func(*InvalidStatement)
 	FieldDeclarationVisitor       func(*FieldDeclaration)
 	PostfixExpressionVisitor      func(*PostfixExpression)
+	ImplementStatementVisitor     func(*ImplementStatement)
 	GenericTypeNameVisitor        func(*GenericTypeName)
+	OptionalTypeNameVisitor func(*OptionalTypeName)
 	ConcreteTypeNameVisitor       func(*ConcreteTypeName)
 	ClassDeclarationVisitor       func(*ClassDeclaration)
 	BinaryExpressionVisitor       func(*BinaryExpression)
@@ -87,6 +95,7 @@ func NewEmptyVisitor() *DelegatingVisitor {
 	return &DelegatingVisitor{
 		ParameterVisitor:              func(*Parameter) {},
 		IdentifierVisitor:             func(*Identifier) {},
+		LetBindingVisitor: func(*LetBinding) {},
 		CallArgumentVisitor:           func(*CallArgument) {},
 		ListTypeNameVisitor:           func(*ListTypeName) {},
 		TestStatementVisitor:          func(*TestStatement) {},
@@ -119,6 +128,9 @@ func NewEmptyVisitor() *DelegatingVisitor {
 		ConditionalStatementVisitor:   func(*ConditionalStatement) {},
 		ListSelectExpressionVisitor:   func(*ListSelectExpression) {},
 		FieldSelectExpressionVisitor:  func(*FieldSelectExpression) {},
+		ImplementStatementVisitor: func(*ImplementStatement) {},
+		GenericStatementVisitor: func(*GenericStatement) {},
+		OptionalTypeNameVisitor: func(*OptionalTypeName) {},
 		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {},
 	}
 }
@@ -262,6 +274,22 @@ func (visitor *DelegatingVisitor) VisitBreakStatement(node *BreakStatement) {
 	visitor.BreakStatementVisitor(node)
 }
 
+func (visitor *DelegatingVisitor) VisitOptionalTypeName(node *OptionalTypeName) {
+	visitor.OptionalTypeNameVisitor(node)
+}
+
+func (visitor *DelegatingVisitor) VisitLetBinding(node *LetBinding) {
+	visitor.LetBindingVisitor(node)
+}
+
+func (visitor *DelegatingVisitor) VisitImplementStatement(node *ImplementStatement) {
+	visitor.ImplementStatementVisitor(node)
+}
+
+func (visitor *DelegatingVisitor) VisitGenericStatement(node *GenericStatement) {
+	visitor.GenericStatementVisitor(node)
+}
+
 type nodeReporter interface {
 	reportNodeEncounter(kind NodeKind)
 }
@@ -372,6 +400,18 @@ func NewReportingVisitor(reporter nodeReporter) Visitor {
 		},
 		WildcardNodeVisitor: func(*WildcardNode) {
 			reporter.reportNodeEncounter(WildcardNodeKind)
+		},
+		LetBindingVisitor: func(*LetBinding) {
+			reporter.reportNodeEncounter(LetBindingNodeKind)
+		},
+		OptionalTypeNameVisitor: func(*OptionalTypeName) {
+			reporter.reportNodeEncounter(OptionalTypeNameNodeKind)
+		},
+		GenericStatementVisitor: func(*GenericStatement) {
+			reporter.reportNodeEncounter(GenericStatementNodeKind)
+		},
+		ImplementStatementVisitor: func(*ImplementStatement) {
+			reporter.reportNodeEncounter(ImplementStatementNodeKind)
 		},
 	}
 }

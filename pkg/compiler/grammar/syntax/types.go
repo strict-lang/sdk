@@ -32,6 +32,9 @@ func (parsing *Parsing) parseTypeNameFromBaseIdentifier(base string) tree.TypeNa
 	if token.HasOperatorValue(parsing.token(), token.LeftBracketOperator) {
 		return parsing.parseListTypeName(typeName)
 	}
+	if token.HasOperatorValue(parsing.token(), token.QuestionMarkOperator) {
+		return parsing.parseOptionalTypeName(typeName)
+	}
 	parsing.completeStructure(tree.WildcardNodeKind)
 	return typeName
 }
@@ -47,11 +50,31 @@ func (parsing *Parsing) expectBaseName(name token.Token) {
 	}
 }
 
+func (parsing *Parsing) parseOptionalTypeName(base tree.TypeName) tree.TypeName {
+	return &tree.OptionalTypeName{
+		Region:   parsing.createRegionOfCurrentStructure(),
+		TypeName: base,
+	}
+}
+
 func (parsing *Parsing) parseIncompleteGenericOrConcreteType(base string) tree.TypeName {
 	if token.HasOperatorValue(parsing.token(), token.SmallerOperator) {
 		return parsing.parseIncompleteGenericTypeName(base)
-	} else {
-		return parsing.parseIncompleteConcreteTypeName(base)
+	}
+	if token.HasOperatorValue(parsing.token(), token.QuestionMarkOperator) {
+		return parsing.parseIncompleteOptionalTypeName(base)
+	}
+	return parsing.parseIncompleteConcreteTypeName(base)
+}
+
+func (parsing *Parsing) parseIncompleteOptionalTypeName(base string) tree.TypeName {
+	parsing.updateTopStructureKind(tree.OptionalTypeNameNodeKind)
+	return &tree.OptionalTypeName{
+		Region:   parsing.createRegionOfCurrentStructure(),
+		TypeName: &tree.ConcreteTypeName{
+			Name:   base,
+			Region: parsing.createRegionOfCurrentStructure(),
+		},
 	}
 }
 

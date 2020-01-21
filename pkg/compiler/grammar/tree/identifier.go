@@ -14,6 +14,14 @@ type Identifier struct {
 	inDeclaration bool
 }
 
+func (identifier *Identifier) ResolveType(class *scope.Class) {
+	identifier.resolvedType.resolve(class)
+}
+
+func (identifier *Identifier) ResolvedType() (*scope.Class, bool) {
+	return identifier.resolvedType.class()
+}
+
 func (identifier *Identifier) ReferencePoint() scope.ReferencePoint {
 	return scope.NewReferencePointWithPosition(
 		identifier.Value, identifier.Region.Begin())

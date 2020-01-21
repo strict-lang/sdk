@@ -191,7 +191,7 @@ func (pass *SymbolEnterPass) newMethodSymbol(
 func (pass *SymbolEnterPass) requireClass(
 	name tree.TypeName, targetScope scope.MutableScope) *scope.Class {
 
-	returnTypePoint := scope.NewReferencePoint(name.NonGenericName())
+	returnTypePoint := scope.NewReferencePoint(name.BaseName())
 	if class, ok := scope.LookupClass(targetScope, returnTypePoint); ok {
 		return class
 	}
@@ -216,8 +216,8 @@ func (pass *SymbolEnterPass) createClassReplacement(
 	name tree.TypeName) *scope.Class {
 
 	return &scope.Class{
-		DeclarationName: name.NonGenericName(),
-		ActualClass:     typing.NewEmptyClass(name.NonGenericName()),
+		DeclarationName: name.BaseName(),
+		ActualClass:     typing.NewEmptyClass(name.BaseName()),
 	}
 }
 

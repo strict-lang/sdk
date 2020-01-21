@@ -2,6 +2,7 @@ package tree
 
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 	"strconv"
 )
 
@@ -9,6 +10,7 @@ type NumberLiteral struct {
 	Value  string
 	Region input.Region
 	Parent Node
+	resolvedType resolvedType
 }
 
 const floatBitSize = 64
@@ -19,6 +21,14 @@ func (literal *NumberLiteral) SetEnclosingNode(target Node) {
 
 func (literal *NumberLiteral) EnclosingNode() (Node, bool) {
   return literal.Parent, literal.Parent != nil
+}
+
+func (literal *NumberLiteral) ResolveType(class *scope.Class) {
+  literal.resolvedType.resolve(class)
+}
+
+func (literal *NumberLiteral) ResolvedType() (*scope.Class, bool) {
+  return literal.resolvedType.class()
 }
 
 func (literal *NumberLiteral) IsFloat() bool {

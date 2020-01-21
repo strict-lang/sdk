@@ -55,7 +55,7 @@ func (generation *Generation) DisableNamespaceSelectors() {
 }
 
 func (generation *Generation) Filename() string {
-	return fmt.Sprintf("%s.cc", generation.Unit.ToTypeName().NonGenericName())
+	return fmt.Sprintf("%s.cc", generation.Unit.ToTypeName().BaseName())
 }
 
 func (generation *Generation) String() string {

@@ -1,17 +1,17 @@
 package tree
 
-type TypeDescriptor string
+import "gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 
 type resolvedType struct {
-	descriptor TypeDescriptor
+	symbol *scope.Class
 	isResolved bool
 }
 
-func (resolvedType *resolvedType) setDescriptor(descriptor TypeDescriptor) {
-	resolvedType.descriptor = descriptor
+func (resolvedType *resolvedType) resolve(symbol *scope.Class) {
+	resolvedType.symbol = symbol
 	resolvedType.isResolved = true
 }
 
-func (resolvedType *resolvedType) getDescriptor() (TypeDescriptor, bool) {
-	return resolvedType.descriptor, resolvedType.isResolved
+func (resolvedType *resolvedType) class() (*scope.Class, bool) {
+	return resolvedType.symbol, resolvedType.isResolved
 }
