@@ -44,6 +44,7 @@ func (pass *SymbolEnterPass) createVisitor() tree.Visitor {
 	visitor.ClassDeclarationVisitor = pass.visitClassDeclaration
 	visitor.MethodDeclarationVisitor = pass.visitMethodDeclaration
 	visitor.FieldDeclarationVisitor = pass.visitFieldDeclaration
+	visitor.LetBindingVisitor = pass.visitLetBinding
 	return visitor
 }
 
@@ -230,6 +231,10 @@ func (pass *SymbolEnterPass) visitFieldDeclaration(
 	} else {
 		pass.enterMemberField(declaration)
 	}
+}
+
+func (pass *SymbolEnterPass) visitLetBinding(binding *tree.LetBinding) {
+	binding.Name.MarkAsPartOfDeclaration()
 }
 
 func isVariable(declaration *tree.FieldDeclaration) bool {

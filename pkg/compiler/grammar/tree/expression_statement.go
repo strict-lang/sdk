@@ -7,34 +7,34 @@ type ExpressionStatement struct {
 	Parent Node
 }
 
-func (expression *ExpressionStatement) SetEnclosingNode(target Node) {
-  expression.Parent = target
+func (statement *ExpressionStatement) SetEnclosingNode(target Node) {
+  statement.Parent = target
 }
 
-func (expression *ExpressionStatement) EnclosingNode() (Node, bool) {
-  return expression.Parent, expression.Parent != nil
+func (statement *ExpressionStatement) EnclosingNode() (Node, bool) {
+  return statement.Parent, statement.Parent != nil
 }
 
-func (expression *ExpressionStatement) Accept(visitor Visitor) {
-	visitor.VisitExpressionStatement(expression)
+func (statement *ExpressionStatement) Accept(visitor Visitor) {
+	visitor.VisitExpressionStatement(statement)
 }
 
-func (expression *ExpressionStatement) AcceptRecursive(visitor Visitor) {
-	expression.Accept(visitor)
-	expression.Expression.AcceptRecursive(visitor)
+func (statement *ExpressionStatement) AcceptRecursive(visitor Visitor) {
+	statement.Accept(visitor)
+	statement.Expression.AcceptRecursive(visitor)
 }
 
-func (expression *ExpressionStatement) Locate() input.Region {
-	return expression.Expression.Locate()
+func (statement *ExpressionStatement) Locate() input.Region {
+	return statement.Expression.Locate()
 }
 
-func (expression *ExpressionStatement) Matches(node Node) bool {
+func (statement *ExpressionStatement) Matches(node Node) bool {
 	if target, ok := node.(*ExpressionStatement); ok {
-		return expression.Expression.Matches(target.Expression)
+		return statement.Expression.Matches(target.Expression)
 	}
 	return false
 }
 
-func (expression *ExpressionStatement) TransformExpressions(transformer ExpressionTransformer) {
-	expression.Expression = expression.Expression.Transform(transformer)
+func (statement *ExpressionStatement) TransformExpressions(transformer ExpressionTransformer) {
+	statement.Expression = statement.Expression.Transform(transformer)
 }

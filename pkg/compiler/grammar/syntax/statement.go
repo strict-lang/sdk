@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
@@ -12,7 +13,6 @@ func (parsing *Parsing) parseConditionalStatement() *tree.ConditionalStatement {
 	parsing.beginStructure(tree.ConditionalStatementNodeKind)
 	parsing.skipKeyword(token.IfKeyword)
 	condition := parsing.parseConditionalExpression()
-	parsing.skipKeyword(token.DoKeyword)
 	parsing.skipEndOfStatement()
 	consequence := parsing.parseStatementBlock()
 	return parsing.parseElseClauseIfPresent(condition, consequence)
@@ -85,7 +85,6 @@ func (parsing *Parsing) completeForEachStatement() *tree.ForEachLoopStatement {
 	field := parsing.parseIdentifier()
 	parsing.skipKeyword(token.InKeyword)
 	value := parsing.parseExpression()
-	parsing.skipKeyword(token.DoKeyword)
 	parsing.skipEndOfStatement()
 	body := parsing.parseStatementBlock()
 	return &tree.ForEachLoopStatement{
@@ -107,7 +106,6 @@ func (parsing *Parsing) completeFromToStatement() *tree.RangedLoopStatement {
 	begin := parsing.parseExpression()
 	parsing.skipKeyword(token.ToKeyword)
 	end := parsing.parseExpression()
-	parsing.skipKeyword(token.DoKeyword)
 	parsing.skipEndOfStatement()
 	body := parsing.parseStatementBlock()
 	return &tree.RangedLoopStatement{
@@ -305,9 +303,9 @@ func (parsing *Parsing) maybeParseConstructorDeclaration() (keywordStatementPars
 
 func (parsing *Parsing) parseLetBinding() tree.Node {
 	parsing.beginStructure(tree.LetBindingNodeKind)
-	parsing.expectKeyword(token.LetKeyword)
+	parsing.skipKeyword(token.LetKeyword)
 	name := parsing.parseIdentifier()
-	parsing.expectOperator(token.AssignOperator)
+	parsing.skipOperator(token.AssignOperator)
 	value := parsing.parseExpression()
 	parsing.skipEndOfStatement()
 	return &tree.LetBinding{
@@ -319,7 +317,7 @@ func (parsing *Parsing) parseLetBinding() tree.Node {
 
 func (parsing *Parsing) parseImplementStatement() tree.Node {
 	parsing.beginStructure(tree.ImplementStatementNodeKind)
-	parsing.expectKeyword(token.ImplementKeyword)
+	parsing.skipKeyword(token.ImplementKeyword)
 	trait := parsing.parseTypeName()
 	parsing.skipEndOfStatement()
 	return &tree.ImplementStatement{
@@ -330,7 +328,7 @@ func (parsing *Parsing) parseImplementStatement() tree.Node {
 
 func (parsing *Parsing) parseGenericStatement() tree.Node {
 	parsing.beginStructure(tree.GenericStatementNodeKind)
-	parsing.expectKeyword(token.GenericKeyword)
+	parsing.skipKeyword(token.GenericKeyword)
 	name := parsing.parseIdentifier()
 	constraints := parsing.parseGenericConstraints()
 	parsing.skipEndOfStatement()
@@ -649,7 +647,7 @@ func (parsing *Parsing) parseStatementSequence() (statements []tree.Statement) {
 func newInvalidIndentError(expected, received token.Indent) *diagnostic.RichError {
 	return &diagnostic.RichError{
 		Error: &diagnostic.InvalidIndentationError{
-			Expected: string(expected),
+			Expected: fmt.Sprintf("%d", expected),
 			Received: int(received),
 		},
 		CommonReasons: []string{

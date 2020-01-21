@@ -27,7 +27,7 @@ func TestNameResolutionPass(testing *testing.T) {
 		Diagnostic: diagnostic.NewBag(),
 		Isolate:    isolate.SingleThreaded(),
 	}
-	execution := passes.NewExecution(&NameResolutionPass{}, context)
+	execution, _ := passes.NewExecution(NameResolutionPassId, context)
 	if err := execution.Run(); err != nil {
 		testing.Error(err)
 	}

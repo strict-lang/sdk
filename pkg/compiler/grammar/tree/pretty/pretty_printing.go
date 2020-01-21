@@ -51,6 +51,7 @@ func newPrinting() *Printing {
 		ExpressionStatementVisitor:    printing.printExpressionStatement,
 		ForEachLoopStatementVisitor:   printing.printForEachLoopStatement,
 		ConditionalStatementVisitor:   printing.printConditionalStatement,
+		LetBindingVisitor: printing.printLetBinding,
 		ListSelectExpressionVisitor:   printing.printListSelectExpression,
 		ConstructorDeclarationVisitor: printing.printConstructorDeclaration,
 		WildcardNodeVisitor:           printing.printWildcardNode,
@@ -208,6 +209,12 @@ func (printing *Printing) printNode(node tree.Node) {
 	node.Accept(printing.visitor)
 }
 
+func (printing *Printing) printResolvedType(expression tree.Expression) {
+	if resolvedType, ok := expression.ResolvedType(); ok {
+		printing.printIndentedStringField("type", resolvedType.Name())
+	}
+}
+
 func (printing *Printing) printListField(node tree.Node) {
 	printing.printIndent()
 	printing.printNode(node)
@@ -219,6 +226,7 @@ func (printing *Printing) printBinaryExpression(expression *tree.BinaryExpressio
 	printing.printIndentedStringField("operator", expression.Operator.String())
 	printing.printIndentedNodeField("leftOperand", expression.LeftOperand)
 	printing.printIndentedNodeField("rightOperand", expression.RightOperand)
+	printing.printResolvedType(expression)
 	printing.printNodeEnd()
 }
 
@@ -226,6 +234,7 @@ func (printing *Printing) printUnaryExpression(expression *tree.UnaryExpression)
 	printing.printNodeBegin("UnaryExpression")
 	printing.printIndentedStringField("operator", expression.Operator.String())
 	printing.printIndentedNodeField("operand", expression.Operand)
+	printing.printResolvedType(expression)
 	printing.printNodeEnd()
 }
 
@@ -260,8 +269,31 @@ func (printing *Printing) printClassDeclaration(class *tree.ClassDeclaration) {
 	printing.printListFieldEnd()
 }
 
+func (printing *Printing) printLetBinding(binding *tree.LetBinding) {
+	printing.printNodeBegin("LetBinding")
+	printing.printIndentedNodeField( "name", binding.Name)
+	printing.printResolvedType(binding)
+	printing.printIndentedNodeField("value", binding.Expression)
+	printing.printNodeEnd()
+}
+
 func (printing *Printing) printIdentifier(identifier *tree.Identifier) {
-	printing.printFormatted("%s", identifier.Value)
+	_, resolved := identifier.ResolvedType()
+	if !resolved && !identifier.IsBound() {
+		printing.printFormatted("%s", identifier.Value)
+		return
+	}
+	printing.printRichIdentifier(identifier)
+}
+
+func (printing *Printing) printRichIdentifier(identifier *tree.Identifier) {
+	printing.printNodeBegin("Identifier")
+	printing.printIndentedStringField("value", identifier.Value)
+	printing.printResolvedType(identifier)
+	if identifier.IsBound() {
+		printing.printIndentedStringField("boundTo", identifier.Binding().Name())
+	}
+	printing.printNodeEnd()
 }
 
 func (printing *Printing) printStringLiteral(literal *tree.StringLiteral) {
@@ -384,6 +416,7 @@ func (printing *Printing) printPostfixExpression(statement *tree.PostfixExpressi
 	printing.printNodeBegin("PostfixExpression")
 	printing.printIndentedStringField("operator", statement.Operator.String())
 	printing.printIndentedNodeField("operand", statement.Operand)
+	printing.printResolvedType(statement)
 	printing.printNodeEnd()
 }
 
@@ -391,6 +424,7 @@ func (printing *Printing) printFieldSelectExpression(expression *tree.FieldSelec
 	printing.printNodeBegin("Select")
 	printing.printIndentedNodeField("target", expression.Target)
 	printing.printIndentedNodeField("selection", expression.Selection)
+	printing.printResolvedType(expression)
 	printing.printNodeEnd()
 }
 
@@ -398,6 +432,7 @@ func (printing *Printing) printListSelectExpression(expression *tree.ListSelectE
 	printing.printNodeBegin("ListSelect")
 	printing.printIndentedNodeField("target", expression.Target)
 	printing.printIndentedNodeField("index", expression.Index)
+	printing.printResolvedType(expression)
 	printing.printNodeEnd()
 }
 
@@ -405,6 +440,7 @@ func (printing *Printing) printCallExpression(call *tree.CallExpression) {
 	printing.printNodeBegin("CallExpression")
 	printing.printIndentedNodeField("method", call.Target)
 	printing.printIndentedListFieldBegin("arguments")
+	printing.printResolvedType(call)
 	for _, argument := range call.Arguments {
 		printing.printListField(argument)
 	}

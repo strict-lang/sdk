@@ -8,11 +8,21 @@ import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
-const TypeResolutionId = "TypeResolution"
+const TypeResolutionPassId = "TypeResolutionPassId"
+
+func init() {
+	passes.Register(newTypeResolution())
+}
 
 type TypeResolution struct {
 	visitor tree.Visitor
 	context *passes.Context
+}
+
+func newTypeResolution() *TypeResolution {
+	resolution := &TypeResolution{}
+	resolution.visitor = tree.NewEmptyVisitor()
+	return resolution
 }
 
 func (pass *TypeResolution) Run(context *passes.Context) {
@@ -21,7 +31,7 @@ func (pass *TypeResolution) Run(context *passes.Context) {
 }
 
 func (pass *TypeResolution) Id() passes.Id {
-	return TypeResolutionId
+	return TypeResolutionPassId
 }
 
 func (pass *TypeResolution) Dependencies(isolate *isolate.Isolate) passes.Set {

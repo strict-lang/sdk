@@ -3,6 +3,7 @@ package pass
 import (
 	"errors"
 	"fmt"
+	"log"
 )
 
 type Execution struct {
@@ -10,11 +11,15 @@ type Execution struct {
 	context *Context
 }
 
-func NewExecution(target Pass, context *Context) *Execution {
-	return &Execution{
-		target: target,
-		context: context,
+func NewExecution(passId Id, context *Context) (*Execution, bool) {
+	properties := context.Isolate.Properties
+	if pass, ok := findPassInProperties(string(passId), properties); ok {
+		return &Execution{
+			target: pass,
+			context: context,
+		}, true
 	}
+	return nil, false
 }
 
 func (execution *Execution) Run() error {
@@ -23,9 +28,14 @@ func (execution *Execution) Run() error {
 		return err
 	}
 	for _, pass := range orderedPasses {
-		pass.Run(execution.context)
+		execution.runPass(pass)
 	}
 	return nil
+}
+
+func (execution *Execution) runPass(pass Pass) {
+	log.Printf("Running Pass%s\n", pass.Id())
+	pass.Run(execution.context)
 }
 
 func (execution *Execution) orderPendingPasses() ([]Pass, error) {

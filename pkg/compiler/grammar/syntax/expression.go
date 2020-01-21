@@ -58,8 +58,7 @@ func (parsing *Parsing) parseUnaryExpression() tree.Expression {
 // binary expressions have a left-hand-side and right-hand-side operand and
 // the operator in between. The operands can be any kind of expression.
 // Example: 'a + b' or '(1 + 2) + 3'
-func (parsing *Parsing) parseBinaryExpression(
-	precedence token.Precedence) tree.Expression {
+func (parsing *Parsing) parseBinaryExpression(precedence token.Precedence) tree.Expression {
 	parsing.beginStructure(tree.BinaryExpressionNodeKind)
 	leftHandSide := parsing.parseUnaryExpression()
 	for !parsing.isAtEndOfBinaryExpression(precedence) {

@@ -28,7 +28,9 @@ func (binding *LetBinding) Locate() input.Region {
 	return binding.Region
 }
 
-func (binding *LetBinding) Accept(visitor Visitor) {}
+func (binding *LetBinding) Accept(visitor Visitor) {
+	visitor.VisitLetBinding(binding)
+}
 
 func (binding *LetBinding) AcceptRecursive(visitor Visitor) {
 	binding.Expression.AcceptRecursive(visitor)
