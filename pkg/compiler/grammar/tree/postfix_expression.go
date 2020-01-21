@@ -3,6 +3,7 @@ package tree
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
 // PostfixExpression is an expression with an operator that is written in a
@@ -29,12 +30,12 @@ func (expression *PostfixExpression) EnclosingNode() (Node, bool) {
   return expression.Parent, expression.Parent != nil
 }
 
-func (expression *PostfixExpression) Resolve(descriptor TypeDescriptor) {
-	expression.resolvedType.setDescriptor(descriptor)
+func (expression *PostfixExpression) ResolveType(class *scope.Class) {
+	expression.resolvedType.resolve(class)
 }
 
-func (expression *PostfixExpression) GetResolvedType() (TypeDescriptor, bool) {
-	return expression.resolvedType.getDescriptor()
+func (expression *PostfixExpression) ResolvedType() (*scope.Class, bool) {
+	return expression.resolvedType.class()
 }
 
 // Accept lets the visitor visit this expression.

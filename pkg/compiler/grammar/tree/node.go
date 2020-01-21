@@ -41,6 +41,7 @@ const (
 	CreateExpressionNodeKind
 	CallArgumentNodeKind
 	CallExpressionNodeKind
+	LetBindingNodeKind
 	expressionKindEnd
 	statementKindBegin
 	ConditionalStatementNodeKind
@@ -57,6 +58,8 @@ const (
 	ExpressionStatementNodeKind
 	ForEachLoopStatementNodeKind
 	RangedLoopStatementNodeKind
+	ImplementStatementNodeKind
+	GenericStatementNodeKind
 	statementKindEnd
 	declarationKindBegin
 	ParameterNodeKind
@@ -70,6 +73,7 @@ const (
 	ListTypeNameNodeKind
 	GenericTypeNameNodeKind
 	ConcreteTypeNameNodeKind
+	OptionalTypeNameNodeKind
 	typeNameKindEnd
 	TranslationUnitNodeKind
 	WildcardNodeKind
@@ -111,7 +115,11 @@ var nodeKindNames = map[NodeKind]string{
 	ListTypeNameNodeKind:           "ListTypeName",
 	GenericTypeNameNodeKind:        "GenericTypeName",
 	ConcreteTypeNameNodeKind:       "ConcreteTypeName",
+	OptionalTypeNameNodeKind:       "OptionalTypeName",
 	TranslationUnitNodeKind:        "TranslationUnit",
+	LetBindingNodeKind: "LetBinding",
+	ImplementStatementNodeKind: "ImplementStatement",
+	GenericStatementNodeKind: "GenericStatement",
 	WildcardNodeKind:               "Wildcard",
 }
 

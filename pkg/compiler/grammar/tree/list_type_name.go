@@ -23,8 +23,8 @@ func (name *ListTypeName) FullName() string {
 	return fmt.Sprintf("%s[]", name.Element.FullName())
 }
 
-func (name *ListTypeName) NonGenericName() string {
-	return name.Element.NonGenericName()
+func (name *ListTypeName) BaseName() string {
+	return name.Element.BaseName()
 }
 
 func (name *ListTypeName) Accept(visitor Visitor) {

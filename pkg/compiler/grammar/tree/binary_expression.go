@@ -3,6 +3,7 @@ package tree
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
 // BinaryExpression is an operation on two operands.
@@ -23,12 +24,12 @@ func (binary *BinaryExpression) EnclosingNode() (Node, bool) {
   return binary.Parent, binary.Parent != nil
 }
 
-func (binary *BinaryExpression) GetResolvedType() (TypeDescriptor, bool) {
-	return binary.resolvedType.getDescriptor()
+func (binary *BinaryExpression) ResolveType(class *scope.Class) {
+  binary.resolvedType.resolve(class)
 }
 
-func (binary *BinaryExpression) Resolve(descriptor TypeDescriptor) {
-	binary.resolvedType.setDescriptor(descriptor)
+func (binary *BinaryExpression) ResolvedType() (*scope.Class, bool) {
+  return binary.resolvedType.class()
 }
 
 func (binary *BinaryExpression) Accept(visitor Visitor) {

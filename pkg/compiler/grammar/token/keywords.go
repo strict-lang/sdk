@@ -30,6 +30,10 @@ const (
 	TestKeyword
 	AssertKeyword
 	CreateKeyword
+	LetKeyword
+	ImplementKeyword
+	GenericKeyword
+	ExistsKeyword
 )
 
 var keywordNameTable = map[Keyword]string{

@@ -7,6 +7,7 @@ type FieldDeclaration struct {
 	TypeName TypeName
 	Region   input.Region
 	Parent   Node
+	Inferred bool
 }
 
 func (field *FieldDeclaration) SetEnclosingNode(target Node) {

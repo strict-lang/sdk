@@ -13,7 +13,7 @@ import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
-func (parsing *Parsing) parseExpression() tree.Node {
+func (parsing *Parsing) parseExpression() tree.Expression {
 	return parsing.parseAnyExpression()
 }
 
@@ -29,7 +29,7 @@ func (parsing *Parsing) parseAnyExpression() tree.Expression {
 // operations with only one operand (arity of one). An example of a unary
 // expression is the negation '!(expression)'. The single operand may be
 // any kind of expression, including another unary expression.
-func (parsing *Parsing) parseUnaryExpression() tree.Node {
+func (parsing *Parsing) parseUnaryExpression() tree.Expression {
 	parsing.beginStructure(tree.UnaryExpressionNodeKind)
 	// TODO: Write tests to find out if other methods change the kind
 	defer parsing.completeStructure(tree.UnaryExpressionNodeKind)
@@ -94,7 +94,7 @@ func (parsing *Parsing) parseBinaryExpressionWithLeftHandSide(
 	}
 }
 
-func (parsing *Parsing) parseOperand() tree.Node {
+func (parsing *Parsing) parseOperand() tree.Expression {
 	switch last := parsing.token(); {
 	case token.IsIdentifierToken(last):
 		return parsing.parseIdentifier()
@@ -145,7 +145,7 @@ func (parsing *Parsing) parseNumberLiteral() *tree.NumberLiteral {
 	}
 }
 
-func (parsing *Parsing) completeLeftParenExpression() tree.Node {
+func (parsing *Parsing) completeLeftParenExpression() tree.Expression {
 	parsing.advance()
 	parsing.expressionDepth++
 	expression := parsing.parseExpression()
@@ -171,7 +171,7 @@ func (parsing *Parsing) expectEndOfLeftParenExpression() {
 
 // ParseOperation parses the initial operand and continues to grammar operands on
 // that operand, forming a node for another expression.
-func (parsing *Parsing) parseOperation() tree.Node {
+func (parsing *Parsing) parseOperation() tree.Expression {
 	operand := parsing.parseOperand()
 	return parsing.parseOperationsOnOperand(operand)
 }
@@ -185,7 +185,7 @@ func (parsing *Parsing) parseOperationOrAssign(node tree.Node) tree.Node {
 	return node
 }
 
-func (parsing *Parsing) parseOperationsOnOperand(operand tree.Node) tree.Node {
+func (parsing *Parsing) parseOperationsOnOperand(operand tree.Expression) tree.Expression {
 	for {
 		if node, done := parsing.parseOperationOnOperand(operand); !done {
 			operand = node
@@ -197,7 +197,9 @@ func (parsing *Parsing) parseOperationsOnOperand(operand tree.Node) tree.Node {
 
 // ParseOperationOnOperand parses an operation on an operand that has already
 // been parsed. It is called by the ParseOperand method.
-func (parsing *Parsing) parseOperationOnOperand(operand tree.Node) (node tree.Node, done bool) {
+func (parsing *Parsing) parseOperationOnOperand(
+	operand tree.Expression) (node tree.Expression, done bool) {
+
 	switch next := parsing.token(); {
 	case token.HasOperatorValue(next, token.LeftParenOperator):
 		return parsing.parseCallOnNode(operand), false
@@ -240,7 +242,7 @@ func newEndOfListSelectError(received token.Token) *diagnostic.RichError {
 	}
 }
 
-func (parsing *Parsing) parseFieldSelectExpression(target tree.Node) *tree.FieldSelectExpression {
+func (parsing *Parsing) parseFieldSelectExpression(target tree.Expression) *tree.FieldSelectExpression {
 	parsing.beginStructure(tree.FieldSelectExpressionNodeKind)
 	parsing.skipOperator(token.DotOperator)
 	field := parsing.parseOperand()
@@ -257,7 +259,7 @@ func (parsing *Parsing) parseConstructorCall() (*tree.CallExpression, tree.TypeN
 	return methodCall, typeName
 }
 
-func (parsing *Parsing) parseCreateExpression() tree.Node {
+func (parsing *Parsing) parseCreateExpression() tree.Expression{
 	parsing.beginStructure(tree.CreateExpressionNodeKind)
 	parsing.skipKeyword(token.CreateKeyword)
 	constructor, typeName := parsing.parseConstructorCall()

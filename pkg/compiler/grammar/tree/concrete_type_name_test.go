@@ -31,9 +31,9 @@ func TestConcreteTypeName_NonGenericName(testing *testing.T) {
 		{Name: "int"},
 	}
 	for _, entry := range entries {
-		if entry.NonGenericName() != entry.Name {
-			testing.Errorf("Entry has invalid NonGenericName(): expected %s - got %s",
-				entry.NonGenericName(), entry.Name)
+		if entry.BaseName() != entry.Name {
+			testing.Errorf("Entry has invalid BaseName(): expected %s - got %s",
+				entry.BaseName(), entry.Name)
 		}
 	}
 }

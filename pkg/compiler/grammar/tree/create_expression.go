@@ -1,6 +1,9 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+)
 
 type CreateExpression struct {
 	Region       input.Region
@@ -18,12 +21,12 @@ func (create *CreateExpression) EnclosingNode() (Node, bool) {
   return create.Parent, create.Parent != nil
 }
 
-func (create *CreateExpression) Resolve(descriptor TypeDescriptor) {
-	create.resolvedType.setDescriptor(descriptor)
+func (create *CreateExpression) ResolveType(class *scope.Class) {
+  create.resolvedType.resolve(class)
 }
 
-func (create *CreateExpression) GetResolvedType() (TypeDescriptor, bool) {
-	return create.resolvedType.getDescriptor()
+func (create *CreateExpression) ResolvedType() (*scope.Class, bool) {
+  return create.resolvedType.class()
 }
 
 func (create *CreateExpression) Accept(visitor Visitor) {

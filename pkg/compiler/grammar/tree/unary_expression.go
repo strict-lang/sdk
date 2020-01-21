@@ -3,6 +3,7 @@ package tree
 import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
 // UnaryExpression is an operation on a single operand.
@@ -11,6 +12,15 @@ type UnaryExpression struct {
 	Operand  Expression
 	Region   input.Region
 	Parent   Node
+	resolvedType resolvedType
+}
+
+func (unary *UnaryExpression) ResolveType(class *scope.Class) {
+  unary.resolvedType.resolve(class)
+}
+
+func (unary *UnaryExpression) ResolvedType() (*scope.Class, bool) {
+  return unary.resolvedType.class()
 }
 
 func (unary *UnaryExpression) SetEnclosingNode(target Node) {
