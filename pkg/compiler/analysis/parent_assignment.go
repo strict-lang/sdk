@@ -136,8 +136,8 @@ return  &tree.DelegatingVisitor{
 	ConditionalStatementVisitor: func(statement *tree.ConditionalStatement) {
 		statement.Condition.SetEnclosingNode(statement)
 		statement.Consequence.SetEnclosingNode(statement)
-		if statement.Consequence != nil {
-			statement.Consequence.SetEnclosingNode(statement)
+		if statement.Alternative != nil {
+			statement.Alternative.SetEnclosingNode(statement)
 		}
 	},
 	ListSelectExpressionVisitor: func(expression *tree.ListSelectExpression) {

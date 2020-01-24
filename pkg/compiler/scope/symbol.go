@@ -14,7 +14,7 @@ type Method struct {
 	DeclarationName   string
 	declarationOffset input.Offset
 
-	ReturnType typing.Class
+	ReturnType *Class
 	// Parameters are lazily added
 	Parameters []*Field
 }

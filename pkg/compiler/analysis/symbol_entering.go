@@ -45,6 +45,8 @@ func (pass *SymbolEnterPass) createVisitor() tree.Visitor {
 	visitor.MethodDeclarationVisitor = pass.visitMethodDeclaration
 	visitor.FieldDeclarationVisitor = pass.visitFieldDeclaration
 	visitor.LetBindingVisitor = pass.visitLetBinding
+	visitor.ForEachLoopStatementVisitor = pass.visitForEachLoopStatement
+	visitor.RangedLoopStatementVisitor = pass.visitRangedLoopStatement
 	return visitor
 }
 
@@ -222,33 +224,70 @@ func (pass *SymbolEnterPass) createClassReplacement(
 	}
 }
 
+func (pass *SymbolEnterPass) visitForEachLoopStatement(
+	loop *tree.ForEachLoopStatement) {
+
+	pass.visitUntypedVariable(loop.Field, loop)
+}
+
+func (pass *SymbolEnterPass) visitRangedLoopStatement(
+	loop *tree.RangedLoopStatement) {
+
+	pass.visitUntypedVariable(loop.Field, loop)
+}
+
 func (pass *SymbolEnterPass) visitFieldDeclaration(
 	declaration *tree.FieldDeclaration) {
 
 	declaration.Name.MarkAsPartOfDeclaration()
+	surroundingScope := requireNearestMutableScope(declaration)
+	name := declaration.Name.Value
+	if pass.ensureNameDoesNotExist(name, declaration, surroundingScope) {
+		pass.enterFieldDeclaration(declaration, surroundingScope)
+	}
+}
+
+func (pass *SymbolEnterPass) enterFieldDeclaration(
+	declaration *tree.FieldDeclaration, scope scope.MutableScope) {
+
 	if isVariable(declaration) {
-		pass.enterVariable(declaration)
+		pass.enterVariable(scope, declaration)
 	} else {
 		pass.enterMemberField(declaration)
 	}
 }
 
 func (pass *SymbolEnterPass) visitLetBinding(binding *tree.LetBinding) {
-	binding.Name.MarkAsPartOfDeclaration()
+	pass.visitUntypedVariable(binding.Name, binding)
+}
+
+func (pass *SymbolEnterPass) visitUntypedVariable(name *tree.Identifier, node tree.Node) {
+	name.MarkAsPartOfDeclaration()
+	surroundingScope := requireNearestMutableScope(node)
+	if pass.ensureNameDoesNotExist(name.Value, node, surroundingScope) {
+		surroundingScope.Insert(pass.createUntypedVariable(name.Value))
+	}
 }
 
 func isVariable(declaration *tree.FieldDeclaration) bool {
 	return tree.IsInsideOfMethod(declaration)
 }
 
-func (pass *SymbolEnterPass) enterMemberField(
-	field *tree.FieldDeclaration) {
+func (pass *SymbolEnterPass) enterMemberField(field *tree.FieldDeclaration) {
 
 }
 
 func (pass *SymbolEnterPass) enterVariable(
-	variable *tree.FieldDeclaration) {
+	targetScope scope.MutableScope, variable *tree.FieldDeclaration) {
 
+	targetScope.Insert(pass.createUntypedVariable(variable.Name.Value))
+}
+
+func (pass *SymbolEnterPass) createUntypedVariable(name string) *scope.Field {
+	return &scope.Field{
+		DeclarationName: name,
+		Kind:            scope.VariableField,
+	}
 }
 
 func (pass *SymbolEnterPass) ensureNameDoesNotExist(

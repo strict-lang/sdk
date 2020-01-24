@@ -104,7 +104,7 @@ func (call *CallExpression) createNameResolveVisitor() Visitor {
 			call.name.value = identifier
 		},
 		FieldSelectExpressionVisitor: func(expression *FieldSelectExpression) {
-			identifier, found := expression.findLastIdentifier()
+			identifier, found := expression.FindLastIdentifier()
 			call.name.found = found
 			call.name.value = identifier
 		},

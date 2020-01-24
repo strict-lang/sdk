@@ -53,14 +53,14 @@ func (expression *FieldSelectExpression) Matches(node Node) bool {
 	return false
 }
 
-func (expression *FieldSelectExpression) findLastIdentifier() (*Identifier, bool) {
+func (expression *FieldSelectExpression) FindLastIdentifier() (*Identifier, bool) {
 	switch expression.Selection.(type) {
 		case *Identifier:
 			identifier, ok := expression.Selection.(*Identifier)
 			return identifier, ok
 		case *FieldSelectExpression:
 			if next, ok := expression.Selection.(*FieldSelectExpression); ok {
-				return next.findLastIdentifier()
+				return next.FindLastIdentifier()
 			}
 	}
 	return nil, false

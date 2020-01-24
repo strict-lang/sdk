@@ -262,7 +262,7 @@ func init() {
 			return parsing.parseMethodDeclaration()
 		},
 		token.LetKeyword: func(parsing *Parsing) tree.Node {
-			return parsing.parseLetBinding()
+			return parsing.parseLetBindingStatement()
 		},
 		token.ImplementKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseImplementStatement()
@@ -312,6 +312,15 @@ func (parsing *Parsing) parseLetBinding() *tree.LetBinding {
 		Region:     parsing.completeStructure(tree.LetBindingNodeKind),
 		Name:       name,
 		Expression: value,
+	}
+}
+
+func (parsing *Parsing) parseLetBindingStatement() tree.Statement {
+	parsing.beginStructure(tree.ExpressionStatementNodeKind)
+	binding := parsing.parseLetBinding()
+	_ = parsing.completeStructure(tree.ExpressionStatementNodeKind)
+	return &tree.ExpressionStatement{
+		Expression: binding,
 	}
 }
 
