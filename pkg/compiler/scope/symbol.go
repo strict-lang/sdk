@@ -54,6 +54,7 @@ const (
 	ParameterField FieldKind = iota
 	VariableField
 	MemberField
+	ConstantField
 )
 
 func (field *Field) Name() string {

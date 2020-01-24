@@ -49,7 +49,7 @@ func (pass *NameResolutionPass) bindIdentifier(identifier *tree.Identifier) {
 		symbol := entries.First().Symbol
 		identifier.Bind(symbol)
 	} else {
-		fmt.Println("Unknown Symbol")
+		fmt.Printf("Unknown Symbol %s\n", identifier.Value)
 	}
 }
 

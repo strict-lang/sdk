@@ -25,7 +25,7 @@ func (keyword KeywordToken) Name() string {
 }
 
 func (keyword KeywordToken) Value() string {
-	return keyword.Value()
+	return keyword.Keyword.String()
 }
 
 func (keyword KeywordToken) Position() Position {

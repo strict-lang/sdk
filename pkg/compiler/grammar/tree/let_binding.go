@@ -33,6 +33,7 @@ func (binding *LetBinding) Accept(visitor Visitor) {
 }
 
 func (binding *LetBinding) AcceptRecursive(visitor Visitor) {
+	binding.Accept(visitor)
 	binding.Expression.AcceptRecursive(visitor)
 	binding.Name.AcceptRecursive(visitor)
 }

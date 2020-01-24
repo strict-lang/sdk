@@ -154,5 +154,9 @@ return  &tree.DelegatingVisitor{
 			parameter.SetEnclosingNode(declaration)
 		}
 	},
+	LetBindingVisitor: func(binding *tree.LetBinding) {
+		binding.Expression.SetEnclosingNode(binding)
+		binding.Name.SetEnclosingNode(binding)
+	},
 }
 }

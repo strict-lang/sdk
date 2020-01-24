@@ -38,7 +38,7 @@ func scanAndPrintTokens(command *cobra.Command, sourceFile *os.File) {
 		if token.IsEndOfFileToken(next) {
 			break
 		}
-		fmt.Printf("%s ", next)
+		fmt.Printf("%s(%d) ", next, next.Indent())
 		if token.IsEndOfStatementToken(next) {
 			fmt.Println()
 			printNewLineIndent()

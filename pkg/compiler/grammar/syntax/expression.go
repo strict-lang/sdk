@@ -95,6 +95,8 @@ func (parsing *Parsing) parseBinaryExpressionWithLeftHandSide(
 
 func (parsing *Parsing) parseOperand() tree.Expression {
 	switch last := parsing.token(); {
+	case token.HasKeywordValue(last, token.LetKeyword):
+		return parsing.parseLetBinding()
 	case token.IsIdentifierToken(last):
 		return parsing.parseIdentifier()
 	case token.IsStringLiteralToken(last):

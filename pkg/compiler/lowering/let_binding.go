@@ -74,8 +74,9 @@ func (lowering *LetBindingLowering) rewriteBindingInStatement(
 
 	if block, parentStatement, ok := findParentStatementInBlock(binding); ok {
 		lowering.rewriteInBlock(binding, parentStatement, block)
+		return binding.Name
 	}
-	return binding.Name
+	return binding
 }
 
 func (lowering *LetBindingLowering) rewriteBindingStatement(
@@ -109,7 +110,6 @@ func (lowering *LetBindingLowering) rewriteInBlockAtIndex(
 func (lowering *LetBindingLowering) lower(
 	binding *tree.LetBinding, parent tree.Node) *tree.AssignStatement {
 
-
 	assign := &tree.AssignStatement{
 		Value:    binding.Expression,
 		Operator: token.AssignOperator,
@@ -119,7 +119,7 @@ func (lowering *LetBindingLowering) lower(
 	field := &tree.FieldDeclaration{
 		Name:     binding.Name,
 		Region:   binding.Locate(),
-		Parent:   assign,
+		Parent: assign,
 		Inferred: true,
 	}
 	assign.Target = field
@@ -138,9 +138,9 @@ func resolveParentBlock(node tree.Node) (*tree.StatementBlock, bool) {
 func findParentStatementInBlock(node tree.Node) (*tree.StatementBlock, tree.Statement, bool) {
 	currentParent, hasParent := node.EnclosingNode()
 	for hasParent {
-		if statementParent, ok := currentParent.(tree.Statement); ok {
-			if block, inBlock := statementParent.(*tree.StatementBlock); inBlock {
-				return block, statementParent, true
+		if parent, ok := currentParent.(tree.Statement); ok {
+			if block, inBlock := resolveParentBlock(parent); inBlock {
+				return block, parent, true
 			}
 		}
 		currentParent, hasParent = currentParent.EnclosingNode()

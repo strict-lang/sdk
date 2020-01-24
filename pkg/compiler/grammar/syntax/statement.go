@@ -301,7 +301,7 @@ func (parsing *Parsing) maybeParseConstructorDeclaration() (keywordStatementPars
 	}, true
 }
 
-func (parsing *Parsing) parseLetBinding() tree.Node {
+func (parsing *Parsing) parseLetBinding() *tree.LetBinding {
 	parsing.beginStructure(tree.LetBindingNodeKind)
 	parsing.skipKeyword(token.LetKeyword)
 	name := parsing.parseIdentifier()
@@ -662,7 +662,7 @@ func (parsing *Parsing) parseStatementBlock() *tree.StatementBlock {
 	parsing.beginStructure(tree.StatementBlockNodeKind)
 	indent := parsing.token().Indent()
 	if indent < parsing.block.Indent {
-		parsing.throwError(newZeroIndentError())
+		parsing.throwError(newSmallerIndentError(indent))
 	}
 	parsing.openBlock(indent)
 	statements := parsing.parseStatementSequence()
@@ -673,11 +673,11 @@ func (parsing *Parsing) parseStatementBlock() *tree.StatementBlock {
 	}
 }
 
-func newZeroIndentError() *diagnostic.RichError {
+func newSmallerIndentError(indent token.Indent) *diagnostic.RichError {
 	return &diagnostic.RichError{
 		Error: &diagnostic.InvalidIndentationError{
-			Expected: "higher than 0",
-			Received: 0,
+			Expected: "increased indent",
+			Received: int(indent),
 		},
 	}
 }
