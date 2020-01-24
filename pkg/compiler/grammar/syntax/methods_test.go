@@ -13,7 +13,7 @@ func TestParsing_ParseMethodDeclaration(testing *testing.T) {
 			{
 				Input: `
 method List<int> range(int begin, int end)
-  for number from begin to end do
+  for number from begin to end
     yield number
 `,
 				ExpectedOutput: &tree.MethodDeclaration{
@@ -53,7 +53,7 @@ method List<int> range(int begin, int end)
 			{
 				Input: `
 method printList(List<int> numbers)
-  for number in numbers do
+  for number in numbers
     printf("%d ", number)
 `,
 				ExpectedOutput: &tree.MethodDeclaration{

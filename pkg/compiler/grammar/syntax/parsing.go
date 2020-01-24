@@ -277,7 +277,9 @@ func newInvalidStructureError() *diagnostic.RichError {
 // skipEndOfStatement skips the next token if it is an EndOfStatement token.
 func (parsing *Parsing) skipEndOfStatement() {
 	// Do not report the missing end of statement.
-	parsing.advance()
+	if token.IsEndOfStatementToken(parsing.token()) {
+		parsing.advance()
+	}
 	parsing.isAtBeginOfStatement = true
 }
 

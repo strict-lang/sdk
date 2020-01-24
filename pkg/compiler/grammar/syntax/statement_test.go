@@ -11,7 +11,7 @@ func TestParsing_ParseConditionalStatement(testing *testing.T) {
 		[]ParserTestEntry{
 			{
 				Input: `
-if 1 < 2 do
+if 1 < 2
   return 3
 `,
 				ExpectedOutput: &tree.ConditionalStatement{
@@ -31,9 +31,9 @@ if 1 < 2 do
 			},
 			{
 				Input: `
-if 1 < 2 do
+if 1 < 2
   return 3
-else if true do
+else if true
   return 2
 else 
   return 1
@@ -162,6 +162,85 @@ func TestParsing_ParseAssignStatement(testing *testing.T) {
 					},
 					Value:    &tree.Identifier{Value: `name`},
 					Operator: token.AssignOperator,
+				},
+			},
+		}, func(parsing *Parsing) tree.Node {
+			return parsing.parseStatement()
+		})
+}
+
+func TestParsing_ParseIndented(testing *testing.T) {
+	ExpectAllResults(testing,
+		[]ParserTestEntry{
+			{
+				Input: `
+for number in Range(0, 100)
+  if IsDivisible(number, 2)
+    yield number
+  if IsDivisible(number, 4)
+    yield number - 1
+`,
+				ExpectedOutput: &tree.ForEachLoopStatement{
+					Sequence: &tree.CallExpression{
+						Target: &tree.Identifier{Value: `Range`},
+						Arguments: tree.CallArgumentList{
+								&tree.CallArgument{
+									Value:  &tree.NumberLiteral{Value: "0"},
+								},
+								&tree.CallArgument{
+										Value:  &tree.NumberLiteral{Value: "100"},
+								},
+						},
+					},
+					Field: &tree.Identifier{Value: `number`},
+					Body: &tree.StatementBlock{
+						Children: []tree.Statement{
+							&tree.ConditionalStatement{
+								Condition:   &tree.CallExpression{
+									Target: &tree.Identifier{Value: `IsDivisible`},
+									Arguments: tree.CallArgumentList{
+										&tree.CallArgument{
+											Value: &tree.Identifier{Value: "number"},
+										},
+										&tree.CallArgument{
+											Value: &tree.NumberLiteral{Value: "2"},
+										},
+									},
+								},
+								Consequence: &tree.StatementBlock{
+									Children: []tree.Statement{
+										&tree.YieldStatement{
+											Value:  &tree.Identifier{Value: `number`},
+										},
+									},
+								},
+							},
+							&tree.ConditionalStatement{
+								Condition:   &tree.CallExpression{
+									Target: &tree.Identifier{Value: `IsDivisible`},
+									Arguments: tree.CallArgumentList{
+										&tree.CallArgument{
+											Value: &tree.Identifier{Value: "number"},
+										},
+										&tree.CallArgument{
+											Value: &tree.NumberLiteral{Value: "4"},
+										},
+									},
+								},
+								Consequence: &tree.StatementBlock{
+									Children: []tree.Statement{
+										&tree.YieldStatement{
+											Value:  &tree.BinaryExpression{
+												LeftOperand: &tree.Identifier{Value: `number`},
+												RightOperand: &tree.NumberLiteral{Value: `1`},
+												Operator:     token.SubOperator,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		}, func(parsing *Parsing) tree.Node {

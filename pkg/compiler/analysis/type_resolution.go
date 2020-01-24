@@ -58,6 +58,52 @@ func (pass *TypeResolution) resolveNumberLiteral(number *tree.NumberLiteral) {
 	}
 }
 
+func (pass *TypeResolution) resolveExpression(expression tree.Expression) *scope.Class {
+	expression.Accept(pass.visitor)
+	if class, ok := expression.ResolvedType(); ok {
+		return class
+	}
+	pass.reportFailedInference(expression)
+	return nil
+}
+
+func (pass *TypeResolution) resolveBinaryExpression(binary *tree.BinaryExpression) {
+	if isResolved(binary) {
+		return
+	}
+	if operation, ok := binaryOperationTypes[binary.Operator]; ok {
+		leftOperandType := pass.resolveExpression(binary.LeftOperand)
+		binary.ResolveType(operation(leftOperandType))
+	}
+	pass.reportFailedInference(binary)
+}
+
+func (pass *TypeResolution) resolveLetExpression(binding *tree.LetBinding) {
+	expressionClass := pass.resolveExpression(binding.Expression)
+	binding.ResolveType(expressionClass)
+}
+
+func (pass *TypeResolution) resolveUnaryExpression(unary *tree.UnaryExpression) {
+	if isResolved(unary) {
+		return
+	}
+	if operation, ok := unaryOperationTypes[unary.Operator]; ok {
+		operandType := pass.resolveExpression(unary.Operand)
+		unary.ResolveType(operation(operandType))
+	}
+	pass.reportFailedInference(unary)
+}
+
+func (pass *TypeResolution) resolveCallExpression(call *tree.CallExpression) {
+	if isResolved(call) {
+		return
+	}
+}
+
+func (pass *TypeResolution) reportFailedInference(node tree.Node) {
+	panic("Failed to infer node")
+}
+
 func isResolved(expression tree.Expression) bool {
 	_, isResolved := expression.ResolvedType()
 	return isResolved
@@ -91,4 +137,8 @@ var binaryOperationTypes = map[token.Operator] typeOperation {
 	token.MulOperator:           identityTypeOperation,
 	token.DivOperator:           identityTypeOperation,
 	token.ModOperator:           identityTypeOperation,
+}
+
+var unaryOperationTypes = map[token.Operator] typeOperation {
+	token.NegateOperator: alwaysBoolean,
 }

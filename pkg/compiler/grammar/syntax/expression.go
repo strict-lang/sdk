@@ -317,6 +317,7 @@ func (parsing *Parsing) parseNonEmptyArgumentList() (arguments tree.CallArgument
 		arguments = append(arguments, parsing.parseCallArgument())
 		parsing.consumeTokenAfterArgument()
 	}
+	parsing.skipOperator(token.RightParenOperator)
 	return arguments
 }
 
