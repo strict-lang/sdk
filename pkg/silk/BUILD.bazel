@@ -5,7 +5,7 @@ go_library(
     srcs = [
         "access.go",
         "block.go",
-        "class_definition.go",
+        "class.go",
         "file.go",
         "instruction.go",
         "method.go",
@@ -13,7 +13,7 @@ go_library(
         "types.go",
         "visitor.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/silk",
+    importpath = "strict.dev/sdk/pkg/silk",
     visibility = ["//visibility:public"],
     deps = ["//pkg/silk/symbol:go_default_library"],
 )

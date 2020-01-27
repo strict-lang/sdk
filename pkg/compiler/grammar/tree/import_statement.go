@@ -2,7 +2,7 @@ package tree
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/input"
 	"strings"
 )
 

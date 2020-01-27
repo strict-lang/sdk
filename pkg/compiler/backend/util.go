@@ -1,6 +1,6 @@
 package backend
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+import "strict.dev/sdk/pkg/compiler/grammar/tree"
 
 func ExtractStatements(nodes []tree.Node) (statements []tree.Statement) {
 	for _, node := range nodes {

@@ -1,14 +1,14 @@
 package compiler
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/arduino"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/headerfile"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/sourcefile"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/testfile"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/backend"
+	"strict.dev/sdk/pkg/compiler/backend/arduino"
+	"strict.dev/sdk/pkg/compiler/backend/headerfile"
+	"strict.dev/sdk/pkg/compiler/backend/sourcefile"
+	"strict.dev/sdk/pkg/compiler/backend/testfile"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/syntax"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
 )
 
 type Compilation struct {

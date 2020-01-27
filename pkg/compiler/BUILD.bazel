@@ -7,7 +7,7 @@ go_library(
         "compile.go",
         "source.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler",
+    importpath = "strict.dev/sdk/pkg/compiler",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/backend:go_default_library",

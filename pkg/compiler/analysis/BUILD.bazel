@@ -11,7 +11,7 @@ go_library(
         "symbol_entering.go",
         "type_resolution.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/analysis",
+    importpath = "strict.dev/sdk/pkg/compiler/analysis",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/diagnostic:go_default_library",

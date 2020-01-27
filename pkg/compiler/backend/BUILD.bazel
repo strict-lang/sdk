@@ -19,7 +19,7 @@ go_library(
         "util.go",
         "visitor.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/backend",
+    importpath = "strict.dev/sdk/pkg/compiler/backend",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/grammar/token:go_default_library",

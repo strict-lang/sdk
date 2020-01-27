@@ -1,6 +1,6 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 // YieldStatement yields an expression to an implicit list that is returned by
 // the method it is defined in. Yield statements can only be in methods,

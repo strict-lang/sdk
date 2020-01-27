@@ -12,7 +12,7 @@ go_library(
         "scanning.go",
         "text.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical",
+    importpath = "strict.dev/sdk/pkg/compiler/grammar/lexical",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/diagnostic:go_default_library",

@@ -12,7 +12,7 @@ go_library(
         "structure_stack.go",
         "types.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax",
+    importpath = "strict.dev/sdk/pkg/compiler/grammar/syntax",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/diagnostic:go_default_library",

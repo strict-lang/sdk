@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
 )
 
 func (generation *Generation) GenerateTranslationUnit(unit *tree.TranslationUnit) {

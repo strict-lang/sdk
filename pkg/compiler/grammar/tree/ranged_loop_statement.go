@@ -1,6 +1,6 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 // RangedLoopStatement is a control statement that. Counting from an initial
 // value to some target while incrementing a field each step. The values of a

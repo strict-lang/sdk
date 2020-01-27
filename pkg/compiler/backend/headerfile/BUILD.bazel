@@ -6,7 +6,7 @@ go_library(
         "class_definition.go",
         "generation.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/backend/headerfile",
+    importpath = "strict.dev/sdk/pkg/compiler/backend/headerfile",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/backend:go_default_library",

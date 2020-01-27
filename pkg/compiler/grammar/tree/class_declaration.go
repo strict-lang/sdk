@@ -1,9 +1,9 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/typing"
 )
 
 type ClassDeclaration struct {
@@ -119,6 +119,6 @@ func (class *ClassDeclaration) hasChildren(children []Node) bool {
 	return true
 }
 
-func (class *ClassDeclaration) NewActualClass() typing.Class {
+func (class *ClassDeclaration) NewActualClass() typing.Type {
 	return nil
 }

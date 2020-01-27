@@ -6,7 +6,7 @@ go_library(
         "builder.go",
         "linemap.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/input/linemap",
+    importpath = "strict.dev/sdk/pkg/compiler/input/linemap",
     visibility = ["//visibility:public"],
     deps = ["//pkg/compiler/input:go_default_library"],
 )

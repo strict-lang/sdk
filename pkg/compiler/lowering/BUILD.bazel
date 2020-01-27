@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["let_binding.go"],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/lowering",
+    importpath = "strict.dev/sdk/pkg/compiler/lowering",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/analysis:go_default_library",

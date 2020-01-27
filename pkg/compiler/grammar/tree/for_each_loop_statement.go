@@ -1,6 +1,6 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 // ForEachLoopStatement is a control statement. Iterating an enumeration without
 // requiring explicit indexing. As opposed to the ranged loop, the element

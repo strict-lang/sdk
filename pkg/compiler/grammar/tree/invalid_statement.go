@@ -1,6 +1,6 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 // InvalidStatement represents a statement that has not been parsed correctly.
 type InvalidStatement struct {

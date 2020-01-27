@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/pkg/compiler"
+	"strict.dev/sdk/pkg/compiler"
 	"os"
 )
 

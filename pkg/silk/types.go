@@ -1,6 +1,6 @@
 package silk
 
-import "gitlab.com/strict-lang/sdk/pkg/silk/symbol"
+import "strict.dev/sdk/pkg/silk/symbol"
 
 type Type interface {
 	ClassReference() symbol.Reference

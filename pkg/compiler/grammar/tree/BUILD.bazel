@@ -55,7 +55,7 @@ go_library(
         "wildcard_node.go",
         "yield_statement.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree",
+    importpath = "strict.dev/sdk/pkg/compiler/grammar/tree",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/grammar/token:go_default_library",

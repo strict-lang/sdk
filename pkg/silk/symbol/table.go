@@ -2,9 +2,6 @@ package symbol
 
 type Reference int
 
-type Symbol interface {
-}
-
 type Table struct {
 	symbols []Symbol
 }

@@ -1,6 +1,6 @@
 package silk
 
-import "gitlab.com/strict-lang/sdk/pkg/silk/symbol"
+import "strict.dev/sdk/pkg/silk/symbol"
 
 type Operation interface {
 	Matches(Operation) bool
@@ -18,6 +18,17 @@ func (WildcardOperation) Matches(Operation) bool {
 }
 
 func (WildcardOperation) Accept(visitor Visitor, instruction *Instruction) {}
+
+type NoOperation struct {}
+
+func (operation NoOperation) Matches(target Operation) bool {
+	_, isSameType := target.(NoOperation)
+	return isSameType
+}
+
+func (operation NoOperation) Accept(visitor Visitor, instruction *Instruction) {
+	visitor.VisitNoOperation(instruction, operation)
+}
 
 type Variable interface {}
 

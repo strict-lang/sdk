@@ -1,11 +1,11 @@
 package silk
 
-import "gitlab.com/strict-lang/sdk/pkg/silk/symbol"
+import "strict.dev/sdk/pkg/silk/symbol"
 
 type Version int
 
 type File struct {
 	Symbols *symbol.Table
-	ClassDefinition *ClassDefinition
+	Class *Class
 	Version Version
 }

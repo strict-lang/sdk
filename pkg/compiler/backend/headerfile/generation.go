@@ -1,8 +1,8 @@
 package headerfile
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/backend"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
 )
 
 type Generation struct {

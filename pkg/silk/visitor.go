@@ -12,4 +12,5 @@ type Visitor interface {
 	VisitPop(*Instruction, *PopOperation)
 	VisitReturn(*Instruction, *ReturnOperation)
 	VisitCreate(*Instruction, *CreateOperation)
+	VisitNoOperation(*Instruction, NoOperation)
 }

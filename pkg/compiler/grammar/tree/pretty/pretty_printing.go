@@ -3,7 +3,7 @@ package pretty
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
 	"strings"
 )
 
@@ -291,7 +291,7 @@ func (printing *Printing) printRichIdentifier(identifier *tree.Identifier) {
 	printing.printIndentedStringField("value", identifier.Value)
 	printing.printResolvedType(identifier)
 	if identifier.IsBound() {
-		printing.printIndentedStringField("boundTo", identifier.Binding().Name())
+		printing.printIndentedStringField("boundTo", identifier.Binding().String())
 	}
 	printing.printNodeEnd()
 }
@@ -438,9 +438,9 @@ func (printing *Printing) printListSelectExpression(expression *tree.ListSelectE
 
 func (printing *Printing) printCallExpression(call *tree.CallExpression) {
 	printing.printNodeBegin("CallExpression")
+	printing.printResolvedType(call)
 	printing.printIndentedNodeField("method", call.Target)
 	printing.printIndentedListFieldBegin("arguments")
-	printing.printResolvedType(call)
 	for _, argument := range call.Arguments {
 		printing.printListField(argument)
 	}

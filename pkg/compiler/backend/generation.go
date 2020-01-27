@@ -2,7 +2,7 @@ package backend
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
 	"strings"
 )
 

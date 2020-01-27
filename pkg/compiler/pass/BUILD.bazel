@@ -6,7 +6,7 @@ go_library(
         "pass.go",
         "pass_execution.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/pass",
+    importpath = "strict.dev/sdk/pkg/compiler/pass",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/diagnostic:go_default_library",

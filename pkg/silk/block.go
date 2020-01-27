@@ -14,6 +14,15 @@ func NewEntryBlock(id BlockId) *Block {
 	return &Block{Id: id}
 }
 
+func NewChildBlock(block *Block, id BlockId) *Block {
+	created := &Block{
+		Id: id,
+		predecessors: []*Block{block},
+	}
+	block.AddSuccessor(created)
+	return created
+}
+
 func (block *Block) AddPredecessor(predecessor *Block) {
 	predecessor.successors = append(predecessor.successors, block)
 	block.predecessors = append(block.predecessors, predecessor)

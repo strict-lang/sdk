@@ -2,7 +2,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["table.go"],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/silk/symbol",
+    srcs = [
+        "symbols.go",
+        "table.go",
+    ],
+    importpath = "strict.dev/sdk/pkg/silk/symbol",
     visibility = ["//visibility:public"],
 )

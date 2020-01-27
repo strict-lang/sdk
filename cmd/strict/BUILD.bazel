@@ -13,7 +13,7 @@ go_library(
         "files.go",
         "main.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/cmd/strict",
+    importpath = "strict.dev/sdk/cmd/strict",
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/compiler:go_default_library",

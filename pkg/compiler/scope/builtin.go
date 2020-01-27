@@ -1,6 +1,6 @@
 package scope
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/typing"
+import "strict.dev/sdk/pkg/compiler/typing"
 
 const builtinScopeId = Id("builtin")
 

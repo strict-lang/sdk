@@ -16,7 +16,7 @@ go_library(
         "token.go",
         "valued_token.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token",
+    importpath = "strict.dev/sdk/pkg/compiler/grammar/token",
     visibility = ["//visibility:public"],
     deps = ["//pkg/compiler/input:go_default_library"],
 )
