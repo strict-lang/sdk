@@ -1,22 +1,22 @@
 package arduino
 
 import (
-	"strict.dev/sdk/pkg/compiler/backend"
+	"strict.dev/sdk/pkg/compiler/backend/cpp"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 )
 
 type Generation struct {
-	backend.Extension
+	cpp.Extension
 
 	className string
-	parent    *backend.Generation
+	parent    *cpp.Generation
 }
 
 func NewGeneration() *Generation {
 	return &Generation{}
 }
 
-func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.DelegatingVisitor) {
+func (generation *Generation) ModifyVisitor(parent *cpp.Generation, visitor *tree.DelegatingVisitor) {
 	generation.parent = parent
 	parent.DisableNamespaceSelectors()
 	parent.DisableStdlibClassImport()
@@ -42,7 +42,7 @@ func (generation *Generation) VisitClassDeclaration(declaration *tree.ClassDecla
 	fields, setupBody := extractFieldDeclarations(others)
 	generation.writeGlobalFieldDeclarations(fields)
 	generation.writeMethodDefinitions(methods)
-	generation.generateSetupMethod(backend.ExtractStatements(setupBody))
+	generation.generateSetupMethod(cpp.ExtractStatements(setupBody))
 }
 
 func (generation *Generation) generateSetupMethod(statements []tree.Statement) {

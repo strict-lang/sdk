@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"strict.dev/sdk/pkg/compiler"
 	"os"
+	"strict.dev/sdk/pkg/compiler/backend"
 )
 
 var buildCommand = &cobra.Command{
@@ -67,12 +68,12 @@ func writeGeneratedSources(compilation compiler.Result) (err error) {
 	return nil
 }
 
-func writeGeneratedSourceFile(generated compiler.Generated) error {
-	file, err := targetFile(generated.FileName)
+func writeGeneratedSourceFile(generated backend.GeneratedFile) error {
+	file, err := targetFile(generated.Name)
 	if err != nil {
 		return err
 	}
-	_, err = file.Write(generated.Bytes)
+	_, err = file.Write(generated.Content)
 	return err
 }
 

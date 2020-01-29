@@ -1,25 +1,26 @@
-package sourcefile
+package cpp
 
 import (
 	"fmt"
-	"strict.dev/sdk/pkg/compiler/backend"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 )
 
-type Generation struct {
-	backend.Extension
+type SourceFileGeneration struct {
+	Extension
 
 	className             string
-	generation            *backend.Generation
+	generation            *Generation
 	hasWrittenInit        bool
 	hasWrittenConstructor bool
 }
 
-func NewGeneration() *Generation {
-	return &Generation{}
+func NewSourceFileGeneration() *SourceFileGeneration {
+	return &SourceFileGeneration{}
 }
 
-func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor *tree.DelegatingVisitor) {
+func (generation *SourceFileGeneration) ModifyVisitor(
+	parent *Generation, visitor *tree.DelegatingVisitor) {
+
 	generation.generation = parent
 	visitor.ClassDeclarationVisitor = generation.generateClassDeclaration
 	visitor.MethodDeclarationVisitor = generation.generateMethodDeclaration
@@ -27,18 +28,20 @@ func (generation *Generation) ModifyVisitor(parent *backend.Generation, visitor 
 	generation.importMatchingHeader()
 }
 
-func (generation *Generation) importMatchingHeader() {
+func (generation *SourceFileGeneration) importMatchingHeader() {
 	className := generation.generation.Unit.Class.Name
 	generation.generation.EmitFormatted("#include \"%s.h\"", className)
 	generation.generation.EmitEndOfLine()
 	generation.generation.EmitEndOfLine()
 }
 
-func (generation *Generation) generateClassDeclaration(declaration *tree.ClassDeclaration) {
+func (generation *SourceFileGeneration) generateClassDeclaration(
+	declaration *tree.ClassDeclaration) {
+
 	generation.className = declaration.Name
 	members, initBody := filterDeclarations(declaration.Children)
 	if len(initBody) > 0 {
-		generation.writeInitMethod(backend.ExtractStatements(initBody))
+		generation.writeInitMethod(ExtractStatements(initBody))
 		generation.generation.EmitEndOfLine()
 		generation.hasWrittenInit = true
 	}
@@ -51,7 +54,7 @@ func (generation *Generation) generateClassDeclaration(declaration *tree.ClassDe
 	}
 }
 
-func (generation *Generation) writeImplicitConstructor() {
+func (generation *SourceFileGeneration) writeImplicitConstructor() {
 	generation.generateConstructorDeclaration(&tree.ConstructorDeclaration{
 		Parameters: []*tree.Parameter{},
 		Body:      &tree.StatementBlock{},
@@ -82,7 +85,9 @@ func createInitStatement(field *tree.FieldDeclaration) tree.Node {
 	}
 }
 
-func filterDeclarations(nodes []tree.Node) (declarations []tree.Node, remainder []tree.Node) {
+func filterDeclarations(
+	nodes []tree.Node) (declarations []tree.Node, remainder []tree.Node) {
+
 	for _, node := range nodes {
 		switch node.(type) {
 		case *tree.MethodDeclaration, *tree.ConstructorDeclaration:
@@ -97,7 +102,9 @@ func filterDeclarations(nodes []tree.Node) (declarations []tree.Node, remainder 
 	return
 }
 
-func (generation *Generation) generateMethodDeclaration(declaration *tree.MethodDeclaration) {
+func (generation *SourceFileGeneration) generateMethodDeclaration(
+	declaration *tree.MethodDeclaration) {
+
 	name := fmt.Sprintf("%s::%s", generation.className, declaration.Name.Value)
 	instanceMethod := &tree.MethodDeclaration{
 		Name: &tree.Identifier{
@@ -110,7 +117,8 @@ func (generation *Generation) generateMethodDeclaration(declaration *tree.Method
 	generation.generation.GenerateMethod(instanceMethod)
 }
 
-func (generation *Generation) generateConstructorDeclaration(declaration *tree.ConstructorDeclaration) {
+func (generation *SourceFileGeneration) generateConstructorDeclaration(
+	declaration *tree.ConstructorDeclaration) {
 	generation.hasWrittenConstructor = true
 	output := generation.generation
 	className := generation.generation.Unit.Class.Name
@@ -126,21 +134,21 @@ func (generation *Generation) generateConstructorDeclaration(declaration *tree.C
 	output.EmitNode(body)
 }
 
-func (generation *Generation) generateInitCall() tree.Node {
+func (generation *SourceFileGeneration) generateInitCall() tree.Node {
 	return &tree.ExpressionStatement{
 		Expression: &tree.CallExpression{
 			Target: &tree.Identifier{
-				Value: backend.InitMethodName,
+				Value: InitMethodName,
 			},
 			Arguments: []*tree.CallArgument{},
 		},
 	}
 }
 
-func (generation *Generation) writeInitMethod(body []tree.Statement) {
+func (generation *SourceFileGeneration) writeInitMethod(body []tree.Statement) {
 	generation.generateMethodDeclaration(&tree.MethodDeclaration{
 		Name: &tree.Identifier{
-			Value: backend.InitMethodName,
+			Value: InitMethodName,
 		},
 		Type: &tree.ConcreteTypeName{
 			Name: "void",

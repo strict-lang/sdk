@@ -1,4 +1,4 @@
-package backend
+package cpp
 
 import (
 	"strict.dev/sdk/pkg/compiler/grammar/token"

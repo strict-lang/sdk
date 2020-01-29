@@ -1,27 +1,24 @@
-package headerfile
+package cpp
 
-import (
-	"strict.dev/sdk/pkg/compiler/backend"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
-)
+import "strict.dev/sdk/pkg/compiler/grammar/tree"
 
-type classDefinition struct {
+type headerClass struct {
 	name               string
 	parameters         []*tree.ClassParameter
 	superTypes         []tree.TypeName
 	otherMembers       []tree.Node
 	fields             []tree.Node
-	generation         *backend.Generation
+	generation         *Generation
 	shouldCreateInit   bool
 	declarationVisitor tree.Visitor
 }
 
 func newClassDefinition(
-	generation *backend.Generation, declaration *tree.ClassDeclaration) *classDefinition {
+	generation *Generation, declaration *tree.ClassDeclaration) *headerClass {
 
 	fields, otherMembers := filterFieldDeclarations(declaration.Children)
 	createInit := len(fields) > 0
-	definition := &classDefinition{
+	definition := &headerClass{
 		name:             declaration.Name,
 		parameters:       declaration.Parameters,
 		superTypes:       declaration.SuperTypes,
@@ -34,7 +31,7 @@ func newClassDefinition(
 	return definition
 }
 
-func createVisitorForDefinition(definition *classDefinition) tree.Visitor {
+func createVisitorForDefinition(definition *headerClass) tree.Visitor {
 	visitor := tree.NewEmptyVisitor()
 	visitor.MethodDeclarationVisitor = definition.writeMethodDeclaration
 	visitor.FieldDeclarationVisitor = definition.writeFieldDeclaration
@@ -54,7 +51,7 @@ func filterFieldDeclarations(nodes []tree.Node) (fields []tree.Node, others []tr
 	return
 }
 
-func (class *classDefinition) writeTemplates() {
+func (class *headerClass) writeTemplates() {
 	if len(class.parameters) == 0 {
 		return
 	}
@@ -68,7 +65,7 @@ func (class *classDefinition) writeTemplates() {
 	class.generation.Emit(">")
 }
 
-func (class *classDefinition) writeSuperTypeInheritance() {
+func (class *headerClass) writeSuperTypeInheritance() {
 	for index, superType := range class.superTypes {
 		if index != 0 {
 			class.generation.Emit(", ")
@@ -77,7 +74,7 @@ func (class *classDefinition) writeSuperTypeInheritance() {
 	}
 }
 
-func (class *classDefinition) generateCode() {
+func (class *headerClass) generateCode() {
 	generation := class.generation
 	generation.EmitFormatted("class %s ", class.name)
 	class.writeSuperTypeInheritance()
@@ -93,19 +90,19 @@ func (class *classDefinition) generateCode() {
 	generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) writeMethodDeclaration(declaration *tree.MethodDeclaration) {
+func (class *headerClass) writeMethodDeclaration(declaration *tree.MethodDeclaration) {
 	class.generation.EmitMethodDeclaration(declaration)
 	class.generation.Emit(";")
 	class.generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) writeFieldDeclaration(declaration *tree.FieldDeclaration) {
+func (class *headerClass) writeFieldDeclaration(declaration *tree.FieldDeclaration) {
 	class.generation.GenerateFieldDeclaration(declaration)
 	class.generation.Emit(";")
 	class.generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) shouldWriteExplicitDefaultConstructor() bool {
+func (class *headerClass) shouldWriteExplicitDefaultConstructor() bool {
 	for _, member := range class.otherMembers {
 		if constructor, isConstructor := member.(*tree.ConstructorDeclaration); isConstructor {
 			if len(constructor.Parameters) == 0 {
@@ -116,7 +113,7 @@ func (class *classDefinition) shouldWriteExplicitDefaultConstructor() bool {
 	return true
 }
 
-func (class *classDefinition) writePublicMembers() {
+func (class *headerClass) writePublicMembers() {
 	generation := class.generation
 	generation.Emit(" public:")
 	generation.IncreaseIndent()
@@ -138,16 +135,16 @@ func (class *classDefinition) writePublicMembers() {
 	generation.DecreaseIndent()
 }
 
-func (class *classDefinition) shouldWritePrivateMembers() bool {
+func (class *headerClass) shouldWritePrivateMembers() bool {
 	return class.shouldCreateInit // Get amount of private members
 }
 
-func (class *classDefinition) writeInitMethod() {
-	class.generation.EmitFormatted("void %s();", backend.InitMethodName)
+func (class *headerClass) writeInitMethod() {
+	class.generation.EmitFormatted("void %s();", InitMethodName)
 	class.generation.EmitEndOfLine()
 }
 
-func (class *classDefinition) writePrivateMembers() {
+func (class *headerClass) writePrivateMembers() {
 	class.generation.Emit(" private:")
 	class.generation.IncreaseIndent()
 	class.generation.EmitEndOfLine()
@@ -158,7 +155,7 @@ func (class *classDefinition) writePrivateMembers() {
 	class.generation.DecreaseIndent()
 }
 
-func (class *classDefinition) writeConstructorDeclaration(declaration *tree.ConstructorDeclaration) {
+func (class *headerClass) writeConstructorDeclaration(declaration *tree.ConstructorDeclaration) {
 	output := class.generation
 	className := output.Unit.Class.Name
 	output.Emit("explicit ")
@@ -168,7 +165,7 @@ func (class *classDefinition) writeConstructorDeclaration(declaration *tree.Cons
 	output.EmitEndOfLine()
 }
 
-func writeExplicitDefaultConstructor(name string, generation *backend.Generation) {
+func writeExplicitDefaultConstructor(name string, generation *Generation) {
 	generation.EmitFormatted("explicit %s()", name)
 	generation.Emit(";")
 	generation.EmitEndOfLine()

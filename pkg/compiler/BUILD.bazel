@@ -11,10 +11,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/backend:go_default_library",
-        "//pkg/compiler/backend/arduino:go_default_library",
-        "//pkg/compiler/backend/headerfile:go_default_library",
-        "//pkg/compiler/backend/sourcefile:go_default_library",
-        "//pkg/compiler/backend/testfile:go_default_library",
+        "//pkg/compiler/backend/cpp:go_default_library",
         "//pkg/compiler/diagnostic:go_default_library",
         "//pkg/compiler/grammar/syntax:go_default_library",
         "//pkg/compiler/grammar/tree:go_default_library",

@@ -17,6 +17,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/compiler:go_default_library",
+        "//pkg/compiler/backend:go_default_library",
         "//pkg/compiler/diagnostic:go_default_library",
         "//pkg/compiler/grammar/lexical:go_default_library",
         "//pkg/compiler/grammar/token:go_default_library",

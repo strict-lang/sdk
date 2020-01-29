@@ -1,12 +1,13 @@
-package backend
+package cpp
 
 import (
 	"fmt"
+	"strict.dev/sdk/pkg/compiler/backend"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 	"strings"
 )
 
-// Generation generates C code from an tree.
+// HeaderFileGeneration generates C code from an tree.
 type Generation struct {
 	Unit                          *tree.TranslationUnit
 	output                        *strings.Builder
@@ -24,13 +25,13 @@ type FileNaming interface {
 	FileNameForUnit(unit *tree.TranslationUnit)
 }
 
-func NewGenerationWithExtension(unit *tree.TranslationUnit, extension Extension) *Generation {
-	generation := NewGeneration(unit)
+func NewGenerationWithExtension(input backend.Input, extension Extension) *Generation {
+	generation := NewGeneration(input.Unit)
 	extension.ModifyVisitor(generation, generation.visitor)
 	return generation
 }
 
-// NewGeneration constructs a Generation that generates C code from
+// NewGeneration constructs a HeaderFileGeneration that generates C code from
 // the nodes in the passed translation-Unit.
 func NewGeneration(unit *tree.TranslationUnit) (generation *Generation) {
 	generation = &Generation{

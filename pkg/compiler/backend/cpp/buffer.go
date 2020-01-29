@@ -1,4 +1,4 @@
-package backend
+package cpp
 
 type OutputStream interface {
 	WriteLine(string)

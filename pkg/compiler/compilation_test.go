@@ -1,7 +1,6 @@
 package compiler
 
 import (
-	"fmt"
 	"strict.dev/sdk/pkg/compiler/diagnostic"
 	"testing"
 )
@@ -31,6 +30,6 @@ method Compute()
 `)
 	result.Diagnostics.PrintEntries(diagnostic.NewFmtPrinter())
 	for _, file := range result.GeneratedFiles {
-		fmt.Println(string(file.Bytes))
+		testing.Log(string(file.Content))
 	}
 }

@@ -1,24 +1,25 @@
-package testfile
+package cpp
 
 import (
 	"fmt"
-	"strict.dev/sdk/pkg/compiler/backend"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 )
 
-type Extension struct{}
+type TestFileGeneration struct{}
 
-var _ backend.Extension = &Extension{}
+var _ Extension = &TestFileGeneration{}
 
 type TestFile struct {
-	generation *backend.Generation
+	generation *Generation
 }
 
-func NewGeneration() *Extension {
-	return &Extension{}
+func NewTestFileGeneration() *TestFileGeneration {
+	return &TestFileGeneration{}
 }
 
-func (extension *Extension) ModifyVisitor(generation *backend.Generation, visitor *tree.DelegatingVisitor) {
+func (extension *TestFileGeneration) ModifyVisitor(
+	generation *Generation, visitor *tree.DelegatingVisitor) {
+
 	testFile := &TestFile{
 		generation: generation,
 	}
@@ -72,7 +73,7 @@ func (testFile *TestFile) emitMethodDeclaration(method *tree.MethodDeclaration) 
 }
 
 func generateAssertionFailureMessage(expression tree.Node) string {
-	assertionMessage := backend.NewAssertionMessageComputation()
+	assertionMessage := NewAssertionMessageComputation()
 	assertionMessage.GenerateNode(expression)
 	return assertionMessage.String()
 }
@@ -81,10 +82,12 @@ type TestDefinition struct {
 	testedMethodName string
 	testMethodName   string
 	node             *tree.TestStatement
-	generation       *backend.Generation
+	generation       *Generation
 }
 
-func NewTestDefinition(node *tree.TestStatement, generation *backend.Generation) *TestDefinition {
+func NewTestDefinition(
+	node *tree.TestStatement, generation *Generation) *TestDefinition {
+
 	return &TestDefinition{
 		testedMethodName: node.MethodName,
 		testMethodName:   produceTestMethodName(node.MethodName),
