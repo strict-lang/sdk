@@ -6,6 +6,11 @@ type ConcreteTypeName struct {
 	Name   string
 	Region input.Region
 	Parent Node
+	typeReference *TypeReference
+}
+
+func (concrete *ConcreteTypeName) TypeReference() *TypeReference {
+	return concrete.typeReference
 }
 
 func (concrete *ConcreteTypeName) SetEnclosingNode(target Node) {

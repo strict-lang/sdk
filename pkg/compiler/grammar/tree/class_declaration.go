@@ -120,5 +120,9 @@ func (class *ClassDeclaration) hasChildren(children []Node) bool {
 }
 
 func (class *ClassDeclaration) NewActualClass() typing.Type {
-	return nil
+	// TODO: Create proper class
+	return &typing.ConcreteType{
+		Name:   class.Name,
+		Traits: []typing.Type{},
+	}
 }

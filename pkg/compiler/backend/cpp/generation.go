@@ -69,7 +69,7 @@ func (generation *Generation) Emit(code string) {
 
 func (generation *Generation) EmitIndent() {
 	for index := int8(0); index < generation.indent; index++ {
-		generation.Emit(" ")
+		generation.Emit("\t")
 	}
 }
 

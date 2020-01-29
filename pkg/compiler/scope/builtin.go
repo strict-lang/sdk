@@ -13,9 +13,11 @@ var Builtins = struct {
 	Float *Class
 	Boolean *Class
 	String *Class
+	Void *Class
 	True *Field
 	False *Field
 }{
+	Void: createVoidType(),
 	Number: createNumberType(),
 	Float: createFloatType(),
 	Boolean: booleanType,
@@ -32,8 +34,15 @@ var builtinScope = func() Scope {
 	scope.Insert(Builtins.String)
 	scope.Insert(Builtins.True)
 	scope.Insert(Builtins.False)
+	scope.Insert(Builtins.Void)
 	return scope
 }()
+
+func createVoidType() *Class {
+	number := createPrimitiveClass("Void")
+	number.ActualClass = typing.NewEmptyClass("Void")
+	return number
+}
 
 func createNumberType() *Class {
 	number := createPrimitiveClass("Number")

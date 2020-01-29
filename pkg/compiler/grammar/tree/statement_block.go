@@ -105,10 +105,10 @@ func (block *StatementBlock) InsertBeforeOffset(offset input.Offset, node Statem
 }
 
 func (block *StatementBlock) InsertBeforeIndex(index int, node Statement) {
-	if index <= 1 {
+	if index < 1 {
 		block.Prepend(node)
 	} else {
-		insert(block.Children, index-1, node)
+		block.Children = insert(block.Children, index, node)
 	}
 }
 

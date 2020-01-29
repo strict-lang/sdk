@@ -6,6 +6,9 @@ import (
 	"strict.dev/sdk/pkg/compiler/diagnostic"
 	"strict.dev/sdk/pkg/compiler/grammar/syntax"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/isolate"
+	"strict.dev/sdk/pkg/compiler/lowering"
+	"strict.dev/sdk/pkg/compiler/pass"
 )
 
 type Compilation struct {
@@ -43,12 +46,22 @@ func (compilation *Compilation) Compile() Result {
 			UnitName:       compilation.Name,
 		}
 	}
+	compilation.Lower(parseResult.TranslationUnit)
 	return Result{
 		GeneratedFiles: compilation.generateOutput(parseResult.TranslationUnit),
 		Diagnostics:    parseResult.Diagnostics,
 		Error:          nil,
 		UnitName:       parseResult.TranslationUnit.Name,
 	}
+}
+
+func (compilation *Compilation) Lower(unit *tree.TranslationUnit) {
+	execution, _ := pass.NewExecution(lowering.LetBindingLoweringPassId, &pass.Context{
+		Unit:       unit,
+		Diagnostic: diagnostic.NewBag(),
+		Isolate:    isolate.SingleThreaded(),
+	})
+	_ = execution.Run()
 }
 
 func (compilation *Compilation) parse() syntax.Result {

@@ -68,7 +68,10 @@ func (definition *MethodDefinition) generateBody() string {
 	// a method body. It will generate open and close brackets and this will produce
 	// faulty code, if a prologue or epilogue is generated.
 	if block, ok := definition.declaration.Body.(*tree.StatementBlock); ok {
-		for _, child := range block.Children {
+		for index, child := range block.Children {
+			if index != 0 {
+				definition.generation.EmitIndent()
+			}
 			definition.generation.EmitNode(child)
 		}
 		return definition.buffer.String()

@@ -4,6 +4,7 @@ import (
 	"strict.dev/sdk/pkg/compiler/input"
 	"strict.dev/sdk/pkg/compiler/scope"
 	"strconv"
+	"strings"
 )
 
 type NumberLiteral struct {
@@ -33,7 +34,7 @@ func (literal *NumberLiteral) ResolvedType() (*scope.Class, bool) {
 
 func (literal *NumberLiteral) IsFloat() bool {
 	_, err := strconv.ParseFloat(literal.Value, floatBitSize)
-	return err == nil
+	return err == nil && strings.Contains(literal.Value, ".")
 }
 
 func (literal *NumberLiteral) Accept(visitor Visitor) {

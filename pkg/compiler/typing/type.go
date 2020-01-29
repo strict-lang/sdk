@@ -16,5 +16,8 @@ type Visitor interface {
 }
 
 func NewEmptyClass(name string) Type {
-	return nil
+	return &ConcreteType{
+		Name:   name,
+		Traits: []Type{},
+	}
 }

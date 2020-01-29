@@ -6,6 +6,11 @@ type OptionalTypeName struct {
 	Region input.Region
 	TypeName TypeName
 	Parent Node
+	typeReference *TypeReference
+}
+
+func (name *OptionalTypeName) TypeReference() *TypeReference {
+	return name.typeReference
 }
 
 func (name *OptionalTypeName) FullName() string {

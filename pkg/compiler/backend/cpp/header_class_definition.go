@@ -82,9 +82,7 @@ func (class *headerClass) generateCode() {
 	generation.IncreaseIndent()
 	generation.EmitEndOfLine()
 	class.writePublicMembers()
-	if class.shouldWritePrivateMembers() {
-		class.writePrivateMembers()
-	}
+	class.writePrivateMembers()
 	generation.DecreaseIndent()
 	generation.Emit("};")
 	generation.EmitEndOfLine()
@@ -115,23 +113,22 @@ func (class *headerClass) shouldWriteExplicitDefaultConstructor() bool {
 
 func (class *headerClass) writePublicMembers() {
 	generation := class.generation
-	generation.Emit(" public:")
+	generation.Emit("public:")
 	generation.IncreaseIndent()
 	generation.EmitEndOfLine()
-	generation.EmitIndent()
 	if class.shouldWriteExplicitDefaultConstructor() {
+		generation.EmitIndent()
 		writeExplicitDefaultConstructor(class.name, generation)
 	}
 	for _, member := range class.otherMembers {
-		generation.EmitIndent()
 		member.Accept(class.declarationVisitor)
 	}
-	generation.EmitEndOfLine()
+	if len(class.otherMembers) != 0 && len(class.fields) != 0 {
+		generation.EmitEndOfLine()
+	}
 	for _, field := range class.fields {
-		generation.EmitIndent()
 		field.Accept(class.declarationVisitor)
 	}
-	generation.EmitEndOfLine()
 	generation.DecreaseIndent()
 }
 
@@ -140,18 +137,15 @@ func (class *headerClass) shouldWritePrivateMembers() bool {
 }
 
 func (class *headerClass) writeInitMethod() {
-	class.generation.EmitFormatted("void %s();", InitMethodName)
+	class.generation.EmitFormatted("void %s() ;", InitMethodName)
 	class.generation.EmitEndOfLine()
 }
 
 func (class *headerClass) writePrivateMembers() {
-	class.generation.Emit(" private:")
-	class.generation.IncreaseIndent()
+	class.generation.Emit("private:")
 	class.generation.EmitEndOfLine()
-	if class.shouldCreateInit {
-		class.generation.EmitIndent()
-		class.writeInitMethod()
-	}
+	class.generation.EmitIndent()
+	class.writeInitMethod()
 	class.generation.DecreaseIndent()
 }
 
@@ -168,5 +162,7 @@ func (class *headerClass) writeConstructorDeclaration(declaration *tree.Construc
 func writeExplicitDefaultConstructor(name string, generation *Generation) {
 	generation.EmitFormatted("explicit %s()", name)
 	generation.Emit(";")
+	generation.EmitEndOfLine()
+	generation.EmitIndent()
 	generation.EmitEndOfLine()
 }

@@ -9,7 +9,6 @@ func (generation *Generation) GenerateConditionalStatement(statement *tree.Condi
 	generation.EmitNode(statement.Condition)
 	generation.Emit(") ")
 	generation.EmitNode(statement.Consequence)
-	defer generation.EmitEndOfLine()
 	if statement.Alternative != nil {
 		generation.Emit(" else ")
 		generation.EmitNode(statement.Alternative)
@@ -23,6 +22,7 @@ const (
 
 func (generation *Generation) GenerateBreakStatement(statement *tree.BreakStatement) {
 	generation.Emit("break;")
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateYieldStatement(statement *tree.YieldStatement) {
@@ -32,6 +32,7 @@ func (generation *Generation) GenerateYieldStatement(statement *tree.YieldStatem
 	generation.EmitFormatted("%s.push_back(", yieldListName)
 	generation.EmitNode(statement.Value)
 	generation.EmitFormatted(");")
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) declareYieldList() {
@@ -55,18 +56,14 @@ func (generation *Generation) GenerateRangedLoopStatement(statement *tree.Ranged
 	generation.EmitFormatted("; %s < ", statement.Field.Value)
 	generation.EmitNode(statement.End)
 	generation.EmitFormatted("; %s++) ", statement.Field.Value)
-
 	generation.EmitNode(statement.Body)
-	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateForEachLoopStatement(statement *tree.ForEachLoopStatement) {
 	generation.EmitFormatted("for (auto %s : ", statement.Field.Value)
 	generation.EmitNode(statement.Sequence)
 	generation.Emit(") ")
-
 	generation.EmitNode(statement.Body)
-	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateReturnStatement(statement *tree.ReturnStatement) {
@@ -111,6 +108,7 @@ func (generation *Generation) GenerateBlockStatement(block *tree.StatementBlock)
 	generation.Emit("\n")
 	generation.EmitIndent()
 	generation.Emit("}")
+	generation.EmitEndOfLine()
 }
 
 func (generation *Generation) GenerateExpressionStatement(statement *tree.ExpressionStatement) {

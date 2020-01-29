@@ -13,6 +13,11 @@ type GenericTypeName struct {
 	Generic TypeName
 	Region  input.Region
 	Parent Node
+	typeReference *TypeReference
+}
+
+func (name *GenericTypeName) TypeReference() *TypeReference {
+	return name.typeReference
 }
 
 func (name *GenericTypeName) SetEnclosingNode(target Node) {

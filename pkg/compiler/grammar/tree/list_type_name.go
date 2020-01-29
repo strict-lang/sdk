@@ -9,6 +9,11 @@ type ListTypeName struct {
 	Element TypeName
 	Region  input.Region
 	Parent Node
+	typeReference *TypeReference
+}
+
+func (name *ListTypeName) TypeReference() *TypeReference {
+	return name.typeReference
 }
 
 func (name *ListTypeName) SetEnclosingNode(target Node) {

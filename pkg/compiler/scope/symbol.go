@@ -43,7 +43,9 @@ func (class *Class) Name() string {
 }
 
 func (class *Class) String() string {
-	return fmt.Sprintf("Class{Name: %s}", class.DeclarationName)
+	return fmt.Sprintf("Class{Name: %s, Type: %s}",
+		class.DeclarationName,
+		class.ActualClass)
 }
 
 func (class *Class) DeclarationOffset() input.Offset {

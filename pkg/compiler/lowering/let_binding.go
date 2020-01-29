@@ -1,12 +1,12 @@
 package lowering
 
 import (
+	"log"
 	"strict.dev/sdk/pkg/compiler/analysis"
 	"strict.dev/sdk/pkg/compiler/grammar/token"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 	"strict.dev/sdk/pkg/compiler/isolate"
 	passes "strict.dev/sdk/pkg/compiler/pass"
-	"log"
 )
 
 const LetBindingLoweringPassId = "LetBindingLowering"
@@ -110,6 +110,7 @@ func (lowering *LetBindingLowering) rewriteInBlockAtIndex(
 func (lowering *LetBindingLowering) lower(
 	binding *tree.LetBinding, parent tree.Node) *tree.AssignStatement {
 
+	resolvedType, _ := binding.ResolvedType()
 	assign := &tree.AssignStatement{
 		Value:    binding.Expression,
 		Operator: token.AssignOperator,
@@ -119,6 +120,7 @@ func (lowering *LetBindingLowering) lower(
 	field := &tree.FieldDeclaration{
 		Name:     binding.Name,
 		Region:   binding.Locate(),
+		TypeName: tree.ParseTypeName(binding.Locate(), resolvedType.ActualClass),
 		Parent: assign,
 		Inferred: true,
 	}

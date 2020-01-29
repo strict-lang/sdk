@@ -34,6 +34,8 @@ func (pass *TypeResolution) createVisitor() tree.Visitor {
 	visitor.CallExpressionVisitor = pass.resolveCallExpression
 	visitor.LetBindingVisitor = pass.resolveLetExpression
 	visitor.IdentifierVisitor = pass.resolveIdentifier
+	visitor.ForEachLoopStatementVisitor = pass.resolveForEachLoop
+	visitor.RangedLoopStatementVisitor = pass.resolveRangedLoop
 	return visitor
 }
 
@@ -113,6 +115,16 @@ func (pass *TypeResolution) resolveBinaryExpression(binary *tree.BinaryExpressio
 func (pass *TypeResolution) resolveLetExpression(binding *tree.LetBinding) {
 	expressionClass := pass.resolveExpression(binding.Expression)
 	binding.ResolveType(expressionClass)
+}
+
+func (pass *TypeResolution) resolveForEachLoop(loop *tree.ForEachLoopStatement) {
+	sequenceClass := pass.resolveExpression(loop.Sequence)
+	loop.Field.ResolveType(sequenceClass)
+}
+
+func (pass *TypeResolution) resolveRangedLoop(loop *tree.RangedLoopStatement) {
+	indexClass := pass.resolveExpression(loop.Begin)
+	loop.Field.ResolveType(indexClass)
 }
 
 func (pass *TypeResolution) resolveUnaryExpression(unary *tree.UnaryExpression) {
