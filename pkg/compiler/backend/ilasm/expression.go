@@ -125,19 +125,19 @@ func (generation *Generation) EmitBinaryOperation(operation binaryOperation) {
 	}
 }
 
-type binaryOperationEmitter func(code *CodeBuilder, operation binaryOperation)
+type binaryOperationEmitter func(code *BlockBuilder, operation binaryOperation)
 
 var binaryOperationEmitters = map[token.Operator] binaryOperationEmitter {
-	token.AddOperator: func(code *CodeBuilder, operation binaryOperation) {
+	token.AddOperator: func(code *BlockBuilder, operation binaryOperation) {
 		code.EmitAdd(operation.operandClass)
 	},
-	token.SubOperator: func(code *CodeBuilder, operation binaryOperation) {
+	token.SubOperator: func(code *BlockBuilder, operation binaryOperation) {
 		code.EmitSubtraction(operation.operandClass)
 	},
-	token.MulOperator: func(code *CodeBuilder, operation binaryOperation) {
+	token.MulOperator: func(code *BlockBuilder, operation binaryOperation) {
 		code.EmitMultiplication(operation.operandClass)
 	},
-	token.DivOperator: func(code *CodeBuilder, operation binaryOperation) {
+	token.DivOperator: func(code *BlockBuilder, operation binaryOperation) {
 		code.EmitDivision(operation.operandClass)
 	},
 }

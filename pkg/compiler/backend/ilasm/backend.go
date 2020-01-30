@@ -11,6 +11,11 @@ func (backend *Backend) Generate(input backends.Input) backends.Output {
 }
 
 type Generation struct {
-	code *CodeBuilder
+	code *BlockBuilder
 	currentClass *Class
+	method *MethodContext
+	breakLabel *Label
+	continuationLabel *Label
 }
+
+func (generation *Generation) updateCurrentBlock(target *BlockBuilder) {}

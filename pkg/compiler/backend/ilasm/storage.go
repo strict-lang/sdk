@@ -9,20 +9,20 @@ type Item struct {
 }
 
 type StorageLocation interface {
-	EmitLoad(code *CodeBuilder) error
-	EmitStore(item *Item, code *CodeBuilder) error
+	EmitLoad(code *BlockBuilder) error
+	EmitStore(item *Item, code *BlockBuilder) error
 }
 
 type StackLocation struct {
 	Index int
 }
 
-func (location *StackLocation) EmitLoad(code *CodeBuilder) error {
+func (location *StackLocation) EmitLoad(code *BlockBuilder) error {
 	// Value is already on the stack.
 	return nil
 }
 
-func (location *StackLocation) EmitStore(item *Item, code *CodeBuilder) error {
+func (location *StackLocation) EmitStore(item *Item, code *BlockBuilder) error {
 	code.EmitPush(item.Class)
 	return nil
 }
@@ -55,7 +55,7 @@ func createOwnReferenceLocation(ownClass *Class) StorageLocation {
 	}
 }
 
-func (location *MemberLocation) EmitLoad(code *CodeBuilder) error {
+func (location *MemberLocation) EmitLoad(code *BlockBuilder) error {
 	if err := location.InstanceLocation.EmitLoad(code); err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (location *MemberLocation) EmitLoad(code *CodeBuilder) error {
 	return nil
 }
 
-func (location *MemberLocation) EmitStore(item *Item, code *CodeBuilder) error {
+func (location *MemberLocation) EmitStore(item *Item, code *BlockBuilder) error {
 	beforeLastPush := code.BeforeLastPush()
 	if err := location.InstanceLocation.EmitLoad(beforeLastPush); err != nil {
 		return err
@@ -77,12 +77,12 @@ type VariableLocation struct {
 	Parameter bool
 }
 
-func (location *VariableLocation) EmitLoad(code *CodeBuilder) error {
+func (location *VariableLocation) EmitLoad(code *BlockBuilder) error {
 	code.EmitFieldLoad(location.Variable)
 	return nil
 }
 
-func (location *VariableLocation) EmitStore(item *Item, code *CodeBuilder) error {
+func (location *VariableLocation) EmitStore(item *Item, code *BlockBuilder) error {
 	targetClass := location.Variable.Class
 	if !item.Class.IsAssignable(targetClass) {
 		return newNotAssignableError(item, targetClass)

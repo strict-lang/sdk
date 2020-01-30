@@ -1,41 +1,72 @@
 package ilasm
 
-type CodeBuilder struct {}
+type Label struct {
+	name string
+}
 
-func (code *CodeBuilder) BeforeLastPush() *CodeBuilder {
+type BlockBuilder struct {
+	Label *Label
+	instructions []string
+}
+
+func (code *BlockBuilder) CreateNextBlock() *BlockBuilder {
 	return nil
 }
 
-func (code *CodeBuilder) EmitPush(class *Class) {
+func (code *BlockBuilder) EmitValueReturn(class *Class) {}
+
+func (code *BlockBuilder) EmitReturn() {}
+
+func (code *BlockBuilder) EmitBranch(label *Label) {
+}
+
+func (code *BlockBuilder) EmitPop() {}
+
+func (code *BlockBuilder) EmitBranchIfFalse(label *Label) {
+}
+
+func (code *BlockBuilder) BeforeLastPush() *BlockBuilder {
+	return nil
+}
+
+func (code *BlockBuilder) EmitPush(class *Class) {
 
 }
 
-func (code *CodeBuilder) EmitFieldLoad(variable *VirtualVariable) {
+func (code *BlockBuilder) EmitFieldLoad(variable *VirtualVariable) {
 
 }
 
-func (code *CodeBuilder) EmitFieldStore(variable *VirtualVariable) {
+func (code *BlockBuilder) EmitFieldStore(variable *VirtualVariable) {
 
 }
 
-func (code *CodeBuilder) EmitMemberLoad(field MemberField) {
+func (code *BlockBuilder) EmitMemberLoad(field MemberField) {
 
 }
 
-func (code *CodeBuilder) EmitMemberStore(field MemberField) {
+func (code *BlockBuilder) EmitMemberStore(field MemberField) {
 
 }
 
-func (code *CodeBuilder) PushStringConstant(value string) {}
+const loadStringInstruction = "ldstr"
 
-func (code *CodeBuilder) PushNumberConstant(class *Class, value string) {
+func (code *BlockBuilder) PushStringConstant(value string) {
+	quoted := "\"" + value + "\""
+	code.emit(loadStringInstruction, quoted)
+}
+
+func (code *BlockBuilder) PushNumberConstant(class *Class, value string) {
 
 }
 
-func (code *CodeBuilder) PushConstantInt(value int) {
+func (code *BlockBuilder) PushConstantInt(value int) {
 }
 
-func (code *CodeBuilder) EmitAdd(class *Class) {}
-func (code *CodeBuilder) EmitSubtraction(class *Class) {}
-func (code *CodeBuilder) EmitMultiplication(class *Class) {}
-func (code *CodeBuilder) EmitDivision(class *Class) {}
+func (code *BlockBuilder) EmitAdd(class *Class)            {}
+func (code *BlockBuilder) EmitSubtraction(class *Class)    {}
+func (code *BlockBuilder) EmitMultiplication(class *Class) {}
+func (code *BlockBuilder) EmitDivision(class *Class)       {}
+
+func (code *BlockBuilder) emit(instruction string, operands ...string) {
+}

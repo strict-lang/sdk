@@ -1,12 +1,20 @@
 package ilasm
 
-type Class struct {}
+type Class struct {
+	Name string
+}
 
-var Float = &Class{}
-var Int = &Class{}
-var String = &Class{}
+var Float = &Class{
+	Name: "Float",
+}
+var Int = &Class{
+	Name: "Int",
+}
+var String = &Class{
+	Name: "String",
+}
 
 func (class *Class) IsAssignable(target *Class) bool {
-	return false
+	return class.Name == target.Name
 }
 
