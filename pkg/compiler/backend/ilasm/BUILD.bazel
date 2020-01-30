@@ -6,6 +6,7 @@ go_library(
         "backend.go",
         "builder.go",
         "expression.go",
+        "statement.go",
         "storage.go",
         "typing.go",
     ],
