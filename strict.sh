@@ -20,7 +20,7 @@ done
 
 case "$OSTYPE" in
   msys*)
-    exec -c "$binaryOutputDirectory/strict.exe"
+    exec "$binaryOutputDirectory/strict.exe" "$*"
     ;;
   *)
     echo "This strict doesn't currently support your OS."
