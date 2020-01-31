@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
+        "import_pass.go",
         "importing.go",
         "name_resolution.go",
         "name_validation.go",
@@ -26,6 +27,7 @@ go_library(
         "//pkg/compiler/pass:go_default_library",
         "//pkg/compiler/scope:go_default_library",
         "//pkg/compiler/typing:go_default_library",
+        "//pkg/concurrent:go_default_library",
     ],
 )
 

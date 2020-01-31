@@ -31,7 +31,7 @@ func (pass *SymbolEnterPass) Run(context *passes.Context) {
 }
 
 func (pass *SymbolEnterPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ScopeCreationPassId)
+	return passes.ListInIsolate(isolate, ScopeCreationPassId, ImportPassId)
 }
 
 func (pass *SymbolEnterPass) Id() passes.Id {

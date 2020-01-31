@@ -99,7 +99,7 @@ func (target *IdentifierChainImport) FilePath() string {
 	var path strings.Builder
 	path.WriteRune('"')
 	writePath(target.Chain, &path)
-	path.WriteString(".h\"")
+	path.WriteString("\"")
 	return path.String()
 }
 

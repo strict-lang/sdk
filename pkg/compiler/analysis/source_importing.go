@@ -7,6 +7,7 @@ import (
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 	"strict.dev/sdk/pkg/compiler/input"
 	"strict.dev/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/concurrent"
 )
 
 type SourceImporting struct {
@@ -39,13 +40,24 @@ func (importing *SourceImporting) parseFiles() (parsed parsedDirectory) {
 }
 
 func (importing *SourceImporting) parseFilesAsync() <- chan *tree.TranslationUnit {
-	results := make(chan *tree.TranslationUnit, len(importing.files))
+	count := len(importing.files)
+	results := make(chan *tree.TranslationUnit, count)
+	latch := concurrent.NewLatch(count)
 	for _, file := range importing.files {
-		go func(file string) {
-			results <- importing.parseFile(file)
-		}(file)
+		importing.parseFileAsync(file, latch, results)
 	}
+	latch.Wait()
+	close(results)
 	return results
+}
+
+func (importing *SourceImporting) parseFileAsync(
+	file string, latch concurrent.Latch, output chan <- *tree.TranslationUnit) {
+
+	go func() {
+		output <- importing.parseFile(file)
+		latch.CountDown()
+	}()
 }
 
 func (importing *SourceImporting) parseFile(name string) *tree.TranslationUnit {
