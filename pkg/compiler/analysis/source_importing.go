@@ -49,7 +49,7 @@ func (importing *SourceImporting) parseFilesAsync() <- chan *tree.TranslationUni
 }
 
 func (importing *SourceImporting) parseFile(name string) *tree.TranslationUnit {
-	file, err := os.OpenFile(name, os.O_RDONLY, 0666)
+	file, err := os.Open(name)
 	if err != nil {
 		defer file.Close()
 		result := syntax.Parse(name, input.NewStreamReader(file))
