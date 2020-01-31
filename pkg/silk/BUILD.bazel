@@ -6,6 +6,7 @@ go_library(
         "access.go",
         "block.go",
         "class.go",
+        "field.go",
         "file.go",
         "instruction.go",
         "method.go",

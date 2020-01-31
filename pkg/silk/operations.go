@@ -7,8 +7,9 @@ type Operation interface {
 	Accept(visitor Visitor, instruction *Instruction)
 }
 
-type Field struct {
-	Id int
+func isWildcard(operation Operation) bool {
+	_, wildcard := operation.(WildcardOperation)
+	return wildcard
 }
 
 type WildcardOperation struct {}
@@ -40,19 +41,89 @@ type ArithmeticInstruction struct {
 	Operation ArithmeticOperation
 }
 
-type LoadOperation struct {}
+type StorageLocation interface {
+	Matches(StorageLocation) bool
+}
 
-type StoreOperation struct {}
+type LoadOperation struct {
+	Index  int
+	Type   Type
+	Target StorageLocation
+}
+
+func (load *LoadOperation) Matches(operation Operation) bool {
+	if isWildcard(operation) {
+		return true
+	}
+	if targetLoad, ok := operation.(*LoadOperation); ok {
+		return load.matchesDeeply(targetLoad)
+	}
+	return false
+}
+
+func (load *LoadOperation) matchesDeeply(target *LoadOperation) bool {
+	return load.Index == target.Index &&
+		load.Target.Matches(target.Target) &&
+		load.Type.Matches(target.Type)
+
+}
+
+func (load *LoadOperation) Accept(visitor Visitor, instruction *Instruction) {
+	visitor.VisitLoad(instruction, load)
+}
+
+type StoreOperation struct {
+	Index int
+	Type Type
+	Target StorageLocation
+}
+
+func (store *StoreOperation) Matches(operation Operation) bool {
+	if isWildcard(operation) {
+		return true
+	}
+	if targetLoad, ok := operation.(*StoreOperation); ok {
+		return store.matchesDeeply(targetLoad)
+	}
+	return false
+}
+
+func (store *StoreOperation) matchesDeeply(target *StoreOperation) bool {
+	return store.Index == target.Index &&
+		store.Target.Matches(target.Target) &&
+		store.Type.Matches(target.Type)
+
+}
+
+func (store *StoreOperation) Accept(visitor Visitor, instruction *Instruction) {
+	visitor.VisitStore(instruction, store)
+}
 
 type PushOperation struct {
 	Type Type
 	Variable Variable
-	Block *Block
 }
 
 type PopOperation struct {
 	Type Type
-	Block *Block
+}
+
+func (pop *PopOperation) Matches(operation Operation) bool {
+	if isWildcard(operation) {
+		return true
+	}
+	if targetPop, ok := operation.(*PopOperation); ok {
+		return pop.matchesDeeply(targetPop)
+	}
+	return false
+}
+
+func (pop *PopOperation) matchesDeeply(target *PopOperation) bool {
+	return pop.Type.Matches(target.Type)
+}
+
+func (pop *PopOperation) Accept(visitor Visitor, instruction *Instruction) {
+	visitor.VisitPop(instruction, pop)
 }
 
 type Comparison int
@@ -97,7 +168,7 @@ type ReturnOperation struct {
 }
 
 func (operation *ReturnOperation) IsReturningValue() bool {
-	return operation.ReturnedType != VoidType
+	return operation.ReturnedType.Matches(VoidType)
 }
 
 func (operation *ReturnOperation) Accept(visitor Visitor, instruction *Instruction) {

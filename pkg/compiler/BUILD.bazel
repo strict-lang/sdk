@@ -16,6 +16,9 @@ go_library(
         "//pkg/compiler/grammar/syntax:go_default_library",
         "//pkg/compiler/grammar/tree:go_default_library",
         "//pkg/compiler/input:go_default_library",
+        "//pkg/compiler/isolate:go_default_library",
+        "//pkg/compiler/lowering:go_default_library",
+        "//pkg/compiler/pass:go_default_library",
     ],
 )
 

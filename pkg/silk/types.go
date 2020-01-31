@@ -4,6 +4,7 @@ import "strict.dev/sdk/pkg/silk/symbol"
 
 type Type interface {
 	ClassReference() symbol.Reference
+	Matches(Type) bool
 }
 
 type SliceReference struct {
@@ -40,6 +41,10 @@ type Primitive struct {
 
 func (primitive Primitive) ClassReference() symbol.Reference {
 	return primitive.Class
+}
+
+func (primitive Primitive) Matches(target Type) bool {
+	return false
 }
 
 var VoidType = Primitive{Class: 0}
