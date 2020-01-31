@@ -6,14 +6,8 @@ import (
 )
 
 const source = `
-method Number Compute()
-	if True
-		let y = Compute()
-		for index from 0 to 1
-			Compute(index)
-	if let z = 10 + 20
-		if True
-			let x = Compute()
+String Name
+Date Date
 `
 
 func TestCompilation(testing *testing.T) {

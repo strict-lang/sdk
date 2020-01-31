@@ -30,6 +30,7 @@ func IsInsideOfMethod(node Node) bool {
 		if _, isMethod := currentParent.(*MethodDeclaration); isMethod {
 			return true
 		}
+		currentParent, _ = currentParent.EnclosingNode()
 	}
 	return false
 }

@@ -5,7 +5,7 @@ import "strict.dev/sdk/pkg/compiler/typing"
 const builtinScopeId = Id("builtin")
 
 var emptyScope = NewEmptyScope("")
-
+var builtinScope = NewOuterScopeWithRootId(builtinScopeId, emptyScope)
 var booleanType = createBooleanType()
 
 var Builtins = struct {
@@ -26,17 +26,15 @@ var Builtins = struct {
 	False: createBuiltinField("False", booleanType),
 }
 
-var builtinScope = func() Scope {
-	scope := NewOuterScope(builtinScopeId, emptyScope)
-	scope.Insert(Builtins.Number)
-	scope.Insert(Builtins.Float)
-	scope.Insert(Builtins.Boolean)
-	scope.Insert(Builtins.String)
-	scope.Insert(Builtins.True)
-	scope.Insert(Builtins.False)
-	scope.Insert(Builtins.Void)
-	return scope
-}()
+func init() {
+	builtinScope.Insert(Builtins.Number)
+	builtinScope.Insert(Builtins.Float)
+	builtinScope.Insert(Builtins.Boolean)
+	builtinScope.Insert(Builtins.String)
+	builtinScope.Insert(Builtins.True)
+	builtinScope.Insert(Builtins.False)
+	builtinScope.Insert(Builtins.Void)
+}
 
 func createVoidType() *Class {
 	number := createPrimitiveClass("Void")
@@ -80,6 +78,7 @@ func createBuiltinField(name string, class *Class) *Field {
 func createPrimitiveClass(name string) *Class {
 	return &Class{
 		DeclarationName:   name,
+		Scope: NewOuterScope(Id(name), builtinScope),
 	}
 }
 

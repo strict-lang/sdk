@@ -3,6 +3,7 @@ package analysis
 import (
 	"fmt"
 	"os"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
 	"strict.dev/sdk/pkg/compiler/grammar/syntax"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 	"strict.dev/sdk/pkg/compiler/input"
@@ -63,20 +64,21 @@ func (importing *SourceImporting) parseFileAsync(
 func (importing *SourceImporting) parseFile(name string) *tree.TranslationUnit {
 	file, err := os.Open(name)
 	if err != nil {
-		defer file.Close()
-		result := syntax.Parse(name, input.NewStreamReader(file))
-		if result.Error != nil {
-			return result.TranslationUnit
-		}
-		importing.reportFailedParse(name, result.Error)
-	} else {
 		importing.reportFailedParse(name, err)
+		return nil
 	}
-	return nil
+	defer file.Close()
+	result := syntax.Parse(name, input.NewStreamReader(file))
+	if result.Error != nil {
+		result.Diagnostics.PrintEntries(diagnostic.NewFmtPrinter())
+		importing.reportFailedParse(name, result.Error)
+		return nil
+	}
+	return result.TranslationUnit
 }
 
 func (importing *SourceImporting) reportFailedParse(name string, err error) {
-	panic(fmt.Errorf("could not parse %s: %s", name, err.Error()))
+	panic(fmt.Errorf("could not parse %s: %s", name, err))
 }
 
 func (importing *SourceImporting) runFirstPass(directory parsedDirectory) {

@@ -71,7 +71,7 @@ func (parsing *Parsing) parseMethodSignature() methodSignature {
 func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
 	if parsing.isLookingAtOperator(token.LeftParenOperator) {
 		return &tree.ConcreteTypeName{
-			Name:   "void",
+			Name:   "Void",
 			Region: input.CreateRegion(parsing.offset(), parsing.offset()),
 		}
 	}
