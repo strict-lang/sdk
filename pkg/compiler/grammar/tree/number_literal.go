@@ -37,6 +37,14 @@ func (literal *NumberLiteral) IsFloat() bool {
 	return err == nil && strings.Contains(literal.Value, ".")
 }
 
+const integerBitSize = 32
+const decimal = 10
+
+func (literal *NumberLiteral) AsInt() (int, bool) {
+	number, err := strconv.ParseInt(literal.Value, decimal, integerBitSize)
+	return int(number), err == nil
+}
+
 func (literal *NumberLiteral) Accept(visitor Visitor) {
 	visitor.VisitNumberLiteral(literal)
 }

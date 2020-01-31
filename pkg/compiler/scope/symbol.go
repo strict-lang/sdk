@@ -57,6 +57,7 @@ type Field struct {
 	declarationOffset input.Offset
 	Class *Class
 	Kind FieldKind
+	EnclosingClass *Class
 }
 
 type FieldKind int
