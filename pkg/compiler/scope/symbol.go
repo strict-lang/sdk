@@ -33,6 +33,7 @@ func (method *Method) DeclarationOffset() input.Offset {
 }
 
 type Class struct {
+	Scope MutableScope
 	DeclarationName   string
 	ActualClass       typing.Type
 	declarationOffset input.Offset
