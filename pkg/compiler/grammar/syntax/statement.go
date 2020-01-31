@@ -495,6 +495,7 @@ func (parsing *Parsing) parseFieldDeclarationOrDefinition() tree.Node {
 	parsing.beginStructure(tree.FieldDeclarationNodeKind)
 	declaration := parsing.parseFieldDeclaration()
 	if !token.HasOperatorValue(parsing.token(), token.AssignOperator) {
+		parsing.completeStructure(tree.FieldDeclarationNodeKind)
 		parsing.skipEndOfStatement()
 		return declaration
 	}
@@ -526,15 +527,11 @@ func (parsing *Parsing) completeFieldDeclarationWithTypeName(
 
 	parsing.updateTopStructureKind(tree.FieldDeclarationNodeKind)
 	fieldName := parsing.parseIdentifier()
-	declaration := &tree.FieldDeclaration{
+	return &tree.FieldDeclaration{
 		Name:     fieldName,
 		TypeName: typeName,
-		Region:   parsing.completeStructure(tree.FieldDeclarationNodeKind),
+		Region:   parsing.createRegionOfCurrentStructure(),
 	}
-	if token.HasOperatorValue(parsing.token(), token.AssignOperator) {
-		return parsing.completeFieldDefinition(declaration)
-	}
-	return declaration
 }
 
 func (parsing *Parsing) completeFieldDefinition(declaration *tree.FieldDeclaration) tree.Node {
@@ -590,9 +587,9 @@ func (parsing *Parsing) parseFieldDeclarationOrListAccess() tree.Node {
 	parsing.beginStructure(tree.UnknownNodeKind)
 	baseTypeOrAccessedField := parsing.pullToken()
 	if parsing.isLookingAtListAccess() {
-		return parsing.completeFieldDeclarationFromBaseTypeName(baseTypeOrAccessedField)
+		return parsing.completeListAccess(baseTypeOrAccessedField)
 	}
-	return parsing.completeListAccess(baseTypeOrAccessedField)
+	return parsing.completeFieldDeclarationFromBaseTypeName(baseTypeOrAccessedField)
 }
 
 func createRegionForToken(target token.Token) input.Region {

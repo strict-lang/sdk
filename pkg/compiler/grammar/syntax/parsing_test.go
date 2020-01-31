@@ -76,6 +76,7 @@ func ExpectResult(
 			diagnostics := bag.CreateDiagnostics(tokens.NewLineMap().PositionAtOffset)
 			diagnostics.PrintEntries(diagnostic.NewFmtPrinter())
 			testing.Errorf("%s", failure)
+			panic(failure)
 		}
 	}()
 	result := parsingFunction(parser)

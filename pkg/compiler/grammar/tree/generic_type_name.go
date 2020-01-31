@@ -51,8 +51,7 @@ func (name *GenericTypeName) Locate() input.Region {
 
 func (name *GenericTypeName) Matches(node Node) bool {
 	if target, ok := node.(*GenericTypeName); ok {
-		return name.Name == target.Name &&
-			name.Generic.Matches(target.Generic)
+		return name.Name == target.Name && name.Generic.Matches(target.Generic)
 	}
 	return false
 }

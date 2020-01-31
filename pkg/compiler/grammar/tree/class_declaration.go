@@ -112,7 +112,7 @@ func (class *ClassDeclaration) hasChildren(children []Node) bool {
 		return false
 	}
 	for index := 0; index < len(children); index++ {
-		if class.Children[index].Matches(children[index]) {
+		if !class.Children[index].Matches(children[index]) {
 			return false
 		}
 	}
