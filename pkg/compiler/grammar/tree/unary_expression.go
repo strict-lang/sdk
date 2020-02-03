@@ -1,9 +1,9 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
 )
 
 // UnaryExpression is an operation on a single operand.
@@ -50,4 +50,12 @@ func (unary *UnaryExpression) Matches(node Node) bool {
 			unary.Operand.Matches(target.Operand)
 	}
 	return false
+}
+
+func (unary *UnaryExpression) TransformExpressions(transformer ExpressionTransformer) {
+	unary.Operand = unary.Operand.Transform(transformer)
+}
+
+func (unary *UnaryExpression) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteUnaryExpression(unary)
 }

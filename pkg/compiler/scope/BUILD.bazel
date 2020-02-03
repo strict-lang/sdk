@@ -10,7 +10,7 @@ go_library(
         "scope.go",
         "symbol.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/scope",
+    importpath = "strict.dev/sdk/pkg/compiler/scope",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/input:go_default_library",

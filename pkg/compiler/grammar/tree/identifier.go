@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
 )
 
 type Identifier struct {
@@ -72,4 +72,8 @@ func (identifier *Identifier) Matches(node Node) bool {
 		return identifier.Value == target.Value
 	}
 	return false
+}
+
+func (identifier *Identifier) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteIdentifier(identifier)
 }

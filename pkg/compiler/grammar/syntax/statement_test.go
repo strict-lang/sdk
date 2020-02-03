@@ -1,8 +1,9 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/input"
 	"testing"
 )
 
@@ -11,7 +12,7 @@ func TestParsing_ParseConditionalStatement(testing *testing.T) {
 		[]ParserTestEntry{
 			{
 				Input: `
-if 1 < 2 do
+if 1 < 2
   return 3
 `,
 				ExpectedOutput: &tree.ConditionalStatement{
@@ -31,9 +32,9 @@ if 1 < 2 do
 			},
 			{
 				Input: `
-if 1 < 2 do
+if 1 < 2
   return 3
-else if true do
+else if true
   return 2
 else 
   return 1
@@ -166,5 +167,156 @@ func TestParsing_ParseAssignStatement(testing *testing.T) {
 			},
 		}, func(parsing *Parsing) tree.Node {
 			return parsing.parseStatement()
+		})
+}
+
+func TestParsing_ParseIndented(testing *testing.T) {
+	ExpectAllResults(testing,
+		[]ParserTestEntry{
+			{
+				Input: `
+for number in Range(0, 100)
+  if IsDivisible(number, 2)
+    yield number
+  if IsDivisible(number, 4)
+    yield number - 1
+`,
+				ExpectedOutput: &tree.ForEachLoopStatement{
+					Sequence: &tree.CallExpression{
+						Target: &tree.Identifier{Value: `Range`},
+						Arguments: tree.CallArgumentList{
+								&tree.CallArgument{
+									Value:  &tree.NumberLiteral{Value: "0"},
+								},
+								&tree.CallArgument{
+										Value:  &tree.NumberLiteral{Value: "100"},
+								},
+						},
+					},
+					Field: &tree.Identifier{Value: `number`},
+					Body: &tree.StatementBlock{
+						Children: []tree.Statement{
+							&tree.ConditionalStatement{
+								Condition:   &tree.CallExpression{
+									Target: &tree.Identifier{Value: `IsDivisible`},
+									Arguments: tree.CallArgumentList{
+										&tree.CallArgument{
+											Value: &tree.Identifier{Value: "number"},
+										},
+										&tree.CallArgument{
+											Value: &tree.NumberLiteral{Value: "2"},
+										},
+									},
+								},
+								Consequence: &tree.StatementBlock{
+									Children: []tree.Statement{
+										&tree.YieldStatement{
+											Value:  &tree.Identifier{Value: `number`},
+										},
+									},
+								},
+							},
+							&tree.ConditionalStatement{
+								Condition:   &tree.CallExpression{
+									Target: &tree.Identifier{Value: `IsDivisible`},
+									Arguments: tree.CallArgumentList{
+										&tree.CallArgument{
+											Value: &tree.Identifier{Value: "number"},
+										},
+										&tree.CallArgument{
+											Value: &tree.NumberLiteral{Value: "4"},
+										},
+									},
+								},
+								Consequence: &tree.StatementBlock{
+									Children: []tree.Statement{
+										&tree.YieldStatement{
+											Value:  &tree.BinaryExpression{
+												LeftOperand: &tree.Identifier{Value: `number`},
+												RightOperand: &tree.NumberLiteral{Value: `1`},
+												Operator:     token.SubOperator,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}, func(parsing *Parsing) tree.Node {
+			return parsing.parseStatement()
+		})
+}
+
+func TestParsing_ParseFullClass(testing *testing.T) {
+	ExpectAllResults(testing,
+		[]ParserTestEntry{
+			{
+				Input:          `
+import Strict.Collection
+
+Sequence<Number> numbers
+
+method Number[] ListNumbers()
+  for number in numbers
+    yield number
+`,
+				ExpectedOutput: &tree.TranslationUnit{
+					Imports: []*tree.ImportStatement{
+						{
+							Target: &tree.IdentifierChainImport{
+								Chain: []string{"Strict", "Collection"},
+							},
+						},
+					},
+					Name: "undefined",
+					Class: &tree.ClassDeclaration{
+						Name:       "undefined",
+						Children: []tree.Node{
+							&tree.FieldDeclaration{
+								Name:     &tree.Identifier{
+									Value: "numbers",
+								},
+								TypeName: &tree.GenericTypeName{
+									Name: "Sequence",
+									Generic: &tree.ConcreteTypeName{
+										Name:   "Number",
+									},
+								},
+							},
+							&tree.MethodDeclaration{
+								Name:       &tree.Identifier{
+									Value: "ListNumbers",
+								},
+								Type:       &tree.ListTypeName{
+									Element: &tree.ConcreteTypeName{
+										Name:   "Number",
+									},
+								},
+								Parameters: tree.ParameterList{},
+								Body:       &tree.StatementBlock{
+									Children: []tree.Statement{
+										&tree.ForEachLoopStatement{
+											Region:   input.Region{},
+											Body:     &tree.StatementBlock{
+												Children: []tree.Statement{
+													&tree.YieldStatement{
+														Value:  &tree.Identifier{Value: "number"},
+													},
+												},
+											},
+											Sequence: &tree.Identifier{Value: "numbers"},
+											Field:    &tree.Identifier{Value: "number"},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}, func(parsing *Parsing) tree.Node {
+			return parsing.parseTranslationUnit()
 		})
 }

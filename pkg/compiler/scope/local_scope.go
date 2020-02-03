@@ -1,6 +1,6 @@
 package scope
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 // ShadowingPolicy determines whether a LocalScope can shadow its parents
 // definitions. It has to states and may be represented by a boolean.

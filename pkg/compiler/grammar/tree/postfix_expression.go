@@ -1,9 +1,9 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
 )
 
 // PostfixExpression is an expression with an operator that is written in a
@@ -61,4 +61,16 @@ func (expression *PostfixExpression) Matches(node Node) bool {
 			target.Operand.Matches(target.Operand)
 	}
 	return false
+}
+
+func (expression *PostfixExpression) TransformExpressions(
+	transformer ExpressionTransformer) {
+
+	expression.Operand = expression.Operand.Transform(transformer)
+}
+
+func (expression *PostfixExpression) Transform(
+	transformer ExpressionTransformer) Expression {
+
+	return transformer.RewritePostfixExpression(expression)
 }

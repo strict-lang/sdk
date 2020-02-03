@@ -1,13 +1,13 @@
 package analysis
 
 import (
-	"errors"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
-	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
+	"log"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/isolate"
+	passes "strict.dev/sdk/pkg/compiler/pass"
+	"strict.dev/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/typing"
 )
 
 const SymbolEnterPassId = "SymbolEnterPass"
@@ -19,9 +19,10 @@ func init() {
 // SymbolEnterPass enters symbols into the scope that they are defined in.
 // It also ensures that there are no duplicates.
 type SymbolEnterPass struct {
-	diagnostics *diagnostic.Bag
-	currentClass *tree.ClassDeclaration
-	currentUnit *tree.TranslationUnit
+	diagnostics        *diagnostic.Bag
+	currentClass       *tree.ClassDeclaration
+	currentClassSymbol *scope.Class
+	currentUnit        *tree.TranslationUnit
 }
 
 func (pass *SymbolEnterPass) Run(context *passes.Context) {
@@ -31,7 +32,7 @@ func (pass *SymbolEnterPass) Run(context *passes.Context) {
 }
 
 func (pass *SymbolEnterPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ScopeCreationPassId)
+	return passes.ListInIsolate(isolate, ScopeCreationPassId, ImportPassId)
 }
 
 func (pass *SymbolEnterPass) Id() passes.Id {
@@ -44,47 +45,13 @@ func (pass *SymbolEnterPass) createVisitor() tree.Visitor {
 	visitor.ClassDeclarationVisitor = pass.visitClassDeclaration
 	visitor.MethodDeclarationVisitor = pass.visitMethodDeclaration
 	visitor.FieldDeclarationVisitor = pass.visitFieldDeclaration
+	visitor.LetBindingVisitor = pass.visitLetBinding
+	visitor.ForEachLoopStatementVisitor = pass.visitForEachLoopStatement
+	visitor.RangedLoopStatementVisitor = pass.visitRangedLoopStatement
 	return visitor
 }
 
-func (pass *SymbolEnterPass) visitTranslationUnit(unit *tree.TranslationUnit) {
-	pass.importIntoScope(unit, ensureScopeIsMutable(unit.Scope()))
-}
-
-func (pass *SymbolEnterPass) importIntoScope(
-	unit *tree.TranslationUnit,
-	targetScope scope.MutableScope) {
-
-	for _, statement := range unit.Imports {
-		pass.importNamespaceIntoScope(statement, targetScope)
-	}
-}
-
-func (pass *SymbolEnterPass) importNamespaceIntoScope(
-	statement *tree.ImportStatement,
-	targetScope scope.MutableScope) {
-
-	name := statement.Target.ToModuleName()
-	imported, err := pass.captureExportedSymbolsOfNamespace(statement.Target)
-	if err != nil {
-		pass.reportImportError(statement.Target, err)
-	}
-	targetScope.Insert(&scope.Namespace{
-		PackageName: name,
-		Scope: imported,
-	})
-}
-
-func (pass *SymbolEnterPass) reportImportError(
-	namespace tree.ImportTarget, err error) {
-
-}
-
-func (pass *SymbolEnterPass) captureExportedSymbolsOfNamespace(
-	namespace tree.ImportTarget) (scope.Scope, error) {
-
-	return nil, errors.New("not implemented")
-}
+func (pass *SymbolEnterPass) visitTranslationUnit(unit *tree.TranslationUnit) {}
 
 func (pass *SymbolEnterPass) visitClassDeclaration(
 	declaration *tree.ClassDeclaration) {
@@ -99,7 +66,9 @@ func (pass *SymbolEnterPass) enterClassDeclaration(
 	name := declaration.Name
 	surroundingScope := requireNearestMutableScope(declaration)
 	if pass.ensureNameDoesNotExist(name, declaration, surroundingScope) {
-		surroundingScope.Insert(pass.newClassSymbol(declaration))
+		symbol := pass.newClassSymbol(declaration)
+		pass.currentClassSymbol = symbol
+		surroundingScope.Insert(symbol)
 	}
 }
 
@@ -108,6 +77,7 @@ func (pass *SymbolEnterPass) newClassSymbol(
 
 	return &scope.Class{
 		DeclarationName: declaration.Name,
+		Scope: ensureScopeIsMutable(declaration.Scope()),
 		ActualClass:     declaration.NewActualClass(),
 	}
 }
@@ -200,35 +170,72 @@ func (pass *SymbolEnterPass) requireClass(
 }
 
 func (pass *SymbolEnterPass) reportMissingClass(name tree.TypeName) {
-
+	log.Printf("Class not found %s\n", name.FullName())
 }
 
 func (pass *SymbolEnterPass) createClassReplacementInScope(
 	name tree.TypeName,
 	targetScope scope.MutableScope) *scope.Class {
 
-	symbol := pass.createClassReplacement(name)
+	symbol := pass.createClassReplacement(name, targetScope)
 	targetScope.Insert(symbol)
 	return symbol
 }
 
+// Class replacements are created when a certain class is not found, in order
+// to keep analysing the code.
 func (pass *SymbolEnterPass) createClassReplacement(
-	name tree.TypeName) *scope.Class {
+	name tree.TypeName, parentScope scope.Scope) *scope.Class {
 
 	return &scope.Class{
 		DeclarationName: name.BaseName(),
+		Scope: scope.NewOuterScope(scope.Id(name.BaseName()), parentScope),
 		ActualClass:     typing.NewEmptyClass(name.BaseName()),
 	}
+}
+
+func (pass *SymbolEnterPass) visitForEachLoopStatement(
+	loop *tree.ForEachLoopStatement) {
+
+	pass.visitUntypedVariable(loop.Field, loop)
+}
+
+func (pass *SymbolEnterPass) visitRangedLoopStatement(
+	loop *tree.RangedLoopStatement) {
+
+	pass.visitUntypedVariable(loop.Field, loop)
 }
 
 func (pass *SymbolEnterPass) visitFieldDeclaration(
 	declaration *tree.FieldDeclaration) {
 
 	declaration.Name.MarkAsPartOfDeclaration()
+	surroundingScope := requireNearestMutableScope(declaration)
+	name := declaration.Name.Value
+	if pass.ensureNameDoesNotExist(name, declaration, surroundingScope) {
+		pass.enterFieldDeclaration(declaration, surroundingScope)
+	}
+}
+
+func (pass *SymbolEnterPass) enterFieldDeclaration(
+	declaration *tree.FieldDeclaration, scope scope.MutableScope) {
+
 	if isVariable(declaration) {
-		pass.enterVariable(declaration)
+		pass.enterVariable(declaration, scope)
 	} else {
-		pass.enterMemberField(declaration)
+		pass.enterMemberField(declaration, scope)
+	}
+}
+
+func (pass *SymbolEnterPass) visitLetBinding(binding *tree.LetBinding) {
+	pass.visitUntypedVariable(binding.Name, binding)
+}
+
+func (pass *SymbolEnterPass) visitUntypedVariable(name *tree.Identifier, node tree.Node) {
+	name.MarkAsPartOfDeclaration()
+	surroundingScope := requireNearestMutableScope(node)
+	if pass.ensureNameDoesNotExist(name.Value, node, surroundingScope) {
+		surroundingScope.Insert(pass.createUntypedVariable(name.Value))
 	}
 }
 
@@ -236,14 +243,33 @@ func isVariable(declaration *tree.FieldDeclaration) bool {
 	return tree.IsInsideOfMethod(declaration)
 }
 
-func (pass *SymbolEnterPass) enterMemberField(
-	field *tree.FieldDeclaration) {
+func (pass *SymbolEnterPass) createMemberField(field *tree.FieldDeclaration) *scope.Field {
+	fieldScope := requireNearestMutableScope(field)
+	return &scope.Field{
+		DeclarationName: field.Name.Value,
+		Class:           pass.requireClass(field.TypeName, fieldScope),
+		Kind:            scope.MemberField,
+		EnclosingClass:  pass.currentClassSymbol,
+	}
+}
 
+func (pass *SymbolEnterPass) enterMemberField(
+	field *tree.FieldDeclaration, scope scope.MutableScope) {
+
+	scope.Insert(pass.createMemberField(field))
 }
 
 func (pass *SymbolEnterPass) enterVariable(
-	variable *tree.FieldDeclaration) {
+	variable *tree.FieldDeclaration, targetScope scope.MutableScope) {
 
+	targetScope.Insert(pass.createUntypedVariable(variable.Name.Value))
+}
+
+func (pass *SymbolEnterPass) createUntypedVariable(name string) *scope.Field {
+	return &scope.Field{
+		DeclarationName: name,
+		Kind:            scope.VariableField,
+	}
 }
 
 func (pass *SymbolEnterPass) ensureNameDoesNotExist(

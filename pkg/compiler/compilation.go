@@ -1,14 +1,14 @@
 package compiler
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/arduino"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/headerfile"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/sourcefile"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/testfile"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/backend"
+	"strict.dev/sdk/pkg/compiler/backend/cpp"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/syntax"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/isolate"
+	"strict.dev/sdk/pkg/compiler/lowering"
+	"strict.dev/sdk/pkg/compiler/pass"
 )
 
 type Compilation struct {
@@ -19,7 +19,7 @@ type Compilation struct {
 
 type Result struct {
 	UnitName       string
-	GeneratedFiles []Generated
+	GeneratedFiles []backend.GeneratedFile
 	Diagnostics    *diagnostic.Diagnostics
 	Error          error
 }
@@ -40,12 +40,13 @@ func (compilation *Compilation) Compile() Result {
 	parseResult := compilation.parse()
 	if parseResult.Error != nil {
 		return Result{
-			GeneratedFiles: []Generated{},
+			GeneratedFiles: []backend.GeneratedFile{},
 			Diagnostics:    parseResult.Diagnostics,
 			Error:          parseResult.Error,
 			UnitName:       compilation.Name,
 		}
 	}
+	compilation.Lower(parseResult.TranslationUnit)
 	return Result{
 		GeneratedFiles: compilation.generateOutput(parseResult.TranslationUnit),
 		Diagnostics:    parseResult.Diagnostics,
@@ -54,68 +55,37 @@ func (compilation *Compilation) Compile() Result {
 	}
 }
 
+func (compilation *Compilation) Lower(unit *tree.TranslationUnit) {
+	execution, _ := pass.NewExecution(lowering.LetBindingLoweringPassId, &pass.Context{
+		Unit:       unit,
+		Diagnostic: diagnostic.NewBag(),
+		Isolate:    isolate.SingleThreaded(),
+	})
+	_ = execution.Run()
+}
+
 func (compilation *Compilation) parse() syntax.Result {
 	return syntax.Parse(compilation.Name, compilation.Source.newSourceReader())
 }
 
-func (compilation *Compilation) generateOutput(unit *tree.TranslationUnit) []Generated {
+func (compilation *Compilation) generateOutput(
+	unit *tree.TranslationUnit) []backend.GeneratedFile {
+
+	output, _ := compilation.invokeBackend(backend.Input{
+		Unit:        unit,
+		Diagnostics: diagnostic.NewBag(),
+	})
+	return output.GeneratedFiles
+}
+
+func (compilation *Compilation) invokeBackend(
+	input backend.Input) (backend.Output, error){
+
 	if compilation.TargetArduino {
-		return []Generated{compilation.generateArduinoFile(unit)}
+		return cpp.Generate(input)
 	}
-	return compilation.generateCppFile(unit)
+	return cpp.Generate(input)
 }
 
-func (compilation *Compilation) generateCppFile(unit *tree.TranslationUnit) []Generated {
-	generated := make(chan Generated)
-	go func() {
-		generated <- compilation.generateHeaderFile(unit)
-	}()
-	go func() {
-		generated <- compilation.generateSourceFile(unit)
-	}()
-	var output []Generated
-	if isContainingTestDefinitions(unit) {
-		output = append(output, compilation.generateTestFile(unit))
-	}
-	output = append(output, <-generated)
-	output = append(output, <-generated)
-	return output
-}
 
-func isContainingTestDefinitions(node tree.Node) bool {
-	counter := tree.NewCounter()
-	counter.Count(node)
-	return counter.ValueFor(tree.TestStatementNodeKind) != 0
-}
 
-func (compilation *Compilation) generateArduinoFile(unit *tree.TranslationUnit) Generated {
-	generation := backend.NewGenerationWithExtension(unit, arduino.NewGeneration())
-	return Generated{
-		FileName: compilation.Name + ".ino",
-		Bytes:    []byte(generation.Generate()),
-	}
-}
-
-func (compilation *Compilation) generateHeaderFile(unit *tree.TranslationUnit) Generated {
-	generation := backend.NewGenerationWithExtension(unit, headerfile.NewGeneration())
-	return Generated{
-		FileName: compilation.Name + ".h",
-		Bytes:    []byte(generation.Generate()),
-	}
-}
-
-func (compilation *Compilation) generateSourceFile(unit *tree.TranslationUnit) Generated {
-	generation := backend.NewGenerationWithExtension(unit, sourcefile.NewGeneration())
-	return Generated{
-		FileName: compilation.Name + ".cc",
-		Bytes:    []byte(generation.Generate()),
-	}
-}
-
-func (compilation *Compilation) generateTestFile(unit *tree.TranslationUnit) Generated {
-	generation := backend.NewGenerationWithExtension(unit, testfile.NewGeneration())
-	return Generated{
-		FileName: compilation.Name + "_test.cc",
-		Bytes:    []byte(generation.Generate()),
-	}
-}

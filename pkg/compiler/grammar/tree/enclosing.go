@@ -1,6 +1,6 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+import "strict.dev/sdk/pkg/compiler/scope"
 
 func ResolveNearestScope(node Node) (scope.Scope, bool) {
 	currentParent, _ := node.EnclosingNode()
@@ -30,6 +30,7 @@ func IsInsideOfMethod(node Node) bool {
 		if _, isMethod := currentParent.(*MethodDeclaration); isMethod {
 			return true
 		}
+		currentParent, _ = currentParent.EnclosingNode()
 	}
 	return false
 }

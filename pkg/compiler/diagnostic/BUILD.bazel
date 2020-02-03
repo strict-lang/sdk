@@ -12,7 +12,7 @@ go_library(
         "rich_error.go",
         "stage.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic",
+    importpath = "strict.dev/sdk/pkg/compiler/diagnostic",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/grammar/tree:go_default_library",

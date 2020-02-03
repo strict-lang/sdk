@@ -1,9 +1,10 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
 	"strconv"
+	"strings"
 )
 
 type NumberLiteral struct {
@@ -33,7 +34,15 @@ func (literal *NumberLiteral) ResolvedType() (*scope.Class, bool) {
 
 func (literal *NumberLiteral) IsFloat() bool {
 	_, err := strconv.ParseFloat(literal.Value, floatBitSize)
-	return err == nil
+	return err == nil && strings.Contains(literal.Value, ".")
+}
+
+const integerBitSize = 32
+const decimal = 10
+
+func (literal *NumberLiteral) AsInt() (int, bool) {
+	number, err := strconv.ParseInt(literal.Value, decimal, integerBitSize)
+	return int(number), err == nil
 }
 
 func (literal *NumberLiteral) Accept(visitor Visitor) {
@@ -53,4 +62,8 @@ func (literal *NumberLiteral) Matches(node Node) bool {
 		return literal.Value == target.Value
 	}
 	return false
+}
+
+func (literal *NumberLiteral) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteNumberLiteral(literal)
 }

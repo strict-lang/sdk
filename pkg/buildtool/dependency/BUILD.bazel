@@ -6,6 +6,6 @@ go_library(
         "depend_chain.go",
         "dependency.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/buildtool/dependency",
+    importpath = "strict.dev/sdk/pkg/buildtool/dependency",
     visibility = ["//visibility:public"],
 )

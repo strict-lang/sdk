@@ -11,7 +11,7 @@ go_library(
         "stream_reader.go",
         "string_reader.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/input",
+    importpath = "strict.dev/sdk/pkg/compiler/input",
     visibility = ["//visibility:public"],
 )
 

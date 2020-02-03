@@ -1,10 +1,10 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/input"
 )
 
 const voidReturnType = `void`
@@ -71,7 +71,7 @@ func (parsing *Parsing) parseMethodSignature() methodSignature {
 func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
 	if parsing.isLookingAtOperator(token.LeftParenOperator) {
 		return &tree.ConcreteTypeName{
-			Name:   "void",
+			Name:   "Void",
 			Region: input.CreateRegion(parsing.offset(), parsing.offset()),
 		}
 	}
@@ -81,7 +81,12 @@ func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
 func (parsing *Parsing) parseAssignedMethodBody() tree.Node {
 	parsing.skipOperator(token.ArrowOperator)
 	statement := parsing.parseStatement()
-	return parsing.replaceNodeWithReturnIfExpression(statement)
+	return &tree.StatementBlock{
+		Children: []tree.Statement{
+			parsing.replaceNodeWithReturnIfExpression(statement),
+		},
+		Region:   statement.Locate(),
+	}
 }
 
 func (parsing *Parsing) replaceNodeWithReturnIfExpression(node tree.Node) tree.Node {

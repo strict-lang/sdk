@@ -1,6 +1,6 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 // ReturnStatement is a control statement that can prematurely end the execution
 // of a method or emit the return value. Return statements with a return value
@@ -8,7 +8,7 @@ import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 // the last statement in a block.
 type ReturnStatement struct {
 	Region input.Region
-	Value  Node
+	Value  Expression
 	Parent Node
 }
 
@@ -53,4 +53,10 @@ func (statement *ReturnStatement) matchesReturnValue(
 		return target.Value == nil
 	}
 	return statement.Value.Matches(target.Value)
+}
+
+func (statement *ReturnStatement) TransformExpressions(transformer ExpressionTransformer) {
+	if statement.Value != nil {
+		statement.Value = statement.Value.Transform(transformer)
+	}
 }

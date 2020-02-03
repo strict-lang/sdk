@@ -1,6 +1,6 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+import "strict.dev/sdk/pkg/compiler/scope"
 
 type ScopeOwner interface {
 	Scope() scope.Scope

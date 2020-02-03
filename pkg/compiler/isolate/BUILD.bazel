@@ -7,6 +7,6 @@ go_library(
         "isolate.go",
         "thread_locals.go",
     ],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/isolate",
+    importpath = "strict.dev/sdk/pkg/compiler/isolate",
     visibility = ["//visibility:public"],
 )

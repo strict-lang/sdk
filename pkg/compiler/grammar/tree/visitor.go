@@ -438,3 +438,129 @@ func (counter *Counter) Count(node Node) {
 func (counter *Counter) ValueFor(kind NodeKind) int {
 	return counter.nodes[kind]
 }
+
+type SingleFunctionVisitor struct {
+	visit func(Node)
+}
+
+func VisitWith(visitor func(Node)) *SingleFunctionVisitor {
+	return &SingleFunctionVisitor{visit: visitor}
+}
+
+func (visitor *SingleFunctionVisitor) VisitParameter(node *Parameter) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitIdentifier(node *Identifier) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitLetBinding(node *LetBinding) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitCallArgument(node *CallArgument) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitListTypeName(node *ListTypeName) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitTestStatement(node *TestStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitStringLiteral(node *StringLiteral) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitNumberLiteral(node *NumberLiteral) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitCallExpression(node *CallExpression) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitEmptyStatement(node *EmptyStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitYieldStatement(node *YieldStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitBreakStatement(node *BreakStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitBlockStatement(node *StatementBlock) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitWildcardNode(node *WildcardNode) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitAssertStatement(node *AssertStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitUnaryExpression(node *UnaryExpression) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitImportStatement(node *ImportStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitAssignStatement(node *AssignStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitReturnStatement(node *ReturnStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitTranslationUnit(node *TranslationUnit) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitCreateExpression(node *CreateExpression) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitInvalidStatement(node *InvalidStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitFieldDeclaration(node *FieldDeclaration) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitGenericTypeName(node *GenericTypeName) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitOptionalTypeName(node *OptionalTypeName) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitConcreteTypeName(node *ConcreteTypeName) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitClassDeclaration(node *ClassDeclaration) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitBinaryExpression(node *BinaryExpression) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitGenericStatement(node *GenericStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitMethodDeclaration(node *MethodDeclaration) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitPostfixExpression(node *PostfixExpression) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitImplementStatement(node *ImplementStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitRangedLoopStatement(node *RangedLoopStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitExpressionStatement(node *ExpressionStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitForEachLoopStatement(node *ForEachLoopStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitConditionalStatement(node *ConditionalStatement) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitListSelectExpression(node *ListSelectExpression) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitFieldSelectExpression(node *FieldSelectExpression) {
+	visitor.visit(node)
+}
+func (visitor *SingleFunctionVisitor) VisitConstructorDeclaration(node *ConstructorDeclaration) {
+	visitor.visit(node)
+}

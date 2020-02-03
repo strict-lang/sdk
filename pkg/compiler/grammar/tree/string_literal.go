@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
 	"strconv"
 )
 
@@ -67,4 +67,8 @@ func (literal *StringLiteral) Matches(node Node) bool {
 		return literal.Value == target.Value
 	}
 	return false
+}
+
+func (literal *StringLiteral) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteStringLiteral(literal)
 }

@@ -1,11 +1,12 @@
 package analysis
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
-	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/grammar/tree/pretty"
+	"strict.dev/sdk/pkg/compiler/isolate"
+	passes "strict.dev/sdk/pkg/compiler/pass"
+	"strict.dev/sdk/pkg/compiler/scope"
 	"log"
 )
 
@@ -98,7 +99,7 @@ func requireNearestScope(node tree.Node) scope.Scope {
 	if surroundingScope, ok := tree.ResolveNearestScope(node); ok {
 		return surroundingScope
 	}
-	log.Fatalf("surrounding scope does not exist: %v", node)
+	log.Fatalf("surrounding scope does not exist: %v", pretty.Format(node))
 	return nil
 }
 
@@ -106,7 +107,7 @@ func requireNearestMutableScope(node tree.Node) scope.MutableScope {
 	if surroundingScope, ok := tree.ResolveNearestMutableScope(node); ok {
 		return surroundingScope
 	}
-	log.Fatalf("surrounding mutable scope does not exist: %v", node)
+	log.Fatalf("surrounding mutable scope does not exist: %v", pretty.Format(node))
 	return nil
 }
 

@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/input"
 )
 
 // AssignStatement assigns values to left-hand-side expressions. Operations like
@@ -10,7 +10,7 @@ import (
 // FieldDeclaration, this is a field definition.
 type AssignStatement struct {
 	Target   Node
-	Value    Node
+	Value    Expression
 	Operator token.Operator
 	Region   input.Region
 	Parent   Node
@@ -49,4 +49,8 @@ func (assign *AssignStatement) matchesAssign(target *AssignStatement) bool {
 	return assign.Operator == target.Operator &&
 		assign.Target.Matches(target.Target) &&
 		assign.Value.Matches(target.Value)
+}
+
+func (assign *AssignStatement) TransformExpressions(transformer ExpressionTransformer) {
+	assign.Value = assign.Value.Transform(transformer)
 }

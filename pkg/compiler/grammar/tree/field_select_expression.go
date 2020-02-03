@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
 )
 
 type FieldSelectExpression struct {
@@ -53,6 +53,28 @@ func (expression *FieldSelectExpression) Matches(node Node) bool {
 	return false
 }
 
-func (expression *FieldSelectExpression) findLastIdentifier() (*Identifier, bool) {
+func (expression *FieldSelectExpression) FindLastIdentifier() (*Identifier, bool) {
+	switch expression.Selection.(type) {
+		case *Identifier:
+			identifier, ok := expression.Selection.(*Identifier)
+			return identifier, ok
+		case *FieldSelectExpression:
+			if next, ok := expression.Selection.(*FieldSelectExpression); ok {
+				return next.FindLastIdentifier()
+			}
+	}
 	return nil, false
+}
+
+func (expression *FieldSelectExpression) TransformExpressions(
+	transformer ExpressionTransformer) {
+
+	expression.Target = expression.Target.Transform(transformer)
+	expression.Selection = expression.Selection.Transform(transformer)
+}
+
+func (expression *FieldSelectExpression) Transform(
+	transformer ExpressionTransformer) Expression {
+
+	return transformer.RewriteFieldSelectExpression(expression)
 }

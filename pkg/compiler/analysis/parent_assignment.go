@@ -1,8 +1,8 @@
 package analysis
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/pass"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/isolate"
+	"strict.dev/sdk/pkg/compiler/pass"
 )
 
 const ParentAssignPassId = "ParentAssignPass"
@@ -136,8 +136,8 @@ return  &tree.DelegatingVisitor{
 	ConditionalStatementVisitor: func(statement *tree.ConditionalStatement) {
 		statement.Condition.SetEnclosingNode(statement)
 		statement.Consequence.SetEnclosingNode(statement)
-		if statement.Consequence != nil {
-			statement.Consequence.SetEnclosingNode(statement)
+		if statement.Alternative != nil {
+			statement.Alternative.SetEnclosingNode(statement)
 		}
 	},
 	ListSelectExpressionVisitor: func(expression *tree.ListSelectExpression) {
@@ -153,6 +153,10 @@ return  &tree.DelegatingVisitor{
 		for _, parameter := range declaration.Parameters {
 			parameter.SetEnclosingNode(declaration)
 		}
+	},
+	LetBindingVisitor: func(binding *tree.LetBinding) {
+		binding.Expression.SetEnclosingNode(binding)
+		binding.Name.SetEnclosingNode(binding)
 	},
 }
 }

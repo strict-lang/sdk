@@ -1,15 +1,15 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
 )
 
 // BinaryExpression is an operation on two operands.
 type BinaryExpression struct {
-	LeftOperand  Node
-	RightOperand Node
+	LeftOperand  Expression
+	RightOperand Expression
 	Operator     token.Operator
 	Region       input.Region
 	resolvedType resolvedType
@@ -57,4 +57,13 @@ func (binary *BinaryExpression) matchesExpression(target *BinaryExpression) bool
 	return binary.Operator == target.Operator &&
 		binary.LeftOperand.Matches(target.LeftOperand) &&
 		binary.RightOperand.Matches(target.RightOperand)
+}
+
+func (binary *BinaryExpression) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteBinaryExpression(binary)
+}
+
+func (binary *BinaryExpression) TransformExpressions(transformer ExpressionTransformer) {
+	binary.LeftOperand = binary.LeftOperand.Transform(transformer)
+	binary.RightOperand = binary.RightOperand.Transform(transformer)
 }

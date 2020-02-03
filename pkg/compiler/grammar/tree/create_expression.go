@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
 )
 
 type CreateExpression struct {
@@ -49,4 +49,8 @@ func (create *CreateExpression) Matches(node Node) bool {
 			create.Type.Matches(target.Type)
 	}
 	return false
+}
+
+func (create *CreateExpression) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteCreateExpression(create)
 }

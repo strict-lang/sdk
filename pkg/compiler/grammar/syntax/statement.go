@@ -1,10 +1,11 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"fmt"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/input"
 )
 
 // parseConditionalStatement parses a conditional statement and it's optional else-clause.
@@ -12,7 +13,6 @@ func (parsing *Parsing) parseConditionalStatement() *tree.ConditionalStatement {
 	parsing.beginStructure(tree.ConditionalStatementNodeKind)
 	parsing.skipKeyword(token.IfKeyword)
 	condition := parsing.parseConditionalExpression()
-	parsing.skipKeyword(token.DoKeyword)
 	parsing.skipEndOfStatement()
 	consequence := parsing.parseStatementBlock()
 	return parsing.parseElseClauseIfPresent(condition, consequence)
@@ -85,7 +85,6 @@ func (parsing *Parsing) completeForEachStatement() *tree.ForEachLoopStatement {
 	field := parsing.parseIdentifier()
 	parsing.skipKeyword(token.InKeyword)
 	value := parsing.parseExpression()
-	parsing.skipKeyword(token.DoKeyword)
 	parsing.skipEndOfStatement()
 	body := parsing.parseStatementBlock()
 	return &tree.ForEachLoopStatement{
@@ -107,7 +106,6 @@ func (parsing *Parsing) completeFromToStatement() *tree.RangedLoopStatement {
 	begin := parsing.parseExpression()
 	parsing.skipKeyword(token.ToKeyword)
 	end := parsing.parseExpression()
-	parsing.skipKeyword(token.DoKeyword)
 	parsing.skipEndOfStatement()
 	body := parsing.parseStatementBlock()
 	return &tree.RangedLoopStatement{
@@ -264,7 +262,7 @@ func init() {
 			return parsing.parseMethodDeclaration()
 		},
 		token.LetKeyword: func(parsing *Parsing) tree.Node {
-			return parsing.parseLetBinding()
+			return parsing.parseLetBindingStatement()
 		},
 		token.ImplementKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseImplementStatement()
@@ -303,11 +301,11 @@ func (parsing *Parsing) maybeParseConstructorDeclaration() (keywordStatementPars
 	}, true
 }
 
-func (parsing *Parsing) parseLetBinding() tree.Node {
+func (parsing *Parsing) parseLetBinding() *tree.LetBinding {
 	parsing.beginStructure(tree.LetBindingNodeKind)
-	parsing.expectKeyword(token.LetKeyword)
+	parsing.skipKeyword(token.LetKeyword)
 	name := parsing.parseIdentifier()
-	parsing.expectOperator(token.AssignOperator)
+	parsing.skipOperator(token.AssignOperator)
 	value := parsing.parseExpression()
 	parsing.skipEndOfStatement()
 	return &tree.LetBinding{
@@ -317,9 +315,18 @@ func (parsing *Parsing) parseLetBinding() tree.Node {
 	}
 }
 
+func (parsing *Parsing) parseLetBindingStatement() tree.Statement {
+	parsing.beginStructure(tree.ExpressionStatementNodeKind)
+	binding := parsing.parseLetBinding()
+	_ = parsing.completeStructure(tree.ExpressionStatementNodeKind)
+	return &tree.ExpressionStatement{
+		Expression: binding,
+	}
+}
+
 func (parsing *Parsing) parseImplementStatement() tree.Node {
 	parsing.beginStructure(tree.ImplementStatementNodeKind)
-	parsing.expectKeyword(token.ImplementKeyword)
+	parsing.skipKeyword(token.ImplementKeyword)
 	trait := parsing.parseTypeName()
 	parsing.skipEndOfStatement()
 	return &tree.ImplementStatement{
@@ -330,7 +337,7 @@ func (parsing *Parsing) parseImplementStatement() tree.Node {
 
 func (parsing *Parsing) parseGenericStatement() tree.Node {
 	parsing.beginStructure(tree.GenericStatementNodeKind)
-	parsing.expectKeyword(token.GenericKeyword)
+	parsing.skipKeyword(token.GenericKeyword)
 	name := parsing.parseIdentifier()
 	constraints := parsing.parseGenericConstraints()
 	parsing.skipEndOfStatement()
@@ -488,6 +495,7 @@ func (parsing *Parsing) parseFieldDeclarationOrDefinition() tree.Node {
 	parsing.beginStructure(tree.FieldDeclarationNodeKind)
 	declaration := parsing.parseFieldDeclaration()
 	if !token.HasOperatorValue(parsing.token(), token.AssignOperator) {
+		parsing.completeStructure(tree.FieldDeclarationNodeKind)
 		parsing.skipEndOfStatement()
 		return declaration
 	}
@@ -519,15 +527,11 @@ func (parsing *Parsing) completeFieldDeclarationWithTypeName(
 
 	parsing.updateTopStructureKind(tree.FieldDeclarationNodeKind)
 	fieldName := parsing.parseIdentifier()
-	declaration := &tree.FieldDeclaration{
+	return &tree.FieldDeclaration{
 		Name:     fieldName,
 		TypeName: typeName,
-		Region:   parsing.completeStructure(tree.FieldDeclarationNodeKind),
+		Region:   parsing.createRegionOfCurrentStructure(),
 	}
-	if token.HasOperatorValue(parsing.token(), token.AssignOperator) {
-		return parsing.completeFieldDefinition(declaration)
-	}
-	return declaration
 }
 
 func (parsing *Parsing) completeFieldDefinition(declaration *tree.FieldDeclaration) tree.Node {
@@ -583,9 +587,9 @@ func (parsing *Parsing) parseFieldDeclarationOrListAccess() tree.Node {
 	parsing.beginStructure(tree.UnknownNodeKind)
 	baseTypeOrAccessedField := parsing.pullToken()
 	if parsing.isLookingAtListAccess() {
-		return parsing.completeFieldDeclarationFromBaseTypeName(baseTypeOrAccessedField)
+		return parsing.completeListAccess(baseTypeOrAccessedField)
 	}
-	return parsing.completeListAccess(baseTypeOrAccessedField)
+	return parsing.completeFieldDeclarationFromBaseTypeName(baseTypeOrAccessedField)
 }
 
 func createRegionForToken(target token.Token) input.Region {
@@ -649,7 +653,7 @@ func (parsing *Parsing) parseStatementSequence() (statements []tree.Statement) {
 func newInvalidIndentError(expected, received token.Indent) *diagnostic.RichError {
 	return &diagnostic.RichError{
 		Error: &diagnostic.InvalidIndentationError{
-			Expected: string(expected),
+			Expected: fmt.Sprintf("%d", expected),
 			Received: int(received),
 		},
 		CommonReasons: []string{
@@ -664,7 +668,7 @@ func (parsing *Parsing) parseStatementBlock() *tree.StatementBlock {
 	parsing.beginStructure(tree.StatementBlockNodeKind)
 	indent := parsing.token().Indent()
 	if indent < parsing.block.Indent {
-		parsing.throwError(newZeroIndentError())
+		parsing.throwError(newSmallerIndentError(indent))
 	}
 	parsing.openBlock(indent)
 	statements := parsing.parseStatementSequence()
@@ -675,11 +679,11 @@ func (parsing *Parsing) parseStatementBlock() *tree.StatementBlock {
 	}
 }
 
-func newZeroIndentError() *diagnostic.RichError {
+func newSmallerIndentError(indent token.Indent) *diagnostic.RichError {
 	return &diagnostic.RichError{
 		Error: &diagnostic.InvalidIndentationError{
-			Expected: "higher than 0",
-			Received: 0,
+			Expected: "increased indent",
+			Received: int(indent),
 		},
 	}
 }

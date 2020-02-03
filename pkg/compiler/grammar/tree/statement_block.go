@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strict.dev/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/scope"
 )
 
 type StatementBlock struct {
@@ -60,4 +60,78 @@ func (block *StatementBlock) hasChildren(children []Statement) bool {
 		}
 	}
 	return true
+}
+
+func (block *StatementBlock) ReplaceExact(replaced Node, target Statement) {
+	for index, child := range block.Children {
+		if child == replaced {
+			block.Children[index] = target
+		}
+	}
+}
+
+func (block *StatementBlock) ReplaceMatching(filter NodeFilter, target Statement) {
+	for index, child := range block.Children {
+		if filter(child) {
+			block.Children[index] = target
+		}
+	}
+}
+
+func (block *StatementBlock) FindIndexOfExact(node Statement) (int, bool) {
+	for index, child := range block.Children {
+		if child == node {
+			return index, true
+		}
+	}
+	return 0, false
+}
+
+func (block *StatementBlock) FindIndexOfMatching(filter NodeFilter) (int, bool) {
+	for index, child := range block.Children {
+		if filter(child) {
+			return index, true
+		}
+	}
+	return 0, false
+}
+
+func (block *StatementBlock) InsertBeforeOffset(offset input.Offset, node Statement) {
+	for index, child := range block.Children {
+		if child.Locate().Begin() < offset {
+			block.Children[index] = node
+		}
+	}
+}
+
+func (block *StatementBlock) InsertBeforeIndex(index int, node Statement) {
+	if index < 1 {
+		block.Prepend(node)
+	} else {
+		block.Children = insert(block.Children, index, node)
+	}
+}
+
+func (block *StatementBlock) InsertAfterIndex(index int, node Statement) {
+	if index >= len(block.Children) {
+		block.Append(node)
+	} else {
+		insert(block.Children, index, node)
+	}
+}
+
+func insert(slice []Statement, index int, value Statement) (result []Statement) {
+	result = append(slice, nil)
+	copy(result[index + 1:], result[index:])
+	result[index] = value
+	return result
+}
+
+func (block *StatementBlock) Prepend(node Statement) {
+	newHead := []Statement{node}
+	block.Children = append(newHead, block.Children...)
+}
+
+func (block *StatementBlock) Append(node Statement) {
+	block.Children = append(block.Children, node)
 }

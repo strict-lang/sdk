@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/assets/strict_logo.png" width="360"></p>
+<p align="center"><img src="docs/assets/banner.png" width="500"></p>
 
 # Strict Development Kit
 

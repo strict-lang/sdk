@@ -1,6 +1,6 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 type ConditionalStatement struct {
 	Condition   Expression
@@ -65,4 +65,10 @@ func (conditional *ConditionalStatement) matchesAlternative(
 		return !target.HasAlternative()
 	}
 	return conditional.Alternative.Matches(target.Alternative)
+}
+
+func (conditional *ConditionalStatement) TransformExpressions(
+	transformer ExpressionTransformer) {
+
+	conditional.Condition = conditional.Condition.Transform(transformer)
 }

@@ -2,7 +2,7 @@ package tree
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/input"
 	"strings"
 )
 
@@ -99,7 +99,7 @@ func (target *IdentifierChainImport) FilePath() string {
 	var path strings.Builder
 	path.WriteRune('"')
 	writePath(target.Chain, &path)
-	path.WriteString(".h\"")
+	path.WriteString("\"")
 	return path.String()
 }
 

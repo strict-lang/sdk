@@ -7,10 +7,10 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/input"
 )
 
 func (parsing *Parsing) parseExpression() tree.Expression {
@@ -58,8 +58,7 @@ func (parsing *Parsing) parseUnaryExpression() tree.Expression {
 // binary expressions have a left-hand-side and right-hand-side operand and
 // the operator in between. The operands can be any kind of expression.
 // Example: 'a + b' or '(1 + 2) + 3'
-func (parsing *Parsing) parseBinaryExpression(
-	precedence token.Precedence) tree.Expression {
+func (parsing *Parsing) parseBinaryExpression(precedence token.Precedence) tree.Expression {
 	parsing.beginStructure(tree.BinaryExpressionNodeKind)
 	leftHandSide := parsing.parseUnaryExpression()
 	for !parsing.isAtEndOfBinaryExpression(precedence) {
@@ -96,6 +95,8 @@ func (parsing *Parsing) parseBinaryExpressionWithLeftHandSide(
 
 func (parsing *Parsing) parseOperand() tree.Expression {
 	switch last := parsing.token(); {
+	case token.HasKeywordValue(last, token.LetKeyword):
+		return parsing.parseLetBinding()
 	case token.IsIdentifierToken(last):
 		return parsing.parseIdentifier()
 	case token.IsStringLiteralToken(last):
@@ -211,7 +212,9 @@ func (parsing *Parsing) parseOperationOnOperand(
 	return nil, true
 }
 
-func (parsing *Parsing) parseListSelectExpression(target tree.Node) *tree.ListSelectExpression {
+func (parsing *Parsing) parseListSelectExpression(
+	target tree.Expression) *tree.ListSelectExpression {
+
 	parsing.beginStructure(tree.ListSelectExpressionNodeKind)
 	parsing.skipOperator(token.LeftBracketOperator)
 	index := parsing.parseExpression()
@@ -253,9 +256,12 @@ func (parsing *Parsing) parseFieldSelectExpression(target tree.Expression) *tree
 	}
 }
 
+// TODO: Get rid of special syntax for constructor calls.
 func (parsing *Parsing) parseConstructorCall() (*tree.CallExpression, tree.TypeName) {
 	typeName := parsing.parseTypeName()
-	methodCall := parsing.parseCallOnNode(typeName)
+	methodCall := parsing.parseCallOnNode(&tree.Identifier{
+		Value: typeName.BaseName(),
+	})
 	return methodCall, typeName
 }
 
@@ -271,7 +277,7 @@ func (parsing *Parsing) parseCreateExpression() tree.Expression{
 }
 
 // ParseMethodCall parses the call to a method.
-func (parsing *Parsing) parseCallOnNode(method tree.Node) *tree.CallExpression {
+func (parsing *Parsing) parseCallOnNode(method tree.Expression) *tree.CallExpression {
 	parsing.beginStructure(tree.CallExpressionNodeKind)
 	parsing.skipOperator(token.LeftParenOperator)
 	arguments := parsing.parseArgumentList()
@@ -311,6 +317,7 @@ func (parsing *Parsing) parseNonEmptyArgumentList() (arguments tree.CallArgument
 		arguments = append(arguments, parsing.parseCallArgument())
 		parsing.consumeTokenAfterArgument()
 	}
+	parsing.skipOperator(token.RightParenOperator)
 	return arguments
 }
 

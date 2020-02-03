@@ -1,8 +1,8 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
 	"strings"
 	"testing"
 )
@@ -13,7 +13,7 @@ func TestParsing_ParseMethodDeclaration(testing *testing.T) {
 			{
 				Input: `
 method List<int> range(int begin, int end)
-  for number from begin to end do
+  for number from begin to end
     yield number
 `,
 				ExpectedOutput: &tree.MethodDeclaration{
@@ -53,12 +53,12 @@ method List<int> range(int begin, int end)
 			{
 				Input: `
 method printList(List<int> numbers)
-  for number in numbers do
+  for number in numbers
     printf("%d ", number)
 `,
 				ExpectedOutput: &tree.MethodDeclaration{
 					Name: &tree.Identifier{Value: `printList`},
-					Type: &tree.ConcreteTypeName{Name: `void`},
+					Type: &tree.ConcreteTypeName{Name: `Void`},
 					Parameters: tree.ParameterList{
 						&tree.Parameter{
 							Type: &tree.GenericTypeName{
@@ -112,11 +112,15 @@ method int add(int left, int right) => left + right
 							Name: &tree.Identifier{Value: `right`},
 						},
 					},
-					Body: &tree.ReturnStatement{
-						Value: &tree.BinaryExpression{
-							LeftOperand:  &tree.Identifier{Value: `left`},
-							RightOperand: &tree.Identifier{Value: `right`},
-							Operator:     token.AddOperator,
+					Body: &tree.StatementBlock{
+						Children: []tree.Statement{
+							&tree.ReturnStatement{
+								Value: &tree.BinaryExpression{
+									LeftOperand:  &tree.Identifier{Value: `left`},
+									RightOperand: &tree.Identifier{Value: `right`},
+									Operator:     token.AddOperator,
+								},
+							},
 						},
 					},
 				},
@@ -127,14 +131,18 @@ method greet() => log("Hello")
 `,
 				ExpectedOutput: &tree.MethodDeclaration{
 					Name:       &tree.Identifier{Value: `greet`},
-					Type:       &tree.ConcreteTypeName{Name: `void`},
+					Type:       &tree.ConcreteTypeName{Name: `Void`},
 					Parameters: tree.ParameterList{},
-					Body: &tree.ExpressionStatement{
-						Expression: &tree.CallExpression{
-							Target: &tree.Identifier{Value: `log`},
-							Arguments: tree.CallArgumentList{
-								&tree.CallArgument{
-									Value: &tree.StringLiteral{Value: `Hello`},
+					Body: &tree.StatementBlock{
+						Children: []tree.Statement{
+							&tree.ReturnStatement{
+								Value: &tree.CallExpression{
+									Target: &tree.Identifier{Value: `log`},
+									Arguments: tree.CallArgumentList{
+										&tree.CallArgument{
+											Value: &tree.StringLiteral{Value: `Hello`},
+										},
+									},
 								},
 							},
 						},

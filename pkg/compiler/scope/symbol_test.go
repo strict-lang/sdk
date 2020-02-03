@@ -1,6 +1,6 @@
 package scope
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 type testSymbol struct {
 	name string
@@ -8,6 +8,10 @@ type testSymbol struct {
 }
 
 func (symbol *testSymbol) Name() string {
+	return symbol.name
+}
+
+func (symbol *testSymbol) String() string {
 	return symbol.name
 }
 

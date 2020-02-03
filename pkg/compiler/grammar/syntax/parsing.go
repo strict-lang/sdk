@@ -2,11 +2,12 @@ package syntax
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/input"
 	"log"
+	"strings"
 )
 
 var notParsingMethod = parsedMethod{name: `!none`}
@@ -50,7 +51,7 @@ func (parsing *Parsing) parseClassDeclaration() *tree.ClassDeclaration {
 	parsing.beginStructure(tree.ClassDeclarationNodeKind)
 	nodes := parsing.parseTopLevelNodes()
 	return &tree.ClassDeclaration{
-		Name:       parsing.unitName,
+		Name:       parseFileName(parsing.unitName),
 		Parameters: []*tree.ClassParameter{},
 		SuperTypes: []tree.TypeName{},
 		Children:   nodes,
@@ -135,6 +136,16 @@ func (parsing *Parsing) updateTopStructureKind(kind tree.NodeKind) {
 		top.nodeKind = kind
 		parsing.pushStructure(top)
 	}
+}
+
+func parseFileName(name string) string {
+	if lastSlash := strings.LastIndex(name, "\\"); lastSlash != -1 {
+		return parseFileName(name[lastSlash + 1:])
+	}
+	if extensionPoint := strings.LastIndex(name, "."); extensionPoint != -1 {
+		return name[:extensionPoint]
+	}
+	return name
 }
 
 func (parsing *Parsing) completeStructure(expectedKind tree.NodeKind) input.Region {
@@ -277,7 +288,9 @@ func newInvalidStructureError() *diagnostic.RichError {
 // skipEndOfStatement skips the next token if it is an EndOfStatement token.
 func (parsing *Parsing) skipEndOfStatement() {
 	// Do not report the missing end of statement.
-	parsing.advance()
+	if token.IsEndOfStatementToken(parsing.token()) {
+		parsing.advance()
+	}
 	parsing.isAtBeginOfStatement = true
 }
 

@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["pretty_printing.go"],
-    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty",
+    importpath = "strict.dev/sdk/pkg/compiler/grammar/tree/pretty",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/compiler/grammar/tree:go_default_library",

@@ -1,10 +1,10 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 type AssertStatement struct {
 	Region     input.Region
-	Expression Node
+	Expression Expression
 	Parent Node
 }
 
@@ -34,4 +34,8 @@ func (assert *AssertStatement) Matches(node Node) bool {
 		return assert.Expression.Matches(target.Expression)
 	}
 	return false
+}
+
+func (assert *AssertStatement) TransformExpressions(transformer ExpressionTransformer) {
+	assert.Expression = assert.Expression.Transform(transformer)
 }

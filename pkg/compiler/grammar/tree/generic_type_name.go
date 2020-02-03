@@ -2,7 +2,7 @@ package tree
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/input"
 )
 
 // TODO(merlinosayimwen) Change this to a slice to support
@@ -13,6 +13,11 @@ type GenericTypeName struct {
 	Generic TypeName
 	Region  input.Region
 	Parent Node
+	typeReference *TypeReference
+}
+
+func (name *GenericTypeName) TypeReference() *TypeReference {
+	return name.typeReference
 }
 
 func (name *GenericTypeName) SetEnclosingNode(target Node) {
@@ -46,8 +51,7 @@ func (name *GenericTypeName) Locate() input.Region {
 
 func (name *GenericTypeName) Matches(node Node) bool {
 	if target, ok := node.(*GenericTypeName); ok {
-		return name.Name == target.Name &&
-			name.Generic.Matches(target.Generic)
+		return name.Name == target.Name && name.Generic.Matches(target.Generic)
 	}
 	return false
 }

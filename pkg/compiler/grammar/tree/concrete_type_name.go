@@ -1,11 +1,16 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "strict.dev/sdk/pkg/compiler/input"
 
 type ConcreteTypeName struct {
 	Name   string
 	Region input.Region
 	Parent Node
+	typeReference *TypeReference
+}
+
+func (concrete *ConcreteTypeName) TypeReference() *TypeReference {
+	return concrete.typeReference
 }
 
 func (concrete *ConcreteTypeName) SetEnclosingNode(target Node) {

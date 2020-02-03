@@ -1,9 +1,9 @@
 package pass
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/isolate"
 )
 
 type Context struct {
@@ -42,5 +42,11 @@ func findPassInProperties(
 		return pass, isPass
 	}
 	return nil, false
+}
 
+func Register(pass Pass) {
+	isolate.RegisterConfigurator(func(isolate *isolate.Isolate) {
+		name := string(pass.Id())
+		isolate.Properties.Insert(name, pass)
+	})
 }

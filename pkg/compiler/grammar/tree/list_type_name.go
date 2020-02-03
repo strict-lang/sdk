@@ -2,13 +2,18 @@ package tree
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"strict.dev/sdk/pkg/compiler/input"
 )
 
 type ListTypeName struct {
 	Element TypeName
 	Region  input.Region
 	Parent Node
+	typeReference *TypeReference
+}
+
+func (name *ListTypeName) TypeReference() *TypeReference {
+	return name.typeReference
 }
 
 func (name *ListTypeName) SetEnclosingNode(target Node) {
