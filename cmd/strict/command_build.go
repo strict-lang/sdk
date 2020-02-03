@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/pkg/compilation"
+	"strict.dev/sdk/pkg/compiler"
 	"os"
+	"strict.dev/sdk/pkg/compiler/backend"
 )
 
 var buildCommand = &cobra.Command{
@@ -40,17 +41,17 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		command.Printf("Invalid filename: %s\n", file.Name())
 		return
 	}
-	compiler := &compilation.Compilation{
+	compiler := &compiler.Compilation{
 		Name:          unitName,
-		Source:        &compilation.FileSource{File: file},
+		Source:        &compiler.FileSource{File: file},
 		TargetArduino: targetArduino,
 	}
 	result := compiler.Compile()
+	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command})
 	if result.Error != nil {
-		command.PrintErrf("Failed to compile the file: %s\n", result.Error)
+		command.PrintErrf("The compilation has failed: %s\n", result.Error)
 		return
 	}
-	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command})
 	if err = writeGeneratedSources(result); err != nil {
 		command.PrintErrf("Failed to write generated code; %s\n", err.Error())
 		return
@@ -58,7 +59,7 @@ func RunCompile(command *cobra.Command, arguments []string) {
 	command.Printf("Successfully compiled %s!\n", unitName)
 }
 
-func writeGeneratedSources(compilation compilation.Result) (err error) {
+func writeGeneratedSources(compilation compiler.Result) (err error) {
 	for _, generated := range compilation.GeneratedFiles {
 		if err = writeGeneratedSourceFile(generated); err != nil {
 			return err
@@ -67,12 +68,12 @@ func writeGeneratedSources(compilation compilation.Result) (err error) {
 	return nil
 }
 
-func writeGeneratedSourceFile(generated compilation.Generated) error {
-	file, err := targetFile(generated.FileName)
+func writeGeneratedSourceFile(generated backend.GeneratedFile) error {
+	file, err := targetFile(generated.Name)
 	if err != nil {
 		return err
 	}
-	_, err = file.Write(generated.Bytes)
+	_, err = file.Write(generated.Content)
 	return err
 }
 

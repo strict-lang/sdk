@@ -1,0 +1,27 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "char.go",
+        "doc.go",
+        "position.go",
+        "reader.go",
+        "region.go",
+        "stream_reader.go",
+        "string_reader.go",
+    ],
+    importpath = "strict.dev/sdk/pkg/compiler/input",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "char_test.go",
+        "region_test.go",
+        "stream_reader_test.go",
+        "string_reader_test.go",
+    ],
+    embed = [":go_default_library"],
+)

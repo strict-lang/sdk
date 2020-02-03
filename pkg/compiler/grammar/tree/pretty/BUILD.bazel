@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["pretty_printing.go"],
+    importpath = "strict.dev/sdk/pkg/compiler/grammar/tree/pretty",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/grammar/tree:go_default_library",
+        "@com_github_fatih_color//:go_default_library",
+    ],
+)

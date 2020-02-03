@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "pass.go",
+        "pass_execution.go",
+    ],
+    importpath = "strict.dev/sdk/pkg/compiler/pass",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/isolate:go_default_library",
+    ],
+)

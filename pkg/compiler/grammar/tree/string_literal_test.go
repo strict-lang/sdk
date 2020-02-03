@@ -1,0 +1,53 @@
+package tree
+
+import (
+	"strict.dev/sdk/pkg/compiler/input"
+	"testing"
+)
+
+func createTestStringLiteral() *StringLiteral {
+	return &StringLiteral{
+		Value:  "test",
+		Region: input.CreateRegion(0, 5),
+	}
+}
+
+func TestStringLiteral_Accept(testing *testing.T) {
+	entry := createTestStringLiteral()
+	CreateVisitorTest(entry, testing).Expect(StringLiteralNodeKind).Run()
+}
+
+func TestStringLiteral_AcceptRecursive(testing *testing.T) {
+	entry := createTestStringLiteral()
+	CreateVisitorTest(entry, testing).Expect(StringLiteralNodeKind).RunRecursive()
+}
+
+func TestStringLiteral_Region(testing *testing.T) {
+	RunNodeRegionTest(testing, func(region input.Region) Node {
+		return &StringLiteral{
+			Value:  "test",
+			Region: region,
+		}
+	})
+}
+
+func TestStringLiteral_ToStringLiteral(testing *testing.T) {
+	entry := createTestStringLiteral()
+	converted, err := entry.ToStringLiteral()
+	if err != nil {
+		testing.Errorf("StringLiteral can not be converted to %s", entry.Value)
+		return
+	}
+	if converted.Value != entry.Value {
+		testing.Errorf("Invalid ToStringLiteral(): got %s - expected %s",
+			entry.Value, converted.Value)
+	}
+}
+
+func TestStringLiteral_ToNumberLiteral_ValidNumber(testing *testing.T) {
+
+}
+
+func TestStringLiteral_ToNumberLiteral_InvalidNumber(testing *testing.T) {
+
+}

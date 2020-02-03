@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "backend.go",
+        "builder.go",
+        "expression.go",
+        "statement.go",
+        "storage.go",
+        "typing.go",
+    ],
+    importpath = "strict.dev/sdk/pkg/compiler/backend/ilasm",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/backend:go_default_library",
+        "//pkg/compiler/grammar/token:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/scope:go_default_library",
+        "//pkg/compiler/typing:go_default_library",
+    ],
+)

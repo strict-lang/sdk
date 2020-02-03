@@ -1,0 +1,38 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "cobra.go",
+        "command_build.go",
+        "command_tokenize.go",
+        "command_tree.go",
+        "command_version.go",
+        "common.go",
+        "filename.go",
+        "files.go",
+        "main.go",
+    ],
+    importpath = "strict.dev/sdk/cmd/strict",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//pkg/compiler:go_default_library",
+        "//pkg/compiler/backend:go_default_library",
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/lexical:go_default_library",
+        "//pkg/compiler/grammar/token:go_default_library",
+        "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/grammar/tree/pretty:go_default_library",
+        "//pkg/compiler/input:go_default_library",
+        "//pkg/compiler/isolate:go_default_library",
+        "//pkg/compiler/lowering:go_default_library",
+        "//pkg/compiler/pass:go_default_library",
+        "@com_github_spf13_cobra//:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "strict",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)

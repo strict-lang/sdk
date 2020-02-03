@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/scanning"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/source"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/token"
+	"strict.dev/sdk/pkg/compiler/grammar/lexical"
+	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"strict.dev/sdk/pkg/compiler/input"
 	"os"
 )
 
@@ -30,7 +30,7 @@ func printNewLineIndent() {
 }
 
 func scanAndPrintTokens(command *cobra.Command, sourceFile *os.File) {
-	scan := scanning.NewScanning(source.NewStreamReader(sourceFile))
+	scan := lexical.NewScanning(input.NewStreamReader(sourceFile))
 	fmt.Println("Scanned tokens:")
 	printNewLineIndent()
 	for {
@@ -38,7 +38,7 @@ func scanAndPrintTokens(command *cobra.Command, sourceFile *os.File) {
 		if token.IsEndOfFileToken(next) {
 			break
 		}
-		fmt.Printf("%s ", next)
+		fmt.Printf("%s(%d) ", next, next.Indent())
 		if token.IsEndOfStatementToken(next) {
 			fmt.Println()
 			printNewLineIndent()

@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "concrete_type.go",
+        "generic_type.go",
+        "list_type.go",
+        "optional_type.go",
+        "type.go",
+    ],
+    importpath = "strict.dev/sdk/pkg/compiler/typing",
+    visibility = ["//visibility:public"],
+)

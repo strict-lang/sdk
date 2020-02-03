@@ -2,9 +2,15 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/pkg/compilation"
-	"gitlab.com/strict-lang/sdk/pkg/compilation/syntaxtree"
+	"strict.dev/sdk/pkg/compiler"
+	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"strict.dev/sdk/pkg/compiler/grammar/tree/pretty"
+	"strict.dev/sdk/pkg/compiler/isolate"
+	"strict.dev/sdk/pkg/compiler/lowering"
+	passes "strict.dev/sdk/pkg/compiler/pass"
 	"os"
+	"strings"
 )
 
 var treeCommand = &cobra.Command{
@@ -15,19 +21,31 @@ var treeCommand = &cobra.Command{
 }
 
 func runTreeCommand(command *cobra.Command, arguments []string) {
-	sourceFile, ok := findSourceFileInArguments(command, arguments)
-	if !ok {
-		return
+	if sourceFile, ok := findSourceFileInArguments(command, arguments); ok {
+		defer sourceFile.Close()
+		parseAndPrintAst(command, sourceFile)
 	}
-	defer sourceFile.Close()
-	parseAndPrintAst(command, sourceFile)
+}
+
+func createUnitNameFromFileName(name string) string {
+	return strings.TrimSuffix(name, ".strict")
 }
 
 func parseAndPrintAst(command *cobra.Command, sourceFile *os.File) {
-	parseResult := compilation.ParseFile("formatted", sourceFile)
+	parseResult := compiler.ParseFile(sourceFile.Name(), sourceFile)
 	parseResult.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command})
 	if parseResult.Error != nil {
 		return
 	}
-	syntaxtree.PrintColored(parseResult.Unit)
+	analyseAndLowerUnit(parseResult.Unit)
+	pretty.PrintColored(parseResult.Unit)
+}
+
+func analyseAndLowerUnit(unit *tree.TranslationUnit) {
+	pass, _ := passes.NewExecution(lowering.LetBindingLoweringPassId, &passes.Context{
+		Unit:       unit,
+		Diagnostic: diagnostic.NewBag(),
+		Isolate:    isolate.SingleThreaded(),
+	})
+	_ = pass.Run()
 }

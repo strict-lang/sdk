@@ -1,0 +1,37 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "identifier.go",
+        "keyword.go",
+        "number.go",
+        "operator.go",
+        "operator_table.go",
+        "recording_source_reader.go",
+        "scanning.go",
+        "text.go",
+    ],
+    importpath = "strict.dev/sdk/pkg/compiler/grammar/lexical",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/compiler/diagnostic:go_default_library",
+        "//pkg/compiler/grammar/token:go_default_library",
+        "//pkg/compiler/input:go_default_library",
+        "//pkg/compiler/input/linemap:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "identifier_test.go",
+        "keyword_test.go",
+        "number_test.go",
+        "operator_test.go",
+        "scanning_test.go",
+        "text_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = ["//pkg/compiler/grammar/token:go_default_library"],
+)

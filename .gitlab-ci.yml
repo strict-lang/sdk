@@ -1,0 +1,19 @@
+default:
+  image:
+    name: l.gcr.io/google/bazel:latest
+    entrypoint: [""]
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - bazel version
+    - bazel build ...
+
+test:
+  stage: test
+  script:
+    - bazel test ...
