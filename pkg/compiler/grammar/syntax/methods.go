@@ -81,7 +81,12 @@ func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
 func (parsing *Parsing) parseAssignedMethodBody() tree.Node {
 	parsing.skipOperator(token.ArrowOperator)
 	statement := parsing.parseStatement()
-	return parsing.replaceNodeWithReturnIfExpression(statement)
+	return &tree.StatementBlock{
+		Children: []tree.Statement{
+			parsing.replaceNodeWithReturnIfExpression(statement),
+		},
+		Region:   statement.Locate(),
+	}
 }
 
 func (parsing *Parsing) replaceNodeWithReturnIfExpression(node tree.Node) tree.Node {

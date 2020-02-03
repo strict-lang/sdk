@@ -58,7 +58,7 @@ method printList(List<int> numbers)
 `,
 				ExpectedOutput: &tree.MethodDeclaration{
 					Name: &tree.Identifier{Value: `printList`},
-					Type: &tree.ConcreteTypeName{Name: `void`},
+					Type: &tree.ConcreteTypeName{Name: `Void`},
 					Parameters: tree.ParameterList{
 						&tree.Parameter{
 							Type: &tree.GenericTypeName{
@@ -112,11 +112,15 @@ method int add(int left, int right) => left + right
 							Name: &tree.Identifier{Value: `right`},
 						},
 					},
-					Body: &tree.ReturnStatement{
-						Value: &tree.BinaryExpression{
-							LeftOperand:  &tree.Identifier{Value: `left`},
-							RightOperand: &tree.Identifier{Value: `right`},
-							Operator:     token.AddOperator,
+					Body: &tree.StatementBlock{
+						Children: []tree.Statement{
+							&tree.ReturnStatement{
+								Value: &tree.BinaryExpression{
+									LeftOperand:  &tree.Identifier{Value: `left`},
+									RightOperand: &tree.Identifier{Value: `right`},
+									Operator:     token.AddOperator,
+								},
+							},
 						},
 					},
 				},
@@ -127,14 +131,18 @@ method greet() => log("Hello")
 `,
 				ExpectedOutput: &tree.MethodDeclaration{
 					Name:       &tree.Identifier{Value: `greet`},
-					Type:       &tree.ConcreteTypeName{Name: `void`},
+					Type:       &tree.ConcreteTypeName{Name: `Void`},
 					Parameters: tree.ParameterList{},
-					Body: &tree.ExpressionStatement{
-						Expression: &tree.CallExpression{
-							Target: &tree.Identifier{Value: `log`},
-							Arguments: tree.CallArgumentList{
-								&tree.CallArgument{
-									Value: &tree.StringLiteral{Value: `Hello`},
+					Body: &tree.StatementBlock{
+						Children: []tree.Statement{
+							&tree.ReturnStatement{
+								Value: &tree.CallExpression{
+									Target: &tree.Identifier{Value: `log`},
+									Arguments: tree.CallArgumentList{
+										&tree.CallArgument{
+											Value: &tree.StringLiteral{Value: `Hello`},
+										},
+									},
 								},
 							},
 						},
