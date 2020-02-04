@@ -13,30 +13,30 @@ type CallExpression struct {
 	Arguments    CallArgumentList
 	Region       input.Region
 	resolvedType resolvedType
-	Parent Node
-	name cachedName
+	Parent       Node
+	name         cachedName
 }
 
 type cachedName struct {
-	value *Identifier
-	found bool
+	value    *Identifier
+	found    bool
 	searched bool
 }
 
 func (call *CallExpression) SetEnclosingNode(target Node) {
-  call.Parent = target
+	call.Parent = target
 }
 
 func (call *CallExpression) EnclosingNode() (Node, bool) {
-  return call.Parent, call.Parent != nil
+	return call.Parent, call.Parent != nil
 }
 
 func (call *CallExpression) ResolveType(class *scope.Class) {
-  call.resolvedType.resolve(class)
+	call.resolvedType.resolve(class)
 }
 
 func (call *CallExpression) ResolvedType() (*scope.Class, bool) {
-  return call.resolvedType.class()
+	return call.resolvedType.class()
 }
 
 func (call *CallExpression) Accept(visitor Visitor) {
@@ -111,7 +111,7 @@ func (call *CallExpression) createNameResolveVisitor() Visitor {
 	}
 }
 
-func (call* CallExpression) TransformExpressions(transformer ExpressionTransformer) {
+func (call *CallExpression) TransformExpressions(transformer ExpressionTransformer) {
 	call.Target = call.Target.Transform(transformer)
 }
 

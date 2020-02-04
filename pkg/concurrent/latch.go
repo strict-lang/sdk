@@ -11,16 +11,16 @@ type Latch interface {
 }
 
 type latch struct {
-	count int32
-	lock *sync.Mutex
+	count     int32
+	lock      *sync.Mutex
 	condition *sync.Cond
 }
 
 func NewLatch(count int) Latch {
 	lock := &sync.Mutex{}
 	return &latch{
-		count: int32(count),
-		lock: lock,
+		count:     int32(count),
+		lock:      lock,
 		condition: sync.NewCond(lock),
 	}
 }
@@ -28,7 +28,8 @@ func NewLatch(count int) Latch {
 func (latch *latch) decrement() int32 {
 	value := atomic.LoadInt32(&latch.count)
 	target := value - 1
-	for !atomic.CompareAndSwapInt32(&latch.count, value, target) {}
+	for !atomic.CompareAndSwapInt32(&latch.count, value, target) {
+	}
 	return target
 }
 

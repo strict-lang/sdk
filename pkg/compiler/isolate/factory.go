@@ -5,7 +5,7 @@ import (
 )
 
 type sharedFactory struct {
-	lock sync.Mutex
+	lock          sync.Mutex
 	configurators []configurator
 }
 
@@ -31,7 +31,7 @@ func (factory *sharedFactory) createIsolate() *Isolate {
 }
 
 var cachedGlobalIsolate = struct {
-	lock sync.Mutex
+	lock    sync.Mutex
 	isolate *Isolate
 }{}
 

@@ -34,7 +34,7 @@ type MemberField struct {
 }
 
 type MemberLocation struct {
-	Field MemberField
+	Field            MemberField
 	InstanceLocation StorageLocation
 }
 
@@ -47,7 +47,7 @@ func NewOwnMemberFieldLocation(ownClass *Class, field MemberField) StorageLocati
 
 func createOwnReferenceLocation(ownClass *Class) StorageLocation {
 	return &VariableLocation{
-		Variable:  &VirtualVariable{
+		Variable: &VirtualVariable{
 			Class: ownClass,
 			Index: 0,
 		},
@@ -73,7 +73,7 @@ func (location *MemberLocation) EmitStore(item *Item, code *BlockBuilder) error 
 }
 
 type VariableLocation struct {
-	Variable *VirtualVariable
+	Variable  *VirtualVariable
 	Parameter bool
 }
 
@@ -97,7 +97,7 @@ func newNotAssignableError(item *Item, targetClass *Class) error {
 
 type VirtualVariable struct {
 	Class *Class
-	Name string
+	Name  string
 	Index int
 }
 
@@ -123,12 +123,12 @@ func (stack *VirtualOperandStack) DecreaseDepth() {
 type MethodContext struct {
 	Variables []*VariableSet
 	Arguments []*VariableSet
-	Stack *VirtualOperandStack
+	Stack     *VirtualOperandStack
 }
 
 type VariableSet struct {
 	indexed []*VirtualVariable
-	named map[string] *VirtualVariable
+	named   map[string]*VirtualVariable
 }
 
 func (set *VariableSet) Index(index int) *VirtualVariable {
@@ -158,7 +158,7 @@ func (set *VariableSet) createOutsideOfBounds(index int, class *Class) *VirtualV
 }
 
 func (set *VariableSet) expandAndInsert(index int, variable *VirtualVariable) {
-	newIndexed := make([]*VirtualVariable, index + 1)
+	newIndexed := make([]*VirtualVariable, index+1)
 	copy(newIndexed, set.indexed)
 	newIndexed[index] = variable
 	set.indexed = newIndexed

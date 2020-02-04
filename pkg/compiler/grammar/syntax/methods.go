@@ -85,7 +85,7 @@ func (parsing *Parsing) parseAssignedMethodBody() tree.Node {
 		Children: []tree.Statement{
 			parsing.replaceNodeWithReturnIfExpression(statement),
 		},
-		Region:   statement.Locate(),
+		Region: statement.Locate(),
 	}
 }
 
@@ -168,7 +168,7 @@ func (parsing *Parsing) parseParameterName() *tree.Identifier {
 
 func newMissingParameterNameError() *diagnostic.RichError {
 	return &diagnostic.RichError{
-		Error:         &diagnostic.SpecificError{
+		Error: &diagnostic.SpecificError{
 			Message: "Name of the parameter is missing",
 		},
 		CommonReasons: []string{
@@ -176,5 +176,3 @@ func newMissingParameterNameError() *diagnostic.RichError {
 		},
 	}
 }
-
-

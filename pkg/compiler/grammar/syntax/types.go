@@ -70,7 +70,7 @@ func (parsing *Parsing) parseIncompleteGenericOrConcreteType(base string) tree.T
 func (parsing *Parsing) parseIncompleteOptionalTypeName(base string) tree.TypeName {
 	parsing.updateTopStructureKind(tree.OptionalTypeNameNodeKind)
 	return &tree.OptionalTypeName{
-		Region:   parsing.createRegionOfCurrentStructure(),
+		Region: parsing.createRegionOfCurrentStructure(),
 		TypeName: &tree.ConcreteTypeName{
 			Name:   base,
 			Region: parsing.createRegionOfCurrentStructure(),
@@ -114,6 +114,6 @@ func (parsing *Parsing) parseListTypeName(base tree.TypeName) tree.TypeName {
 	}
 	return &tree.ListTypeName{
 		Element: base,
-		Region: parsing.completeStructure(tree.WildcardNodeKind),
+		Region:  parsing.completeStructure(tree.WildcardNodeKind),
 	}
 }

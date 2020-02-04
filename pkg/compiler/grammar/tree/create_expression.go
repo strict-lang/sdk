@@ -10,23 +10,23 @@ type CreateExpression struct {
 	Call         *CallExpression
 	Type         TypeName
 	resolvedType resolvedType
-	Parent Node
+	Parent       Node
 }
 
 func (create *CreateExpression) SetEnclosingNode(target Node) {
-  create.Parent = target
+	create.Parent = target
 }
 
 func (create *CreateExpression) EnclosingNode() (Node, bool) {
-  return create.Parent, create.Parent != nil
+	return create.Parent, create.Parent != nil
 }
 
 func (create *CreateExpression) ResolveType(class *scope.Class) {
-  create.resolvedType.resolve(class)
+	create.resolvedType.resolve(class)
 }
 
 func (create *CreateExpression) ResolvedType() (*scope.Class, bool) {
-  return create.resolvedType.class()
+	return create.resolvedType.class()
 }
 
 func (create *CreateExpression) Accept(visitor Visitor) {

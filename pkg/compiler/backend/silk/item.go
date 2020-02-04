@@ -8,9 +8,9 @@ import (
 
 type Item struct {
 	Location StorageLocation
-	Name string
-	Type typing.Type
-	Context *MethodContext
+	Name     string
+	Type     typing.Type
+	Context  *MethodContext
 }
 
 type StorageLocation interface {
@@ -21,8 +21,8 @@ type StorageLocation interface {
 
 type VariableLocation struct {
 	Index int
-	Name string
-	Type typing.Type
+	Name  string
+	Type  typing.Type
 }
 
 func (location *VariableLocation) EmitLoad(item *Item, generation *Generation) error {
@@ -38,9 +38,9 @@ func (location *VariableLocation) EmitLoad(item *Item, generation *Generation) e
 
 func (location *VariableLocation) CreateSilkLocation() silk.StorageLocation {
 	return &silk.Field{
-		Name: location.Name,
+		Name:  location.Name,
 		Index: location.Index,
-		Type: translateType(location.Type),
+		Type:  translateType(location.Type),
 	}
 }
 
@@ -49,8 +49,8 @@ func (location *VariableLocation) loadIntoTarget(
 
 	item.Location = location
 	generation.EmitInstruction(silk.Instruct(&silk.LoadOperation{
-		Type: translateType(location.Type),
-		Index: location.Index,
+		Type:   translateType(location.Type),
+		Index:  location.Index,
 		Target: target.CreateSilkLocation(),
 	}))
 	return nil
@@ -66,8 +66,8 @@ func (location *VariableLocation) EmitStore(item *Item, generation *Generation) 
 		return errors.New("can not store item to target location")
 	}
 	generation.EmitInstruction(silk.Instruct(&silk.StoreOperation{
-		Type: translateType(location.Type),
-		Index: location.Index,
+		Type:   translateType(location.Type),
+		Index:  location.Index,
 		Target: location.CreateSilkLocation(),
 	}))
 	return nil

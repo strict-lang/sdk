@@ -3,16 +3,16 @@ package silk
 import "strict.dev/sdk/pkg/silk/symbol"
 
 type Class struct {
-	Name symbol.Reference
-	Traits []symbol.Reference
+	Name    symbol.Reference
+	Traits  []symbol.Reference
 	Methods []*Method
 }
 
 type ClassBuilder struct {
-	tableBuilder *symbol.TableBuilder
-	nameReference symbol.Reference
+	tableBuilder    *symbol.TableBuilder
+	nameReference   symbol.Reference
 	traitReferences []symbol.Reference
-	methods []*Method
+	methods         []*Method
 }
 
 func (builder *ClassBuilder) WithName(name string) *ClassBuilder {

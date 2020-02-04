@@ -7,15 +7,15 @@ type ConditionalStatement struct {
 	Alternative *StatementBlock
 	Consequence *StatementBlock
 	Region      input.Region
-	Parent Node
+	Parent      Node
 }
 
 func (conditional *ConditionalStatement) SetEnclosingNode(target Node) {
-  conditional.Parent = target
+	conditional.Parent = target
 }
 
 func (conditional *ConditionalStatement) EnclosingNode() (Node, bool) {
-  return conditional.Parent, conditional.Parent != nil
+	return conditional.Parent, conditional.Parent != nil
 }
 
 func (conditional *ConditionalStatement) HasAlternative() bool {

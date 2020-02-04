@@ -23,7 +23,7 @@ func ParseTypeName(region input.Region, deducedType typing.Type) TypeName {
 }
 
 type typeNameParser struct {
-	region input.Region
+	region   input.Region
 	lastType TypeName
 }
 
@@ -47,7 +47,7 @@ func (parser *typeNameParser) VisitOptional(optional *typing.OptionalType) {
 func (parser *typeNameParser) VisitConcrete(concrete *typing.ConcreteType) {
 	parser.lastType = &ConcreteTypeName{
 		Region:        parser.region,
-		Name:     concrete.Name,
+		Name:          concrete.Name,
 		typeReference: &TypeReference{resolved: concrete},
 	}
 }

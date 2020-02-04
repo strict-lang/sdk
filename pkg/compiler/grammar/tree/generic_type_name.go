@@ -9,10 +9,10 @@ import (
 //  types like maps and tuples.
 
 type GenericTypeName struct {
-	Name    string
-	Generic TypeName
-	Region  input.Region
-	Parent Node
+	Name          string
+	Generic       TypeName
+	Region        input.Region
+	Parent        Node
 	typeReference *TypeReference
 }
 
@@ -21,11 +21,11 @@ func (name *GenericTypeName) TypeReference() *TypeReference {
 }
 
 func (name *GenericTypeName) SetEnclosingNode(target Node) {
-  name.Parent = target
+	name.Parent = target
 }
 
 func (name *GenericTypeName) EnclosingNode() (Node, bool) {
-  return name.Parent, name.Parent != nil
+	return name.Parent, name.Parent != nil
 }
 
 func (name *GenericTypeName) FullName() string {

@@ -57,7 +57,7 @@ func (generation *SourceFileGeneration) generateClassDeclaration(
 func (generation *SourceFileGeneration) writeImplicitConstructor() {
 	generation.generateConstructorDeclaration(&tree.ConstructorDeclaration{
 		Parameters: []*tree.Parameter{},
-		Body:      &tree.StatementBlock{},
+		Body:       &tree.StatementBlock{},
 	})
 }
 
@@ -76,7 +76,7 @@ func createInitStatement(field *tree.FieldDeclaration) tree.Node {
 	return &tree.AssignStatement{
 		Target: field.Name,
 		Value: &tree.CallExpression{
-			Target:    &tree.Identifier{
+			Target: &tree.Identifier{
 				Value: field.TypeName.BaseName(),
 			},
 			Arguments: []*tree.CallArgument{},

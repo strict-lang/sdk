@@ -7,7 +7,7 @@ import (
 )
 
 type Execution struct {
-	target Pass
+	target  Pass
 	context *Context
 }
 
@@ -15,7 +15,7 @@ func NewExecution(passId Id, context *Context) (*Execution, bool) {
 	properties := context.Isolate.Properties
 	if pass, ok := findPassInProperties(string(passId), properties); ok {
 		return &Execution{
-			target: pass,
+			target:  pass,
 			context: context,
 		}, true
 	}
@@ -39,10 +39,10 @@ func (execution *Execution) runPass(pass Pass) {
 }
 
 func (execution *Execution) orderPendingPasses() ([]Pass, error) {
-  order, err := execution.createDependencyOrder()
-  if err != nil {
-  	return nil, err
-  }
+	order, err := execution.createDependencyOrder()
+	if err != nil {
+		return nil, err
+	}
 	return order.compute()
 }
 
@@ -55,15 +55,15 @@ func (execution *Execution) createDependencyOrder() (dependencyOrder, error) {
 	return dependencyOrder{entries: entries}, nil
 }
 
-func extractValues(table map[Id] *graphEntry) (values []*graphEntry) {
+func extractValues(table map[Id]*graphEntry) (values []*graphEntry) {
 	for _, value := range table {
 		values = append(values, value)
 	}
 	return values
 }
 
-func (execution *Execution) populatePassEntryTable() map[Id] *graphEntry {
-	entries := map[Id] *graphEntry{}
+func (execution *Execution) populatePassEntryTable() map[Id]*graphEntry {
+	entries := map[Id]*graphEntry{}
 	execution.traversePassDependencies(func(pass Pass, dependencies []Pass) {
 		entries[pass.Id()] = &graphEntry{pass: pass}
 	})
@@ -71,7 +71,7 @@ func (execution *Execution) populatePassEntryTable() map[Id] *graphEntry {
 }
 
 func (execution *Execution) translatePassesToGraphEntries(
-	entries map[Id] *graphEntry) error {
+	entries map[Id]*graphEntry) error {
 
 	for _, entry := range entries {
 		if err := execution.translateDependencies(entry, entries); err != nil {
@@ -82,7 +82,7 @@ func (execution *Execution) translatePassesToGraphEntries(
 }
 
 func (execution *Execution) translateDependencies(
-	entry *graphEntry, entries map[Id] *graphEntry) error {
+	entry *graphEntry, entries map[Id]*graphEntry) error {
 
 	isolate := execution.context.Isolate
 	for _, dependency := range entry.pass.Dependencies(isolate) {
@@ -113,13 +113,13 @@ func (execution *Execution) traversePassDependenciesRecursive(
 
 type dependencyOrder struct {
 	entries []*graphEntry
-	output []Pass
+	output  []Pass
 }
 
 type graphEntry struct {
-	pass Pass
+	pass         Pass
 	dependencies []*graphEntry
-	executed bool
+	executed     bool
 }
 
 func (order *dependencyOrder) insert(entry *graphEntry) {
@@ -173,7 +173,7 @@ func (order *dependencyOrder) nextElementToExecute() (*graphEntry, bool) {
 }
 
 func (entry *graphEntry) canBeExecuted() bool {
-	for _, dependency  := range entry.dependencies {
+	for _, dependency := range entry.dependencies {
 		if !dependency.executed {
 			return false
 		}

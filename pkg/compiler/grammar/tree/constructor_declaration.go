@@ -9,24 +9,24 @@ type ConstructorDeclaration struct {
 	Parameters ParameterList
 	Body       *StatementBlock
 	Region     input.Region
-	scope  scope.Scope
-	Parent Node
+	scope      scope.Scope
+	Parent     Node
 }
 
 func (declaration *ConstructorDeclaration) UpdateScope(target scope.Scope) {
-  declaration.scope = target
+	declaration.scope = target
 }
 
 func (declaration *ConstructorDeclaration) Scope() scope.Scope {
-  return declaration.scope
+	return declaration.scope
 }
 
 func (declaration *ConstructorDeclaration) SetEnclosingNode(target Node) {
-  declaration.Parent = target
+	declaration.Parent = target
 }
 
 func (declaration *ConstructorDeclaration) EnclosingNode() (Node, bool) {
-  return declaration.Parent, declaration.Parent != nil
+	return declaration.Parent, declaration.Parent != nil
 }
 
 func (declaration *ConstructorDeclaration) Accept(visitor Visitor) {

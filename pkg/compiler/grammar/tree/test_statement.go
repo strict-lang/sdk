@@ -8,15 +8,15 @@ type TestStatement struct {
 	MethodName string
 	Body       *StatementBlock
 	Region     input.Region
-	Parent Node
+	Parent     Node
 }
 
 func (test *TestStatement) SetEnclosingNode(target Node) {
-  test.Parent = target
+	test.Parent = target
 }
 
 func (test *TestStatement) EnclosingNode() (Node, bool) {
-  return test.Parent, test.Parent != nil
+	return test.Parent, test.Parent != nil
 }
 
 func (test *TestStatement) Accept(visitor Visitor) {

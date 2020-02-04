@@ -23,10 +23,14 @@ func (generation *Generation) EmitIdentifier(identifier *tree.Identifier) {
 
 func (generation *Generation) EmitField(field *scope.Field) {
 	switch field.Kind {
-	case scope.MemberField: generation.EmitMemberField(field)
-	case scope.ConstantField: generation.EmitConstantField(field)
-	case scope.VariableField: generation.emitVariableFieldLoad(field)
-	case scope.ParameterField: generation.emitParameterFieldLoad(field)
+	case scope.MemberField:
+		generation.EmitMemberField(field)
+	case scope.ConstantField:
+		generation.EmitConstantField(field)
+	case scope.VariableField:
+		generation.emitVariableFieldLoad(field)
+	case scope.ParameterField:
+		generation.emitParameterFieldLoad(field)
 	}
 }
 
@@ -48,14 +52,13 @@ func (generation *Generation) emitLocalFieldLoad(field *scope.Field) {
 
 func createLocationOfField(class *Class, field *scope.Field) StorageLocation {
 	return &VariableLocation{
-		Variable:  &VirtualVariable{
+		Variable: &VirtualVariable{
 			Name:  field.Name(),
 			Class: class,
 		},
 		Parameter: field.Kind == scope.ParameterField,
 	}
 }
-
 
 func (generation *Generation) EmitConstantField(field *scope.Field) {
 	// TODO: Support constant values
@@ -107,13 +110,13 @@ func (generation *Generation) EmitBinaryExpression(binary *tree.BinaryExpression
 	generation.EmitExpression(binary.RightOperand)
 	class := resolveClassOfExpression(binary)
 	generation.EmitBinaryOperation(binaryOperation{
-		operator:	binary.Operator,
+		operator:     binary.Operator,
 		operandClass: class,
 	})
 }
 
 type binaryOperation struct {
-	operator token.Operator
+	operator     token.Operator
 	operandClass *Class
 }
 
@@ -127,7 +130,7 @@ func (generation *Generation) EmitBinaryOperation(operation binaryOperation) {
 
 type binaryOperationEmitter func(code *BlockBuilder, operation binaryOperation)
 
-var binaryOperationEmitters = map[token.Operator] binaryOperationEmitter {
+var binaryOperationEmitters = map[token.Operator]binaryOperationEmitter{
 	token.AddOperator: func(code *BlockBuilder, operation binaryOperation) {
 		code.EmitAdd(operation.operandClass)
 	},
@@ -141,4 +144,3 @@ var binaryOperationEmitters = map[token.Operator] binaryOperationEmitter {
 		code.EmitDivision(operation.operandClass)
 	},
 }
-

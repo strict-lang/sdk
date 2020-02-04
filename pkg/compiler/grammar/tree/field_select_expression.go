@@ -6,27 +6,27 @@ import (
 )
 
 type FieldSelectExpression struct {
-	Target    StoredExpression
-	Selection Expression
-	Region    input.Region
-	Parent Node
+	Target       StoredExpression
+	Selection    Expression
+	Region       input.Region
+	Parent       Node
 	resolvedType resolvedType
 }
 
 func (expression *FieldSelectExpression) SetEnclosingNode(target Node) {
-  expression.Parent = target
+	expression.Parent = target
 }
 
 func (expression *FieldSelectExpression) EnclosingNode() (Node, bool) {
-  return expression.Parent, expression.Parent != nil
+	return expression.Parent, expression.Parent != nil
 }
 
 func (expression *FieldSelectExpression) ResolveType(class *scope.Class) {
-  expression.resolvedType.resolve(class)
+	expression.resolvedType.resolve(class)
 }
 
 func (expression *FieldSelectExpression) ResolvedType() (*scope.Class, bool) {
-  return expression.resolvedType.class()
+	return expression.resolvedType.class()
 }
 
 func (expression *FieldSelectExpression) Accept(visitor Visitor) {
@@ -55,13 +55,13 @@ func (expression *FieldSelectExpression) Matches(node Node) bool {
 
 func (expression *FieldSelectExpression) FindLastIdentifier() (*Identifier, bool) {
 	switch expression.Selection.(type) {
-		case *Identifier:
-			identifier, ok := expression.Selection.(*Identifier)
-			return identifier, ok
-		case *FieldSelectExpression:
-			if next, ok := expression.Selection.(*FieldSelectExpression); ok {
-				return next.FindLastIdentifier()
-			}
+	case *Identifier:
+		identifier, ok := expression.Selection.(*Identifier)
+		return identifier, ok
+	case *FieldSelectExpression:
+		if next, ok := expression.Selection.(*FieldSelectExpression); ok {
+			return next.FindLastIdentifier()
+		}
 	}
 	return nil, false
 }

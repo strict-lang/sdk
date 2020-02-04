@@ -60,14 +60,14 @@ var beginOfFile = token.NewInvalidToken("BeginOfFile", token.Position{}, token.N
 // reports errors to the given DiagnosticBag.
 func newDiagnosticScanning(reader input.Reader, recorder *diagnostic.Bag) *Scanning {
 	scanning := &Scanning{
-		input:           decorateSourceReader(reader),
-		lineMapBuilder:  linemap.NewBuilder(),
-		diagnosticBag:   recorder,
-		last:            beginOfFile,
-		lineIndex:       1,
-		updateIndent:    true,
-		emptyLine:       true, // The line is empty until a char is hit
-		lineBuffer:      &strings.Builder{},
+		input:          decorateSourceReader(reader),
+		lineMapBuilder: linemap.NewBuilder(),
+		diagnosticBag:  recorder,
+		last:           beginOfFile,
+		lineIndex:      1,
+		updateIndent:   true,
+		emptyLine:      true, // The line is empty until a char is hit
+		lineBuffer:     &strings.Builder{},
 	}
 	scanning.advance()
 	return scanning
@@ -290,6 +290,7 @@ func (scanning *Scanning) scanToken() token.Token {
 func (scanning *Scanning) NewLineMap() *linemap.LineMap {
 	return scanning.lineMapBuilder.NewLineMap()
 }
+
 type charMatcher func(input.Char) bool
 
 func (scanning *Scanning) offset() input.Offset {

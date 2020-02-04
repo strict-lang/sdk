@@ -11,11 +11,11 @@ type FieldDeclaration struct {
 }
 
 func (field *FieldDeclaration) SetEnclosingNode(target Node) {
-  field.Parent = target
+	field.Parent = target
 }
 
 func (field *FieldDeclaration) EnclosingNode() (Node, bool) {
-  return field.Parent, field.Parent != nil
+	return field.Parent, field.Parent != nil
 }
 
 func (field *FieldDeclaration) Accept(visitor Visitor) {

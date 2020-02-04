@@ -8,5 +8,6 @@ go_library(
     deps = [
         "//pkg/compiler/diagnostic:go_default_library",
         "//pkg/compiler/grammar/tree:go_default_library",
+        "//pkg/compiler/isolate:go_default_library",
     ],
 )

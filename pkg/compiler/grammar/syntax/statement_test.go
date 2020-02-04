@@ -36,7 +36,7 @@ if 1 < 2
   return 3
 else if true
   return 2
-else 
+else
   return 1
 `,
 				ExpectedOutput: &tree.ConditionalStatement{
@@ -185,19 +185,19 @@ for number in Range(0, 100)
 					Sequence: &tree.CallExpression{
 						Target: &tree.Identifier{Value: `Range`},
 						Arguments: tree.CallArgumentList{
-								&tree.CallArgument{
-									Value:  &tree.NumberLiteral{Value: "0"},
-								},
-								&tree.CallArgument{
-										Value:  &tree.NumberLiteral{Value: "100"},
-								},
+							&tree.CallArgument{
+								Value: &tree.NumberLiteral{Value: "0"},
+							},
+							&tree.CallArgument{
+								Value: &tree.NumberLiteral{Value: "100"},
+							},
 						},
 					},
 					Field: &tree.Identifier{Value: `number`},
 					Body: &tree.StatementBlock{
 						Children: []tree.Statement{
 							&tree.ConditionalStatement{
-								Condition:   &tree.CallExpression{
+								Condition: &tree.CallExpression{
 									Target: &tree.Identifier{Value: `IsDivisible`},
 									Arguments: tree.CallArgumentList{
 										&tree.CallArgument{
@@ -211,13 +211,13 @@ for number in Range(0, 100)
 								Consequence: &tree.StatementBlock{
 									Children: []tree.Statement{
 										&tree.YieldStatement{
-											Value:  &tree.Identifier{Value: `number`},
+											Value: &tree.Identifier{Value: `number`},
 										},
 									},
 								},
 							},
 							&tree.ConditionalStatement{
-								Condition:   &tree.CallExpression{
+								Condition: &tree.CallExpression{
 									Target: &tree.Identifier{Value: `IsDivisible`},
 									Arguments: tree.CallArgumentList{
 										&tree.CallArgument{
@@ -231,8 +231,8 @@ for number in Range(0, 100)
 								Consequence: &tree.StatementBlock{
 									Children: []tree.Statement{
 										&tree.YieldStatement{
-											Value:  &tree.BinaryExpression{
-												LeftOperand: &tree.Identifier{Value: `number`},
+											Value: &tree.BinaryExpression{
+												LeftOperand:  &tree.Identifier{Value: `number`},
 												RightOperand: &tree.NumberLiteral{Value: `1`},
 												Operator:     token.SubOperator,
 											},
@@ -253,7 +253,7 @@ func TestParsing_ParseFullClass(testing *testing.T) {
 	ExpectAllResults(testing,
 		[]ParserTestEntry{
 			{
-				Input:          `
+				Input: `
 import Strict.Collection
 
 Sequence<Number> numbers
@@ -272,37 +272,37 @@ method Number[] ListNumbers()
 					},
 					Name: "undefined",
 					Class: &tree.ClassDeclaration{
-						Name:       "undefined",
+						Name: "undefined",
 						Children: []tree.Node{
 							&tree.FieldDeclaration{
-								Name:     &tree.Identifier{
+								Name: &tree.Identifier{
 									Value: "numbers",
 								},
 								TypeName: &tree.GenericTypeName{
 									Name: "Sequence",
 									Generic: &tree.ConcreteTypeName{
-										Name:   "Number",
+										Name: "Number",
 									},
 								},
 							},
 							&tree.MethodDeclaration{
-								Name:       &tree.Identifier{
+								Name: &tree.Identifier{
 									Value: "ListNumbers",
 								},
-								Type:       &tree.ListTypeName{
+								Type: &tree.ListTypeName{
 									Element: &tree.ConcreteTypeName{
-										Name:   "Number",
+										Name: "Number",
 									},
 								},
 								Parameters: tree.ParameterList{},
-								Body:       &tree.StatementBlock{
+								Body: &tree.StatementBlock{
 									Children: []tree.Statement{
 										&tree.ForEachLoopStatement{
-											Region:   input.Region{},
-											Body:     &tree.StatementBlock{
+											Region: input.Region{},
+											Body: &tree.StatementBlock{
 												Children: []tree.Statement{
 													&tree.YieldStatement{
-														Value:  &tree.Identifier{Value: "number"},
+														Value: &tree.Identifier{Value: "number"},
 													},
 												},
 											},

@@ -29,4 +29,3 @@ func (optional *OptionalType) AcceptRecursive(visitor Visitor) {
 	optional.Accept(visitor)
 	optional.Child.AcceptRecursive(visitor)
 }
-

@@ -13,24 +13,24 @@ type MethodDeclaration struct {
 	Parameters ParameterList
 	Body       Node
 	Region     input.Region
-	Parent  Node
-	scope   scope.Scope
+	Parent     Node
+	scope      scope.Scope
 }
 
 func (declaration *MethodDeclaration) UpdateScope(target scope.Scope) {
-  declaration.scope = target
+	declaration.scope = target
 }
 
 func (declaration *MethodDeclaration) Scope() scope.Scope {
-  return declaration.scope
+	return declaration.scope
 }
 
 func (declaration *MethodDeclaration) SetEnclosingNode(target Node) {
-  declaration.Parent = target
+	declaration.Parent = target
 }
 
 func (declaration *MethodDeclaration) EnclosingNode() (Node, bool) {
-  return declaration.Parent, declaration.Parent != nil
+	return declaration.Parent, declaration.Parent != nil
 }
 
 func (declaration *MethodDeclaration) Accept(visitor Visitor) {

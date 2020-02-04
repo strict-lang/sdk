@@ -9,7 +9,7 @@ func SearchEnclosingMethod(node Node) (*MethodDeclaration, bool) {
 		if method, isMethod := currentParent.(*MethodDeclaration); isMethod {
 			return method, true
 		}
-		currentParent, _  = currentParent.EnclosingNode()
+		currentParent, _ = currentParent.EnclosingNode()
 	}
 	return nil, false
 }
@@ -20,7 +20,7 @@ func SearchEnclosingClass(node Node) (*ClassDeclaration, bool) {
 		if class, isClass := currentParent.(*ClassDeclaration); isClass {
 			return class, true
 		}
-		currentParent, _  = currentParent.EnclosingNode()
+		currentParent, _ = currentParent.EnclosingNode()
 	}
 	return nil, false
 }
@@ -33,7 +33,7 @@ func SearchFirstMatchingEnclosingNode(node Node, filter NodeFilter) (Node, bool)
 		if filter(currentParent) {
 			return node, true
 		}
-		currentParent, _  = currentParent.EnclosingNode()
+		currentParent, _ = currentParent.EnclosingNode()
 	}
 	return nil, false
 }

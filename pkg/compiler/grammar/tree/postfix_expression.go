@@ -19,15 +19,15 @@ type PostfixExpression struct {
 	// InputRegion is the area of code covered by the node.
 	Region       input.Region
 	resolvedType resolvedType
-	Parent Node
+	Parent       Node
 }
 
 func (expression *PostfixExpression) SetEnclosingNode(target Node) {
-  expression.Parent = target
+	expression.Parent = target
 }
 
 func (expression *PostfixExpression) EnclosingNode() (Node, bool) {
-  return expression.Parent, expression.Parent != nil
+	return expression.Parent, expression.Parent != nil
 }
 
 func (expression *PostfixExpression) ResolveType(class *scope.Class) {

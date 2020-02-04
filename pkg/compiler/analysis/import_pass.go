@@ -44,7 +44,6 @@ func (pass *ImportPass) processImport(
 	pass.importDirectory(statement.Target.FilePath(), scope)
 }
 
-
 func (pass *ImportPass) importWorkingDirectory(scope scope.MutableScope) {
 	workingDirectory, err := os.Getwd()
 	if err != nil {
@@ -56,7 +55,7 @@ func (pass *ImportPass) importWorkingDirectory(scope scope.MutableScope) {
 }
 
 func (pass *ImportPass) shouldImportFile(name string) bool {
-	return !strings.HasSuffix(name, pass.currentFile + strictFileExtension)
+	return !strings.HasSuffix(name, pass.currentFile+strictFileExtension)
 }
 
 func filterFiles(files []string, filter func(string) bool) (filtered []string) {
@@ -113,4 +112,3 @@ func isStrictFile(info os.FileInfo) bool {
 func (pass *ImportPass) reportFailedImport(err error) {
 	panic(fmt.Errorf("failed to import: %s", err))
 }
-

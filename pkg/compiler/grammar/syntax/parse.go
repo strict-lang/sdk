@@ -8,8 +8,8 @@ import (
 )
 
 type Result struct {
-	Error error
-	Diagnostics *diagnostic.Diagnostics
+	Error           error
+	Diagnostics     *diagnostic.Diagnostics
 	TranslationUnit *tree.TranslationUnit
 }
 
@@ -25,9 +25,9 @@ func Parse(name string, reader input.Reader) Result {
 	offsetConverter := tokenReader.NewLineMap().PositionAtOffset
 	diagnostics := diagnosticBag.CreateDiagnostics(offsetConverter)
 	return Result{
-		Error:       err,
-		TranslationUnit:        unit,
-		Diagnostics: diagnostics,
+		Error:           err,
+		TranslationUnit: unit,
+		Diagnostics:     diagnostics,
 	}
 }
 
