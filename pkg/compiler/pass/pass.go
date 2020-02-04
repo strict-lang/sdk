@@ -7,9 +7,9 @@ import (
 )
 
 type Context struct {
-	Unit *tree.TranslationUnit
+	Unit       *tree.TranslationUnit
 	Diagnostic *diagnostic.Bag
-	Isolate *isolate.Isolate
+	Isolate    *isolate.Isolate
 }
 
 type Id string

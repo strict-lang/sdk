@@ -342,8 +342,8 @@ func (parsing *Parsing) parseGenericStatement() tree.Node {
 	constraints := parsing.parseGenericConstraints()
 	parsing.skipEndOfStatement()
 	return &tree.GenericStatement{
-		Region: parsing.completeStructure(tree.GenericStatementNodeKind),
-		Name: name,
+		Region:      parsing.completeStructure(tree.GenericStatementNodeKind),
+		Name:        name,
 		Constraints: constraints,
 	}
 }
@@ -413,7 +413,7 @@ func (parsing *Parsing) parseTestStatement() tree.Node {
 	return &tree.TestStatement{
 		Region:     parsing.completeStructure(tree.TestStatementNodeKind),
 		MethodName: parsing.currentMethod.name,
-		Body:      statements,
+		Body:       statements,
 	}
 }
 

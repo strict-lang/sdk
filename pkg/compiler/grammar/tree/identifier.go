@@ -6,11 +6,11 @@ import (
 )
 
 type Identifier struct {
-	Value        string
-	Region       input.Region
-	resolvedType resolvedType
-	Parent Node
-	binding scope.Symbol
+	Value         string
+	Region        input.Region
+	resolvedType  resolvedType
+	Parent        Node
+	binding       scope.Symbol
 	inDeclaration bool
 }
 
@@ -48,11 +48,11 @@ func (identifier *Identifier) IsBound() bool {
 }
 
 func (identifier *Identifier) SetEnclosingNode(target Node) {
-  identifier.Parent = target
+	identifier.Parent = target
 }
 
 func (identifier *Identifier) EnclosingNode() (Node, bool) {
-  return identifier.Parent, identifier.Parent != nil
+	return identifier.Parent, identifier.Parent != nil
 }
 
 func (identifier *Identifier) Accept(visitor Visitor) {

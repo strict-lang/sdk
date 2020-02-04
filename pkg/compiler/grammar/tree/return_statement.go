@@ -13,11 +13,11 @@ type ReturnStatement struct {
 }
 
 func (statement *ReturnStatement) SetEnclosingNode(target Node) {
-  statement.Parent = target
+	statement.Parent = target
 }
 
 func (statement *ReturnStatement) EnclosingNode() (Node, bool) {
-  return statement.Parent, statement.Parent != nil
+	return statement.Parent, statement.Parent != nil
 }
 
 func (statement *ReturnStatement) IsReturningValue() bool {

@@ -5,7 +5,7 @@ type Label struct {
 }
 
 type BlockBuilder struct {
-	Label *Label
+	Label        *Label
 	instructions []string
 }
 

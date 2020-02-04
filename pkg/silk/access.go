@@ -1,3 +1,3 @@
 package silk
 
-type Access interface {}
+type Access interface{}

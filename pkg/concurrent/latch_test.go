@@ -22,4 +22,3 @@ func TestLatch_WaitWhenZero(testing *testing.T) {
 	}
 	latch.Wait()
 }
-

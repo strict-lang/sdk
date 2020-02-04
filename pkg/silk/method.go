@@ -3,10 +3,10 @@ package silk
 import "strict.dev/sdk/pkg/silk/symbol"
 
 type Method struct {
-	Reference symbol.Reference
+	Reference  symbol.Reference
 	Parameters []Parameter
-	Access Access
-	Code *CodeContainer
+	Access     Access
+	Code       *CodeContainer
 }
 
 type Parameter struct {

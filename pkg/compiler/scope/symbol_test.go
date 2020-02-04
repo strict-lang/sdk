@@ -3,7 +3,7 @@ package scope
 import "strict.dev/sdk/pkg/compiler/input"
 
 type testSymbol struct {
-	name string
+	name              string
 	declarationOffset input.Offset
 }
 

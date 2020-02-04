@@ -1,13 +1,13 @@
 package analysis
 
 import (
+	"log"
 	"strict.dev/sdk/pkg/compiler/diagnostic"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 	"strict.dev/sdk/pkg/compiler/grammar/tree/pretty"
 	"strict.dev/sdk/pkg/compiler/isolate"
 	passes "strict.dev/sdk/pkg/compiler/pass"
 	"strict.dev/sdk/pkg/compiler/scope"
-	"log"
 )
 
 const ScopeCreationPassId = "ScopeCreationPass"

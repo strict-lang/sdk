@@ -2,11 +2,11 @@ package syntax
 
 import (
 	"fmt"
+	"log"
 	"strict.dev/sdk/pkg/compiler/diagnostic"
 	"strict.dev/sdk/pkg/compiler/grammar/token"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 	"strict.dev/sdk/pkg/compiler/input"
-	"log"
 	"strings"
 )
 
@@ -140,7 +140,7 @@ func (parsing *Parsing) updateTopStructureKind(kind tree.NodeKind) {
 
 func parseFileName(name string) string {
 	if lastSlash := strings.LastIndex(name, "\\"); lastSlash != -1 {
-		return parseFileName(name[lastSlash + 1:])
+		return parseFileName(name[lastSlash+1:])
 	}
 	if extensionPoint := strings.LastIndex(name, "."); extensionPoint != -1 {
 		return name[:extensionPoint]

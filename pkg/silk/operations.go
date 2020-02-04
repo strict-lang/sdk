@@ -12,7 +12,7 @@ func isWildcard(operation Operation) bool {
 	return wildcard
 }
 
-type WildcardOperation struct {}
+type WildcardOperation struct{}
 
 func (WildcardOperation) Matches(Operation) bool {
 	return true
@@ -20,7 +20,7 @@ func (WildcardOperation) Matches(Operation) bool {
 
 func (WildcardOperation) Accept(visitor Visitor, instruction *Instruction) {}
 
-type NoOperation struct {}
+type NoOperation struct{}
 
 func (operation NoOperation) Matches(target Operation) bool {
 	_, isSameType := target.(NoOperation)
@@ -31,13 +31,13 @@ func (operation NoOperation) Accept(visitor Visitor, instruction *Instruction) {
 	visitor.VisitNoOperation(instruction, operation)
 }
 
-type Variable interface {}
+type Variable interface{}
 
 type ArithmeticOperation int
 
 type ArithmeticInstruction struct {
-	Output *Field
-	Operands []Variable
+	Output    *Field
+	Operands  []Variable
 	Operation ArithmeticOperation
 }
 
@@ -73,8 +73,8 @@ func (load *LoadOperation) Accept(visitor Visitor, instruction *Instruction) {
 }
 
 type StoreOperation struct {
-	Index int
-	Type Type
+	Index  int
+	Type   Type
 	Target StorageLocation
 }
 
@@ -100,7 +100,7 @@ func (store *StoreOperation) Accept(visitor Visitor, instruction *Instruction) {
 }
 
 type PushOperation struct {
-	Type Type
+	Type     Type
 	Variable Variable
 }
 
@@ -129,23 +129,23 @@ func (pop *PopOperation) Accept(visitor Visitor, instruction *Instruction) {
 type Comparison int
 
 type CompareInstruction struct {
-	Output *Field
+	Output     *Field
 	Comparison Comparison
-	Operands []Variable
+	Operands   []Variable
 }
 
-type JumpOperation struct {}
+type JumpOperation struct{}
 
 type PhiEntry struct {
 	LastBlock BlockId
-	Value Variable
+	Value     Variable
 }
 
 type PhiOperation struct {
 	ReturnedType Type
-	Entries []PhiEntry
-	Block     *Block
-	Output *Field
+	Entries      []PhiEntry
+	Block        *Block
+	Output       *Field
 }
 
 func (operation *PhiOperation) Accept(visitor Visitor, instruction *Instruction) {
@@ -154,17 +154,17 @@ func (operation *PhiOperation) Accept(visitor Visitor, instruction *Instruction)
 
 type SelectOperation struct {
 	ReturnedType Type
-	Value       Variable
-	Consequence Variable
-	Alternative Variable
-	Output *Field
-	Block *Block
+	Value        Variable
+	Consequence  Variable
+	Alternative  Variable
+	Output       *Field
+	Block        *Block
 }
 
 type ReturnOperation struct {
 	ReturnedType Type
-	Value  Variable
-	Block *Block
+	Value        Variable
+	Block        *Block
 }
 
 func (operation *ReturnOperation) IsReturningValue() bool {
@@ -177,8 +177,8 @@ func (operation *ReturnOperation) Accept(visitor Visitor, instruction *Instructi
 
 type CreateOperation struct {
 	CreatedType Type
-	Output *Field
-	Arguments []Variable
+	Output      *Field
+	Arguments   []Variable
 }
 
 func (operation *CreateOperation) Accept(visitor Visitor, instruction *Instruction) {
@@ -186,10 +186,10 @@ func (operation *CreateOperation) Accept(visitor Visitor, instruction *Instructi
 }
 
 type CallOperation struct {
-	Output *Field
+	Output     *Field
 	ReturnType Type
-	Arguments []Variable
-	Method symbol.Reference
+	Arguments  []Variable
+	Method     symbol.Reference
 }
 
 func (operation *CallOperation) HasOutput() bool {

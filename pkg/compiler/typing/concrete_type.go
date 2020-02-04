@@ -1,7 +1,7 @@
 package typing
 
 type ConcreteType struct {
-	Name string
+	Name   string
 	Traits []Type
 }
 
@@ -46,4 +46,3 @@ func (concrete *ConcreteType) Accept(visitor Visitor) {
 func (concrete *ConcreteType) AcceptRecursive(visitor Visitor) {
 	concrete.Accept(visitor)
 }
-

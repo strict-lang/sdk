@@ -3,9 +3,9 @@ package tree
 import "strict.dev/sdk/pkg/compiler/input"
 
 type GenericStatement struct {
-	Region input.Region
-	Parent Node
-	Name *Identifier
+	Region      input.Region
+	Parent      Node
+	Name        *Identifier
 	Constraints []TypeName
 }
 

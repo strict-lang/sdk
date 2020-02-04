@@ -10,23 +10,23 @@ type ListSelectExpression struct {
 	Target       Expression
 	Region       input.Region
 	resolvedType resolvedType
-	Parent Node
+	Parent       Node
 }
 
 func (expression *ListSelectExpression) SetEnclosingNode(target Node) {
-  expression.Parent = target
+	expression.Parent = target
 }
 
 func (expression *ListSelectExpression) EnclosingNode() (Node, bool) {
-  return expression.Parent, expression.Parent != nil
+	return expression.Parent, expression.Parent != nil
 }
 
 func (expression *ListSelectExpression) ResolveType(class *scope.Class) {
-  expression.resolvedType.resolve(class)
+	expression.resolvedType.resolve(class)
 }
 
 func (expression *ListSelectExpression) ResolvedType() (*scope.Class, bool) {
-  return expression.resolvedType.class()
+	return expression.resolvedType.class()
 }
 
 func (expression *ListSelectExpression) Accept(visitor Visitor) {

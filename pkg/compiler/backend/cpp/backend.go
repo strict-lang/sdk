@@ -5,14 +5,20 @@ import (
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
 )
 
+const BackendName = "c++"
+
+func init() {
+	backends.Register(BackendName, NewBackend)
+}
+
 func Generate(input backends.Input) (backends.Output, error) {
 	backend := NewBackend()
 	return backend.Generate(input)
 }
 
-type Backend struct {}
+type Backend struct{}
 
-func NewBackend() *Backend {
+func NewBackend() backends.Backend {
 	return &Backend{}
 }
 
@@ -42,23 +48,23 @@ func isContainingTestDefinitions(node tree.Node) bool {
 func (backend *Backend) generateHeaderFile(input backends.Input) backends.GeneratedFile {
 	generation := NewGenerationWithExtension(input, NewHeaderFileGeneration())
 	return backends.GeneratedFile{
-		Name: input.Unit.Name + ".h",
-		Content:    []byte(generation.Generate()),
+		Name:    input.Unit.Name + ".h",
+		Content: []byte(generation.Generate()),
 	}
 }
 
 func (backend *Backend) generateSourceFile(input backends.Input) backends.GeneratedFile {
 	generation := NewGenerationWithExtension(input, NewSourceFileGeneration())
 	return backends.GeneratedFile{
-		Name: input.Unit.Name + ".cc",
-		Content:    []byte(generation.Generate()),
+		Name:    input.Unit.Name + ".cc",
+		Content: []byte(generation.Generate()),
 	}
 }
 
 func (backend *Backend) generateTestFile(input backends.Input) backends.GeneratedFile {
 	generation := NewGenerationWithExtension(input, NewTestFileGeneration())
 	return backends.GeneratedFile{
-		Name: input.Unit.Name + "_test.cc",
-		Content:    []byte(generation.Generate()),
+		Name:    input.Unit.Name + "_test.cc",
+		Content: []byte(generation.Generate()),
 	}
 }

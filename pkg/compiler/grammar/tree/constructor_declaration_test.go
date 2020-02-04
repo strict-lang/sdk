@@ -8,7 +8,7 @@ import (
 func TestConstructorDeclaration_Accept(testing *testing.T) {
 	region := &ConstructorDeclaration{
 		Parameters: ParameterList{},
-		Body:      &StatementBlock{Region: input.ZeroRegion},
+		Body:       &StatementBlock{Region: input.ZeroRegion},
 		Region:     input.ZeroRegion,
 	}
 	CreateVisitorTest(region, testing).Expect(ConstructorDeclarationNodeKind).Run()
@@ -26,13 +26,13 @@ func TestConstructorDeclaration_AcceptRecursive(testing *testing.T) {
 				Region: input.ZeroRegion,
 			},
 		},
-		Body:  &StatementBlock{Region: input.ZeroRegion},
+		Body:   &StatementBlock{Region: input.ZeroRegion},
 		Region: input.ZeroRegion,
 	}
 	CreateVisitorTest(region, testing).
 		Expect(ConstructorDeclarationNodeKind).
 		Expect(ParameterNodeKind).
-		Expect(IdentifierNodeKind).       // Of Parameter
+		Expect(IdentifierNodeKind). // Of Parameter
 		Expect(ConcreteTypeNameNodeKind). // Of Parameter
 		Expect(StatementBlockNodeKind).
 		RunRecursive()
@@ -42,7 +42,7 @@ func TestConstructorDeclaration_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &ConstructorDeclaration{
 			Parameters: ParameterList{},
-			Body:      &StatementBlock{Region: input.ZeroRegion},
+			Body:       &StatementBlock{Region: input.ZeroRegion},
 			Region:     region,
 		}
 	})

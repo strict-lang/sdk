@@ -265,7 +265,7 @@ func (parsing *Parsing) parseConstructorCall() (*tree.CallExpression, tree.TypeN
 	return methodCall, typeName
 }
 
-func (parsing *Parsing) parseCreateExpression() tree.Expression{
+func (parsing *Parsing) parseCreateExpression() tree.Expression {
 	parsing.beginStructure(tree.CreateExpressionNodeKind)
 	parsing.skipKeyword(token.CreateKeyword)
 	constructor, typeName := parsing.parseConstructorCall()

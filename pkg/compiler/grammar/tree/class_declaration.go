@@ -12,30 +12,30 @@ type ClassDeclaration struct {
 	SuperTypes []TypeName
 	Children   []Node
 	Region     input.Region
-	Parent Node
-	scope scope.Scope
+	Parent     Node
+	scope      scope.Scope
 }
 
 type ClassParameter struct {
 	Name      string
 	SuperType TypeName
-	Parent Node
+	Parent    Node
 }
 
 func (class *ClassDeclaration) UpdateScope(target scope.Scope) {
-  class.scope = target
+	class.scope = target
 }
 
 func (class *ClassDeclaration) Scope() scope.Scope {
-  return class.scope
+	return class.scope
 }
 
 func (parameter *ClassParameter) SetEnclosingNode(target Node) {
-  parameter.Parent = target
+	parameter.Parent = target
 }
 
 func (parameter *ClassParameter) EnclosingNode() (Node, bool) {
-  return parameter.Parent, parameter.Parent != nil
+	return parameter.Parent, parameter.Parent != nil
 }
 
 func (parameter *ClassParameter) Matches(target *ClassParameter) bool {
@@ -44,11 +44,11 @@ func (parameter *ClassParameter) Matches(target *ClassParameter) bool {
 }
 
 func (class *ClassDeclaration) SetEnclosingNode(target Node) {
-  class.Parent = target
+	class.Parent = target
 }
 
 func (class *ClassDeclaration) EnclosingNode() (Node, bool) {
-  return class.Parent, class.Parent != nil
+	return class.Parent, class.Parent != nil
 }
 
 func (class *ClassDeclaration) Accept(visitor Visitor) {

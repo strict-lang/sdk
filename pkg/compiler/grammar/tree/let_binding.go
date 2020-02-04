@@ -9,10 +9,10 @@ import (
 // variable definition. LetBindings are also viable expressions, which have the
 // value of their Expression field.
 type LetBinding struct {
-	Parent Node
-	Region input.Region
+	Parent     Node
+	Region     input.Region
 	Expression Expression
-	Name *Identifier
+	Name       *Identifier
 }
 
 func (binding *LetBinding) ResolveType(class *scope.Class) {
@@ -55,7 +55,7 @@ func (binding *LetBinding) Matches(target Node) bool {
 }
 
 func (binding *LetBinding) matchesBinding(target *LetBinding) bool {
-	return binding.Name.Matches(target.Name)  &&
+	return binding.Name.Matches(target.Name) &&
 		binding.Expression.Matches(target.Expression)
 }
 

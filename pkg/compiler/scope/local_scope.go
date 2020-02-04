@@ -7,7 +7,7 @@ import "strict.dev/sdk/pkg/compiler/input"
 type ShadowingPolicy bool
 
 const (
-	AllowShadowing ShadowingPolicy = true
+	AllowShadowing  ShadowingPolicy = true
 	ForbidShadowing ShadowingPolicy = false
 )
 
@@ -95,7 +95,7 @@ func (scope *LocalScope) LookupOrInsert(
 	}
 	if symbol, ok := factory(); ok {
 		createdEntry := scope.insertToLocal(symbol)
-		return EntrySet{createdEntry }
+		return EntrySet{createdEntry}
 	}
 	return EntrySet{}
 }
@@ -135,7 +135,7 @@ func (scope *LocalScope) canShadow() bool {
 	return scope.shadowingPolicy == AllowShadowing
 }
 
-func (scope* LocalScope) createEntry(symbol Symbol) Entry {
+func (scope *LocalScope) createEntry(symbol Symbol) Entry {
 	return Entry{
 		Symbol:   symbol,
 		position: symbol.DeclarationOffset(),
@@ -143,7 +143,7 @@ func (scope* LocalScope) createEntry(symbol Symbol) Entry {
 	}
 }
 
-func (scope* LocalScope) insertToLocal(symbol Symbol) Entry {
+func (scope *LocalScope) insertToLocal(symbol Symbol) Entry {
 	entry := scope.createEntry(symbol)
 	scope.entries[symbol.Name()] = entry
 	return entry

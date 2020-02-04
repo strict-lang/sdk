@@ -70,14 +70,14 @@ type DelegatingVisitor struct {
 	AssignStatementVisitor        func(*AssignStatement)
 	ReturnStatementVisitor        func(*ReturnStatement)
 	TranslationUnitVisitor        func(*TranslationUnit)
-	GenericStatementVisitor func(*GenericStatement)
+	GenericStatementVisitor       func(*GenericStatement)
 	CreateExpressionVisitor       func(*CreateExpression)
 	InvalidStatementVisitor       func(*InvalidStatement)
 	FieldDeclarationVisitor       func(*FieldDeclaration)
 	PostfixExpressionVisitor      func(*PostfixExpression)
 	ImplementStatementVisitor     func(*ImplementStatement)
 	GenericTypeNameVisitor        func(*GenericTypeName)
-	OptionalTypeNameVisitor func(*OptionalTypeName)
+	OptionalTypeNameVisitor       func(*OptionalTypeName)
 	ConcreteTypeNameVisitor       func(*ConcreteTypeName)
 	ClassDeclarationVisitor       func(*ClassDeclaration)
 	BinaryExpressionVisitor       func(*BinaryExpression)
@@ -95,7 +95,7 @@ func NewEmptyVisitor() *DelegatingVisitor {
 	return &DelegatingVisitor{
 		ParameterVisitor:              func(*Parameter) {},
 		IdentifierVisitor:             func(*Identifier) {},
-		LetBindingVisitor: func(*LetBinding) {},
+		LetBindingVisitor:             func(*LetBinding) {},
 		CallArgumentVisitor:           func(*CallArgument) {},
 		ListTypeNameVisitor:           func(*ListTypeName) {},
 		TestStatementVisitor:          func(*TestStatement) {},
@@ -128,9 +128,9 @@ func NewEmptyVisitor() *DelegatingVisitor {
 		ConditionalStatementVisitor:   func(*ConditionalStatement) {},
 		ListSelectExpressionVisitor:   func(*ListSelectExpression) {},
 		FieldSelectExpressionVisitor:  func(*FieldSelectExpression) {},
-		ImplementStatementVisitor: func(*ImplementStatement) {},
-		GenericStatementVisitor: func(*GenericStatement) {},
-		OptionalTypeNameVisitor: func(*OptionalTypeName) {},
+		ImplementStatementVisitor:     func(*ImplementStatement) {},
+		GenericStatementVisitor:       func(*GenericStatement) {},
+		OptionalTypeNameVisitor:       func(*OptionalTypeName) {},
 		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {},
 	}
 }

@@ -9,11 +9,11 @@ type EmptyStatement struct {
 }
 
 func (statement *EmptyStatement) SetEnclosingNode(target Node) {
-  statement.Parent = target
+	statement.Parent = target
 }
 
 func (statement *EmptyStatement) EnclosingNode() (Node, bool) {
-  return statement.Parent, statement.Parent != nil
+	return statement.Parent, statement.Parent != nil
 }
 
 func (statement *EmptyStatement) Accept(visitor Visitor) {

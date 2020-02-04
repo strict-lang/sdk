@@ -3,9 +3,9 @@ package tree
 import "strict.dev/sdk/pkg/compiler/input"
 
 type ConcreteTypeName struct {
-	Name   string
-	Region input.Region
-	Parent Node
+	Name          string
+	Region        input.Region
+	Parent        Node
 	typeReference *TypeReference
 }
 
@@ -14,11 +14,11 @@ func (concrete *ConcreteTypeName) TypeReference() *TypeReference {
 }
 
 func (concrete *ConcreteTypeName) SetEnclosingNode(target Node) {
-  concrete.Parent = target
+	concrete.Parent = target
 }
 
 func (concrete *ConcreteTypeName) EnclosingNode() (Node, bool) {
-  return concrete.Parent, concrete.Parent != nil
+	return concrete.Parent, concrete.Parent != nil
 }
 
 func (concrete *ConcreteTypeName) BaseName() string {

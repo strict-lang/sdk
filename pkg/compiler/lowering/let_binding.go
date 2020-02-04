@@ -121,7 +121,7 @@ func (lowering *LetBindingLowering) lower(
 		Name:     binding.Name,
 		Region:   binding.Locate(),
 		TypeName: tree.ParseTypeName(binding.Locate(), resolvedType.ActualClass),
-		Parent: assign,
+		Parent:   assign,
 		Inferred: true,
 	}
 	assign.Target = field

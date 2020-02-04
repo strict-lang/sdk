@@ -13,11 +13,11 @@ type YieldStatement struct {
 }
 
 func (yield *YieldStatement) SetEnclosingNode(target Node) {
-  yield.Parent = target
+	yield.Parent = target
 }
 
 func (yield *YieldStatement) EnclosingNode() (Node, bool) {
-  return yield.Parent, yield.Parent != nil
+	return yield.Parent, yield.Parent != nil
 }
 
 func (yield *YieldStatement) Accept(visitor Visitor) {

@@ -16,7 +16,7 @@ type Entry struct {
 
 type Position struct {
 	Begin input.Position
-	End input.Position
+	End   input.Position
 }
 
 func (position Position) isSpanningMultipleLines() bool {
@@ -30,12 +30,11 @@ func (position Position) endColumn() input.Offset {
 	return position.End.Column
 }
 
-func (position Position) selectedSource() (begin, end input.Offset){
+func (position Position) selectedSource() (begin, end input.Offset) {
 	begin = position.Begin.Column
 	end = position.endColumn() - 1
 	return
 }
-
 
 func (entry Entry) PrintColored(printer Printer) {
 	line := entry.Position.Begin.Line.Index

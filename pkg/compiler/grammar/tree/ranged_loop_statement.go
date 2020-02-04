@@ -15,11 +15,11 @@ type RangedLoopStatement struct {
 }
 
 func (loop *RangedLoopStatement) SetEnclosingNode(target Node) {
-  loop.Parent = target
+	loop.Parent = target
 }
 
 func (loop *RangedLoopStatement) EnclosingNode() (Node, bool) {
-  return loop.Parent, loop.Parent != nil
+	return loop.Parent, loop.Parent != nil
 }
 
 func (loop *RangedLoopStatement) Accept(visitor Visitor) {

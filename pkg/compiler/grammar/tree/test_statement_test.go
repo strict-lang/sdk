@@ -8,7 +8,7 @@ import (
 func TestTestStatement_Accept(testing *testing.T) {
 	entry := &TestStatement{
 		MethodName: "test",
-		Body:      &StatementBlock{},
+		Body:       &StatementBlock{},
 		Region:     input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).Expect(TestStatementNodeKind).Run()
@@ -16,7 +16,7 @@ func TestTestStatement_Accept(testing *testing.T) {
 
 func TestTestStatement_AcceptRecursive(testing *testing.T) {
 	entry := &TestStatement{
-		Body:      &StatementBlock{Region: input.ZeroRegion},
+		Body:       &StatementBlock{Region: input.ZeroRegion},
 		Region:     input.ZeroRegion,
 		MethodName: "test",
 	}
@@ -29,7 +29,7 @@ func TestTestStatement_AcceptRecursive(testing *testing.T) {
 func TestTestStatement_Locate(testing *testing.T) {
 	RunNodeRegionTest(testing, func(region input.Region) Node {
 		return &TestStatement{
-			Body:      &StatementBlock{Region: input.ZeroRegion},
+			Body:       &StatementBlock{Region: input.ZeroRegion},
 			Region:     region,
 			MethodName: "test",
 		}

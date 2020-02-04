@@ -1,8 +1,8 @@
 package compiler
 
 import (
-	"strict.dev/sdk/pkg/compiler/input"
 	"os"
+	"strict.dev/sdk/pkg/compiler/input"
 )
 
 type Source interface {

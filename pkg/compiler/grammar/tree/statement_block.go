@@ -13,11 +13,11 @@ type StatementBlock struct {
 }
 
 func (block *StatementBlock) UpdateScope(target scope.Scope) {
-  block.scope = target
+	block.scope = target
 }
 
 func (block *StatementBlock) Scope() scope.Scope {
-  return block.scope
+	return block.scope
 }
 
 func (block *StatementBlock) SetEnclosingNode(target Node) {
@@ -25,7 +25,7 @@ func (block *StatementBlock) SetEnclosingNode(target Node) {
 }
 
 func (block *StatementBlock) EnclosingNode() (Node, bool) {
-  return block.Parent, block.Parent != nil
+	return block.Parent, block.Parent != nil
 }
 
 func (block *StatementBlock) Accept(visitor Visitor) {
@@ -122,7 +122,7 @@ func (block *StatementBlock) InsertAfterIndex(index int, node Statement) {
 
 func insert(slice []Statement, index int, value Statement) (result []Statement) {
 	result = append(slice, nil)
-	copy(result[index + 1:], result[index:])
+	copy(result[index+1:], result[index:])
 	result[index] = value
 	return result
 }

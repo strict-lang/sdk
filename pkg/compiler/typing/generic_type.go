@@ -6,7 +6,7 @@ import (
 )
 
 type GenericType struct {
-	Child Type
+	Child     Type
 	Arguments []Type
 }
 
@@ -61,4 +61,3 @@ func (generic *GenericType) String() string {
 	formatted := strings.Join(argumentNames, ", ")
 	return fmt.Sprintf("%s<%s>", generic.Child, formatted)
 }
-

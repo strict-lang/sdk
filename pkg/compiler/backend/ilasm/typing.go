@@ -17,4 +17,3 @@ var String = &Class{
 func (class *Class) IsAssignable(target *Class) bool {
 	return class.Name == target.Name
 }
-

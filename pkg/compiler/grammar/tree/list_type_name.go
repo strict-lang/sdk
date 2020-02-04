@@ -6,9 +6,9 @@ import (
 )
 
 type ListTypeName struct {
-	Element TypeName
-	Region  input.Region
-	Parent Node
+	Element       TypeName
+	Region        input.Region
+	Parent        Node
 	typeReference *TypeReference
 }
 
@@ -17,11 +17,11 @@ func (name *ListTypeName) TypeReference() *TypeReference {
 }
 
 func (name *ListTypeName) SetEnclosingNode(target Node) {
-  name.Parent = target
+	name.Parent = target
 }
 
 func (name *ListTypeName) EnclosingNode() (Node, bool) {
-  return name.Parent, name.Parent != nil
+	return name.Parent, name.Parent != nil
 }
 
 func (name *ListTypeName) FullName() string {

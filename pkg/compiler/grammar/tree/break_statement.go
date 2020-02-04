@@ -3,16 +3,16 @@ package tree
 import "strict.dev/sdk/pkg/compiler/input"
 
 type BreakStatement struct {
-	Region     input.Region
-	Parent     Node
+	Region input.Region
+	Parent Node
 }
 
 func (statement *BreakStatement) SetEnclosingNode(target Node) {
-  statement.Parent = target
+	statement.Parent = target
 }
 
 func (statement *BreakStatement) EnclosingNode() (Node, bool) {
-  return statement.Parent, statement.Parent != nil
+	return statement.Parent, statement.Parent != nil
 }
 
 func (statement *BreakStatement) Accept(visitor Visitor) {

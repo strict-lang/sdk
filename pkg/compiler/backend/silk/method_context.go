@@ -4,8 +4,8 @@ import "strict.dev/sdk/pkg/compiler/typing"
 
 type MethodContext struct {
 	OperandStack *VirtualOperandStack
-	Variables []*VirtualVariable
-	Arguments []*VirtualVariable
+	Variables    []*VirtualVariable
+	Arguments    []*VirtualVariable
 }
 
 func (context *MethodContext) IndexVariable(index int) *VirtualVariable {

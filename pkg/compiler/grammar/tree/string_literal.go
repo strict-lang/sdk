@@ -1,9 +1,9 @@
 package tree
 
 import (
+	"strconv"
 	"strict.dev/sdk/pkg/compiler/input"
 	"strict.dev/sdk/pkg/compiler/scope"
-	"strconv"
 )
 
 type StringLiteral struct {
@@ -14,23 +14,23 @@ type StringLiteral struct {
 	// It contains the leading and trailing characters.
 	Region       input.Region
 	resolvedType resolvedType
-	Parent Node
+	Parent       Node
 }
 
 func (literal *StringLiteral) SetEnclosingNode(target Node) {
-  literal.Parent = target
+	literal.Parent = target
 }
 
 func (literal *StringLiteral) EnclosingNode() (Node, bool) {
-  return literal.Parent, literal.Parent != nil
+	return literal.Parent, literal.Parent != nil
 }
 
 func (literal *StringLiteral) ResolveType(class *scope.Class) {
-  literal.resolvedType.resolve(class)
+	literal.resolvedType.resolve(class)
 }
 
 func (literal *StringLiteral) ResolvedType() (*scope.Class, bool) {
-  return literal.resolvedType.class()
+	return literal.resolvedType.class()
 }
 
 func (literal *StringLiteral) Accept(visitor Visitor) {
