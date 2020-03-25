@@ -9,6 +9,6 @@ go_library(
         "optional_type.go",
         "type.go",
     ],
-    importpath = "strict.dev/sdk/pkg/compiler/typing",
+    importpath = "gitlab.com/strict-lang/sdk/pkg/compiler/typing",
     visibility = ["//visibility:public"],
 )

@@ -3,7 +3,7 @@ package pretty
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"strings"
 )
 

@@ -1,8 +1,8 @@
 package arduino
 
 import (
-	backends "strict.dev/sdk/pkg/compiler/backend"
-	"strict.dev/sdk/pkg/compiler/backend/cpp"
+	backends "gitlab.com/strict-lang/sdk/pkg/compiler/backend"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/cpp"
 )
 
 const BackendName = "arduino"

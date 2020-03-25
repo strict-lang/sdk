@@ -1,6 +1,6 @@
 package tree
 
-import "strict.dev/sdk/pkg/compiler/input"
+import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 // EmptyStatement is a statement that does not execute any instructions.
 type EmptyStatement struct {

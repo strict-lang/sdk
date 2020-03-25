@@ -1,6 +1,6 @@
 package silk
 
-import "strict.dev/sdk/pkg/silk"
+import "gitlab.com/strict-lang/sdk/pkg/silk"
 
 type Generation struct {
 }

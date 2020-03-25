@@ -1,7 +1,7 @@
 package cpp
 
 import (
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 func (generation *Generation) GenerateClassDeclaration(declaration *tree.ClassDeclaration) {
