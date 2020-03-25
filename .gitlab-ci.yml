@@ -21,9 +21,6 @@ build:
   stage: build
   script:
     - go build -o ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME} ./cmd/strict
-  artifacts:
-    paths:
-      - ${ARTIFACTS_DIRECTORY}/${BINARY_NAME}
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     policy: pull-push
