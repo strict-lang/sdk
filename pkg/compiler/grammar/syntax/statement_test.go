@@ -1,9 +1,9 @@
 package syntax
 
 import (
-	"strict.dev/sdk/pkg/compiler/grammar/token"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
-	"strict.dev/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"testing"
 )
 

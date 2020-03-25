@@ -1,6 +1,6 @@
 package ilasm
 
-import "strict.dev/sdk/pkg/compiler/grammar/tree"
+import "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 
 func (generation *Generation) generateStatementBlock(
 	block *tree.StatementBlock, code *BlockBuilder) {

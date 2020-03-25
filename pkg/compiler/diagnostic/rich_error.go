@@ -1,6 +1,6 @@
 package diagnostic
 
-import "strict.dev/sdk/pkg/compiler/grammar/tree"
+import "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 
 type RichError struct {
 	Error         KnownError

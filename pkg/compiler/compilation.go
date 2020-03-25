@@ -2,13 +2,13 @@ package compiler
 
 import (
 	"fmt"
-	"strict.dev/sdk/pkg/compiler/backend"
-	"strict.dev/sdk/pkg/compiler/diagnostic"
-	"strict.dev/sdk/pkg/compiler/grammar/syntax"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
-	isolates "strict.dev/sdk/pkg/compiler/isolate"
-	"strict.dev/sdk/pkg/compiler/lowering"
-	"strict.dev/sdk/pkg/compiler/pass"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	isolates "gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/lowering"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 )
 
 type Compilation struct {

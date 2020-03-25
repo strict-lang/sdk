@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"strict.dev/sdk/pkg/compiler/grammar/lexical"
-	"strict.dev/sdk/pkg/compiler/grammar/token"
-	"strict.dev/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 var tokenizeCommand = &cobra.Command{

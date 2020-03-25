@@ -1,7 +1,7 @@
 package analysis
 
 import (
-	"strict.dev/sdk/pkg/compiler/pass"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 )
 
 func registerPassInstance(instance pass.Pass) {
