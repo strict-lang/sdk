@@ -256,9 +256,9 @@ func TestParsing_ParseFullClass(testing *testing.T) {
 				Input: `
 import Strict.Collection
 
-Sequence<Number> numbers
+has numbers Sequence<Number>
 
-method Number[] ListNumbers()
+method ListNumbers() returns Number[]
   for number in numbers
     yield number
 `,

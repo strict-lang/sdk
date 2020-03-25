@@ -1,7 +1,17 @@
-default:
-  image:
-    name: l.gcr.io/google/bazel:latest
-    entrypoint: [""]
+image: golang:1.14
+
+variables:
+  ARTIFACT_DIRECTORY: buildOutput
+  BINARY_NAME: strict
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - vendor/
+    - ${GOPATH}/bin/
+
+before_script:
+  - go get -d -v all
 
 stages:
   - build
@@ -10,10 +20,15 @@ stages:
 build:
   stage: build
   script:
-    - bazel version
-    - bazel build ...
+    - go build -o ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME} ./cmd/strict
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: pull-push
 
 test:
   stage: test
   script:
-    - bazel test ...
+    - go test -v -cover ./...
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: pull

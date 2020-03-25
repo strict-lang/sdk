@@ -5,23 +5,15 @@
 Strict is a statically typed multi-paradigm programming language that is
 compiled to SIR.
 
-### Building from source
+### Building from Source
 
-You need Bazel in order to build the SDK. 
-https://docs.bazel.build/versions/master/install.html 
+In order to build, you will need the [latest version of go](https://golang.org/).
+Clone the repository and run:
 
-After bazel has been installed, run following commands in the root directory.
-*If you are building on windows, you will have to run them from a bash command line.*
-
-`bazel build ...`
-
-To test the built source code, run the following:
-
-`bazel test ...`
-
-You can also directly run the strict program with bazel:
-`bazel run //cmd/strict:strict`
-
+```shell script
+go get -d -v all
+go install ./cmd/strict
+```
 
 ### Compiling and Running your first Strict program
 

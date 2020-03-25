@@ -31,6 +31,6 @@ func (line Line) String() string {
 }
 
 func (position Position) String() string {
-	return fmt.Sprintf("Area{%d:%d}}",
+	return fmt.Sprintf("Area{%s:%d}}",
 		position.Line, position.Column)
 }
