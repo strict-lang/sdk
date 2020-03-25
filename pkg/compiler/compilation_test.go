@@ -1,7 +1,7 @@
 package compiler
 
 import (
-	"strict.dev/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"testing"
 )
 

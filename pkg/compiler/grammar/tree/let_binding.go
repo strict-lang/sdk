@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"strict.dev/sdk/pkg/compiler/input"
-	"strict.dev/sdk/pkg/compiler/scope"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
 // LetBinding binds an expression to a name. In strict, this behaves like a

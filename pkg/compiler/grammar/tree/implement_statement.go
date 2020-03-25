@@ -1,6 +1,6 @@
 package tree
 
-import "strict.dev/sdk/pkg/compiler/input"
+import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 type ImplementStatement struct {
 	Parent Node

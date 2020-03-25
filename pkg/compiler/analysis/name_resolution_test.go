@@ -1,11 +1,11 @@
 package analysis
 
 import (
-	"strict.dev/sdk/pkg/compiler/diagnostic"
-	"strict.dev/sdk/pkg/compiler/grammar/syntax"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
-	"strict.dev/sdk/pkg/compiler/isolate"
-	passes "strict.dev/sdk/pkg/compiler/pass"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
+	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"testing"
 )
 

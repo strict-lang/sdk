@@ -1,4 +1,4 @@
-module strict.dev/sdk
+module gitlab.com/strict-lang/sdk
 
 go 1.13
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"strict.dev/sdk/pkg/compiler"
-	"strict.dev/sdk/pkg/compiler/backend"
+	"gitlab.com/strict-lang/sdk/pkg/compiler"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
 )
 
 var buildCommand = &cobra.Command{

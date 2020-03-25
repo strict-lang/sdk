@@ -1,6 +1,6 @@
 package tree
 
-import "strict.dev/sdk/pkg/compiler/input"
+import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
 
 // ReturnStatement is a control statement that can prematurely end the execution
 // of a method or emit the return value. Return statements with a return value
