@@ -270,6 +270,9 @@ func init() {
 		token.GenericKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseGenericStatement()
 		},
+		token.HasKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseFieldDeclarationOrDefinition()
+		},
 	}
 }
 
@@ -493,6 +496,7 @@ func (parsing *Parsing) shouldParseFieldDeclaration() bool {
 
 func (parsing *Parsing) parseFieldDeclarationOrDefinition() tree.Node {
 	parsing.beginStructure(tree.FieldDeclarationNodeKind)
+	parsing.skipKeyword(token.HasKeyword)
 	declaration := parsing.parseFieldDeclaration()
 	if !token.HasOperatorValue(parsing.token(), token.AssignOperator) {
 		parsing.completeStructure(tree.FieldDeclarationNodeKind)
@@ -502,6 +506,7 @@ func (parsing *Parsing) parseFieldDeclarationOrDefinition() tree.Node {
 	parsing.advance()
 	return parsing.completeParsingFieldDefinition(declaration)
 }
+
 func (parsing *Parsing) completeParsingFieldDefinition(
 	declaration tree.Node) tree.Node {
 
@@ -517,18 +522,17 @@ func (parsing *Parsing) completeParsingFieldDefinition(
 }
 
 func (parsing *Parsing) parseFieldDeclaration() tree.Node {
-	parsing.beginStructure(tree.FieldDeclarationNodeKind)
-	typeName := parsing.parseTypeName()
-	return parsing.completeFieldDeclarationWithTypeName(typeName)
-}
-
-func (parsing *Parsing) completeFieldDeclarationWithTypeName(
-	typeName tree.TypeName) tree.Node {
-
 	parsing.updateTopStructureKind(tree.FieldDeclarationNodeKind)
 	fieldName := parsing.parseIdentifier()
+	return parsing.completeFieldDeclarationWithName(fieldName)
+}
+
+func (parsing *Parsing) completeFieldDeclarationWithName(
+	name *tree.Identifier) tree.Node {
+
+	typeName := parsing.parseTypeName()
 	return &tree.FieldDeclaration{
-		Name:     fieldName,
+		Name:     name,
 		TypeName: typeName,
 		Region:   parsing.createRegionOfCurrentStructure(),
 	}
@@ -549,9 +553,6 @@ func (parsing *Parsing) completeFieldDefinition(declaration *tree.FieldDeclarati
 // conditionals or loops, therefor this function may end up scanning multiple statements
 // and call itself.
 func (parsing *Parsing) parseStatement() tree.Node {
-	parsing.beginStructure(tree.UnknownNodeKind)
-	defer parsing.completeStructure(tree.WildcardNodeKind) // Could have been modified
-
 	switch current := parsing.token(); {
 	case parsing.isKeywordStatementToken(current):
 		return parsing.parseKeywordStatement(token.KeywordValue(current))
@@ -586,10 +587,7 @@ func newUnexpectedTokenError(token token.Token) *diagnostic.RichError {
 func (parsing *Parsing) parseFieldDeclarationOrListAccess() tree.Node {
 	parsing.beginStructure(tree.UnknownNodeKind)
 	baseTypeOrAccessedField := parsing.pullToken()
-	if parsing.isLookingAtListAccess() {
-		return parsing.completeListAccess(baseTypeOrAccessedField)
-	}
-	return parsing.completeFieldDeclarationFromBaseTypeName(baseTypeOrAccessedField)
+	return parsing.completeListAccess(baseTypeOrAccessedField)
 }
 
 func createRegionForToken(target token.Token) input.Region {
@@ -610,13 +608,6 @@ func (parsing *Parsing) completeListAccess(target token.Token) tree.Statement {
 func (parsing *Parsing) isLookingAtListAccess() bool {
 	return token.HasOperatorValue(parsing.token(), token.LeftBracketOperator) &&
 		token.HasOperatorValue(parsing.peek(), token.RightBracketOperator)
-}
-
-func (parsing *Parsing) completeFieldDeclarationFromBaseTypeName(
-	baseTypeName token.Token) tree.Node {
-
-	typeName := parsing.parseTypeNameFromBaseIdentifier(baseTypeName.Value())
-	return parsing.completeFieldDeclarationWithTypeName(typeName)
 }
 
 // ParseStatementSequence parses a sequence of statements. The sequence

@@ -12,10 +12,10 @@ import (
 func parseTestUnit() *tree.TranslationUnit {
 	result := syntax.ParseString("Test",
 		`
-method Number add(Number left, Number right)
+method add(left Number, right Number) returns Number
   return left + right
 
-method Number addPositive(Number left, Number right)
+method addPositive(left Number, right Number) returns Number
   if left < 0 or right < 0
     return 0
   return add(left, right)

@@ -62,19 +62,20 @@ func (parsing *Parsing) parseMethodBlockBody() tree.Node {
 
 func (parsing *Parsing) parseMethodSignature() methodSignature {
 	return methodSignature{
-		returnTypeName: parsing.parseOptionalReturnTypeName(),
 		name:           parsing.parseIdentifier(),
 		parameters:     parsing.parseParameterListWithParens(),
+		returnTypeName: parsing.parseOptionalReturnTypeName(),
 	}
 }
 
 func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
-	if parsing.isLookingAtOperator(token.LeftParenOperator) {
+	if !token.HasKeywordValue(parsing.token(), token.ReturnsKeyword) {
 		return &tree.ConcreteTypeName{
 			Name:   "Void",
 			Region: input.CreateRegion(parsing.offset(), parsing.offset()),
 		}
 	}
+	parsing.advance()
 	return parsing.parseTypeName()
 }
 
@@ -151,8 +152,8 @@ func (parsing *Parsing) isAtEndOfParameterList() bool {
 func (parsing *Parsing) parseParameter() *tree.Parameter {
 	parsing.beginStructure(tree.ParameterNodeKind)
 	return &tree.Parameter{
-		Type:   parsing.parseTypeName(),
 		Name:   parsing.parseParameterName(),
+		Type:   parsing.parseTypeName(),
 		Region: parsing.completeStructure(tree.ParameterNodeKind),
 	}
 }
