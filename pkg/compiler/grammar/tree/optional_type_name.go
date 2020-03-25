@@ -3,9 +3,9 @@ package tree
 import "strict.dev/sdk/pkg/compiler/input"
 
 type OptionalTypeName struct {
-	Region input.Region
-	TypeName TypeName
-	Parent Node
+	Region        input.Region
+	TypeName      TypeName
+	Parent        Node
 	typeReference *TypeReference
 }
 

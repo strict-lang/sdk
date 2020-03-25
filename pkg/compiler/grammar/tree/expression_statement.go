@@ -4,15 +4,15 @@ import "strict.dev/sdk/pkg/compiler/input"
 
 type ExpressionStatement struct {
 	Expression Expression
-	Parent Node
+	Parent     Node
 }
 
 func (statement *ExpressionStatement) SetEnclosingNode(target Node) {
-  statement.Parent = target
+	statement.Parent = target
 }
 
 func (statement *ExpressionStatement) EnclosingNode() (Node, bool) {
-  return statement.Parent, statement.Parent != nil
+	return statement.Parent, statement.Parent != nil
 }
 
 func (statement *ExpressionStatement) Accept(visitor Visitor) {

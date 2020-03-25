@@ -9,11 +9,11 @@ type InvalidStatement struct {
 }
 
 func (statement *InvalidStatement) SetEnclosingNode(target Node) {
-  statement.Parent = target
+	statement.Parent = target
 }
 
 func (statement *InvalidStatement) EnclosingNode() (Node, bool) {
-  return statement.Parent, statement.Parent != nil
+	return statement.Parent, statement.Parent != nil
 }
 
 func (statement *InvalidStatement) Accept(visitor Visitor) {

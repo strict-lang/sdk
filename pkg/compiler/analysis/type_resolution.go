@@ -191,7 +191,7 @@ var alwaysBoolean = func(*scope.Class) *scope.Class {
 	return scope.Builtins.Boolean
 }
 
-var binaryOperationTypes = map[token.Operator] typeOperation {
+var binaryOperationTypes = map[token.Operator]typeOperation{
 	token.SmallerOperator:       alwaysBoolean,
 	token.GreaterOperator:       alwaysBoolean,
 	token.EqualsOperator:        alwaysBoolean,
@@ -208,6 +208,6 @@ var binaryOperationTypes = map[token.Operator] typeOperation {
 	token.ModOperator:           identityTypeOperation,
 }
 
-var unaryOperationTypes = map[token.Operator] typeOperation {
+var unaryOperationTypes = map[token.Operator]typeOperation{
 	token.NegateOperator: alwaysBoolean,
 }

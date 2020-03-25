@@ -17,14 +17,14 @@ type TranslationUnit struct {
 }
 
 func (unit *TranslationUnit) UpdateScope(target scope.Scope) {
-  unit.scope = target
+	unit.scope = target
 }
 
 func (unit *TranslationUnit) Scope() scope.Scope {
-  return unit.scope
+	return unit.scope
 }
 
-func (*TranslationUnit) SetEnclosingNode(Node) { }
+func (*TranslationUnit) SetEnclosingNode(Node) {}
 
 func (unit *TranslationUnit) EnclosingNode() (Node, bool) {
 	return nil, false

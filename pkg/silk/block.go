@@ -3,11 +3,11 @@ package silk
 type BlockId int
 
 type Block struct {
-	Id BlockId
-	predecessors []*Block
-	successors []*Block
+	Id               BlockId
+	predecessors     []*Block
+	successors       []*Block
 	firstInstruction *Instruction
-	lastInstruction *Instruction
+	lastInstruction  *Instruction
 }
 
 func NewEntryBlock(id BlockId) *Block {
@@ -16,7 +16,7 @@ func NewEntryBlock(id BlockId) *Block {
 
 func NewChildBlock(block *Block, id BlockId) *Block {
 	created := &Block{
-		Id: id,
+		Id:           id,
 		predecessors: []*Block{block},
 	}
 	block.AddSuccessor(created)

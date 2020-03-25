@@ -40,7 +40,7 @@ func (importing *SourceImporting) parseFiles() (parsed parsedDirectory) {
 	return parsed
 }
 
-func (importing *SourceImporting) parseFilesAsync() <- chan *tree.TranslationUnit {
+func (importing *SourceImporting) parseFilesAsync() <-chan *tree.TranslationUnit {
 	count := len(importing.files)
 	results := make(chan *tree.TranslationUnit, count)
 	latch := concurrent.NewLatch(count)
@@ -53,7 +53,7 @@ func (importing *SourceImporting) parseFilesAsync() <- chan *tree.TranslationUni
 }
 
 func (importing *SourceImporting) parseFileAsync(
-	file string, latch concurrent.Latch, output chan <- *tree.TranslationUnit) {
+	file string, latch concurrent.Latch, output chan<- *tree.TranslationUnit) {
 
 	go func() {
 		output <- importing.parseFile(file)

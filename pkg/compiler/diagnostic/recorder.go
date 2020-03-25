@@ -40,7 +40,7 @@ func (recorder *Bag) CreateDiagnostics(converter OffsetConversionFunction) *Diag
 		position := converter(recorded.Position.Begin())
 		entry := Entry{
 			Position: Position{
-				Begin:	position,
+				Begin: position,
 				End:   converter(recorded.Position.End()),
 			},
 			Source:   position.Line.Text,

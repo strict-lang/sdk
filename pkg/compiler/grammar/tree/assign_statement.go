@@ -17,11 +17,11 @@ type AssignStatement struct {
 }
 
 func (assign *AssignStatement) SetEnclosingNode(target Node) {
-  assign.Parent = target
+	assign.Parent = target
 }
 
 func (assign *AssignStatement) EnclosingNode() (Node, bool) {
-  return assign.Parent, assign.Parent != nil
+	return assign.Parent, assign.Parent != nil
 }
 
 func (assign *AssignStatement) Accept(visitor Visitor) {

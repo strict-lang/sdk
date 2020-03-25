@@ -1,9 +1,9 @@
 package silk
 
 type Field struct {
-	Name string
+	Name  string
 	Index int
-	Type Type
+	Type  Type
 }
 
 func (field *Field) Matches(target StorageLocation) bool {

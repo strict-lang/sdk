@@ -9,21 +9,21 @@ var builtinScope = NewOuterScopeWithRootId(builtinScopeId, emptyScope)
 var booleanType = createBooleanType()
 
 var Builtins = struct {
-	Number *Class
-	Float *Class
+	Number  *Class
+	Float   *Class
 	Boolean *Class
-	String *Class
-	Void *Class
-	True *Field
-	False *Field
+	String  *Class
+	Void    *Class
+	True    *Field
+	False   *Field
 }{
-	Void: createVoidType(),
-	Number: createNumberType(),
-	Float: createFloatType(),
+	Void:    createVoidType(),
+	Number:  createNumberType(),
+	Float:   createFloatType(),
 	Boolean: booleanType,
-	String: createStringType(),
-	True: createBuiltinField("True", booleanType),
-	False: createBuiltinField("False", booleanType),
+	String:  createStringType(),
+	True:    createBuiltinField("True", booleanType),
+	False:   createBuiltinField("False", booleanType),
 }
 
 func init() {
@@ -77,8 +77,8 @@ func createBuiltinField(name string, class *Class) *Field {
 
 func createPrimitiveClass(name string) *Class {
 	return &Class{
-		DeclarationName:   name,
-		Scope: NewOuterScope(Id(name), builtinScope),
+		DeclarationName: name,
+		Scope:           NewOuterScope(Id(name), builtinScope),
 	}
 }
 

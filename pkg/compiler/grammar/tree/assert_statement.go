@@ -5,11 +5,11 @@ import "strict.dev/sdk/pkg/compiler/input"
 type AssertStatement struct {
 	Region     input.Region
 	Expression Expression
-	Parent Node
+	Parent     Node
 }
 
 func (assert *AssertStatement) SetEnclosingNode(target Node) {
-  assert.Parent = target
+	assert.Parent = target
 }
 
 func (assert *AssertStatement) EnclosingNode() (Node, bool) {

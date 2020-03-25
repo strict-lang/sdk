@@ -17,19 +17,19 @@ type WildcardNode struct {
 }
 
 func (node *WildcardNode) UpdateScope(target scope.Scope) {
-  node.scope = target
+	node.scope = target
 }
 
 func (node *WildcardNode) Scope() scope.Scope {
-  return node.scope
+	return node.scope
 }
 
 func (node *WildcardNode) SetEnclosingNode(target Node) {
-  node.Parent = target
+	node.Parent = target
 }
 
 func (node *WildcardNode) EnclosingNode() (Node, bool) {
-  return node.Parent, node.Parent != nil
+	return node.Parent, node.Parent != nil
 }
 
 func (node *WildcardNode) Accept(visitor Visitor) {

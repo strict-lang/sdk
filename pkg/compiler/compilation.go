@@ -1,20 +1,20 @@
 package compiler
 
 import (
+	"fmt"
 	"strict.dev/sdk/pkg/compiler/backend"
-	"strict.dev/sdk/pkg/compiler/backend/cpp"
 	"strict.dev/sdk/pkg/compiler/diagnostic"
 	"strict.dev/sdk/pkg/compiler/grammar/syntax"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
-	"strict.dev/sdk/pkg/compiler/isolate"
+	isolates "strict.dev/sdk/pkg/compiler/isolate"
 	"strict.dev/sdk/pkg/compiler/lowering"
 	"strict.dev/sdk/pkg/compiler/pass"
 )
 
 type Compilation struct {
-	Source        Source
-	Name          string
-	TargetArduino bool
+	Source  Source
+	Name    string
+	Backend string
 }
 
 type Result struct {
@@ -59,7 +59,7 @@ func (compilation *Compilation) Lower(unit *tree.TranslationUnit) {
 	execution, _ := pass.NewExecution(lowering.LetBindingLoweringPassId, &pass.Context{
 		Unit:       unit,
 		Diagnostic: diagnostic.NewBag(),
-		Isolate:    isolate.SingleThreaded(),
+		Isolate:    isolates.SingleThreaded(),
 	})
 	_ = execution.Run()
 }
@@ -79,13 +79,13 @@ func (compilation *Compilation) generateOutput(
 }
 
 func (compilation *Compilation) invokeBackend(
-	input backend.Input) (backend.Output, error){
+	input backend.Input) (backend.Output, error) {
 
-	if compilation.TargetArduino {
-		return cpp.Generate(input)
+	isolate := isolates.SingleThreaded()
+	backendId := compilation.Backend
+	chosenBackend, ok := backend.LookupInIsolate(isolate, backendId)
+	if ok {
+		return chosenBackend.Generate(input)
 	}
-	return cpp.Generate(input)
+	return backend.Output{}, fmt.Errorf("no such backend: %s", backendId)
 }
-
-
-

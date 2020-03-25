@@ -1,9 +1,9 @@
 package silk
 
 type Instruction struct {
-	block *Block
-	last *Instruction
-	next *Instruction
+	block     *Block
+	last      *Instruction
+	next      *Instruction
 	Operation Operation
 }
 
@@ -14,7 +14,7 @@ func Instruct(operation Operation) *Instruction {
 }
 
 func (instruction *Instruction) Matches(target *Instruction) bool {
-	return instruction.Operation.Matches(target.Operation )
+	return instruction.Operation.Matches(target.Operation)
 }
 
 func (instruction *Instruction) Accept(visitor Visitor) {
@@ -24,8 +24,8 @@ func (instruction *Instruction) Accept(visitor Visitor) {
 
 func (instruction *Instruction) ReplaceWith(target *Instruction) {
 	target.block = instruction.block
- instruction.appendToLast(target)
- instruction.prependToNext(target)
+	instruction.appendToLast(target)
+	instruction.prependToNext(target)
 }
 
 func (instruction *Instruction) removeSelf() {

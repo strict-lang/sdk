@@ -6,6 +6,6 @@ type Version int
 
 type File struct {
 	Symbols *symbol.Table
-	Class *Class
+	Class   *Class
 	Version Version
 }

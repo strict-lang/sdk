@@ -1,9 +1,9 @@
 package scope
 
 type OuterScope struct {
-	id Id
-	parent Scope
-	entries map[string] Entry
+	id      Id
+	parent  Scope
+	entries map[string]Entry
 }
 
 func NewOuterScope(id Id, parent Scope) MutableScope {
@@ -15,7 +15,7 @@ func NewOuterScopeWithRootId(id Id, parent Scope) MutableScope {
 	return &OuterScope{
 		id:      id,
 		parent:  parent,
-		entries: map[string] Entry{},
+		entries: map[string]Entry{},
 	}
 }
 
@@ -41,7 +41,7 @@ func (scope *OuterScope) LookupOrInsert(
 	}
 	if symbol, ok := factory(); ok {
 		createdEntry := scope.insertToSelf(symbol)
-		return EntrySet{createdEntry }
+		return EntrySet{createdEntry}
 	}
 	return EntrySet{}
 }
@@ -61,7 +61,7 @@ func (scope *OuterScope) lookupOwn(point ReferencePoint) EntrySet {
 	return EntrySet{}
 }
 
-func (scope* OuterScope) createEntry(symbol Symbol) Entry {
+func (scope *OuterScope) createEntry(symbol Symbol) Entry {
 	return Entry{
 		Symbol:   symbol,
 		position: symbol.DeclarationOffset(),
@@ -69,7 +69,7 @@ func (scope* OuterScope) createEntry(symbol Symbol) Entry {
 	}
 }
 
-func (scope* OuterScope) insertToSelf(symbol Symbol) Entry {
+func (scope *OuterScope) insertToSelf(symbol Symbol) Entry {
 	entry := scope.createEntry(symbol)
 	scope.entries[symbol.Name()] = entry
 	return entry

@@ -3,31 +3,27 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"strict.dev/sdk/pkg/compiler"
 	"os"
+	"strict.dev/sdk/pkg/compiler"
 	"strict.dev/sdk/pkg/compiler/backend"
 )
 
 var buildCommand = &cobra.Command{
-	Use:   "build [-t target] [-a arduino] [-c] [compile flags] [file]",
+	Use:   "build [",
 	Short: "Builds a Strict module",
 	Long:  `Build compiles a file to a specified output file.`,
 	Run:   RunCompile,
 }
 
-var (
-	buildTargetFile string
-	targetArduino   bool
-	compileToCpp    bool
-)
+var buildOptions struct {
+	backendId  string
+	outputPath string
+}
 
 func init() {
-	buildCommand.Flags().
-		StringVarP(&buildTargetFile, "target", "t", "", "path to the output file")
-
-	expectNoError(buildCommand.MarkFlagFilename("target", "Strict"))
-	buildCommand.Flags().BoolVarP(&targetArduino, "arduino", "a", false, "generate arduino code")
-	buildCommand.Flags().BoolVar(&compileToCpp, "c", false, "compile the generated cpp code")
+	flags := buildCommand.Flags()
+	flags.StringVarP(&buildOptions.outputPath, "output", "o", "", "output path")
+	flags.StringVarP(&buildOptions.backendId, "backend", "b", "cpp", "id of the backend")
 }
 
 func RunCompile(command *cobra.Command, arguments []string) {
@@ -41,12 +37,12 @@ func RunCompile(command *cobra.Command, arguments []string) {
 		command.Printf("Invalid filename: %s\n", file.Name())
 		return
 	}
-	compiler := &compiler.Compilation{
-		Name:          unitName,
-		Source:        &compiler.FileSource{File: file},
-		TargetArduino: targetArduino,
+	compilation := &compiler.Compilation{
+		Name:    unitName,
+		Source:  &compiler.FileSource{File: file},
+		Backend: buildOptions.backendId,
 	}
-	result := compiler.Compile()
+	result := compilation.Compile()
 	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command})
 	if result.Error != nil {
 		command.PrintErrf("The compilation has failed: %s\n", result.Error)
@@ -78,8 +74,8 @@ func writeGeneratedSourceFile(generated backend.GeneratedFile) error {
 }
 
 func targetFile(name string) (*os.File, error) {
-	if buildTargetFile != "" {
-		return createNewFile(fmt.Sprintf("./%s", buildTargetFile))
+	if buildOptions.outputPath != "" {
+		return createNewFile(fmt.Sprintf("./%s", buildOptions.outputPath))
 	}
 	return createNewFile(fmt.Sprintf("./%s", name))
 }

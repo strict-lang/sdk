@@ -5,7 +5,7 @@ import "strict.dev/sdk/pkg/compiler/input"
 type ImplementStatement struct {
 	Parent Node
 	Region input.Region
-	Trait TypeName
+	Trait  TypeName
 }
 
 func (statement *ImplementStatement) Accept(visitor Visitor) {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/spf13/cobra"
+	"os"
 	"strict.dev/sdk/pkg/compiler"
 	"strict.dev/sdk/pkg/compiler/diagnostic"
 	"strict.dev/sdk/pkg/compiler/grammar/tree"
@@ -9,7 +10,6 @@ import (
 	"strict.dev/sdk/pkg/compiler/isolate"
 	"strict.dev/sdk/pkg/compiler/lowering"
 	passes "strict.dev/sdk/pkg/compiler/pass"
-	"os"
 	"strings"
 )
 

@@ -29,4 +29,3 @@ func (list *ListType) AcceptRecursive(visitor Visitor) {
 	list.Accept(visitor)
 	list.Child.AcceptRecursive(visitor)
 }
-

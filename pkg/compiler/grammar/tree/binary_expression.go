@@ -17,19 +17,19 @@ type BinaryExpression struct {
 }
 
 func (binary *BinaryExpression) SetEnclosingNode(target Node) {
-  binary.Parent = target
+	binary.Parent = target
 }
 
 func (binary *BinaryExpression) EnclosingNode() (Node, bool) {
-  return binary.Parent, binary.Parent != nil
+	return binary.Parent, binary.Parent != nil
 }
 
 func (binary *BinaryExpression) ResolveType(class *scope.Class) {
-  binary.resolvedType.resolve(class)
+	binary.resolvedType.resolve(class)
 }
 
 func (binary *BinaryExpression) ResolvedType() (*scope.Class, bool) {
-  return binary.resolvedType.class()
+	return binary.resolvedType.class()
 }
 
 func (binary *BinaryExpression) Accept(visitor Visitor) {

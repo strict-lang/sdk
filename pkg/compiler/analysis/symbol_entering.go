@@ -77,7 +77,7 @@ func (pass *SymbolEnterPass) newClassSymbol(
 
 	return &scope.Class{
 		DeclarationName: declaration.Name,
-		Scope: ensureScopeIsMutable(declaration.Scope()),
+		Scope:           ensureScopeIsMutable(declaration.Scope()),
 		ActualClass:     declaration.NewActualClass(),
 	}
 }
@@ -189,7 +189,7 @@ func (pass *SymbolEnterPass) createClassReplacement(
 
 	return &scope.Class{
 		DeclarationName: name.BaseName(),
-		Scope: scope.NewOuterScope(scope.Id(name.BaseName()), parentScope),
+		Scope:           scope.NewOuterScope(scope.Id(name.BaseName()), parentScope),
 		ActualClass:     typing.NewEmptyClass(name.BaseName()),
 	}
 }

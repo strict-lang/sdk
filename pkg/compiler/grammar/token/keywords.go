@@ -33,34 +33,39 @@ const (
 	LetKeyword
 	ImplementKeyword
 	GenericKeyword
+	ReturnsKeyword
+	HasKeyword
 	ExistsKeyword
 )
 
 var keywordNameTable = map[Keyword]string{
-	MethodKeyword: "method",
-	BreakKeyword:  "break",
-	ReturnKeyword: "return",
-	ImportKeyword: "import",
-	TypeKeyword:   "type",
-	IsKeyword:     "is",
-	InKeyword:     "in",
-	IfKeyword:     "if",
-	AsKeyword:     "as",
-	ElseKeyword:   "else",
-	ForKeyword:    "for",
-	FromKeyword:   "from",
-	YieldKeyword:  "yield",
-	ToKeyword:     "to",
-	DoKeyword:     "do",
-	AndKeyword:    "and",
-	OrKeyword:     "or",
-	LetKeyword: "let",
+	MethodKeyword:    "method",
+	BreakKeyword:     "break",
+	ReturnKeyword:    "return",
+	ImportKeyword:    "import",
+	TypeKeyword:      "type",
+	ReturnsKeyword:   "returns",
+	HasKeyword:       "has",
+	IsKeyword:        "is",
+	InKeyword:        "in",
+	IfKeyword:        "if",
+	AsKeyword:        "as",
+	ElseKeyword:      "else",
+	ForKeyword:       "for",
+	FromKeyword:      "from",
+	YieldKeyword:     "yield",
+	ToKeyword:        "to",
+	DoKeyword:        "do",
+	AndKeyword:       "and",
+	OrKeyword:        "or",
+	LetKeyword:       "let",
 	ImplementKeyword: "implement",
-	GenericKeyword: "generic",
-	IsNotKeyword:  "isnt",
-	TestKeyword:   "test",
-	AssertKeyword: "assert",
-	CreateKeyword: "create",
+	GenericKeyword:   "generic",
+	IsNotKeyword:     "isnt",
+	TestKeyword:      "test",
+	AssertKeyword:    "assert",
+	CreateKeyword:    "create",
+	ExistsKeyword: "exists",
 }
 
 var operatorKeywords = map[Keyword]Operator{

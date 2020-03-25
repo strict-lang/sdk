@@ -15,11 +15,11 @@ type CallArgument struct {
 }
 
 func (argument *CallArgument) SetEnclosingNode(target Node) {
-  argument.Parent = target
+	argument.Parent = target
 }
 
 func (argument *CallArgument) EnclosingNode() (Node, bool) {
-  return argument.Parent, argument.Parent != nil
+	return argument.Parent, argument.Parent != nil
 }
 
 func (argument *CallArgument) IsLabeled() bool {

@@ -14,11 +14,11 @@ type ImportStatement struct {
 }
 
 func (statement *ImportStatement) EnclosingNode() (Node, bool) {
-  return statement.Parent, statement.Parent != nil
+	return statement.Parent, statement.Parent != nil
 }
 
 func (statement *ImportStatement) SetEnclosingNode(target Node) {
-  statement.Parent = target
+	statement.Parent = target
 }
 
 func (statement *ImportStatement) Accept(visitor Visitor) {

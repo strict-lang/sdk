@@ -10,11 +10,11 @@ type Parameter struct {
 }
 
 func (parameter *Parameter) SetEnclosingNode(target Node) {
-  parameter.Parent = target
+	parameter.Parent = target
 }
 
 func (parameter *Parameter) EnclosingNode() (Node, bool) {
-  return parameter.Parent, parameter.Parent != nil
+	return parameter.Parent, parameter.Parent != nil
 }
 
 func (parameter *Parameter) Accept(visitor Visitor) {

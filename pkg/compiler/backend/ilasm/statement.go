@@ -32,7 +32,7 @@ func (generation *Generation) EmitReturnStatement(
 		generation.EmitExpression(statement.Value)
 		returnClass := resolveClassOfExpression(statement.Value)
 		generation.code.EmitValueReturn(returnClass)
-	}	else {
+	} else {
 		generation.code.EmitReturn()
 	}
 }
@@ -42,7 +42,7 @@ func (generation *Generation) EmitConditionalStatement(
 
 	if statement.HasAlternative() {
 		generation.emitConditionalWithAlternative(statement)
-	}	else {
+	} else {
 		generation.emitConditionalWithoutAlternative(statement)
 	}
 }
@@ -52,7 +52,7 @@ func (generation *Generation) emitConditionalWithAlternative(
 
 	current := generation.code.CreateNextBlock()
 	consequence := generation.code.CreateNextBlock()
-	alternative :=  consequence.CreateNextBlock()
+	alternative := consequence.CreateNextBlock()
 	exit := alternative.CreateNextBlock()
 	generation.EmitExpression(statement.Condition)
 	current.EmitBranchIfFalse(exit.Label)
@@ -67,7 +67,7 @@ func (generation *Generation) emitConditionalWithoutAlternative(
 
 	current := generation.code.CreateNextBlock()
 	consequence := generation.code.CreateNextBlock()
-	exit :=  consequence.CreateNextBlock()
+	exit := consequence.CreateNextBlock()
 	generation.EmitExpression(statement.Condition)
 	current.EmitBranchIfFalse(exit.Label)
 	generation.generateStatementBlock(statement.Consequence, consequence)

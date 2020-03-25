@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"strict.dev/sdk/pkg/compiler/input"
 	"math/rand"
+	"strict.dev/sdk/pkg/compiler/input"
 	"testing"
 )
 

@@ -16,19 +16,18 @@ type ExpressionTransformer interface {
 }
 
 type DelegatingExpressionTransformer struct {
-	IdentifierVisitor func(node *Identifier) Expression
-	StringLiteralVisitor func(node *StringLiteral) Expression
-	NumberLiteralVisitor func(node *NumberLiteral) Expression
+	IdentifierVisitor            func(node *Identifier) Expression
+	StringLiteralVisitor         func(node *StringLiteral) Expression
+	NumberLiteralVisitor         func(node *NumberLiteral) Expression
 	FieldSelectExpressionVisitor func(node *FieldSelectExpression) Expression
-	ListSelectExpressionVisitor func(node *ListSelectExpression) Expression
-	BinaryExpressionVisitor func(node *BinaryExpression) Expression
-	UnaryExpressionVisitor func(node *UnaryExpression) Expression
-	PostfixExpressionVisitor func(node *PostfixExpression) Expression
-	CreateExpressionVisitor func(node *CreateExpression) Expression
-	CallArgumentVisitor func(node *CallArgument) Expression
-	CallExpressionVisitor func(node *CallExpression) Expression
-	LetBindingVisitor func(node *LetBinding) Expression
-
+	ListSelectExpressionVisitor  func(node *ListSelectExpression) Expression
+	BinaryExpressionVisitor      func(node *BinaryExpression) Expression
+	UnaryExpressionVisitor       func(node *UnaryExpression) Expression
+	PostfixExpressionVisitor     func(node *PostfixExpression) Expression
+	CreateExpressionVisitor      func(node *CreateExpression) Expression
+	CallArgumentVisitor          func(node *CallArgument) Expression
+	CallExpressionVisitor        func(node *CallExpression) Expression
+	LetBindingVisitor            func(node *LetBinding) Expression
 }
 
 func NewDelegatingExpressionTransformer() *DelegatingExpressionTransformer {
@@ -69,7 +68,6 @@ func NewDelegatingExpressionTransformer() *DelegatingExpressionTransformer {
 		LetBindingVisitor: func(node *LetBinding) Expression {
 			return node
 		},
-
 	}
 }
 

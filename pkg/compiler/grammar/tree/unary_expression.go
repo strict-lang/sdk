@@ -8,27 +8,27 @@ import (
 
 // UnaryExpression is an operation on a single operand.
 type UnaryExpression struct {
-	Operator token.Operator
-	Operand  Expression
-	Region   input.Region
-	Parent   Node
+	Operator     token.Operator
+	Operand      Expression
+	Region       input.Region
+	Parent       Node
 	resolvedType resolvedType
 }
 
 func (unary *UnaryExpression) ResolveType(class *scope.Class) {
-  unary.resolvedType.resolve(class)
+	unary.resolvedType.resolve(class)
 }
 
 func (unary *UnaryExpression) ResolvedType() (*scope.Class, bool) {
-  return unary.resolvedType.class()
+	return unary.resolvedType.class()
 }
 
 func (unary *UnaryExpression) SetEnclosingNode(target Node) {
-  unary.Parent = target
+	unary.Parent = target
 }
 
 func (unary *UnaryExpression) EnclosingNode() (Node, bool) {
-  return unary.Parent, unary.Parent != nil
+	return unary.Parent, unary.Parent != nil
 }
 
 func (unary *UnaryExpression) Accept(visitor Visitor) {

@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"strict.dev/sdk/pkg/compiler/input"
 	"math/rand"
+	"strict.dev/sdk/pkg/compiler/input"
 	"testing"
 )
 
@@ -29,8 +29,8 @@ func TestBreakStatement_Locate(testing *testing.T) {
 func TestBreakStatement_Matches(testing *testing.T) {
 	CreateMatchTest(testing, &BreakStatement{}).
 		Matches(func(random *rand.Rand) Node {
-		return &BreakStatement{
-			Region:     createRandomRegion(random),
-		}
-	})
+			return &BreakStatement{
+				Region: createRandomRegion(random),
+			}
+		})
 }

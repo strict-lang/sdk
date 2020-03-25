@@ -15,7 +15,7 @@ type Symbol interface {
 type Method struct {
 	DeclarationName   string
 	declarationOffset input.Offset
-	ReturnType *Class
+	ReturnType        *Class
 	// Parameters are lazily added
 	Parameters []*Field
 }
@@ -33,7 +33,7 @@ func (method *Method) DeclarationOffset() input.Offset {
 }
 
 type Class struct {
-	Scope MutableScope
+	Scope             MutableScope
 	DeclarationName   string
 	ActualClass       typing.Type
 	declarationOffset input.Offset
@@ -54,11 +54,11 @@ func (class *Class) DeclarationOffset() input.Offset {
 }
 
 type Field struct {
-	DeclarationName string
+	DeclarationName   string
 	declarationOffset input.Offset
-	Class *Class
-	Kind FieldKind
-	EnclosingClass *Class
+	Class             *Class
+	Kind              FieldKind
+	EnclosingClass    *Class
 }
 
 type FieldKind int
@@ -84,7 +84,7 @@ func (field *Field) DeclarationOffset() input.Offset {
 
 type Namespace struct {
 	PackageName string
-	Scope Scope
+	Scope       Scope
 }
 
 func (namespace *Namespace) Name() string {

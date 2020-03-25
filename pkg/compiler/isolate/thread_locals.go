@@ -1,7 +1,7 @@
 package isolate
 
 type ThreadLocalPropertyTable struct {
-	properties map[string] interface{}
+	properties map[string]interface{}
 }
 
 func (table *ThreadLocalPropertyTable) Insert(name string, value interface{}) {

@@ -12,7 +12,7 @@ func TestParsing_ParseMethodDeclaration(testing *testing.T) {
 		[]ParserTestEntry{
 			{
 				Input: `
-method List<int> range(int begin, int end)
+method range(begin int, end int) returns List<int>
   for number from begin to end
     yield number
 `,
@@ -52,7 +52,7 @@ method List<int> range(int begin, int end)
 			},
 			{
 				Input: `
-method printList(List<int> numbers)
+method printList(numbers List<int>)
   for number in numbers
     printf("%d ", number)
 `,
@@ -97,7 +97,7 @@ method printList(List<int> numbers)
 			},
 			{
 				Input: `
-method int add(int left, int right) => left + right
+method add(left int, right int) returns int => left + right
 `,
 				ExpectedOutput: &tree.MethodDeclaration{
 					Name: &tree.Identifier{Value: `add`},
@@ -156,7 +156,7 @@ method greet() => log("Hello")
 
 func TestParsing_InvalidMethodDeclaration(testing *testing.T) {
 	ExpectError(testing,
-		`method call(int x`,
+		`method call(x int`,
 		func(parsing *Parsing) tree.Node {
 			return parsing.parseMethodDeclaration()
 		},
@@ -164,7 +164,7 @@ func TestParsing_InvalidMethodDeclaration(testing *testing.T) {
 			return strings.HasSuffix(err.Error(), "expected ) but got: ';'")
 		})
 	ExpectError(testing,
-		`method call(int x,`,
+		`method call(x int,`,
 		func(parsing *Parsing) tree.Node {
 			return parsing.parseMethodDeclaration()
 		},

@@ -51,7 +51,7 @@ func newPrinting() *Printing {
 		ExpressionStatementVisitor:    printing.printExpressionStatement,
 		ForEachLoopStatementVisitor:   printing.printForEachLoopStatement,
 		ConditionalStatementVisitor:   printing.printConditionalStatement,
-		LetBindingVisitor: printing.printLetBinding,
+		LetBindingVisitor:             printing.printLetBinding,
 		ListSelectExpressionVisitor:   printing.printListSelectExpression,
 		ConstructorDeclarationVisitor: printing.printConstructorDeclaration,
 		WildcardNodeVisitor:           printing.printWildcardNode,
@@ -271,7 +271,7 @@ func (printing *Printing) printClassDeclaration(class *tree.ClassDeclaration) {
 
 func (printing *Printing) printLetBinding(binding *tree.LetBinding) {
 	printing.printNodeBegin("LetBinding")
-	printing.printIndentedNodeField( "name", binding.Name)
+	printing.printIndentedNodeField("name", binding.Name)
 	printing.printResolvedType(binding)
 	printing.printIndentedNodeField("value", binding.Expression)
 	printing.printNodeEnd()
