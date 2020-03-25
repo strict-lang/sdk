@@ -2,7 +2,7 @@ package compiler
 
 import (
 	"os"
-	"strict.dev/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 type Source interface {

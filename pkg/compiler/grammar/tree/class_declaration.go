@@ -1,9 +1,9 @@
 package tree
 
 import (
-	"strict.dev/sdk/pkg/compiler/input"
-	"strict.dev/sdk/pkg/compiler/scope"
-	"strict.dev/sdk/pkg/compiler/typing"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
 )
 
 type ClassDeclaration struct {

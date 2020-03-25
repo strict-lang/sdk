@@ -1,7 +1,7 @@
 package lexical
 
 import (
-	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"strings"
 	"testing"
 )
@@ -83,7 +83,7 @@ func TestScanExpression(test *testing.T) {
 
 func TestScanMethodDeclaration(test *testing.T) {
 	const entry = `
-	method number add(number a, number b) 
+	method number add(number a, number b)
 		return 0.123 + 3.210
 	`
 	scanner := NewStringScanning(entry)
