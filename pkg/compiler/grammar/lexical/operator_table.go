@@ -1,7 +1,7 @@
 package lexical
 
 import (
-	"strict.dev/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 )
 
 var operatorTable = operatorOptionTable{

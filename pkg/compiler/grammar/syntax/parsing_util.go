@@ -1,9 +1,9 @@
 package syntax
 
 import (
-	"strict.dev/sdk/pkg/compiler/diagnostic"
-	"strict.dev/sdk/pkg/compiler/grammar/token"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 // skipOperator skips the next keyword if it the passed operator, otherwise

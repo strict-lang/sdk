@@ -1,8 +1,8 @@
 package syntax
 
 import (
-	"strict.dev/sdk/pkg/compiler/grammar/token"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 // parseConditionalStatement parses a conditional statement and it's optional else-clause.

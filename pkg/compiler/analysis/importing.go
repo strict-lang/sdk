@@ -1,6 +1,6 @@
 package analysis
 
-import "strict.dev/sdk/pkg/compiler/scope"
+import "gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 
 type Importing interface {
 	Import(scope scope.MutableScope) error

@@ -2,9 +2,9 @@ package syntax
 
 import (
 	"fmt"
-	"strict.dev/sdk/pkg/compiler/diagnostic"
-	"strict.dev/sdk/pkg/compiler/grammar/token"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 type keywordStatementParser func(*Parsing) tree.Node

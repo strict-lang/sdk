@@ -1,21 +1,21 @@
 package analysis
 
 import (
-	"strict.dev/sdk/pkg/compiler/diagnostic"
-	"strict.dev/sdk/pkg/compiler/grammar/syntax"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
-	"strict.dev/sdk/pkg/compiler/isolate"
-	passes "strict.dev/sdk/pkg/compiler/pass"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
+	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"testing"
 )
 
 func parseTestUnit() *tree.TranslationUnit {
 	result := syntax.ParseString("Test",
 		`
-method Number add(Number left, Number right)
+method add(left Number, right Number) returns Number
   return left + right
 
-method Number addPositive(Number left, Number right)
+method addPositive(left Number, right Number) returns Number
   if left < 0 or right < 0
     return 0
   return add(left, right)

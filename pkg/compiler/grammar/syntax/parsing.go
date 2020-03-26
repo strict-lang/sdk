@@ -3,10 +3,10 @@ package syntax
 import (
 	"fmt"
 	"log"
-	"strict.dev/sdk/pkg/compiler/diagnostic"
-	"strict.dev/sdk/pkg/compiler/grammar/token"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
-	"strict.dev/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"strings"
 )
 
@@ -154,9 +154,32 @@ func (parsing *Parsing) isParsingMethod() bool {
 	return parsing.currentMethod != notParsingMethod
 }
 
+func (parsing *Parsing) parseTopLevelDeclarations() (nodes []tree.Statement) {
+	for {
+		current := parsing.token()
+		if token.IsEndOfFileToken(current) {
+			break
+		}
+		if token.IsEndOfStatementToken(current) {
+			parsing.advance()
+			continue
+		}
+		nodes = append(nodes, parsing.parseTopLevelDeclaration())
+	}
+	return
+}
+
+func (parsing *Parsing) parseTopLevelDeclaration() tree.Statement {
+	current := parsing.token()
+	if parsing.isKeywordStatementToken(current) {
+		return parsing.parseKeywordStatement(token.KeywordValue(current))
+	} else {
+		panic(newUnexpectedTokenError(current))
+	}
+}
+
 func (parsing *Parsing) parseTopLevelNodes() (nodes []tree.Node) {
-	parsing.beginStructure(tree.StatementBlockNodeKind)
-	block := parsing.parseStatementBlock()
+	block := parsing.parseTopLevelDeclarations()
 	defer func() {
 		if failure := recover(); failure != nil {
 			err := extractErrorFromPanic(failure)
@@ -164,8 +187,7 @@ func (parsing *Parsing) parseTopLevelNodes() (nodes []tree.Node) {
 			nodes = []tree.Node{invalid}
 		}
 	}()
-	parsing.completeStructure(tree.StatementBlockNodeKind)
-	return convertStatementSliceToNodeSlice(block.Children)
+	return convertStatementSliceToNodeSlice(block)
 }
 
 func extractErrorFromPanic(value interface{}) error {

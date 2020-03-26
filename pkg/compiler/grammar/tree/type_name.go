@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"strict.dev/sdk/pkg/compiler/input"
-	"strict.dev/sdk/pkg/compiler/typing"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
 )
 
 type TypeName interface {

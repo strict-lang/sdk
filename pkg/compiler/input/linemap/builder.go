@@ -1,7 +1,7 @@
 package linemap
 
 import (
-	"strict.dev/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 type Builder struct {

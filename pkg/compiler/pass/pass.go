@@ -1,9 +1,9 @@
 package pass
 
 import (
-	"strict.dev/sdk/pkg/compiler/diagnostic"
-	"strict.dev/sdk/pkg/compiler/grammar/tree"
-	"strict.dev/sdk/pkg/compiler/isolate"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 )
 
 type Context struct {

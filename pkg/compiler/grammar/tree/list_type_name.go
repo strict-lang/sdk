@@ -2,7 +2,7 @@ package tree
 
 import (
 	"fmt"
-	"strict.dev/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 )
 
 type ListTypeName struct {

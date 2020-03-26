@@ -2,8 +2,8 @@ package tree
 
 import (
 	"strconv"
-	"strict.dev/sdk/pkg/compiler/input"
-	"strict.dev/sdk/pkg/compiler/scope"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 	"strings"
 )
 
