@@ -83,6 +83,8 @@ func (parsing *Parsing) parseStatement() tree.Node {
 		return parsing.parseKeywordStatement(token.KeywordValue(current))
 	case token.IsOperatorToken(current):
 		fallthrough
+	case token.IsIdentifierToken(current):
+		fallthrough
 	case token.IsLiteralToken(current):
 		return parsing.parseInstructionStatement()
 	default:
@@ -125,8 +127,6 @@ func (parsing *Parsing) parseStatementInSequence() (statement tree.Statement, sh
 		return nil, false
 	}
 	if current.Indent() < expectedIndent {
-		parsing.closeBlock()
-		parsing.popBlocksUntilMatchingIndent(current.Indent())
 		return nil, false
 	}
 	statement = parsing.parseStatement()
@@ -136,21 +136,6 @@ func (parsing *Parsing) parseStatementInSequence() (statement tree.Statement, sh
 	return statement, true
 }
 
-func (parsing *Parsing) popBlocksUntilMatchingIndent(indent token.Indent) bool {
-	for parsing.block != nil {
-		switch blockIndent := parsing.block.Indent; {
-		case blockIndent == indent:
-			return true
-		case blockIndent > indent:
-			parsing.closeBlock()
-			continue
-		case blockIndent < indent:
-			parsing.throwError(newInvalidIndentError(blockIndent, indent))
-			return false
-		}
-	}
-	return false
-}
 
 func newInvalidIndentError(expected, received token.Indent) *diagnostic.RichError {
 	return &diagnostic.RichError{

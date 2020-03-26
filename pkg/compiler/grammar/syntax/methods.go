@@ -69,7 +69,7 @@ func (parsing *Parsing) parseMethodSignature() methodSignature {
 }
 
 func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
-	if !parsing.isLookingAtKeyword(token.ReturnsKeyword) {
+	if !token.HasKeywordValue(parsing.token(), token.ReturnsKeyword) {
 		return &tree.ConcreteTypeName{
 			Name:   "Void",
 			Region: input.CreateRegion(parsing.offset(), parsing.offset()),

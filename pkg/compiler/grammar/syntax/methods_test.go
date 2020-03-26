@@ -1,8 +1,8 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"strings"
 	"testing"
 )
@@ -98,36 +98,6 @@ method printList(numbers Number[])
 											},
 										},
 									},
-								},
-							},
-						},
-					},
-				},
-			},
-			{
-				Input: `
-method add(left Number, right Number) Number => left + right
-`,
-				ExpectedOutput: &tree.MethodDeclaration{
-					Name: &tree.Identifier{Value: `add`},
-					Type: &tree.ConcreteTypeName{Name: `Number`},
-					Parameters: tree.ParameterList{
-						&tree.Parameter{
-							Type: &tree.ConcreteTypeName{Name: `Number`},
-							Name: &tree.Identifier{Value: `left`},
-						},
-						&tree.Parameter{
-							Type: &tree.ConcreteTypeName{Name: `Number`},
-							Name: &tree.Identifier{Value: `right`},
-						},
-					},
-					Body: &tree.StatementBlock{
-						Children: []tree.Statement{
-							&tree.ReturnStatement{
-								Value: &tree.BinaryExpression{
-									LeftOperand:  &tree.Identifier{Value: `left`},
-									RightOperand: &tree.Identifier{Value: `right`},
-									Operator:     token.AddOperator,
 								},
 							},
 						},
