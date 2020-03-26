@@ -33,6 +33,8 @@ const (
 	LetKeyword
 	ImplementKeyword
 	GenericKeyword
+	HasKeyword
+	ReturnsKeyword
 	ExistsKeyword
 )
 
@@ -61,6 +63,9 @@ var keywordNameTable = map[Keyword]string{
 	TestKeyword:      "test",
 	AssertKeyword:    "assert",
 	CreateKeyword:    "create",
+	HasKeyword: "has",
+	ReturnsKeyword: "returns",
+	ExistsKeyword: "exists",
 }
 
 var operatorKeywords = map[Keyword]Operator{

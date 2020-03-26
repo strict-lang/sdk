@@ -3,12 +3,18 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
+        "declaration.go",
         "expression.go",
         "factory.go",
         "methods.go",
         "parse.go",
         "parsing.go",
+        "parsing_error.go",
+        "parsing_util.go",
         "statement.go",
+        "statement_control.go",
+        "statement_import.go",
+        "statement_instruction.go",
         "structure_stack.go",
         "types.go",
     ],
