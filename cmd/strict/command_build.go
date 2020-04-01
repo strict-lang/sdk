@@ -5,54 +5,111 @@ import (
 	"github.com/spf13/cobra"
 	"gitlab.com/strict-lang/sdk/pkg/compiler"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/report"
+	"io/ioutil"
+	"log"
 	"os"
+	"time"
 )
 
 var buildCommand = &cobra.Command{
-	Use:   "build [",
-	Short: "Builds a Strict module",
+	Use:   "build",
+	Short: "Builds a Strict package",
 	Long:  `Build compiles a file to a specified output file.`,
-	Run:   RunCompile,
+	RunE:   RunCompile,
 }
 
 var buildOptions struct {
-	backendId  string
 	outputPath string
+	reportFormat string
+	debug bool
 }
 
 func init() {
 	flags := buildCommand.Flags()
-	flags.StringVarP(&buildOptions.outputPath, "output", "o", "", "output path")
-	flags.StringVarP(&buildOptions.backendId, "backend", "b", "cpp", "id of the backend")
+	flags.StringVarP(&buildOptions.outputPath, "destination", "d", "build/silk", "build destination")
+	flags.BoolVarP(&buildOptions.debug, "debug", "z", false, "enable debug mode")
+	flags.StringVarP(&buildOptions.reportFormat, "report-format", "r", "text",
+		"format in which the report is encoded (json/pretty-json/xml/pretty-xml/text)")
 }
 
-func RunCompile(command *cobra.Command, arguments []string) {
+func disableLogging() {
+	if !buildOptions.debug {
+		log.SetFlags(0)
+		log.SetOutput(ioutil.Discard)
+	}
+}
+
+var reportFormats = map[string] func(report.Report) report.Output {
+	"text": report.NewRenderingOutput,
+	"json": func(input report.Report) report.Output {
+		return report.NewSerializingOutput(report.NewJsonSerializationFormat(), input)
+	},
+	"pretty-json": func(input report.Report) report.Output {
+		return report.NewSerializingOutput(report.NewPrettyJsonSerializationFormat(), input)
+	},
+	"xml": func(input report.Report) report.Output {
+		return report.NewSerializingOutput(report.NewXmlSerializationFormat(), input)
+	},
+	"pretty-xml": func(input report.Report) report.Output {
+		return report.NewSerializingOutput(report.NewPrettyXmlSerializationFormat(), input)
+	},
+}
+
+func createFailedReport(beginTime time.Time) report.Report {
+	return report.Report{
+		Success:     false,
+		Time:        report.Time{
+			Begin: beginTime.UnixNano(),
+			Completion: time.Now().UnixNano(),
+		},
+		Diagnostics: []report.Diagnostic{},
+	}
+}
+
+func RunCompile(command *cobra.Command, arguments []string) error {
+	disableLogging()
+	compilationReport := compile(command, arguments)
+	output := createOutput(compilationReport)
+	return output.Print(command.OutOrStdout())
+}
+
+func createOutput(compilationReport report.Report) report.Output {
+	if output, ok := reportFormats[buildOptions.reportFormat]; ok {
+		return output(compilationReport)
+	}
+	return report.NewRenderingOutput(compilationReport)
+}
+
+func compile(command *cobra.Command, arguments []string) report.Report {
+	beginTime := time.Now()
 	file, ok := findSourceFileInArguments(command, arguments)
 	if !ok {
-		return
+		return createFailedReport(beginTime)
 	}
 	defer file.Close()
-	unitName, err := ParseUnitName(file.Name())
+	name, err := ParseUnitName(file.Name())
 	if err != nil {
 		command.Printf("Invalid filename: %s\n", file.Name())
-		return
+		return createFailedReport(beginTime)
 	}
+	return runCompilation(command, name, file)
+}
+
+func runCompilation(command *cobra.Command, unitName string, file *os.File) report.Report {
 	compilation := &compiler.Compilation{
 		Name:    unitName,
 		Source:  &compiler.FileSource{File: file},
-		Backend: buildOptions.backendId,
 	}
 	result := compilation.Compile()
-	result.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command: command})
 	if result.Error != nil {
-		command.PrintErrf("The compilation has failed: %s\n", result.Error)
-		return
+		return result.Report
 	}
-	if err = writeGeneratedSources(result); err != nil {
-		command.PrintErrf("Failed to write generated code; %s\n", err.Error())
-		return
+	if err := writeGeneratedSources(result); err != nil {
+		command.PrintErrf("failed to write generated sources %v\n", err)
+		result.Report.Success = false
 	}
-	command.Printf("Successfully compiled %s!\n", unitName)
+	return result.Report
 }
 
 func writeGeneratedSources(compilation compiler.Result) (err error) {
