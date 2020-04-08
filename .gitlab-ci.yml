@@ -12,18 +12,12 @@ cache:
 
 before_script:
   - go get -d -v all
+  - go install ./cmd/strict_sdk
 
 stages:
   - build
+  - bundle-sdk
   - test
-
-build:
-  stage: build
-  script:
-    - go build -o ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME} ./cmd/strict
-  cache:
-    key: ${CI_COMMIT_REF_SLUG}
-    policy: pull-push
 
 test:
   stage: test
@@ -32,3 +26,87 @@ test:
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     policy: pull
+
+.build:
+  stage: build
+
+build:windows:
+  stage: build
+  extends: .build
+  script:
+    - env GOOS=windows GOARCH=amd64 go build -o ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME} ./cmd/strict
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: pull-push
+  artifacts:
+    name: strict-sdk-bundlers-windows
+    paths:
+      - output/
+
+build:linux:
+  stage: build
+  extends: .build
+  script:
+    - env GOOS=linux GOARCH=amd64 go build -o ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME} ./cmd/strict
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: pull-push
+  artifacts:
+    name: strict-sdk-bundlers-linux
+    paths:
+      - output/
+
+build:osx:
+  stage: build
+  extends: .build
+  script:
+    - env GOOS=darwin GOARCH=amd64 go build -o ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME} ./cmd/strict
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: pull-push
+  artifacts:
+    name: strict-sdk-bundlers-osx
+    paths:
+      - output/
+
+.bundle-sdk:
+  stage: bundle-sdk
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: pull
+
+bundle-sdk:windows:
+  stage: bundle-sdk
+  extends: .bundle-sdk
+  script:
+    - strict_sdk --platform windows --version ${CI_COMMIT_REF_SLUG} --bundle --output output --source-code .
+  artifacts:
+    name: sdk-${CI_COMMIT_REF_SLUG}-windows-x86_64.tar.gz
+    paths:
+      - output
+  dependencies:
+    - build:windows
+
+bundle-sdk:linux:
+  stage: bundle-sdk
+  extends: .bundle-sdk
+  script:
+    - strict_sdk --platform linux --version ${CI_COMMIT_REF_SLUG} --bundle --output output --source-code .
+  artifacts:
+    name: sdk-${CI_COMMIT_REF_SLUG}-linux-x86_64.tar.gz
+    paths:
+      - output
+  dependencies:
+    - build:linux
+
+bundle-sdk:osx:
+  stage: bundle-sdk
+  extends: .bundle-sdk
+  script:
+    - strict_sdk --platform osx --version ${CI_COMMIT_REF_SLUG} --bundle --output output --source-code .
+  artifacts:
+    name: sdk-${CI_COMMIT_REF_SLUG}-osx-x86_64.tar.gz
+    paths:
+      - output
+  dependencies:
+    - build:osx
