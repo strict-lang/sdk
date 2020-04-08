@@ -24,7 +24,7 @@ type Make struct {
 	name             string
 	platform         string
 	architecture     string
-	sourceCodePath   string
+	executablePath   string
 }
 
 var makeContext Make
@@ -36,7 +36,7 @@ func init() {
 	flags.StringVarP(&makeContext.platform, "platform", "p", "linux", "target platform")
 	flags.StringVarP(&makeContext.resultOutputPath, "output", "o", ".", "output path of the created strict_sdk")
 	flags.StringVarP(&makeContext.version, "version", "v", "undefined", "version of the created strict_sdk")
-	flags.StringVarP(&makeContext.sourceCodePath, "source-code", "s", ".", "path to the sdk source code")
+	flags.StringVarP(&makeContext.executablePath, "executable", "e", ".", "path to the sdk executable")
 }
 
 func prepareOptions() {
@@ -60,7 +60,10 @@ func chooseWorkOutputPath() string {
 func RunMake(command *cobra.Command, arguments []string) error {
 	prepareOptions()
 	files := append(createTemplateFiles(), downloadBasePackage()...)
-	files = append(files, buildBinary(makeContext.createPath("temp/bin/strict")))
+	files = append(files, TarballEntry{
+		SystemPath: makeContext.executablePath,
+		Name:       path.Join("bin", selectBinaryName()),
+	})
 	if makeContext.bundle {
 		bundleSdk(files)
 	}

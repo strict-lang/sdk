@@ -41,7 +41,7 @@ build:windows:
   artifacts:
     name: strict-sdk-bundlers-windows
     paths:
-      - output/
+      - ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
 
 build:linux:
   stage: build
@@ -54,7 +54,7 @@ build:linux:
   artifacts:
     name: strict-sdk-bundlers-linux
     paths:
-      - output/
+      - ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
 
 build:osx:
   stage: build
@@ -67,7 +67,7 @@ build:osx:
   artifacts:
     name: strict-sdk-bundlers-osx
     paths:
-      - output/
+      - ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
 
 .bundle-sdk:
   stage: bundle-sdk
@@ -79,7 +79,7 @@ bundle-sdk:windows:
   stage: bundle-sdk
   extends: .bundle-sdk
   script:
-    - strict_sdk --platform windows --version ${CI_COMMIT_REF_SLUG} --bundle --output output --source-code .
+    - strict_sdk --platform windows --version ${CI_COMMIT_REF_SLUG} --bundle --output output --executable ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
   artifacts:
     name: sdk-${CI_COMMIT_REF_SLUG}-windows-x86_64.tar.gz
     paths:
@@ -91,7 +91,7 @@ bundle-sdk:linux:
   stage: bundle-sdk
   extends: .bundle-sdk
   script:
-    - strict_sdk --platform linux --version ${CI_COMMIT_REF_SLUG} --bundle --output output --source-code .
+    - strict_sdk --platform linux --version ${CI_COMMIT_REF_SLUG} --bundle --output output --executable ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
   artifacts:
     name: sdk-${CI_COMMIT_REF_SLUG}-linux-x86_64.tar.gz
     paths:
@@ -103,7 +103,7 @@ bundle-sdk:osx:
   stage: bundle-sdk
   extends: .bundle-sdk
   script:
-    - strict_sdk --platform osx --version ${CI_COMMIT_REF_SLUG} --bundle --output output --source-code .
+    - strict_sdk --platform osx --version ${CI_COMMIT_REF_SLUG} --bundle --output output --executable ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
   artifacts:
     name: sdk-${CI_COMMIT_REF_SLUG}-osx-x86_64.tar.gz
     paths:
