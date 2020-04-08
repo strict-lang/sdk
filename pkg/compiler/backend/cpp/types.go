@@ -20,7 +20,11 @@ var builtinTypes = map[string]string{
 func (generation *Generation) GenerateGenericTypeName(name *tree.GenericTypeName) {
 	generation.Emit(name.Name)
 	generation.Emit("<")
-	generation.EmitNode(name.Generic)
+	generation.EmitNode(name.Arguments[0].Expression)
+	for _, remaining := range name.Arguments[1:] {
+		generation.Emit(", ")
+		generation.EmitNode(remaining.Expression)
+	}
 	generation.Emit(">")
 }
 

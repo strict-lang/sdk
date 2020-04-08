@@ -45,9 +45,6 @@ func init() {
 		token.ImplementKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseImplementStatement()
 		},
-		token.GenericKeyword: func(parsing *Parsing) tree.Node {
-			return parsing.parseGenericStatement()
-		},
 		token.HasKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseFieldDeclaration()
 		},

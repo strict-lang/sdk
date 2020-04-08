@@ -98,7 +98,9 @@ func createAssignmentVisitor() tree.Visitor {
 			expression.Operand.SetEnclosingNode(expression)
 		},
 		GenericTypeNameVisitor: func(name *tree.GenericTypeName) {
-			name.Generic.SetEnclosingNode(name)
+			for _, argument := range name.Arguments {
+				argument.Expression.SetEnclosingNode(name)
+			}
 		},
 		ConcreteTypeNameVisitor: func(name *tree.ConcreteTypeName) {},
 		ClassDeclarationVisitor: func(declaration *tree.ClassDeclaration) {
@@ -157,7 +159,9 @@ func createAssignmentVisitor() tree.Visitor {
 		},
 		LetBindingVisitor: func(binding *tree.LetBinding) {
 			binding.Expression.SetEnclosingNode(binding)
-			binding.Name.SetEnclosingNode(binding)
+			for _, name := range binding.Names {
+				name.SetEnclosingNode(binding)
+			}
 		},
 	}
 }

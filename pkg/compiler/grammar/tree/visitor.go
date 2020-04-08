@@ -36,7 +36,6 @@ type Visitor interface {
 	VisitConcreteTypeName(*ConcreteTypeName)
 	VisitClassDeclaration(*ClassDeclaration)
 	VisitBinaryExpression(*BinaryExpression)
-	VisitGenericStatement(*GenericStatement)
 	VisitMethodDeclaration(*MethodDeclaration)
 	VisitPostfixExpression(*PostfixExpression)
 	VisitImplementStatement(*ImplementStatement)
@@ -70,7 +69,6 @@ type DelegatingVisitor struct {
 	AssignStatementVisitor        func(*AssignStatement)
 	ReturnStatementVisitor        func(*ReturnStatement)
 	TranslationUnitVisitor        func(*TranslationUnit)
-	GenericStatementVisitor       func(*GenericStatement)
 	CreateExpressionVisitor       func(*CreateExpression)
 	InvalidStatementVisitor       func(*InvalidStatement)
 	FieldDeclarationVisitor       func(*FieldDeclaration)
@@ -129,7 +127,6 @@ func NewEmptyVisitor() *DelegatingVisitor {
 		ListSelectExpressionVisitor:   func(*ListSelectExpression) {},
 		FieldSelectExpressionVisitor:  func(*FieldSelectExpression) {},
 		ImplementStatementVisitor:     func(*ImplementStatement) {},
-		GenericStatementVisitor:       func(*GenericStatement) {},
 		OptionalTypeNameVisitor:       func(*OptionalTypeName) {},
 		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {},
 	}
@@ -286,10 +283,6 @@ func (visitor *DelegatingVisitor) VisitImplementStatement(node *ImplementStateme
 	visitor.ImplementStatementVisitor(node)
 }
 
-func (visitor *DelegatingVisitor) VisitGenericStatement(node *GenericStatement) {
-	visitor.GenericStatementVisitor(node)
-}
-
 type nodeReporter interface {
 	reportNodeEncounter(kind NodeKind)
 }
@@ -406,9 +399,6 @@ func NewReportingVisitor(reporter nodeReporter) Visitor {
 		},
 		OptionalTypeNameVisitor: func(*OptionalTypeName) {
 			reporter.reportNodeEncounter(OptionalTypeNameNodeKind)
-		},
-		GenericStatementVisitor: func(*GenericStatement) {
-			reporter.reportNodeEncounter(GenericStatementNodeKind)
 		},
 		ImplementStatementVisitor: func(*ImplementStatement) {
 			reporter.reportNodeEncounter(ImplementStatementNodeKind)
@@ -531,9 +521,7 @@ func (visitor *SingleFunctionVisitor) VisitClassDeclaration(node *ClassDeclarati
 func (visitor *SingleFunctionVisitor) VisitBinaryExpression(node *BinaryExpression) {
 	visitor.visit(node)
 }
-func (visitor *SingleFunctionVisitor) VisitGenericStatement(node *GenericStatement) {
-	visitor.visit(node)
-}
+
 func (visitor *SingleFunctionVisitor) VisitMethodDeclaration(node *MethodDeclaration) {
 	visitor.visit(node)
 }

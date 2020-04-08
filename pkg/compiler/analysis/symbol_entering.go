@@ -228,7 +228,9 @@ func (pass *SymbolEnterPass) enterFieldDeclaration(
 }
 
 func (pass *SymbolEnterPass) visitLetBinding(binding *tree.LetBinding) {
-	pass.visitUntypedVariable(binding.Name, binding)
+	for _, name := range binding.Names {
+		pass.visitUntypedVariable(name, binding)
+	}
 }
 
 func (pass *SymbolEnterPass) visitUntypedVariable(name *tree.Identifier, node tree.Node) {

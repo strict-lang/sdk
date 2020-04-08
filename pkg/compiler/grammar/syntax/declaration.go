@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
@@ -51,15 +52,47 @@ func (parsing *Parsing) parseFieldDeclaration() tree.Node {
 func (parsing *Parsing) parseLetBinding() *tree.LetBinding {
 	parsing.beginStructure(tree.LetBindingNodeKind)
 	parsing.skipKeyword(token.LetKeyword)
-	name := parsing.parseIdentifier()
+	names := parsing.parseLetBindingNames()
 	parsing.skipOperator(token.AssignOperator)
 	value := parsing.parseExpression()
 	parsing.skipEndOfStatement()
 	return &tree.LetBinding{
 		Region:     parsing.completeStructure(tree.LetBindingNodeKind),
-		Name:       name,
+		Names: names,
 		Expression: value,
 	}
+}
+
+func (parsing *Parsing) parseLetBindingNames() []*tree.Identifier {
+	if token.HasOperatorValue(parsing.token(), token.LeftBracketOperator) {
+		return parsing.parseBindingNameList()
+	} else {
+		return []*tree.Identifier{parsing.parseIdentifier()}
+	}
+}
+
+func (parsing *Parsing) throwEmptyLetBindingError() {
+	parsing.throwError(&diagnostic.RichError{
+		CommonReasons: []string{"let binding has no variable names"},
+		Error: &diagnostic.UnexpectedTokenError{
+			Expected: token.IdentifierTokenName,
+			Received: token.RightBracketOperator.String(),
+		},
+	})
+}
+
+func (parsing *Parsing) parseBindingNameList() (names []*tree.Identifier) {
+	parsing.skipOperator(token.LeftBracketOperator)
+	if parsing.isLookingAtOperator(token.RightBracketOperator) {
+		parsing.throwEmptyLetBindingError()
+	}
+	names = append(names, parsing.parseIdentifier())
+	for !token.HasOperatorValue(parsing.token(), token.RightBracketOperator) {
+		parsing.skipOperator(token.CommaOperator)
+		names = append(names, parsing.parseIdentifier())
+	}
+	parsing.skipOperator(token.RightBracketOperator)
+	return names
 }
 
 func (parsing *Parsing) parseLetBindingStatement() tree.Statement {
@@ -80,27 +113,6 @@ func (parsing *Parsing) parseImplementStatement() tree.Node {
 		Region: parsing.completeStructure(tree.ImplementStatementNodeKind),
 		Trait:  trait,
 	}
-}
-
-func (parsing *Parsing) parseGenericStatement() tree.Node {
-	parsing.beginStructure(tree.GenericStatementNodeKind)
-	parsing.skipKeyword(token.GenericKeyword)
-	name := parsing.parseIdentifier()
-	constraints := parsing.parseGenericConstraints()
-	parsing.skipEndOfStatement()
-	return &tree.GenericStatement{
-		Region:      parsing.completeStructure(tree.GenericStatementNodeKind),
-		Name:        name,
-		Constraints: constraints,
-	}
-}
-
-func (parsing *Parsing) parseGenericConstraints() []tree.TypeName {
-	if !parsing.isLookingAtKeyword(token.IsKeyword) {
-		return []tree.TypeName{}
-	}
-	parsing.skipKeyword(token.IsKeyword)
-	return parsing.parseTypeNameList()
 }
 
 func (parsing *Parsing) parseTypeNameList() (names []tree.TypeName) {

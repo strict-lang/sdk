@@ -18,19 +18,8 @@ func TestParsing_ParseTypeName(testing *testing.T) {
 				Input: `list<int>`,
 				ExpectedOutput: &tree.GenericTypeName{
 					Name: `list`,
-					Generic: &tree.ConcreteTypeName{
-						Name: `int`,
-					},
-				},
-			},
-			{
-				Input: `list<int[]>`,
-				ExpectedOutput: &tree.GenericTypeName{
-					Name: `list`,
-					Generic: &tree.ListTypeName{
-						Element: &tree.ConcreteTypeName{
-							Name: `int`,
-						},
+					Arguments: []*tree.Generic{
+						tree.NewIdentifierGeneric(&tree.Identifier{Value: "int"}),
 					},
 				},
 			},

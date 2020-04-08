@@ -27,7 +27,7 @@ func (pass *ScopeCreationPass) Run(context *passes.Context) {
 }
 
 func (pass *ScopeCreationPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ParentAssignPassId)
+	return passes.ListInIsolate(isolate, ParentAssignPassId, GenericResolutionPassId)
 }
 
 func (pass *ScopeCreationPass) Id() passes.Id {

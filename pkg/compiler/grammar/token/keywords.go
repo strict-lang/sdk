@@ -32,7 +32,6 @@ const (
 	CreateKeyword
 	LetKeyword
 	ImplementKeyword
-	GenericKeyword
 	ReturnsKeyword
 	HasKeyword
 	ExistsKeyword
@@ -60,7 +59,6 @@ var keywordNameTable = map[Keyword]string{
 	OrKeyword:        "or",
 	LetKeyword:       "let",
 	ImplementKeyword: "implement",
-	GenericKeyword:   "generic",
 	IsNotKeyword:     "isnt",
 	TestKeyword:      "test",
 	AssertKeyword:    "assert",

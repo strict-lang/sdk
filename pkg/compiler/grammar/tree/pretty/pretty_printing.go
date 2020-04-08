@@ -271,7 +271,15 @@ func (printing *Printing) printClassDeclaration(class *tree.ClassDeclaration) {
 
 func (printing *Printing) printLetBinding(binding *tree.LetBinding) {
 	printing.printNodeBegin("LetBinding")
-	printing.printIndentedNodeField("name", binding.Name)
+	if len(binding.Names) > 1 {
+		printing.	printIndentedListFieldBegin("names")
+		for _, name := range binding.Names {
+			printing.printListField(name)
+		}
+		printing.printListFieldEnd()
+	} else {
+		printing.printIndentedNodeField("name", binding.Names[0])
+	}
 	printing.printResolvedType(binding)
 	printing.printIndentedNodeField("value", binding.Expression)
 	printing.printNodeEnd()

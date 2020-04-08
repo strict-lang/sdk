@@ -12,14 +12,6 @@ func expectNoError(err error) {
 	}
 }
 
-func findWorkingDirectory() string {
-	directory, err := os.Getwd()
-	if err != nil {
-		panic(err.Error())
-	}
-	return directory
-}
-
 func findSourceFileInArguments(command *cobra.Command, arguments []string) (*os.File, bool) {
 	if len(arguments) == 0 {
 		command.PrintErrf("No file given\n")
