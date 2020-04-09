@@ -14,11 +14,7 @@ import (
 
 var buildCommand = &cobra.Command{
 	Use:   "build",
-<<<<<<< HEAD
-	Short: "Builds a Strict module",
-=======
 	Short: "Builds a Strict package",
->>>>>>> feature/build
 	Long:  `Build compiles a file to a specified output file.`,
 	RunE:   RunCompile,
 }
