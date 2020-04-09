@@ -26,14 +26,16 @@ install:
   - go get -d -v all
   - go install ./cmd/strict_sdk
 
+os: 
+  - linux
+
+env: 
+  - STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd
+  - STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
+  - STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd
+
 jobs:
   include:
-    - os: linux
-      env: STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
-    - os: linux
-      env: STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd
-    - os: linux
-      env: STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd
     # Builds the executable binary and saves it to a location, where it is later accessed by
     # the bundle step. Platform and architecture are configured in the build matrix.
     - stage: build
