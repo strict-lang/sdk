@@ -28,6 +28,7 @@ before_script:
   - sudo chmod 700 installer_linux
   - sudo ./installer_linux
   - sudo mv .go /usr/local/go
+  - cd -
   - go get -d -v all
   - go install ./cmd/strict_sdk
 
