@@ -46,7 +46,7 @@ jobs:
         - STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd
         - STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd
       script:
-        - strict_sdk make -p $STRICT_PLATFORM -a $STRICT_ARCHITECTURE -b -o $RESULT_DIRECTORY -v -e $EXECUTABLE_PATH
+        - strict_sdk make -p $STRICT_PLATFORM -a $STRICT_ARCHITECTURE -b -o $RESULT_DIRECTORY -v $TRAVIS_BRANCH -e $EXECUTABLE_PATH
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
