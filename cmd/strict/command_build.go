@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
 	"gitlab.com/strict-lang/sdk/pkg/compiler"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
+	"os"
 )
 
 var buildCommand = &cobra.Command{
-	Use:   "build [",
+	Use:   "build",
 	Short: "Builds a Strict module",
 	Long:  `Build compiles a file to a specified output file.`,
 	Run:   RunCompile,

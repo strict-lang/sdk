@@ -53,6 +53,6 @@ func (factory *Factory) NewParser() *Parsing {
 	}
 	parser.openBlock(token.NoIndent)
 	parser.advance()
-	parser.isAtBeginOfStatement = true
+	parser.statementBegin = true
 	return parser
 }

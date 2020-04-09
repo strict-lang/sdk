@@ -179,9 +179,7 @@ func (parsing *Parsing) parseOperation() tree.Expression {
 
 func (parsing *Parsing) parseOperationOrAssign(node tree.Node) tree.Node {
 	if token.IsOperatorToken(parsing.token()) {
-		operator := token.OperatorValue(parsing.token())
-		parsing.advance()
-		return parsing.completeAssignStatement(operator, node)
+		return parsing.completeAssignStatement(node)
 	}
 	return node
 }

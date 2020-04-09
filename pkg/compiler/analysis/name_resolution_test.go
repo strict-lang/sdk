@@ -1,6 +1,7 @@
 package analysis
 
 import (
+	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
@@ -21,6 +22,9 @@ method addPositive(left Number, right Number) returns Number
   return add(left, right)
 
 `)
+	if result.Error != nil {
+		_ = fmt.Errorf("failed to parse unit: %v\n", result.Error)
+	}
 	return result.TranslationUnit
 }
 

@@ -12,12 +12,14 @@ type LetBinding struct {
 	Parent     Node
 	Region     input.Region
 	Expression Expression
-	Name       *Identifier
+	Names[]       *Identifier
 }
 
 func (binding *LetBinding) ResolveType(class *scope.Class) {
 	binding.Expression.ResolveType(class)
-	binding.Name.ResolveType(class)
+	for _, name := range binding.Names {
+		name.ResolveType(class)
+	}
 }
 
 func (binding *LetBinding) ResolvedType() (*scope.Class, bool) {
@@ -35,7 +37,9 @@ func (binding *LetBinding) Accept(visitor Visitor) {
 func (binding *LetBinding) AcceptRecursive(visitor Visitor) {
 	binding.Accept(visitor)
 	binding.Expression.AcceptRecursive(visitor)
-	binding.Name.AcceptRecursive(visitor)
+	for _, name := range binding.Names {
+		name.AcceptRecursive(visitor)
+	}
 }
 
 func (binding *LetBinding) SetEnclosingNode(target Node) {
@@ -55,8 +59,20 @@ func (binding *LetBinding) Matches(target Node) bool {
 }
 
 func (binding *LetBinding) matchesBinding(target *LetBinding) bool {
-	return binding.Name.Matches(target.Name) &&
+	return binding.matchesNames(target.Names) &&
 		binding.Expression.Matches(target.Expression)
+}
+
+func (binding *LetBinding) matchesNames(names []*Identifier) bool {
+	if len(names) != len(binding.Names) {
+		return false
+	}
+	for index, name := range binding.Names {
+		if names[index] != name {
+			return false
+		}
+	}
+	return true
 }
 
 func (binding *LetBinding) TransformExpressions(transformer ExpressionTransformer) {

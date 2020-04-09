@@ -74,9 +74,17 @@ func (lowering *LetBindingLowering) rewriteBindingInStatement(
 
 	if block, parentStatement, ok := findParentStatementInBlock(binding); ok {
 		lowering.rewriteInBlock(binding, parentStatement, block)
-		return binding.Name
+		return convertNamesToExpression(binding.Names)
 	}
 	return binding
+}
+
+func convertNamesToExpression(names []*tree.Identifier) tree.Expression {
+	if len(names) == 0 {
+		return &tree.WildcardNode{}
+	}
+	// TODO: Implement list expressions
+	return names[0]
 }
 
 func (lowering *LetBindingLowering) rewriteBindingStatement(
@@ -107,6 +115,7 @@ func (lowering *LetBindingLowering) rewriteInBlockAtIndex(
 	block.InsertBeforeIndex(index, lowered)
 }
 
+// TODO: Support destruction
 func (lowering *LetBindingLowering) lower(
 	binding *tree.LetBinding, parent tree.Node) *tree.AssignStatement {
 
@@ -118,7 +127,7 @@ func (lowering *LetBindingLowering) lower(
 		Parent:   parent,
 	}
 	field := &tree.FieldDeclaration{
-		Name:     binding.Name,
+		Name:     binding.Names[0],
 		Region:   binding.Locate(),
 		TypeName: tree.ParseTypeName(binding.Locate(), resolvedType.ActualClass),
 		Parent:   assign,

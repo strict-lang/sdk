@@ -280,8 +280,8 @@ method ListNumbers() returns Number[]
 								},
 								TypeName: &tree.GenericTypeName{
 									Name: "Sequence",
-									Generic: &tree.ConcreteTypeName{
-										Name: "Number",
+									Arguments: []*tree.Generic{
+										tree.NewIdentifierGeneric(&tree.Identifier{Value: "Number"}),
 									},
 								},
 							},

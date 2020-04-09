@@ -17,11 +17,11 @@ of the String List `strings`. Lists are builtin types but still implement the
 `Sequence<T>` interface. Thus the code could be written as
 
 ```strict
-method String concat(Sequence<String> strings)
-	let builder = StringBuilder()
-	for string in strings do
-		builder.Append(string)
-	return builder.ToString()
+method concat(strings Sequence<String>) returns String
+  let builder = String.Builder()
+  for string in strings
+    builder += string
+  return builder to String
 ```
 
 Now instead of using the type parameter of the builtin List type, we use that
@@ -35,8 +35,8 @@ let sum = a + b
 ```
 
 In this case, the type of `a` and `b` have to be known first. Then, the `add`
-method is looked up for their type. Even primitives will have this method. 
-To be more precise, the method is looked up on the `typeof(a)` (LHS) of a 
+method gets looked up for their type. Even primitives will have this method. 
+To be more precise, the method gets looked up on the `typeof(a)` (LHS) of a 
 unary expression. If it exists, it has to have a single argument of 
 type `typeof(b)` or a super-type of `typeof(b)`. 
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"os"
 	"gitlab.com/strict-lang/sdk/pkg/compiler"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
@@ -10,6 +9,7 @@ import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/lowering"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
+	"os"
 	"strings"
 )
 

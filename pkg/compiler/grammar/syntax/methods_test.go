@@ -1,8 +1,8 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"strings"
 	"testing"
 )
@@ -12,32 +12,42 @@ func TestParsing_ParseMethodDeclaration(testing *testing.T) {
 		[]ParserTestEntry{
 			{
 				Input: `
-method range(begin int, end int) returns List<int>
-  for number from begin to end
+method ListNumbers(begin Number, end Number) returns Number[]
+  for number in Range(begin, end)
     yield number
 `,
 				ExpectedOutput: &tree.MethodDeclaration{
-					Name: &tree.Identifier{Value: `range`},
-					Type: &tree.GenericTypeName{
-						Name:    "List",
-						Generic: &tree.ConcreteTypeName{Name: `int`},
+					Name: &tree.Identifier{Value: `ListNumbers`},
+					Type: &tree.ListTypeName{
+						Element: &tree.ConcreteTypeName{Name: "Number"},
 					},
 					Parameters: tree.ParameterList{
 						&tree.Parameter{
-							Type: &tree.ConcreteTypeName{Name: `int`},
+							Type: &tree.ConcreteTypeName{Name: `Number`},
 							Name: &tree.Identifier{Value: `begin`},
 						},
 						&tree.Parameter{
-							Type: &tree.ConcreteTypeName{Name: `int`},
+							Type: &tree.ConcreteTypeName{Name: `Number`},
 							Name: &tree.Identifier{Value: `end`},
 						},
 					},
 					Body: &tree.StatementBlock{
 						Children: []tree.Statement{
-							&tree.RangedLoopStatement{
+							&tree.ForEachLoopStatement{
 								Field: &tree.Identifier{Value: `number`},
-								Begin: &tree.Identifier{Value: `begin`},
-								End:   &tree.Identifier{Value: `end`},
+								Sequence:   &tree.CallExpression{
+									Target:    &tree.Identifier{Value: "Range"},
+									Arguments: tree.CallArgumentList{
+										&tree.CallArgument{
+											Value: &tree.Identifier{Value: "begin"},
+										},
+										&tree.CallArgument{
+											Value: &tree.Identifier{Value: "end"},
+										},
+									},
+									Region:    input.Region{},
+									Parent:    nil,
+								},
 								Body: &tree.StatementBlock{
 									Children: []tree.Statement{
 										&tree.YieldStatement{
@@ -52,7 +62,7 @@ method range(begin int, end int) returns List<int>
 			},
 			{
 				Input: `
-method printList(numbers List<int>)
+method printList(numbers Number[])
   for number in numbers
     printf("%d ", number)
 `,
@@ -61,9 +71,8 @@ method printList(numbers List<int>)
 					Type: &tree.ConcreteTypeName{Name: `Void`},
 					Parameters: tree.ParameterList{
 						&tree.Parameter{
-							Type: &tree.GenericTypeName{
-								Name:    "List",
-								Generic: &tree.ConcreteTypeName{Name: `int`},
+							Type: &tree.ListTypeName{
+								Element: &tree.ConcreteTypeName{Name: `Number`},
 							},
 							Name: &tree.Identifier{Value: `numbers`},
 						},
@@ -89,36 +98,6 @@ method printList(numbers List<int>)
 											},
 										},
 									},
-								},
-							},
-						},
-					},
-				},
-			},
-			{
-				Input: `
-method add(left int, right int) returns int => left + right
-`,
-				ExpectedOutput: &tree.MethodDeclaration{
-					Name: &tree.Identifier{Value: `add`},
-					Type: &tree.ConcreteTypeName{Name: `int`},
-					Parameters: tree.ParameterList{
-						&tree.Parameter{
-							Type: &tree.ConcreteTypeName{Name: `int`},
-							Name: &tree.Identifier{Value: `left`},
-						},
-						&tree.Parameter{
-							Type: &tree.ConcreteTypeName{Name: `int`},
-							Name: &tree.Identifier{Value: `right`},
-						},
-					},
-					Body: &tree.StatementBlock{
-						Children: []tree.Statement{
-							&tree.ReturnStatement{
-								Value: &tree.BinaryExpression{
-									LeftOperand:  &tree.Identifier{Value: `left`},
-									RightOperand: &tree.Identifier{Value: `right`},
-									Operator:     token.AddOperator,
 								},
 							},
 						},
@@ -156,7 +135,7 @@ method greet() => log("Hello")
 
 func TestParsing_InvalidMethodDeclaration(testing *testing.T) {
 	ExpectError(testing,
-		`method call(x int`,
+		`method call(x Number`,
 		func(parsing *Parsing) tree.Node {
 			return parsing.parseMethodDeclaration()
 		},
@@ -164,7 +143,7 @@ func TestParsing_InvalidMethodDeclaration(testing *testing.T) {
 			return strings.HasSuffix(err.Error(), "expected ) but got: ';'")
 		})
 	ExpectError(testing,
-		`method call(x int,`,
+		`method call(x Number,`,
 		func(parsing *Parsing) tree.Node {
 			return parsing.parseMethodDeclaration()
 		},

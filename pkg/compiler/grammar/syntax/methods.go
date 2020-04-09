@@ -75,7 +75,7 @@ func (parsing *Parsing) parseOptionalReturnTypeName() tree.TypeName {
 			Region: input.CreateRegion(parsing.offset(), parsing.offset()),
 		}
 	}
-	parsing.advance()
+	parsing.skipKeyword(token.ReturnsKeyword)
 	return parsing.parseTypeName()
 }
 

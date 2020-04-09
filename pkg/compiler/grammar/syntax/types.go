@@ -89,13 +89,35 @@ func (parsing *Parsing) parseIncompleteConcreteTypeName(base string) tree.TypeNa
 func (parsing *Parsing) parseIncompleteGenericTypeName(base string) tree.TypeName {
 	parsing.updateTopStructureKind(tree.GenericTypeNameNodeKind)
 	parsing.skipOperator(token.SmallerOperator)
-	generic := parsing.parseTypeName()
+	arguments := parsing.parseGenericArguments()
 	parsing.skipEndOfGenericTypeName()
 	return &tree.GenericTypeName{
 		Name:    base,
-		Generic: generic,
+		Arguments: arguments,
 		Region:  parsing.createRegionOfCurrentStructure(),
 	}
+}
+
+func (parsing *Parsing) parseGenericArguments() (arguments []*tree.Generic) {
+	arguments = append(arguments, parsing.parseArgument())
+	for !token.HasOperatorValue(parsing.token(), token.GreaterOperator) {
+		parsing.skipOperator(token.CommaOperator)
+		arguments = append(arguments, parsing.parseArgument())
+	}
+	return arguments
+}
+
+func (parsing *Parsing) parseArgument() *tree.Generic {
+	if token.HasOperatorValue(parsing.token(), token.MulOperator) {
+		parsing.advance()
+		return tree.NewWildcardGeneric()
+	}
+	if token.HasKeywordValue(parsing.token(), token.LetKeyword) {
+		binding := parsing.parseLetBinding()
+		return tree.NewLetBindingGeneric(binding)
+	}
+	name := parsing.parseIdentifier()
+	return tree.NewIdentifierGeneric(name)
 }
 
 func (parsing *Parsing) skipEndOfGenericTypeName() {

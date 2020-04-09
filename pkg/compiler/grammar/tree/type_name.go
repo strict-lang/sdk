@@ -59,10 +59,15 @@ func (parser *typeNameParser) VisitGeneric(generic *typing.GenericType) {
 	}
 	parser.lastType = &GenericTypeName{
 		Name:          generic.Concrete().String(),
-		Generic:       generics[0],
+		Arguments:     translateTypeNamesToGeneric(generic.Arguments),
 		Region:        parser.region,
 		typeReference: &TypeReference{resolved: generic},
 	}
+}
+
+func translateTypeNamesToGeneric(types []typing.Type) (generics []*Generic) {
+	// TODO: Add proper translation
+	return generics
 }
 
 func (parser *typeNameParser) VisitList(list *typing.ListType) {
