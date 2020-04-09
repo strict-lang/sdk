@@ -83,7 +83,7 @@ bundle-sdk:windows:
   artifacts:
     name: sdk-${CI_COMMIT_REF_SLUG}-windows-x86_64.tar.gz
     paths:
-      - output
+      - output/sdk-${CI_COMMIT_REF_SLUG}-windows-x86_64.tar.gz
   dependencies:
     - build:windows
 
@@ -95,7 +95,7 @@ bundle-sdk:linux:
   artifacts:
     name: sdk-${CI_COMMIT_REF_SLUG}-linux-x86_64.tar.gz
     paths:
-      - output
+      - output/sdk-${CI_COMMIT_REF_SLUG}-linux-x86_64.tar.gz
   dependencies:
     - build:linux
 
@@ -107,6 +107,6 @@ bundle-sdk:osx:
   artifacts:
     name: sdk-${CI_COMMIT_REF_SLUG}-osx-x86_64.tar.gz
     paths:
-      - output
+      - output/sdk-${CI_COMMIT_REF_SLUG}-osx-x86_64.tar.gz
   dependencies:
     - build:osx
