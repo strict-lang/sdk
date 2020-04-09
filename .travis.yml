@@ -19,7 +19,7 @@ notifications:
 addons:
   apt:
 
-stages: [build, test, lint, bundle]
+stages: [test, build, bundle]
 
 install:
   - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
@@ -34,7 +34,7 @@ jobs:
     - os: linux
       arch: arm64
       env: STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=arm
-    - os: osx
+    - os: linux # Booting osx takes some time
       env: STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd
     - os: windows
       env: STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd
@@ -65,10 +65,10 @@ jobs:
       name: test
       script: go test -v -cover ./...
       os: linux
-      env: STRICT_PLAFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
+      env: STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
     # Lints the source code.
-    - stage: lint
+    - stage: test
       name: lint
       script: golangci-lint run
       os: linux
-      env: STRICT_PLAFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
+      env: STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
