@@ -1,3 +1,4 @@
+sudo: true
 language: minimal # travis fails to support 1.14
 
 git:
@@ -9,7 +10,7 @@ cache:
     - vendor/
     - ${GOPATH}/bin
     - /usr/local/go
-    
+
 install: true
 
 notifications:
