@@ -5,12 +5,11 @@ go: [1.13.x]
 git:
   depth: 1
 
-cache: 
+cache:
   directories:
     - output/
     - vendor/
     - ${GOPATH}/bin
-    - /usr/local/go
 
 notifications:
   email: false
@@ -29,7 +28,7 @@ os: [linux]
 
 _build: &_build
   stage: build
-  script: go build -o ./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict ./cmd/strict 
+  script: go build -o ./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict ./cmd/strict
 
 _bundle: &_bundle
   stage: bundle
@@ -39,11 +38,10 @@ _bundle: &_bundle
     - strict_sdk make -p $STRICT_PLATFORM -a $STRICT_ARCHITECTURE -b -o $RESULT_DIRECTORY -v $TRAVIS_BRANCH -e $EXECUTABLE_PATH
   deploy:
     provider: releases
+    draft: true
     api_key: $GITHUB_OAUTH_TOKEN
-    file: output/$TRAVIS_BRANCH/artifacts/sdk-$TRAVIS_BRANCH-$STRICT_PLATFORM-$STRICT_ARCHITECTURE.tar.gz
-    on:
-      tags: true
-      all_branches: true
+    file: output/$TRAVIS_BRANCH/artifacts/sdk-*-$STRICT_PLATFORM-$STRICT_ARCHITECTURE.tar.gz
+    file_glob: true
 
 jobs:
   include:
