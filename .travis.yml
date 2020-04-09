@@ -20,15 +20,16 @@ addons:
 stages: [build, test, lint, bundle]
 
 install:
-  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
   - wget https://github.com/golang/go/archive/go1.14.2.tar.gz
   - sudo tar -C /usr/local -xzf go1.14.2.tar.gz
   - export PATH=$PATH:/usr/local/go/bin
   - source ~/.bash_profile
   - mkdir ~/go
+  - go version
   - go get -d -v all
   - go install ./cmd/strict_sdk
-
+  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
+ 
 jobs:
   include:
     - os: linux
