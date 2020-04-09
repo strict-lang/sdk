@@ -6,21 +6,28 @@ import (
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	isolates "gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/lowering"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/pass"
+	"gitlab.com/strict-lang/sdk/pkg/compiler/report"
+	"time"
 )
 
 type Compilation struct {
 	Source  Source
 	Name    string
 	Backend string
+
+	beginTime time.Time
+	diagnostics *diagnostic.Diagnostics
+	err error
 }
 
 type Result struct {
 	UnitName       string
 	GeneratedFiles []backend.GeneratedFile
-	Diagnostics    *diagnostic.Diagnostics
+	Report         report.Report
 	Error          error
 }
 
@@ -36,12 +43,76 @@ type ParseResult struct {
 	Error       error
 }
 
+const failure = false
+const success = true
+
+func (compilation *Compilation) createReport(success bool) report.Report {
+	return report.Report{
+		Success:     success,
+		Time:        report.Time{
+			Begin: compilation.beginTime.UnixNano(),
+			Completion: compilation.beginTime.UnixNano(),
+		},
+		Diagnostics: translateDiagnostics(compilation.diagnostics),
+	}
+}
+
+func translateDiagnostics(diagnostics *diagnostic.Diagnostics) []report.Diagnostic {
+	var translated []report.Diagnostic
+	for _, entry := range diagnostics.ListEntries() {
+		translated = append(translated, translateDiagnosticEntry(entry))
+	}
+	if translated == nil {
+		return []report.Diagnostic{}
+	}
+	return translated
+}
+
+func translateDiagnosticEntry(entry diagnostic.Entry) report.Diagnostic {
+	return report.Diagnostic{
+		Kind: translateDiagnosticKind(entry.Kind),
+		Message: entry.Message,
+		TextRange: report.TextRange{
+			Text:     entry.Source,
+			Range: report.PositionRange{
+				BeginPosition: translatePosition(entry.Position.Begin),
+				EndPosition:   translatePosition(entry.Position.End),
+			},
+			File:     entry.UnitName,
+		},
+	}
+}
+
+func translatePosition(position input.Position) report.Position {
+	return report.Position{
+		Line:   int(position.Line.Index),
+		Column: int(position.Column),
+		Offset: int(position.Offset),
+	}
+}
+
+func translateDiagnosticKind(kind *diagnostic.Kind) report.DiagnosticKind {
+	switch kind.Name {
+	case diagnostic.Error.Name:
+		return report.DiagnosticError
+	case diagnostic.Info.Name:
+		return report.DiagnosticInfo
+	case diagnostic.Warning.Name:
+		return report.DiagnosticWarning
+	default:
+		return report.DiagnosticError
+	}
+}
+
+
 func (compilation *Compilation) Compile() Result {
+	compilation.beginTime = time.Now()
 	parseResult := compilation.parse()
+	compilation.diagnostics = parseResult.Diagnostics
 	if parseResult.Error != nil {
 		return Result{
 			GeneratedFiles: []backend.GeneratedFile{},
-			Diagnostics:    parseResult.Diagnostics,
+			Report:         compilation.createReport(failure),
 			Error:          parseResult.Error,
 			UnitName:       compilation.Name,
 		}
@@ -49,7 +120,7 @@ func (compilation *Compilation) Compile() Result {
 	compilation.Lower(parseResult.TranslationUnit)
 	return Result{
 		GeneratedFiles: compilation.generateOutput(parseResult.TranslationUnit),
-		Diagnostics:    parseResult.Diagnostics,
+		Report:         compilation.createReport(success),
 		Error:          nil,
 		UnitName:       parseResult.TranslationUnit.Name,
 	}

@@ -1,11 +1,11 @@
 package analysis
 
 import (
-	"fmt"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"log"
 )
 
 const NameResolutionPassId = "NameResolutionPass"
@@ -49,7 +49,7 @@ func (pass *NameResolutionPass) bindIdentifier(identifier *tree.Identifier) {
 		symbol := entries.First().Symbol
 		identifier.Bind(symbol)
 	} else {
-		fmt.Printf("Unknown Symbol %s\n", identifier.Value)
+		log.Printf("Unknown Symbol %s\n", identifier.Value)
 	}
 }
 
