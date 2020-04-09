@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"os"
 )
 
 var tokenizeCommand = &cobra.Command{

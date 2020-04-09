@@ -1,9 +1,9 @@
 package tree
 
 import (
-	"strconv"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"strconv"
 )
 
 type StringLiteral struct {

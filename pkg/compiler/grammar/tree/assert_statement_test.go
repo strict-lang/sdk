@@ -1,8 +1,8 @@
 package tree
 
 import (
-	"math/rand"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"math/rand"
 	"testing"
 )
 

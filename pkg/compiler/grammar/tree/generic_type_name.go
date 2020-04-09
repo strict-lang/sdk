@@ -19,7 +19,7 @@ type GenericTypeName struct {
 // we would need an adapter that wraps non expression types and supplies
 // functions such as AcceptRecursive and TransformExpression.
 type Generic struct {
-	Name string
+	Name       string
 	IsWildcard bool
 	Expression Expression
 }
@@ -28,7 +28,7 @@ const WildcardName = "_wildcard"
 
 func NewWildcardGeneric() *Generic {
 	return &Generic{
-		Name: WildcardName,
+		Name:       WildcardName,
 		IsWildcard: true,
 		Expression: &WildcardNode{},
 	}
@@ -36,7 +36,7 @@ func NewWildcardGeneric() *Generic {
 
 func NewLetBindingGeneric(binding *LetBinding) *Generic {
 	return &Generic{
-		Name: binding.Names[0].Value,
+		Name:       binding.Names[0].Value,
 		IsWildcard: false,
 		Expression: binding,
 	}
@@ -44,7 +44,7 @@ func NewLetBindingGeneric(binding *LetBinding) *Generic {
 
 func NewIdentifierGeneric(identifier *Identifier) *Generic {
 	return &Generic{
-		Name: identifier.Value,
+		Name:       identifier.Value,
 		IsWildcard: false,
 		Expression: identifier,
 	}
@@ -72,7 +72,7 @@ func (name *GenericTypeName) joinArguments() string {
 	}
 	var builder strings.Builder
 	builder.WriteString(name.Arguments[0].Name)
-	for _, argument := range name.Arguments[1:]{
+	for _, argument := range name.Arguments[1:] {
 		builder.WriteString(", ")
 		builder.WriteString(argument.Name)
 	}

@@ -92,9 +92,9 @@ func (parsing *Parsing) parseIncompleteGenericTypeName(base string) tree.TypeNam
 	arguments := parsing.parseGenericArguments()
 	parsing.skipEndOfGenericTypeName()
 	return &tree.GenericTypeName{
-		Name:    base,
+		Name:      base,
 		Arguments: arguments,
-		Region:  parsing.createRegionOfCurrentStructure(),
+		Region:    parsing.createRegionOfCurrentStructure(),
 	}
 }
 

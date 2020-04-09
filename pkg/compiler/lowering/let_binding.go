@@ -1,12 +1,12 @@
 package lowering
 
 import (
-	"log"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/analysis"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
+	"log"
 )
 
 const LetBindingLoweringPassId = "LetBindingLowering"

@@ -35,8 +35,8 @@ method ListNumbers(begin Number, end Number) returns Number[]
 						Children: []tree.Statement{
 							&tree.ForEachLoopStatement{
 								Field: &tree.Identifier{Value: `number`},
-								Sequence:   &tree.CallExpression{
-									Target:    &tree.Identifier{Value: "Range"},
+								Sequence: &tree.CallExpression{
+									Target: &tree.Identifier{Value: "Range"},
 									Arguments: tree.CallArgumentList{
 										&tree.CallArgument{
 											Value: &tree.Identifier{Value: "begin"},
@@ -45,8 +45,8 @@ method ListNumbers(begin Number, end Number) returns Number[]
 											Value: &tree.Identifier{Value: "end"},
 										},
 									},
-									Region:    input.Region{},
-									Parent:    nil,
+									Region: input.Region{},
+									Parent: nil,
 								},
 								Body: &tree.StatementBlock{
 									Children: []tree.Statement{

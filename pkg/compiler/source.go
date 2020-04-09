@@ -1,8 +1,8 @@
 package compiler
 
 import (
-	"os"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"os"
 )
 
 type Source interface {

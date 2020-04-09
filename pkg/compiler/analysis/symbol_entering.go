@@ -1,13 +1,13 @@
 package analysis
 
 import (
-	"log"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
+	"log"
 )
 
 const SymbolEnterPassId = "SymbolEnterPass"

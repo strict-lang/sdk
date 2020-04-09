@@ -272,7 +272,7 @@ func (printing *Printing) printClassDeclaration(class *tree.ClassDeclaration) {
 func (printing *Printing) printLetBinding(binding *tree.LetBinding) {
 	printing.printNodeBegin("LetBinding")
 	if len(binding.Names) > 1 {
-		printing.	printIndentedListFieldBegin("names")
+		printing.printIndentedListFieldBegin("names")
 		for _, name := range binding.Names {
 			printing.printListField(name)
 		}

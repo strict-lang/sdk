@@ -2,13 +2,13 @@ package analysis
 
 import (
 	"fmt"
-	"os"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
 	"gitlab.com/strict-lang/sdk/pkg/concurrent"
+	"os"
 )
 
 type SourceImporting struct {

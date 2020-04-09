@@ -12,9 +12,9 @@ func TestGenericTypeName_Accept(testing *testing.T) {
 
 func TestGenericTypeName_AcceptRecursive(testing *testing.T) {
 	entry := &GenericTypeName{
-		Name:    "Future",
+		Name:      "Future",
 		Arguments: []*Generic{NewIdentifierGeneric(&Identifier{Value: "String"})},
-		Region:  input.ZeroRegion,
+		Region:    input.ZeroRegion,
 	}
 	CreateVisitorTest(entry, testing).
 		Expect(GenericTypeNameNodeKind).

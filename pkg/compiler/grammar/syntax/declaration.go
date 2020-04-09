@@ -43,8 +43,8 @@ func (parsing *Parsing) parseFieldDeclaration() tree.Node {
 	name := parsing.parseIdentifier()
 	fieldType := parsing.parseTypeName()
 	return &tree.FieldDeclaration{
-		Region: parsing.completeStructure(tree.FieldDeclarationNodeKind),
-		Name: name,
+		Region:   parsing.completeStructure(tree.FieldDeclarationNodeKind),
+		Name:     name,
 		TypeName: fieldType,
 	}
 }
@@ -58,7 +58,7 @@ func (parsing *Parsing) parseLetBinding() *tree.LetBinding {
 	parsing.skipEndOfStatement()
 	return &tree.LetBinding{
 		Region:     parsing.completeStructure(tree.LetBindingNodeKind),
-		Names: names,
+		Names:      names,
 		Expression: value,
 	}
 }

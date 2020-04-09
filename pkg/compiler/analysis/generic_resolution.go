@@ -76,8 +76,8 @@ func (pass *GenericResolutionPass) visitTopLevelLetBindings(class *tree.ClassDec
 func (pass *GenericResolutionPass) addParameters(binding *tree.LetBinding) {
 	for _, identifier := range binding.Names {
 		parameters := &tree.ClassParameter{
-			Name:      identifier.Value,
-			Parent:    pass.currentClass,
+			Name:   identifier.Value,
+			Parent: pass.currentClass,
 		}
 		pass.currentClass.Parameters = append(pass.currentClass.Parameters, parameters)
 	}

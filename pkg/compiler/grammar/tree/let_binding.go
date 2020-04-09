@@ -12,7 +12,7 @@ type LetBinding struct {
 	Parent     Node
 	Region     input.Region
 	Expression Expression
-	Names[]       *Identifier
+	Names      []*Identifier
 }
 
 func (binding *LetBinding) ResolveType(class *scope.Class) {

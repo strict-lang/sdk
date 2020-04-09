@@ -10,6 +10,7 @@ import (
 type keywordStatementParser func(*Parsing) tree.Node
 
 var keywordStatementParserTable map[token.Keyword]keywordStatementParser
+
 func init() {
 	keywordStatementParserTable = map[token.Keyword]keywordStatementParser{
 		token.IfKeyword: func(parsing *Parsing) tree.Node {
@@ -132,7 +133,6 @@ func (parsing *Parsing) parseStatementInSequence() (statement tree.Statement, sh
 	}
 	return statement, true
 }
-
 
 func newInvalidIndentError(expected, received token.Indent) *diagnostic.RichError {
 	return &diagnostic.RichError{

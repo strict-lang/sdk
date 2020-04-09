@@ -2,12 +2,12 @@ package analysis
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+	"os"
+	"path/filepath"
 	"strings"
 )
 

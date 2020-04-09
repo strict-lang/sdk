@@ -2,11 +2,11 @@ package syntax
 
 import (
 	"fmt"
-	"log"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"log"
 )
 
 func newInvalidStructureError() *diagnostic.RichError {

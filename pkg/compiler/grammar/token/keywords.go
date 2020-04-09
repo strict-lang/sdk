@@ -63,7 +63,7 @@ var keywordNameTable = map[Keyword]string{
 	TestKeyword:      "test",
 	AssertKeyword:    "assert",
 	CreateKeyword:    "create",
-	ExistsKeyword: "exists",
+	ExistsKeyword:    "exists",
 }
 
 var operatorKeywords = map[Keyword]Operator{

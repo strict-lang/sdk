@@ -12,7 +12,7 @@ type GeneratedFile struct {
 }
 
 type Output struct {
-	GeneratedFiles [] GeneratedFile
+	GeneratedFiles []GeneratedFile
 }
 
 type Input struct {
