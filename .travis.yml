@@ -1,0 +1,70 @@
+language: go
+env: GO111MODULE=on GOFLAGS='-mod vendor'
+
+go: [1.14.x]
+
+git:
+  depth: 1
+
+cache: 
+  directories:
+    - output/
+    - vendor/
+    - ${GOPATH}/bin
+
+install: true
+
+notification:
+  email: false
+
+stages: [build, test, lint, bundle]
+
+before_script:
+  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
+
+install:
+  - go get -d -v all
+  - go install ./cmd/strict_sdk
+
+jobs:
+  include:
+    - os: linux
+      env: STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
+    - os: linux
+      env: STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=arm
+    - os: osx
+      env: STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd
+    - os: windows
+      env: STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd
+    # Builds the executable binary and saves it to a location, where it is later accessed by
+    # the bundle step. Platform and architecture are configured in the build matrix.
+    - stage: build
+      name: build
+      script: go build -o ./cmd/strict output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict
+    # Bundles a Strict SDK by using the executable built in the 'build' stage and deploys it to
+    # the Github releases. The $GITHUB_OAUTH_TOKEN has to be defined.
+    - stage: bundle
+      name: bundle
+      env: EXECUTABLE_PATH=output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict
+      script:
+        - strict_sdk -p $STRICT_PLATFORM -a $STRICT_ARCHITECTURE -b -o $TRAVIS_BRANCH/artifacts -v -e $EXECITABLE_PAT
+      deploy:
+        provider: releases
+        api_key: $GITHUB_OAUTH_TOKEN
+        file: $EXECUTABLE_PATH
+        skip_cleanup: true
+        on:
+          tags: true
+          all_branches: true
+    # Runs all tests.
+    - stage: test
+      name: test
+      script: go test -v -cover ./...
+      os: linux
+      env: STRICT_PLAFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
+    # Lints the source code.
+    - stage: lint
+      name: lint
+      script: golangci-lint run
+      os: linux
+      env: STRICT_PLAFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
