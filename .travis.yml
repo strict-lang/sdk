@@ -10,8 +10,6 @@ cache:
     - ${GOPATH}/bin
     - /usr/local/go
 
-install: true
-
 notifications:
   email: false
 
@@ -21,14 +19,14 @@ addons:
 
 stages: [build, test, lint, bundle]
 
-before_script:
+install:
   - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
-  - cd ~
-  - curl -O https://storage.googleapis.com/golang/getgo/installer_linux
+  - wget https://github.com/golang/go/archive/go1.14.2.tar.gz
+  - sudo tar -C /usr/local -xzf go1.14.2.tar.gz
   - sudo chmod 700 installer_linux
-  - sudo ./installer_linux
-  - sudo mv .go /usr/local/go
-  - cd -
+  - export PATH=$PATH:/usr/local/go/bin
+  - source ~/.bash_profile
+  - mkdir ~/go
   - go get -d -v all
   - go install ./cmd/strict_sdk
 
