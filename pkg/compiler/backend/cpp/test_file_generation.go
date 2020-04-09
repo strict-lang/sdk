@@ -2,7 +2,7 @@ package cpp
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 type TestFileGeneration struct{}

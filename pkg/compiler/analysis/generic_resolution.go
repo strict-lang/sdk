@@ -1,9 +1,9 @@
 package analysis
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
-	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/isolate"
+	passes "github.com/strict-lang/sdk/pkg/compiler/pass"
 )
 
 func init() {

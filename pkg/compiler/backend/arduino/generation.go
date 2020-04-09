@@ -1,8 +1,8 @@
 package arduino
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend/cpp"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/backend/cpp"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 type Generation struct {

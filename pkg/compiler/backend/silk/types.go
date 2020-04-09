@@ -1,8 +1,8 @@
 package silk
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
-	"gitlab.com/strict-lang/sdk/pkg/silk"
+	"github.com/strict-lang/sdk/pkg/compiler/typing"
+	"github.com/strict-lang/sdk/pkg/silk"
 )
 
 func translateType(source typing.Type) silk.Type {

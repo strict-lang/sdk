@@ -1,6 +1,6 @@
 package scope
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/input"
+import "github.com/strict-lang/sdk/pkg/compiler/input"
 
 type testSymbol struct {
 	name              string

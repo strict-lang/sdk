@@ -1,6 +1,6 @@
 package cpp
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+import "github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 
 type headerClass struct {
 	name               string

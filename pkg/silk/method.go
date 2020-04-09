@@ -1,6 +1,6 @@
 package silk
 
-import "gitlab.com/strict-lang/sdk/pkg/silk/symbol"
+import "github.com/strict-lang/sdk/pkg/silk/symbol"
 
 type Method struct {
 	Reference  symbol.Reference

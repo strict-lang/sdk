@@ -1,6 +1,6 @@
 package silk
 
-import backends "gitlab.com/strict-lang/sdk/pkg/compiler/backend"
+import backends "github.com/strict-lang/sdk/pkg/compiler/backend"
 
 type Backend struct {
 }

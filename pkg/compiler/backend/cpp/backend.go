@@ -1,8 +1,8 @@
 package cpp
 
 import (
-	backends "gitlab.com/strict-lang/sdk/pkg/compiler/backend"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	backends "github.com/strict-lang/sdk/pkg/compiler/backend"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 const BackendName = "c++"

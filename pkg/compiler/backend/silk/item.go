@@ -2,8 +2,8 @@ package silk
 
 import (
 	"errors"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
-	"gitlab.com/strict-lang/sdk/pkg/silk"
+	"github.com/strict-lang/sdk/pkg/compiler/typing"
+	"github.com/strict-lang/sdk/pkg/silk"
 )
 
 type Item struct {
