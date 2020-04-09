@@ -34,12 +34,12 @@ func executeOrFail(name string, options ...string) {
 }
 
 func selectExecutionPath() string {
-	if makeContext.sourceCodePath == "." {
+	if makeContext.executablePath == "." {
 		return findWorkingDirectory()
 	}
-	if strings.HasPrefix(makeContext.sourceCodePath, "./") {
-		fixedPath := strings.Replace(makeContext.sourceCodePath, "./", "", 1)
+	if strings.HasPrefix(makeContext.executablePath, "./") {
+		fixedPath := strings.Replace(makeContext.executablePath, "./", "", 1)
 		return path.Join(findWorkingDirectory(), fixedPath)
 	}
-	return makeContext.sourceCodePath
+	return makeContext.executablePath
 }
