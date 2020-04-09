@@ -28,6 +28,11 @@ install:
 
 jobs:
   include:
+    - os: linux
+      env:
+        - STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
+        - STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd
+        - STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd
     # Builds the executable binary and saves it to a location, where it is later accessed by
     # the bundle step. Platform and architecture are configured in the build matrix.
     - stage: build
@@ -37,19 +42,14 @@ jobs:
     # the Github releases. The $GITHUB_OAUTH_TOKEN has to be defined.
     - stage: bundle
       name: bundle
-      os: linux
-      env: 
-        - EXECUTABLE_PATH=./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict
-        - RESULT_FILE=sdk-$TRAVIS_BRANCH-$STRICT_PLATFORM-$STRICT_ARCHITECTURE.tar.gz
-        - RESULT_DIRECTORY=output/$TRAVIS_BRANCH/artifacts
-        - STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd
-        - STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd
       script:
+        - EXECUTABLE_PATH=./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict
+        - RESULT_DIRECTORY=output/$TRAVIS_BRANCH/artifacts
         - strict_sdk make -p $STRICT_PLATFORM -a $STRICT_ARCHITECTURE -b -o $RESULT_DIRECTORY -v $TRAVIS_BRANCH -e $EXECUTABLE_PATH
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
-        file: $RESULT_DIRECTORY/$RESULT_FILE
+        file: output/$TRAVIS_BRANCH/artifacts/sdk-$TRAVIS_BRANCH-$STRICT_PLATFORM-$STRICT_ARCHITECTURE.tar.gz
         on:
           tags: true
           all_branches: true
@@ -57,5 +57,3 @@ jobs:
     - stage: test
       name: test
       script: go test -v -cover ./...
-      os: linux
-      env: STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
