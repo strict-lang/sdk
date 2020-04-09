@@ -79,11 +79,11 @@ bundle-sdk:windows:
   stage: bundle-sdk
   extends: .bundle-sdk
   script:
-    - strict_sdk make -p windows -v ${CI_COMMIT_REF_SLUG} -b -o output -e ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
+    - strict_sdk make -p windows -v ${CI_COMMIT_REF_SLUG} -b -e ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
   artifacts:
     name: sdk-${CI_COMMIT_REF_SLUG}-windows-x86_64.tar.gz
     paths:
-      - output/sdk-${CI_COMMIT_REF_SLUG}-windows-x86_64.tar.gz
+      - sdk-${CI_COMMIT_REF_SLUG}-windows-x86_64.tar.gz
   dependencies:
     - build:windows
 
@@ -91,11 +91,11 @@ bundle-sdk:linux:
   stage: bundle-sdk
   extends: .bundle-sdk
   script:
-    - strict_sdk make -p linux -v ${CI_COMMIT_REF_SLUG} -b -o output -e ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
+    - strict_sdk make -p linux -v ${CI_COMMIT_REF_SLUG} -b -e ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
   artifacts:
     name: sdk-${CI_COMMIT_REF_SLUG}-linux-x86_64.tar.gz
     paths:
-      - output/sdk-${CI_COMMIT_REF_SLUG}-linux-x86_64.tar.gz
+      - sdk-${CI_COMMIT_REF_SLUG}-linux-x86_64.tar.gz
   dependencies:
     - build:linux
 
@@ -103,10 +103,10 @@ bundle-sdk:osx:
   stage: bundle-sdk
   extends: .bundle-sdk
   script:
-    - strict_sdk make -p osx -v ${CI_COMMIT_REF_SLUG} -b -o output -e ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
+    - strict_sdk make -p osx -v ${CI_COMMIT_REF_SLUG} -b -e ${CI_PROJECT_DIR}/${ARTIFACT_DIRECTORY}/${BINARY_NAME}
   artifacts:
     name: sdk-${CI_COMMIT_REF_SLUG}-osx-x86_64.tar.gz
     paths:
-      - output/sdk-${CI_COMMIT_REF_SLUG}-osx-x86_64.tar.gz
+      - sdk-${CI_COMMIT_REF_SLUG}-osx-x86_64.tar.gz
   dependencies:
     - build:osx

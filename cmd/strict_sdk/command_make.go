@@ -34,7 +34,7 @@ func init() {
 	flags.BoolVarP(&makeContext.bundle, "bundle", "b", false, "puts the created sdk into a gzipped tarball")
 	flags.StringVarP(&makeContext.architecture, "arch", "a", "x86_64", "architecture of the target platform")
 	flags.StringVarP(&makeContext.platform, "platform", "p", "linux", "target platform")
-	flags.StringVarP(&makeContext.resultOutputPath, "output", "o", ".", "output path of the created strict_sdk")
+	flags.StringVarP(&makeContext.resultOutputPath, "output", "o", "", "output path of the created strict_sdk")
 	flags.StringVarP(&makeContext.version, "version", "v", "undefined", "version of the created strict_sdk")
 	flags.StringVarP(&makeContext.executablePath, "executable", "e", ".", "path to the sdk executable")
 }
@@ -162,11 +162,11 @@ func (context *Make) ensureSuccess(file string, err error) {
 }
 
 func (context *Make) createPath(name string) string {
-	return path.Join(context.workOutputPath, name)
+	return path.Clean(path.Join(context.workOutputPath, name))
 }
 
 func (context *Make) createResultPath(name string) string {
-	return path.Join(context.resultOutputPath, name)
+	return path.Clean(path.Join(context.resultOutputPath, name))
 }
 
 func findWorkingDirectory() string {
