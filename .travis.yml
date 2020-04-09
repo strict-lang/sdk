@@ -42,7 +42,6 @@ jobs:
         - EXECUTABLE_PATH=./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict
         - RESULT_FILE=sdk-$TRAVIS_BRANCH-$STRICT_PLATFORM-$STRICT_ARCHITECTURE.tar.gz
         - RESULT_DIRECTORY=output/$TRAVIS_BRANCH/artifacts
-        - RESULT_PATH=$RESULT_DIRECTORY/$RESULT_FILE
         - STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd
         - STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd
       script:
@@ -50,7 +49,7 @@ jobs:
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
-        file: $RESULT_PATH
+        file: $RESULT_DIRECTORY/$RESULT_FILE
         on:
           tags: true
           all_branches: true
