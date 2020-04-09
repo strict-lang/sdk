@@ -1,7 +1,6 @@
 language: go
 
-go:
-  - 1.13.x
+go: [1.13.x]
 
 git:
   depth: 1
@@ -26,36 +25,50 @@ install:
   - go get -d -v all
   - go install ./cmd/strict_sdk
 
-os: 
-  - linux
+os: [linux]
 
-env: 
-  - STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd
-  - STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd
-  - STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd
+_build: &_build
+  stage: build
+  script: go build -o ./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict ./cmd/strict 
+
+_bundle: &_bundle
+  stage: bundle
+  script:
+    - EXECUTABLE_PATH=./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict
+    - RESULT_DIRECTORY=output/$TRAVIS_BRANCH/artifacts
+    - strict_sdk make -p $STRICT_PLATFORM -a $STRICT_ARCHITECTURE -b -o $RESULT_DIRECTORY -v $TRAVIS_BRANCH -e $EXECUTABLE_PATH
+  deploy:
+    provider: releases
+    api_key: $GITHUB_OAUTH_TOKEN
+    file: output/$TRAVIS_BRANCH/artifacts/sdk-$TRAVIS_BRANCH-$STRICT_PLATFORM-$STRICT_ARCHITECTURE.tar.gz
+    on:
+      tags: true
+      all_branches: true
 
 jobs:
   include:
     # Builds the executable binary and saves it to a location, where it is later accessed by
     # the bundle step. Platform and architecture are configured in the build matrix.
-    - stage: build
-      name: build
-      script: go build -o ./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict ./cmd/strict 
+    - name: build-osx
+      env: [STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd]
+      <<: *_build
+    - name: build-linux
+      env: [STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd]
+      <<: *_build
+    - name: build-windows
+      env: [STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd]
+      <<: *_build
     # Bundles a Strict SDK by using the executable built in the 'build' stage and deploys it to
     # the Github releases. The $GITHUB_OAUTH_TOKEN has to be defined.
-    - stage: bundle
-      name: bundle
-      script:
-        - EXECUTABLE_PATH=./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict
-        - RESULT_DIRECTORY=output/$TRAVIS_BRANCH/artifacts
-        - strict_sdk make -p $STRICT_PLATFORM -a $STRICT_ARCHITECTURE -b -o $RESULT_DIRECTORY -v $TRAVIS_BRANCH -e $EXECUTABLE_PATH
-      deploy:
-        provider: releases
-        api_key: $GITHUB_OAUTH_TOKEN
-        file: output/$TRAVIS_BRANCH/artifacts/sdk-$TRAVIS_BRANCH-$STRICT_PLATFORM-$STRICT_ARCHITECTURE.tar.gz
-        on:
-          tags: true
-          all_branches: true
+    - name: bundle-osx
+      env: [STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd]
+      <<: *_bundle
+    - name: bundle-linux
+      env: [STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd]
+      <<: *_bundle
+    - name: bundle-windows
+      env: [STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd]
+      <<: *_bundle
     # Runs all tests.
     - stage: test
       name: test
