@@ -41,9 +41,10 @@ func init() {
 
 func prepareOptions() {
 	makeContext.name = fmt.Sprintf("sdk-%s-%s-%s.tar.gz",
-		makeContext.version,
+		strings.ReplaceAll(makeContext.version, "/", "-"),
 		makeContext.platform,
 		makeContext.architecture)
+	
 	makeContext.resultOutputPath = path.Join(findWorkingDirectory(), fixPath(makeContext.resultOutputPath))
 	makeContext.workOutputPath = chooseWorkOutputPath()
 	makeContext.ensureDirectoryExists(makeContext.workOutputPath)
