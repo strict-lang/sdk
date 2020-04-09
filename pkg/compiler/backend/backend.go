@@ -1,9 +1,9 @@
 package backend
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
+	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/isolate"
 )
 
 type GeneratedFile struct {

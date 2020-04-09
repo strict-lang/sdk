@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"gitlab.com/strict-lang/sdk/pkg/compiler"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/report"
+	"github.com/strict-lang/sdk/pkg/compiler"
+	"github.com/strict-lang/sdk/pkg/compiler/backend"
+	"github.com/strict-lang/sdk/pkg/compiler/report"
 	"io/ioutil"
 	"log"
 	"os"

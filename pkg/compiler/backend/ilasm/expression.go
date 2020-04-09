@@ -1,10 +1,10 @@
 package ilasm
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/scope"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/typing"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/scope"
+	"github.com/strict-lang/sdk/pkg/compiler/typing"
 )
 
 func resolveClassOfExpression(expression tree.Expression) *Class {

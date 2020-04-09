@@ -2,11 +2,11 @@ package syntax
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty"
+	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty"
 	"strings"
 	"testing"
 )

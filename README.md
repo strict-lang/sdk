@@ -1,6 +1,7 @@
 <p align="center"><img src="docs/assets/banner.png" width="500"></p>
 
 # Strict Development Kit
+![Build Status](https://api.travis-ci.org/strict-lang/sdk.svg?branch=master)
 
 Strict is a statically typed multi-paradigm programming language that is
 compiled to SIR.

@@ -1,6 +1,6 @@
 package ilasm
 
-import backends "gitlab.com/strict-lang/sdk/pkg/compiler/backend"
+import backends "github.com/strict-lang/sdk/pkg/compiler/backend"
 
 const BackendName = "msil"
 

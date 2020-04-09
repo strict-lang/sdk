@@ -1,7 +1,7 @@
 package lexical
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
+	"github.com/strict-lang/sdk/pkg/compiler/input"
 	"strings"
 )
 

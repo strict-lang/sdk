@@ -1,6 +1,6 @@
 package tree
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/scope"
+import "github.com/strict-lang/sdk/pkg/compiler/scope"
 
 func ResolveNearestScope(node Node) (scope.Scope, bool) {
 	currentParent, _ := node.EnclosingNode()

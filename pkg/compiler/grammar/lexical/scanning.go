@@ -2,10 +2,10 @@ package lexical
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input/linemap"
+	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"github.com/strict-lang/sdk/pkg/compiler/input"
+	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 	"strings"
 )
 

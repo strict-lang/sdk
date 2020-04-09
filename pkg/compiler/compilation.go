@@ -2,15 +2,15 @@ package compiler
 
 import (
 	"fmt"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/backend"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/diagnostic"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/input"
-	isolates "gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/lowering"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/pass"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/report"
+	"github.com/strict-lang/sdk/pkg/compiler/backend"
+	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/input"
+	isolates "github.com/strict-lang/sdk/pkg/compiler/isolate"
+	"github.com/strict-lang/sdk/pkg/compiler/lowering"
+	"github.com/strict-lang/sdk/pkg/compiler/pass"
+	"github.com/strict-lang/sdk/pkg/compiler/report"
 	"time"
 )
 

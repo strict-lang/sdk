@@ -1,6 +1,6 @@
 package silk
 
-import "gitlab.com/strict-lang/sdk/pkg/compiler/typing"
+import "github.com/strict-lang/sdk/pkg/compiler/typing"
 
 type MethodContext struct {
 	OperandStack *VirtualOperandStack

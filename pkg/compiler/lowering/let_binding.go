@@ -1,11 +1,11 @@
 package lowering
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/analysis"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/isolate"
-	passes "gitlab.com/strict-lang/sdk/pkg/compiler/pass"
+	"github.com/strict-lang/sdk/pkg/compiler/analysis"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/isolate"
+	passes "github.com/strict-lang/sdk/pkg/compiler/pass"
 	"log"
 )
 

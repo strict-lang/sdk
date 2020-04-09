@@ -1,8 +1,8 @@
 package syntax
 
 import (
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/token"
-	"gitlab.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/token"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 )
 
 // parseInstructionStatement parses a statement that is not a structured-control flow
