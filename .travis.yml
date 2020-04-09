@@ -15,7 +15,6 @@ notifications:
 
 addons:
   apt:
-    update: true
 
 stages: [build, test, lint, bundle]
 
@@ -23,6 +22,7 @@ before_install:
   - sudo add-apt-repository -y ppa:longsleep/golang-backports
 
 install:
+  - sudo apt-get update
   - sudo apt-get install -y golang-1.14
   - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
   - go version
