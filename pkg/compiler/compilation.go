@@ -3,14 +3,20 @@ package compiler
 import (
 	"fmt"
 	"github.com/strict-lang/sdk/pkg/compiler/backend"
+	_ "github.com/strict-lang/sdk/pkg/compiler/backend/arduino"
+	_ "github.com/strict-lang/sdk/pkg/compiler/backend/cpp"
+	_ "github.com/strict-lang/sdk/pkg/compiler/backend/ilasm"
+	_ "github.com/strict-lang/sdk/pkg/compiler/backend/silk"
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/input"
+	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 	isolates "github.com/strict-lang/sdk/pkg/compiler/isolate"
 	"github.com/strict-lang/sdk/pkg/compiler/lowering"
 	"github.com/strict-lang/sdk/pkg/compiler/pass"
 	"github.com/strict-lang/sdk/pkg/compiler/report"
+	"log"
 	"time"
 )
 
@@ -29,6 +35,7 @@ type Result struct {
 	GeneratedFiles []backend.GeneratedFile
 	Report         report.Report
 	Error          error
+	LineMap *linemap.LineMap
 }
 
 type Generated struct {
@@ -104,7 +111,6 @@ func translateDiagnosticKind(kind *diagnostic.Kind) report.DiagnosticKind {
 	}
 }
 
-
 func (compilation *Compilation) Compile() Result {
 	compilation.beginTime = time.Now()
 	parseResult := compilation.parse()
@@ -115,14 +121,18 @@ func (compilation *Compilation) Compile() Result {
 			Report:         compilation.createReport(failure),
 			Error:          parseResult.Error,
 			UnitName:       compilation.Name,
+			LineMap:        parseResult.LineMap,
 		}
 	}
 	compilation.Lower(parseResult.TranslationUnit)
+	generatedFiles, err := compilation.generateOutput(parseResult.TranslationUnit)
+
 	return Result{
-		GeneratedFiles: compilation.generateOutput(parseResult.TranslationUnit),
+		GeneratedFiles: generatedFiles,
 		Report:         compilation.createReport(success),
-		Error:          nil,
+		Error:          err,
 		UnitName:       parseResult.TranslationUnit.Name,
+		LineMap: parseResult.LineMap,
 	}
 }
 
@@ -140,13 +150,16 @@ func (compilation *Compilation) parse() syntax.Result {
 }
 
 func (compilation *Compilation) generateOutput(
-	unit *tree.TranslationUnit) []backend.GeneratedFile {
+	unit *tree.TranslationUnit) ([]backend.GeneratedFile, error) {
 
-	output, _ := compilation.invokeBackend(backend.Input{
+	output, err := compilation.invokeBackend(backend.Input{
 		Unit:        unit,
 		Diagnostics: diagnostic.NewBag(),
 	})
-	return output.GeneratedFiles
+	if err != nil {
+		return nil, err
+	}
+	return output.GeneratedFiles, nil
 }
 
 func (compilation *Compilation) invokeBackend(
@@ -156,6 +169,7 @@ func (compilation *Compilation) invokeBackend(
 	backendId := compilation.Backend
 	chosenBackend, ok := backend.LookupInIsolate(isolate, backendId)
 	if ok {
+		log.Printf("compiling files with %s backend", backendId)
 		return chosenBackend.Generate(input)
 	}
 	return backend.Output{}, fmt.Errorf("no such backend: %s", backendId)

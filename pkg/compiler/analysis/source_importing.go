@@ -2,7 +2,6 @@ package analysis
 
 import (
 	"fmt"
-	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/input"
@@ -70,7 +69,6 @@ func (importing *SourceImporting) parseFile(name string) *tree.TranslationUnit {
 	defer file.Close()
 	result := syntax.Parse(name, input.NewStreamReader(file))
 	if result.Error != nil {
-		result.Diagnostics.PrintEntries(diagnostic.NewFmtPrinter())
 		importing.reportFailedParse(name, result.Error)
 		return nil
 	}

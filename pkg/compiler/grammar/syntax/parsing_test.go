@@ -70,11 +70,9 @@ func ExpectResult(
 	parsingFunction testParsingFunction) {
 
 	tokens := lexical.NewStringScanning(input)
-	parser, bag := NewTestParserAndDiagnosticBag(tokens)
+	parser, _ := NewTestParserAndDiagnosticBag(tokens)
 	defer func() {
 		if failure := recover(); failure != nil {
-			diagnostics := bag.CreateDiagnostics(tokens.NewLineMap().PositionAtOffset)
-			diagnostics.PrintEntries(diagnostic.NewFmtPrinter())
 			testing.Errorf("%s", failure)
 		}
 	}()

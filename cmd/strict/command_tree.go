@@ -33,7 +33,6 @@ func createUnitNameFromFileName(name string) string {
 
 func parseAndPrintAst(command *cobra.Command, sourceFile *os.File) {
 	parseResult := compiler.ParseFile(sourceFile.Name(), sourceFile)
-	parseResult.Diagnostics.PrintEntries(&cobraDiagnosticPrinter{command})
 	if parseResult.Error != nil {
 		return
 	}

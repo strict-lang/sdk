@@ -6,8 +6,8 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "github.com/strict-lang/sdk/pkg/compiler/pass"
 	"github.com/strict-lang/sdk/pkg/compiler/scope"
+	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -54,11 +54,15 @@ func (pass *ImportPass) importWorkingDirectory(scope scope.MutableScope) {
 	pass.importFiles(files, scope)
 }
 
-func (pass *ImportPass) shouldImportFile(name string) bool {
-	return !strings.HasSuffix(name, pass.currentFile+strictFileExtension)
+func (pass *ImportPass) shouldImportFile(info os.FileInfo) bool {
+	name := info.Name()
+	return strings.HasSuffix(name, pass.currentFile + strictFileExtension)
 }
 
-func filterFiles(files []string, filter func(string) bool) (filtered []string) {
+func filterFiles(
+	files []os.FileInfo,
+	filter func(info os.FileInfo) bool) (filtered []os.FileInfo) {
+
 	for _, file := range files {
 		if filter(file) {
 			filtered = append(filtered, file)
@@ -76,25 +80,28 @@ func (pass *ImportPass) importDirectory(directory string, scope scope.MutableSco
 	pass.importFiles(files, scope)
 }
 
-func (pass *ImportPass) importFiles(files []string, scope scope.MutableScope) {
-	importing := NewSourceImporting(files)
+func (pass *ImportPass) importFiles(files []os.FileInfo, scope scope.MutableScope) {
+	names := convertInfosToNames(files)
+	importing := NewSourceImporting(names)
 	if err := importing.Import(scope); err != nil {
 		pass.reportFailedImport(err)
 	}
 }
 
-func listFilesInDirectory(directory string) (files []string, err error) {
-	err = filepath.Walk(directory, func(path string, info os.FileInfo, walkErr error) error {
-		if walkErr == nil && isStrictFile(info) {
-			files = append(files, path)
-		}
-		return walkErr
-	})
-	return files, err
+func convertInfosToNames(infos []os.FileInfo) (names []string) {
+	for _, info := range infos {
+		names = append(names, info.Name())
+	}
+	return
+}
+
+func listFilesInDirectory(directory string) (files []os.FileInfo, err error) {
+	return ioutil.ReadDir(directory)
 }
 
 func listFilesInDirectoryFiltered(
-	directory string, filter func(string) bool) ([]string, error) {
+	directory string,
+	filter func(info os.FileInfo) bool) ([]os.FileInfo, error) {
 
 	files, err := listFilesInDirectory(directory)
 	if err != nil {

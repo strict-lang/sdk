@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/strict-lang/sdk/pkg/compiler"
 	"github.com/strict-lang/sdk/pkg/compiler/backend"
+	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 	"github.com/strict-lang/sdk/pkg/compiler/report"
 	"io/ioutil"
 	"log"
@@ -40,18 +41,18 @@ func disableLogging() {
 	}
 }
 
-var reportFormats = map[string] func(report.Report) report.Output {
+var reportFormats = map[string] func(report.Report, *linemap.LineMap) report.Output {
 	"text": report.NewRenderingOutput,
-	"json": func(input report.Report) report.Output {
+	"json": func(input report.Report, lineMap *linemap.LineMap) report.Output {
 		return report.NewSerializingOutput(report.NewJsonSerializationFormat(), input)
 	},
-	"pretty-json": func(input report.Report) report.Output {
+	"pretty-json": func(input report.Report, lineMap *linemap.LineMap) report.Output {
 		return report.NewSerializingOutput(report.NewPrettyJsonSerializationFormat(), input)
 	},
-	"xml": func(input report.Report) report.Output {
+	"xml": func(input report.Report, lineMap *linemap.LineMap) report.Output {
 		return report.NewSerializingOutput(report.NewXmlSerializationFormat(), input)
 	},
-	"pretty-xml": func(input report.Report) report.Output {
+	"pretty-xml": func(input report.Report, lineMap *linemap.LineMap) report.Output {
 		return report.NewSerializingOutput(report.NewPrettyXmlSerializationFormat(), input)
 	},
 }
@@ -69,47 +70,56 @@ func createFailedReport(beginTime time.Time) report.Report {
 
 func RunCompile(command *cobra.Command, arguments []string) error {
 	disableLogging()
-	compilationReport := compile(command, arguments)
-	output := createOutput(compilationReport)
+	compilationReport, lineMap := compile(command, arguments)
+	output := createOutput(compilationReport, lineMap)
 	return output.Print(command.OutOrStdout())
 }
 
-func createOutput(compilationReport report.Report) report.Output {
+func createOutput(
+	compilationReport report.Report,
+	lineMap *linemap.LineMap) report.Output {
+
 	if output, ok := reportFormats[buildOptions.reportFormat]; ok {
-		return output(compilationReport)
+		return output(compilationReport, lineMap)
 	}
-	return report.NewRenderingOutput(compilationReport)
+	return report.NewRenderingOutput(compilationReport, lineMap)
 }
 
-func compile(command *cobra.Command, arguments []string) report.Report {
+func compile(
+	command *cobra.Command, arguments []string) (report.Report, *linemap.LineMap) {
+
 	beginTime := time.Now()
 	file, ok := findSourceFileInArguments(command, arguments)
 	if !ok {
-		return createFailedReport(beginTime)
+		return createFailedReport(beginTime), linemap.Empty()
 	}
 	defer file.Close()
 	name, err := ParseUnitName(file.Name())
 	if err != nil {
 		command.Printf("Invalid filename: %s\n", file.Name())
-		return createFailedReport(beginTime)
+		return createFailedReport(beginTime), linemap.Empty()
 	}
 	return runCompilation(command, name, file)
 }
 
-func runCompilation(command *cobra.Command, unitName string, file *os.File) report.Report {
+func runCompilation(
+	command *cobra.Command,
+	unitName string,
+	file *os.File) (report.Report, *linemap.LineMap) {
+
 	compilation := &compiler.Compilation{
 		Name:    unitName,
 		Source:  &compiler.FileSource{File: file},
 	}
 	result := compilation.Compile()
 	if result.Error != nil {
-		return result.Report
+		return result.Report, result.LineMap
 	}
 	if err := writeGeneratedSources(result); err != nil {
 		command.PrintErrf("failed to write generated sources %v\n", err)
 		result.Report.Success = false
 	}
-	return result.Report
+	return result.Report, result.LineMap
 }
 
 func writeGeneratedSources(compilation compiler.Result) (err error) {

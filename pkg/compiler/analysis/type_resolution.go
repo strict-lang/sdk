@@ -167,7 +167,7 @@ func (pass *TypeResolution) resolveCalledMethod(
 }
 
 func (pass *TypeResolution) reportFailedInference(node tree.Node) {
-	panic("Failed to infer node")
+	// panic("Failed to infer node")
 }
 
 func isResolved(expression tree.Expression) bool {

@@ -82,3 +82,12 @@ func (lines *LineMap) LineAtIndex(lineIndex input.LineIndex) input.Line {
 func (lines *LineMap) LineCount() int {
 	return len(lines.lines)
 }
+
+func Empty() *LineMap {
+	return &LineMap{
+		lines:        []lineEntry{},
+		lineOffsets:  []input.Offset{},
+		recentOffset: 0,
+		recentLine:   0,
+	}
+}
