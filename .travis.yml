@@ -47,13 +47,13 @@ jobs:
     # Bundles a Strict SDK by using the executable built in the 'build' stage and deploys it to
     # the Github releases. The $GITHUB_OAUTH_TOKEN has to be defined.
     - name: bundle-osx
-      env: [STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 COMPILE_OS=darwin COMPILE_ARCH=amd]
+      env: [STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 COMPILE_OS=darwin COMPILE_ARCH=amd64]
       <<: *_bundle
     - name: bundle-linux
-      env: [STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 COMPILE_OS=windows COMPILE_ARCH=amd]
+      env: [STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 COMPILE_OS=windows COMPILE_ARCH=amd64]
       <<: *_bundle
     - name: bundle-windows
-      env: [STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 COMPILE_OS=linux COMPILE_ARCH=amd]
+      env: [STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 COMPILE_OS=linux COMPILE_ARCH=amd64]
       <<: *_bundle
     # Runs all tests.
     - stage: test
