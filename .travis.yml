@@ -30,7 +30,7 @@ _bundle: &_bundle
   stage: bundle
   script:
     - EXECUTABLE_PATH=./output/$TRAVIS_BRANCH/$STRICT_PLATFORM/$STRICT_ARCHITECTURE/strict
-    - go build -o $EXECUTABLE_PATH ./cmd/strict
+    - GOOS=$COMPILE_OS GOARCH=$COMPILE_ARCH go build -o $EXECUTABLE_PATH ./cmd/strict
     - RESULT_DIRECTORY=output/$TRAVIS_BRANCH/artifacts
     - strict_sdk make -p $STRICT_PLATFORM -a $STRICT_ARCHITECTURE -b -o $RESULT_DIRECTORY -v $TRAVIS_BRANCH -e $EXECUTABLE_PATH
   deploy:
@@ -47,13 +47,13 @@ jobs:
     # Bundles a Strict SDK by using the executable built in the 'build' stage and deploys it to
     # the Github releases. The $GITHUB_OAUTH_TOKEN has to be defined.
     - name: bundle-osx
-      env: [STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 GOOS=darwin GOARCH=amd]
+      env: [STRICT_PLATFORM=osx STRICT_ARCHITECTURE=x86_64 COMPILE_OS=darwin COMPILE_ARCH=amd]
       <<: *_bundle
     - name: bundle-linux
-      env: [STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 GOOS=windows GOARCH=amd]
+      env: [STRICT_PLATFORM=windows STRICT_ARCHITECTURE=x86_64 COMPILE_OS=windows COMPILE_ARCH=amd]
       <<: *_bundle
     - name: bundle-windows
-      env: [STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 GOOS=linux GOARCH=amd]
+      env: [STRICT_PLATFORM=linux STRICT_ARCHITECTURE=x86_64 COMPILE_OS=linux COMPILE_ARCH=amd]
       <<: *_bundle
     # Runs all tests.
     - stage: test
