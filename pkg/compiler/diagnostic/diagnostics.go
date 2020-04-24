@@ -12,12 +12,3 @@ func (diagnostics *Diagnostics) ListEntries() (values []Entry) {
 	}
 	return values
 }
-
-func (diagnostics *Diagnostics) PrintEntries(printer Printer) {
-	for _, entries := range diagnostics.entries {
-		for _, entry := range entries {
-			entry.PrintColored(printer)
-		}
-		printer.PrintLine("")
-	}
-}

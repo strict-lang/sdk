@@ -187,9 +187,19 @@ func (scanning *Scanning) completeCurrentLine() (token.Token, bool) {
 
 // saveCurrentLine saves the characters of the current line to the linemap.
 func (scanning *Scanning) saveCurrentLine() {
-	length := scanning.offset() - scanning.lineBeginOffset
-	text := scanning.lineBuffer.String()
+	text := scanning.fixCurrentLine()
+	length := input.Offset(len(text))
 	scanning.lineMapBuilder.Append(text, scanning.lineBeginOffset, length)
+}
+
+const invalidLineBegin = 255
+
+func (scanning *Scanning) fixCurrentLine() string {
+	text := scanning.lineBuffer.String()
+	if len(text) == 0 || text[0] != invalidLineBegin {
+		return text
+	}
+	return text[1:]
 }
 
 // resetLineStats clears the information of the last line.

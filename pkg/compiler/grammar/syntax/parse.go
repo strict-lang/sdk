@@ -5,12 +5,14 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/lexical"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/input"
+	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 )
 
 type Result struct {
 	Error           error
 	Diagnostics     *diagnostic.Diagnostics
 	TranslationUnit *tree.TranslationUnit
+	LineMap *linemap.LineMap
 }
 
 func Parse(name string, reader input.Reader) Result {
@@ -22,12 +24,14 @@ func Parse(name string, reader input.Reader) Result {
 		WithUnitName(name)
 
 	unit, err := parserFactory.NewParser().Parse()
-	offsetConverter := tokenReader.NewLineMap().PositionAtOffset
+	lineMap := tokenReader.NewLineMap()
+	offsetConverter := lineMap.PositionAtOffset
 	diagnostics := diagnosticBag.CreateDiagnostics(offsetConverter)
 	return Result{
 		Error:           err,
 		TranslationUnit: unit,
 		Diagnostics:     diagnostics,
+		LineMap: lineMap,
 	}
 }
 

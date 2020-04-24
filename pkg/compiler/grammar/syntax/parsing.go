@@ -174,7 +174,8 @@ func (parsing *Parsing) parseTopLevelDeclaration() tree.Statement {
 	if token.IsKeywordToken(current) {
 		return parsing.parseKeywordStatement(token.KeywordValue(current))
 	} else {
-		panic(newUnexpectedTokenError(current))
+		parsing.throwError(newUnexpectedTokenError(current))
+		return &tree.InvalidStatement{}
 	}
 }
 

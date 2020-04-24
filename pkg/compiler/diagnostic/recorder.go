@@ -29,6 +29,9 @@ func NewBag() *Bag {
 }
 
 func (recorder *Bag) Record(entry RecordedEntry) {
+	if entry.Message == "" {
+		entry.Message = entry.Error.Error.Name()
+	}
 	*recorder.entries = append(*recorder.entries, entry)
 }
 
