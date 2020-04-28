@@ -24,7 +24,12 @@ func Parse(name string, reader input.Reader) Result {
 		WithUnitName(name)
 
 	unit, err := parserFactory.NewParser().Parse()
-	lineMap := tokenReader.NewLineMap()
+	var lineMap *linemap.LineMap
+	if err != nil {
+		lineMap = tokenReader.NewLineMap()
+	} else {
+		lineMap = unit.LineMap
+	}
 	offsetConverter := lineMap.PositionAtOffset
 	diagnostics := diagnosticBag.CreateDiagnostics(offsetConverter)
 	return Result{

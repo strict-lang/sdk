@@ -2,6 +2,7 @@ package tree
 
 import (
 	"github.com/strict-lang/sdk/pkg/compiler/input"
+	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 	"github.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
@@ -12,6 +13,7 @@ type TranslationUnit struct {
 	Name    string
 	Imports []*ImportStatement
 	Class   *ClassDeclaration
+	LineMap *linemap.LineMap
 	Region  input.Region
 	scope   scope.Scope
 }

@@ -9,6 +9,7 @@ var builtinScope = NewOuterScopeWithRootId(builtinScopeId, emptyScope)
 var booleanType = createBooleanType()
 
 var Builtins = struct {
+	Any     *Class
 	Number  *Class
 	Float   *Class
 	Boolean *Class
@@ -20,6 +21,7 @@ var Builtins = struct {
 	Void:    createVoidType(),
 	Number:  createNumberType(),
 	Float:   createFloatType(),
+	Any:     createAnyType(),
 	Boolean: booleanType,
 	String:  createStringType(),
 	True:    createBuiltinField("True", booleanType),
@@ -34,6 +36,24 @@ func init() {
 	builtinScope.Insert(Builtins.True)
 	builtinScope.Insert(Builtins.False)
 	builtinScope.Insert(Builtins.Void)
+	builtinScope.Insert(Builtins.Any)
+}
+
+func createAnyType() *Class {
+	any := createPrimitiveClass("Any")
+	any.ActualClass = typing.NewEmptyClass("Any")
+	any.Scope = createAnyContents()
+	return any
+}
+
+func createAnyContents() MutableScope {
+	contents := NewOuterScope("Builtin.Any", emptyScope)
+	contents.Insert(&Method{
+		DeclarationName:   "CalculateHashCode",
+		declarationOffset: 0,
+		ReturnType:        booleanType,
+	})
+	return contents
 }
 
 func createVoidType() *Class {

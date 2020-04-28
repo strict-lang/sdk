@@ -113,12 +113,12 @@ func (printing *Printing) decreaseIndent() {
 
 func (printing *Printing) printFieldName(name string) {
 	if printing.colored {
-		coloredName := color.CyanString("\"%s\"", name)
-		coloredAssign := color.RedString(" = ")
+		coloredName := color.CyanString("%s", name)
+		coloredAssign := color.RedString(": ")
 		printing.print(coloredName + coloredAssign)
 		return
 	}
-	printing.printFormatted("\"%s\" = ", name)
+	printing.printFormatted("%s: ", name)
 }
 
 func (printing *Printing) printIndentedFieldName(name string) {

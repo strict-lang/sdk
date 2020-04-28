@@ -13,7 +13,7 @@ import (
 var notParsingMethod = parsedMethod{name: `!none`}
 
 type Parsing struct {
-	tokenReader     token.Stream
+	tokenReader     token.StreamWithLineMap
 	recorder        *diagnostic.Bag
 	block           *Block
 	unitName        string
@@ -48,6 +48,7 @@ func (parsing *Parsing) parseTranslationUnit() *tree.TranslationUnit {
 		Name:    parsing.unitName,
 		Imports: imports,
 		Class:   class,
+		LineMap: parsing.tokenReader.NewLineMap(),
 		Region:  parsing.completeStructure(tree.TranslationUnitNodeKind),
 	}
 }

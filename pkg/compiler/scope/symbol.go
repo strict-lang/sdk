@@ -39,6 +39,10 @@ type Class struct {
 	declarationOffset input.Offset
 }
 
+func (class *Class) ToTopLevelClassType() *Class {
+	return class
+}
+
 func (class *Class) Name() string {
 	return class.DeclarationName
 }
@@ -97,6 +101,15 @@ func (namespace *Namespace) DeclarationOffset() input.Offset {
 
 func (namespace *Namespace) String() string {
 	return fmt.Sprintf("Namespace{Name: %s}", namespace.PackageName)
+}
+
+func TopLevelMethodType() *Class {
+	return &Class{
+		Scope:             nil,
+		DeclarationName:   "",
+		ActualClass:       nil,
+		declarationOffset: 0,
+	}	
 }
 
 func AsMethodSymbol(symbol Symbol) (*Method, bool) {

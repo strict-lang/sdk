@@ -34,7 +34,7 @@ func (lowering *LetBindingLowering) Id() passes.Id {
 }
 
 func (lowering *LetBindingLowering) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, analysis.TypeResolutionPassId)
+	return passes.ListInIsolate(isolate, analysis.NameResolutionPassId)
 }
 
 func (lowering *LetBindingLowering) createExpressionTransformer() tree.ExpressionTransformer {

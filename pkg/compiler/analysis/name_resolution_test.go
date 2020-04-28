@@ -1,12 +1,13 @@
 package analysis
 
 import (
-	"fmt"
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty"
 	"github.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "github.com/strict-lang/sdk/pkg/compiler/pass"
+	"log"
 	"testing"
 )
 
@@ -21,9 +22,12 @@ method addPositive(left Number, right Number) returns Number
     return 0
   return add(left, right)
 
+method testing(any Any)
+  let hashCode = any.CalculateHashCode()
+
 `)
 	if result.Error != nil {
-		_ = fmt.Errorf("failed to parse unit: %v\n", result.Error)
+		log.Printf("failed to parse unit: %v\n", result.Error)
 	}
 	return result.TranslationUnit
 }
@@ -38,4 +42,5 @@ func TestNameResolutionPass(testing *testing.T) {
 	if err := execution.Run(); err != nil {
 		testing.Error(err)
 	}
+	pretty.Print(context.Unit)
 }
