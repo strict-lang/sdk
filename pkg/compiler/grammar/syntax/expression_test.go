@@ -11,8 +11,8 @@ func TestParseFieldSelectExpression(testing *testing.T) {
 		`strict.version`,
 		&tree.ChainExpression{
 			Expressions: []tree.Expression{
-				&tree.Identifier{Value: "version"},
 				&tree.Identifier{Value: "strict"},
+				&tree.Identifier{Value: "version"},
 			},
 		}, func(parsing *Parsing) tree.Node {
 			return parsing.parseExpression()
