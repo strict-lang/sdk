@@ -1,6 +1,7 @@
 package tree
 
 type ExpressionTransformer interface {
+	RewriteListExpression(*ListExpression) Expression
 	RewriteIdentifier(*Identifier) Expression
 	RewriteStringLiteral(*StringLiteral) Expression
 	RewriteNumberLiteral(*NumberLiteral) Expression
@@ -28,6 +29,7 @@ type DelegatingExpressionTransformer struct {
 	CallArgumentVisitor          func(node *CallArgument) Expression
 	CallExpressionVisitor        func(node *CallExpression) Expression
 	LetBindingVisitor            func(node *LetBinding) Expression
+	ListExpressionVisitor                  func(node *ListExpression) Expression
 }
 
 func NewDelegatingExpressionTransformer() *DelegatingExpressionTransformer {
@@ -68,6 +70,9 @@ func NewDelegatingExpressionTransformer() *DelegatingExpressionTransformer {
 		LetBindingVisitor: func(node *LetBinding) Expression {
 			return node
 		},
+		ListExpressionVisitor: func(node *ListExpression) Expression {
+			return node
+		},
 	}
 }
 
@@ -106,4 +111,7 @@ func (visitor *DelegatingExpressionTransformer) RewriteCallExpression(node *Call
 }
 func (visitor *DelegatingExpressionTransformer) RewriteLetBinding(node *LetBinding) Expression {
 	return visitor.LetBindingVisitor(node)
+}
+func (visitor *DelegatingExpressionTransformer) RewriteListExpression(node *ListExpression) Expression {
+	return visitor.ListExpressionVisitor(node)
 }

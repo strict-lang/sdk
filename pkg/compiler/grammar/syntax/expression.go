@@ -97,6 +97,8 @@ func (parsing *Parsing) parseFirstOperand() tree.Expression {
 	switch last := parsing.token(); {
 	case token.IsIdentifierToken(last):
 		return parsing.parseIdentifier()
+	case token.HasOperatorValue(last, token.LeftBracketOperator):
+		return parsing.parseListExpression()
 	case token.IsStringLiteralToken(last):
 		return parsing.parseStringLiteral()
 	case token.IsNumberLiteralToken(last):
@@ -256,6 +258,29 @@ func newEndOfListSelectError(received token.Token) *diagnostic.RichError {
 			"The index expression is invalid",
 		},
 	}
+}
+
+func (parsing *Parsing) parseListExpression() *tree.ListExpression {
+	parsing.beginStructure(tree.ListExpressionNodeKind)
+	parsing.skipOperator(token.LeftBracketOperator)
+	var expressions []tree.Expression
+	if !token.HasOperatorValue(parsing.token(), token.RightBracketOperator) {
+		expressions = parsing.parseCommaSeparatedExpressions()
+	}
+	parsing.skipOperator(token.RightBracketOperator)
+	return &tree.ListExpression{
+		Expressions: expressions,
+		Region:      parsing.completeStructure(tree.ListExpressionNodeKind),
+	}
+}
+
+func (parsing *Parsing) parseCommaSeparatedExpressions() []tree.Expression {
+	expressions := []tree.Expression{parsing.parseExpression()}
+	for token.HasOperatorValue(parsing.token(), token.CommaOperator) {
+		parsing.skipOperator(token.CommaOperator)
+		expressions = append(expressions, parsing.parseExpression())
+	}
+	return expressions
 }
 
 func (parsing *Parsing) parseChainExpression(firstElement tree.Expression) *tree.ChainExpression {

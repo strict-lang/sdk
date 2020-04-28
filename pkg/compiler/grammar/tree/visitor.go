@@ -16,12 +16,13 @@ type Visitor interface {
 	VisitTestStatement(*TestStatement)
 	VisitStringLiteral(*StringLiteral)
 	VisitNumberLiteral(*NumberLiteral)
+	VisitListExpression(*ListExpression)
 	VisitCallExpression(*CallExpression)
 	VisitEmptyStatement(*EmptyStatement)
 	VisitYieldStatement(*YieldStatement)
 	VisitBreakStatement(*BreakStatement)
 	VisitBlockStatement(*StatementBlock)
-	VisitWildcardNode(node *WildcardNode)
+	VisitWildcardNode(*WildcardNode)
 	VisitAssertStatement(*AssertStatement)
 	VisitUnaryExpression(*UnaryExpression)
 	VisitImportStatement(*ImportStatement)
@@ -57,6 +58,7 @@ type DelegatingVisitor struct {
 	TestStatementVisitor          func(*TestStatement)
 	StringLiteralVisitor          func(*StringLiteral)
 	NumberLiteralVisitor          func(*NumberLiteral)
+	ListExpressionVisitor         func(*ListExpression)
 	CallExpressionVisitor         func(*CallExpression)
 	EmptyStatementVisitor         func(*EmptyStatement)
 	WildcardNodeVisitor           func(*WildcardNode)
@@ -100,6 +102,7 @@ func NewEmptyVisitor() *DelegatingVisitor {
 		StringLiteralVisitor:          func(*StringLiteral) {},
 		NumberLiteralVisitor:          func(*NumberLiteral) {},
 		CallExpressionVisitor:         func(*CallExpression) {},
+		ListExpressionVisitor:         func(*ListExpression) {},
 		EmptyStatementVisitor:         func(*EmptyStatement) {},
 		YieldStatementVisitor:         func(*YieldStatement) {},
 		WildcardNodeVisitor:           func(*WildcardNode) {},
@@ -283,6 +286,10 @@ func (visitor *DelegatingVisitor) VisitImplementStatement(node *ImplementStateme
 	visitor.ImplementStatementVisitor(node)
 }
 
+func (visitor *DelegatingVisitor) VisitListExpression(expression *ListExpression) {
+	visitor.ListExpressionVisitor(expression)
+}
+
 type nodeReporter interface {
 	reportNodeEncounter(kind NodeKind)
 }
@@ -402,6 +409,9 @@ func NewReportingVisitor(reporter nodeReporter) Visitor {
 		},
 		ImplementStatementVisitor: func(*ImplementStatement) {
 			reporter.reportNodeEncounter(ImplementStatementNodeKind)
+		},
+		ListExpressionVisitor: func(*ListExpression) {
+			reporter.reportNodeEncounter(ListExpressionNodeKind)
 		},
 	}
 }
@@ -550,5 +560,9 @@ func (visitor *SingleFunctionVisitor) VisitFieldSelectExpression(node *ChainExpr
 	visitor.visit(node)
 }
 func (visitor *SingleFunctionVisitor) VisitConstructorDeclaration(node *ConstructorDeclaration) {
+	visitor.visit(node)
+}
+
+func (visitor *SingleFunctionVisitor) VisitListExpression(node *ListExpression) {
 	visitor.visit(node)
 }

@@ -55,6 +55,7 @@ func newPrinting() *Printing {
 		ListSelectExpressionVisitor:   printing.printListSelectExpression,
 		ConstructorDeclarationVisitor: printing.printConstructorDeclaration,
 		WildcardNodeVisitor:           printing.printWildcardNode,
+		ListExpressionVisitor:         printing.printListExpression,
 	}
 	printing.visitor = visitor
 	return printing
@@ -331,6 +332,16 @@ func (printing *Printing) printReturnStatement(statement *tree.ReturnStatement) 
 func (printing *Printing) printYieldStatement(statement *tree.YieldStatement) {
 	printing.printNodeBegin("YieldStatement")
 	printing.printIndentedNodeField("value", statement.Value)
+	printing.printNodeEnd()
+}
+
+func (printing *Printing) printListExpression(list *tree.ListExpression) {
+	printing.printNodeBegin("List")
+	printing.printIndentedListFieldBegin("children")
+	for _, child := range list.Expressions {
+		printing.printListField(child)
+	}
+	printing.printListFieldEnd()
 	printing.printNodeEnd()
 }
 

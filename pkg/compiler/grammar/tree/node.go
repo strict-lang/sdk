@@ -59,6 +59,7 @@ const (
 	ForEachLoopStatementNodeKind
 	RangedLoopStatementNodeKind
 	ImplementStatementNodeKind
+	ListExpressionNodeKind
 	GenericStatementNodeKind
 	statementKindEnd
 	declarationKindBegin

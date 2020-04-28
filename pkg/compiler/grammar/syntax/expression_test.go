@@ -19,6 +19,35 @@ func TestParseFieldSelectExpression(testing *testing.T) {
 		})
 }
 
+func TestParseListExpression(testing *testing.T) {
+	ExpectAllResults(testing,
+		[]ParserTestEntry{
+			{
+				Input: `[]`,
+				ExpectedOutput: &tree.ListExpression{},
+			},
+			{
+				Input: `[abc, a + b, a()]`,
+				ExpectedOutput: &tree.ListExpression{
+					Expressions: []tree.Expression{
+						&tree.Identifier{Value: `abc`},
+						&tree.BinaryExpression{
+							LeftOperand: &tree.Identifier{Value: `a`},
+							RightOperand: &tree.Identifier{Value: `b`},
+							Operator: token.AddOperator,
+						},
+						&tree.CallExpression{
+							Target: &tree.Identifier{Value: "a"},
+						},
+					},
+				},
+			},
+		},
+		func(parsing *Parsing) tree.Node {
+			return parsing.parseExpression()
+		})
+}
+
 func TestBinaryExpressions(testing *testing.T) {
 	ExpectAllResults(testing,
 		[]ParserTestEntry{
