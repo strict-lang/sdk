@@ -1,6 +1,7 @@
 package analysis
 
 import (
+	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/isolate"
@@ -143,28 +144,22 @@ func (pass *TypeResolution) resolveCallExpression(call *tree.CallExpression) {
 	if isResolved(call) {
 		return
 	}
-	if name, ok := pass.resolveCalledMethod(call.Target); ok && name.IsBound() {
-		if symbol, ok := scope.AsMethodSymbol(name.Binding()); ok {
+	if targetName, ok := call.TargetName(); ok && targetName.IsBound() {
+		if symbol, ok := scope.AsMethodSymbol(targetName.Binding()); ok {
 			call.ResolveType(symbol.ReturnType)
-			return
 		}
 	}
 	pass.reportFailedInference(call)
 }
 
-func (pass *TypeResolution) resolveCalledMethod(
-	target tree.Expression) (*tree.Identifier, bool) {
-
-	switch target.(type) {
-	case *tree.Identifier:
-		identifier, ok := target.(*tree.Identifier)
-		return identifier, ok
-	}
-	return nil, false
-}
-
 func (pass *TypeResolution) reportFailedInference(node tree.Node) {
-	// panic("Failed to infer node")
+	pass.context.Diagnostic.Record(diagnostic.RecordedEntry{
+		Kind:     &diagnostic.Error,
+		Stage:    &diagnostic.SemanticAnalysis,
+		Message:  "failed to resolve type",
+		UnitName: pass.context.Unit.Name,
+		Position: node.Locate(),
+	})
 }
 
 func isResolved(expression tree.Expression) bool {

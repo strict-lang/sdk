@@ -65,7 +65,7 @@ func (chain *ChainExpression) childrenMatch(target []Expression) bool {
 		return false
 	}
 	for index, expression := range target {
-		if !target[index].Matches(expression) {
+		if !chain.Expressions[index].Matches(expression) {
 			return false
 		}
 	}

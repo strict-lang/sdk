@@ -181,8 +181,8 @@ func (parsing *Parsing) expectEndOfLeftParenExpression() {
 func (parsing *Parsing) parseOperation() tree.Expression {
 	parsing.beginStructure(tree.UnknownNodeKind)
 	operand := parsing.parseFirstOperand()
-	operation := parsing.parseOperationsOnOperand(operand)
-	if parsing.isLookingAtOperator(token.DotOperator) {
+	operation := parsing.parseMultipleOperationsOnOperand(operand)
+	if token.HasOperatorValue(parsing.token(), token.DotOperator) {
 		return parsing.parseChainExpression(operation)
 	}
 	parsing.completeStructure(tree.UnknownNodeKind)
@@ -191,7 +191,7 @@ func (parsing *Parsing) parseOperation() tree.Expression {
 
 func (parsing *Parsing) parseOperationInChain() tree.Expression {
 	operand := parsing.parseChainedOperand()
-	return parsing.parseOperationsOnOperand(operand)
+	return parsing.parseMultipleOperationsOnOperand(operand)
 }
 
 func (parsing *Parsing) parseOperationOrAssign(node tree.Node) tree.Node {
@@ -201,7 +201,7 @@ func (parsing *Parsing) parseOperationOrAssign(node tree.Node) tree.Node {
 	return node
 }
 
-func (parsing *Parsing) parseOperationsOnOperand(operand tree.Expression) tree.Expression {
+func (parsing *Parsing) parseMultipleOperationsOnOperand(operand tree.Expression) tree.Expression {
 	for {
 		if node, done := parsing.parseOperationOnOperand(operand); !done {
 			operand = node
@@ -261,7 +261,7 @@ func newEndOfListSelectError(received token.Token) *diagnostic.RichError {
 func (parsing *Parsing) parseChainExpression(firstElement tree.Expression) *tree.ChainExpression {
 	parsing.updateTopStructureKind(tree.ChainExpressionNodeKind)
 	elements := []tree.Expression{firstElement}
-	for parsing.isLookingAtOperator(token.DotOperator) {
+	for token.HasOperatorValue(parsing.token(), token.DotOperator) {
 		parsing.skipOperator(token.DotOperator)
 		elements = append(elements, parsing.parseOperationInChain())
 	}
