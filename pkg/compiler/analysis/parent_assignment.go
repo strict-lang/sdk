@@ -147,9 +147,10 @@ func createAssignmentVisitor() tree.Visitor {
 			expression.Target.SetEnclosingNode(expression)
 			expression.Index.SetEnclosingNode(expression)
 		},
-		FieldSelectExpressionVisitor: func(expression *tree.FieldSelectExpression) {
-			expression.Target.SetEnclosingNode(expression)
-			expression.Selection.SetEnclosingNode(expression)
+		FieldSelectExpressionVisitor: func(expression *tree.ChainExpression) {
+			for _, child := range expression.Expressions {
+				child.SetEnclosingNode(expression)
+			}
 		},
 		ConstructorDeclarationVisitor: func(declaration *tree.ConstructorDeclaration) {
 			declaration.Body.SetEnclosingNode(declaration)

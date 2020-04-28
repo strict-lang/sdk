@@ -5,76 +5,79 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
-type FieldSelectExpression struct {
-	Target       StoredExpression
-	Selection    Expression
+type ChainExpression struct {
+	Expressions []Expression
 	Region       input.Region
 	Parent       Node
-	resolvedType resolvedType
 }
 
-func (expression *FieldSelectExpression) SetEnclosingNode(target Node) {
-	expression.Parent = target
+func (chain *ChainExpression) LastChild() Expression {
+	lastIndex := len(chain.Expressions) - 1
+	return chain.Expressions[lastIndex]
 }
 
-func (expression *FieldSelectExpression) EnclosingNode() (Node, bool) {
-	return expression.Parent, expression.Parent != nil
+func (chain *ChainExpression) FirstChild() Expression {
+	return chain.Expressions[0]
 }
 
-func (expression *FieldSelectExpression) ResolveType(class *scope.Class) {
-	expression.resolvedType.resolve(class)
+func (chain *ChainExpression) SetEnclosingNode(target Node) {
+	chain.Parent = target
 }
 
-func (expression *FieldSelectExpression) ResolvedType() (*scope.Class, bool) {
-	return expression.resolvedType.class()
+func (chain *ChainExpression) EnclosingNode() (Node, bool) {
+	return chain.Parent, chain.Parent != nil
 }
 
-func (expression *FieldSelectExpression) Accept(visitor Visitor) {
-	visitor.VisitFieldSelectExpression(expression)
+func (chain *ChainExpression) ResolveType(class *scope.Class) {
+	chain.LastChild().ResolveType(class)
+}
+
+func (chain *ChainExpression) ResolvedType() (*scope.Class, bool) {
+	return chain.LastChild().ResolvedType()
+}
+
+func (chain *ChainExpression) Accept(visitor Visitor) {
+	visitor.VisitFieldSelectExpression(chain)
 }
 
 // AcceptRecursive lets the visitor visit the expression and its children.
 // The expressions target is accepted prior to the selection.
-func (expression *FieldSelectExpression) AcceptRecursive(visitor Visitor) {
-	expression.Accept(visitor)
-	expression.Target.AcceptRecursive(visitor)
-	expression.Selection.AcceptRecursive(visitor)
+func (chain *ChainExpression) AcceptRecursive(visitor Visitor) {
+	chain.Accept(visitor)
+	for _, child := range chain.Expressions {
+		child.AcceptRecursive(visitor)
+	}
 }
 
-func (expression *FieldSelectExpression) Locate() input.Region {
-	return expression.Region
+func (chain *ChainExpression) Locate() input.Region {
+	return chain.Region
 }
 
-func (expression *FieldSelectExpression) Matches(node Node) bool {
-	if target, ok := node.(*FieldSelectExpression); ok {
-		return expression.Target.Matches(target.Target) &&
-			expression.Selection.Matches(target.Selection)
+func (chain *ChainExpression) Matches(node Node) bool {
+	if target, ok := node.(*ChainExpression); ok {
+		return chain.childrenMatch(target.Expressions)
 	}
 	return false
 }
 
-func (expression *FieldSelectExpression) FindLastIdentifier() (*Identifier, bool) {
-	switch expression.Selection.(type) {
-	case *Identifier:
-		identifier, ok := expression.Selection.(*Identifier)
-		return identifier, ok
-	case *FieldSelectExpression:
-		if next, ok := expression.Selection.(*FieldSelectExpression); ok {
-			return next.FindLastIdentifier()
+func (chain *ChainExpression) childrenMatch(target []Expression) bool {
+	if len(target) != len(chain.Expressions) {
+		return false
+	}
+	for index, expression := range target {
+		if !target[index].Matches(expression) {
+			return false
 		}
 	}
-	return nil, false
+	return true
 }
 
-func (expression *FieldSelectExpression) TransformExpressions(
-	transformer ExpressionTransformer) {
-
-	expression.Target = expression.Target.Transform(transformer)
-	expression.Selection = expression.Selection.Transform(transformer)
+func (chain *ChainExpression) TransformExpressions(transformer ExpressionTransformer) {
+	for index, expression := range chain.Expressions {
+		chain.Expressions[index] = expression.Transform(transformer)
+	}
 }
 
-func (expression *FieldSelectExpression) Transform(
-	transformer ExpressionTransformer) Expression {
-
-	return transformer.RewriteFieldSelectExpression(expression)
+func (chain *ChainExpression) Transform(transformer ExpressionTransformer) Expression {
+	return transformer.RewriteFieldSelectExpression(chain)
 }

@@ -44,7 +44,7 @@ type Visitor interface {
 	VisitForEachLoopStatement(*ForEachLoopStatement)
 	VisitConditionalStatement(*ConditionalStatement)
 	VisitListSelectExpression(*ListSelectExpression)
-	VisitFieldSelectExpression(*FieldSelectExpression)
+	VisitFieldSelectExpression(*ChainExpression)
 	VisitConstructorDeclaration(*ConstructorDeclaration)
 }
 
@@ -85,7 +85,7 @@ type DelegatingVisitor struct {
 	ForEachLoopStatementVisitor   func(*ForEachLoopStatement)
 	ConditionalStatementVisitor   func(*ConditionalStatement)
 	ListSelectExpressionVisitor   func(*ListSelectExpression)
-	FieldSelectExpressionVisitor  func(*FieldSelectExpression)
+	FieldSelectExpressionVisitor  func(*ChainExpression)
 	ConstructorDeclarationVisitor func(*ConstructorDeclaration)
 }
 
@@ -125,7 +125,7 @@ func NewEmptyVisitor() *DelegatingVisitor {
 		ForEachLoopStatementVisitor:   func(*ForEachLoopStatement) {},
 		ConditionalStatementVisitor:   func(*ConditionalStatement) {},
 		ListSelectExpressionVisitor:   func(*ListSelectExpression) {},
-		FieldSelectExpressionVisitor:  func(*FieldSelectExpression) {},
+		FieldSelectExpressionVisitor:  func(*ChainExpression) {},
 		ImplementStatementVisitor:     func(*ImplementStatement) {},
 		OptionalTypeNameVisitor:       func(*OptionalTypeName) {},
 		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {},
@@ -251,7 +251,7 @@ func (visitor *DelegatingVisitor) VisitConditionalStatement(node *ConditionalSta
 	visitor.ConditionalStatementVisitor(node)
 }
 
-func (visitor *DelegatingVisitor) VisitFieldSelectExpression(node *FieldSelectExpression) {
+func (visitor *DelegatingVisitor) VisitFieldSelectExpression(node *ChainExpression) {
 	visitor.FieldSelectExpressionVisitor(node)
 }
 
@@ -385,8 +385,8 @@ func NewReportingVisitor(reporter nodeReporter) Visitor {
 		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {
 			reporter.reportNodeEncounter(ConstructorDeclarationNodeKind)
 		},
-		FieldSelectExpressionVisitor: func(*FieldSelectExpression) {
-			reporter.reportNodeEncounter(FieldSelectExpressionNodeKind)
+		FieldSelectExpressionVisitor: func(*ChainExpression) {
+			reporter.reportNodeEncounter(ChainExpressionNodeKind)
 		},
 		PostfixExpressionVisitor: func(*PostfixExpression) {
 			reporter.reportNodeEncounter(PostfixExpressionNodeKind)
@@ -546,7 +546,7 @@ func (visitor *SingleFunctionVisitor) VisitConditionalStatement(node *Conditiona
 func (visitor *SingleFunctionVisitor) VisitListSelectExpression(node *ListSelectExpression) {
 	visitor.visit(node)
 }
-func (visitor *SingleFunctionVisitor) VisitFieldSelectExpression(node *FieldSelectExpression) {
+func (visitor *SingleFunctionVisitor) VisitFieldSelectExpression(node *ChainExpression) {
 	visitor.visit(node)
 }
 func (visitor *SingleFunctionVisitor) VisitConstructorDeclaration(node *ConstructorDeclaration) {

@@ -428,10 +428,13 @@ func (printing *Printing) printPostfixExpression(statement *tree.PostfixExpressi
 	printing.printNodeEnd()
 }
 
-func (printing *Printing) printFieldSelectExpression(expression *tree.FieldSelectExpression) {
-	printing.printNodeBegin("Select")
-	printing.printIndentedNodeField("target", expression.Target)
-	printing.printIndentedNodeField("selection", expression.Selection)
+func (printing *Printing) printFieldSelectExpression(expression *tree.ChainExpression) {
+	printing.printNodeBegin("Chain")
+	printing.printIndentedListFieldBegin("Expressions")
+	for _, expression := range expression.Expressions {
+		printing.printListField(expression)
+	}
+	printing.printListFieldEnd()
 	printing.printResolvedType(expression)
 	printing.printNodeEnd()
 }

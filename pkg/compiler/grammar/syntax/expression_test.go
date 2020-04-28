@@ -9,9 +9,11 @@ import (
 func TestParseFieldSelectExpression(testing *testing.T) {
 	ExpectResult(testing,
 		`strict.version`,
-		&tree.FieldSelectExpression{
-			Target:    &tree.Identifier{Value: "strict"},
-			Selection: &tree.Identifier{Value: "version"},
+		&tree.ChainExpression{
+			Expressions: []tree.Expression{
+				&tree.Identifier{Value: "version"},
+				&tree.Identifier{Value: "strict"},
+			},
 		}, func(parsing *Parsing) tree.Node {
 			return parsing.parseExpression()
 		})
@@ -133,13 +135,60 @@ func TestParsing_ParseCallExpression(testing *testing.T) {
 	ExpectAllResults(testing,
 		[]ParserTestEntry{
 			{
-				Input: `Chain().Call()`,
-				ExpectedOutput: &tree.CallExpression{
-					Target: &tree.FieldSelectExpression{
-						Target: &tree.CallExpression{
-							Target: &tree.Identifier{Value: `Chain`},
+				Input: `"text".Length()`,
+				ExpectedOutput: &tree.ChainExpression{
+					Expressions: []tree.Expression{
+						&tree.StringLiteral{Value: "text"},
+						&tree.CallExpression{
+							Target: &tree.Identifier{Value: "Length"},
 						},
-						Selection: &tree.Identifier{Value: `Call`},
+					},
+				},
+			},
+			{
+				Input: `"text".Length.ToString()`,
+				ExpectedOutput: &tree.ChainExpression{
+					Expressions: []tree.Expression{
+						&tree.StringLiteral{Value: "text"},
+						&tree.Identifier{Value: "Length"},
+						&tree.CallExpression{
+							Target: &tree.Identifier{Value: "ToString"},
+						},
+					},
+				},
+			},
+			{
+				Input: `a.b.c`,
+				ExpectedOutput: &tree.ChainExpression{
+					Expressions: []tree.Expression{
+						&tree.Identifier{Value: "a"},
+						&tree.Identifier{Value: "b"},
+						&tree.Identifier{Value: "c"},
+					},
+				},
+			},
+			{
+				Input: `a.b().c`,
+				ExpectedOutput: &tree.ChainExpression{
+					Expressions: []tree.Expression{
+						&tree.Identifier{Value: "a"},
+						&tree.CallExpression{
+							Target: &tree.Identifier{Value: "b"},
+						},
+						&tree.Identifier{Value: "c"},
+					},
+				},
+			},
+			{
+				Input: `Chain().Call()`,
+				ExpectedOutput: &tree.ChainExpression{
+					Expressions: []tree.Expression{
+						&tree.CallExpression{
+							Target: &tree.Identifier{Value: "Chain"},
+						},
+						&tree.CallExpression{
+							Target: &tree.Identifier{Value: "Call"},
+						},
 					},
 				},
 			},

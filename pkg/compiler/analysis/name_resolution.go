@@ -58,7 +58,7 @@ func (pass *NameResolutionPass) reportUnknownIdentifier(
 }
 
 func (pass *NameResolutionPass) visitFieldSelect(
-	expression *tree.FieldSelectExpression) {
+	expression *tree.ChainExpression) {
 
 	chainResolution := &chainResolution{
 		currentScope: requireNearestScope(expression),

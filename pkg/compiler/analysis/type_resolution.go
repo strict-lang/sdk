@@ -156,9 +156,6 @@ func (pass *TypeResolution) resolveCalledMethod(
 	target tree.Expression) (*tree.Identifier, bool) {
 
 	switch target.(type) {
-	case *tree.FieldSelectExpression:
-		field, _ := target.(*tree.FieldSelectExpression)
-		return field.FindLastIdentifier()
 	case *tree.Identifier:
 		identifier, ok := target.(*tree.Identifier)
 		return identifier, ok

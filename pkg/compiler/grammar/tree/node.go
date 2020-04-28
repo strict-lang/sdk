@@ -33,7 +33,7 @@ const (
 	IdentifierNodeKind
 	StringLiteralNodeKind
 	NumberLiteralNodeKind
-	FieldSelectExpressionNodeKind
+	ChainExpressionNodeKind
 	ListSelectExpressionNodeKind
 	BinaryExpressionNodeKind
 	UnaryExpressionNodeKind
@@ -80,21 +80,21 @@ const (
 )
 
 var nodeKindNames = map[NodeKind]string{
-	UnknownNodeKind:                "Unknown",
-	IdentifierNodeKind:             "Identifier",
-	StringLiteralNodeKind:          "StringLiteral",
-	NumberLiteralNodeKind:          "NumberLiteral",
-	FieldSelectExpressionNodeKind:  "FieldSelectExpression",
-	ListSelectExpressionNodeKind:   "ListSelectExpression",
-	BinaryExpressionNodeKind:       "BinaryExpression",
-	UnaryExpressionNodeKind:        "UnaryExpression",
-	PostfixExpressionNodeKind:      "PostfixExpression",
-	CreateExpressionNodeKind:       "CreateExpression",
-	CallArgumentNodeKind:           "CallArgument",
-	CallExpressionNodeKind:         "CallExpression",
-	ConditionalStatementNodeKind:   "ConditionalStatement",
-	InvalidStatementNodeKind:       "InvalidStatement",
-	YieldStatementNodeKind:         "YieldStatement",
+	UnknownNodeKind:              "Unknown",
+	IdentifierNodeKind:           "Identifier",
+	StringLiteralNodeKind:        "StringLiteral",
+	NumberLiteralNodeKind:        "NumberLiteral",
+	ChainExpressionNodeKind:      "ChainExpression",
+	ListSelectExpressionNodeKind: "ListSelectExpression",
+	BinaryExpressionNodeKind:     "BinaryExpression",
+	UnaryExpressionNodeKind:      "UnaryExpression",
+	PostfixExpressionNodeKind:    "PostfixExpression",
+	CreateExpressionNodeKind:     "CreateExpression",
+	CallArgumentNodeKind:         "CallArgument",
+	CallExpressionNodeKind:       "CallExpression",
+	ConditionalStatementNodeKind: "ConditionalStatement",
+	InvalidStatementNodeKind:     "InvalidStatement",
+	YieldStatementNodeKind:       "YieldStatement",
 	StatementBlockNodeKind:         "StatementBlock",
 	AssertStatementNodeKind:        "AssertStatement",
 	ReturnStatementNodeKind:        "ReturnStatement",

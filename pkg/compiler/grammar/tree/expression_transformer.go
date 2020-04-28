@@ -4,7 +4,7 @@ type ExpressionTransformer interface {
 	RewriteIdentifier(*Identifier) Expression
 	RewriteStringLiteral(*StringLiteral) Expression
 	RewriteNumberLiteral(*NumberLiteral) Expression
-	RewriteFieldSelectExpression(*FieldSelectExpression) Expression
+	RewriteFieldSelectExpression(*ChainExpression) Expression
 	RewriteListSelectExpression(*ListSelectExpression) Expression
 	RewriteBinaryExpression(*BinaryExpression) Expression
 	RewriteUnaryExpression(*UnaryExpression) Expression
@@ -19,7 +19,7 @@ type DelegatingExpressionTransformer struct {
 	IdentifierVisitor            func(node *Identifier) Expression
 	StringLiteralVisitor         func(node *StringLiteral) Expression
 	NumberLiteralVisitor         func(node *NumberLiteral) Expression
-	FieldSelectExpressionVisitor func(node *FieldSelectExpression) Expression
+	FieldSelectExpressionVisitor func(node *ChainExpression) Expression
 	ListSelectExpressionVisitor  func(node *ListSelectExpression) Expression
 	BinaryExpressionVisitor      func(node *BinaryExpression) Expression
 	UnaryExpressionVisitor       func(node *UnaryExpression) Expression
@@ -41,7 +41,7 @@ func NewDelegatingExpressionTransformer() *DelegatingExpressionTransformer {
 		NumberLiteralVisitor: func(node *NumberLiteral) Expression {
 			return node
 		},
-		FieldSelectExpressionVisitor: func(node *FieldSelectExpression) Expression {
+		FieldSelectExpressionVisitor: func(node *ChainExpression) Expression {
 			return node
 		},
 		ListSelectExpressionVisitor: func(node *ListSelectExpression) Expression {
@@ -80,7 +80,7 @@ func (visitor *DelegatingExpressionTransformer) RewriteStringLiteral(node *Strin
 func (visitor *DelegatingExpressionTransformer) RewriteNumberLiteral(node *NumberLiteral) Expression {
 	return visitor.NumberLiteralVisitor(node)
 }
-func (visitor *DelegatingExpressionTransformer) RewriteFieldSelectExpression(node *FieldSelectExpression) Expression {
+func (visitor *DelegatingExpressionTransformer) RewriteFieldSelectExpression(node *ChainExpression) Expression {
 	return visitor.FieldSelectExpressionVisitor(node)
 }
 func (visitor *DelegatingExpressionTransformer) RewriteListSelectExpression(node *ListSelectExpression) Expression {

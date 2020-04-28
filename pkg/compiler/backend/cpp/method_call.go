@@ -20,21 +20,7 @@ func visitMethodName(node tree.Node, visitor identifierVisitor) bool {
 		visitor(identifier)
 		return true
 	}
-	if selection, isSelection := node.(*tree.FieldSelectExpression); isSelection {
-		last, ok := findLastSelection(selection)
-		if !ok {
-			return false
-		}
-		return visitMethodName(last, visitor)
-	}
 	return false
-}
-
-func findLastSelection(expression *tree.FieldSelectExpression) (node tree.Node, ok bool) {
-	if next, ok := expression.Selection.(*tree.FieldSelectExpression); ok {
-		return findLastSelection(next)
-	}
-	return expression.Selection, true
 }
 
 func renameBuiltinMethodName(identifier *tree.Identifier) {
@@ -112,12 +98,14 @@ func (generation *Generation) generateLabeledConstructorCallLambdaBody(
 
 func (generation *Generation) emitFieldInitializationForLabeledArgument(argument *tree.CallArgument) {
 	generation.EmitNode(&tree.AssignStatement{
-		Target: &tree.FieldSelectExpression{
-			Target: &tree.Identifier{
-				Value: constructedFieldName,
-			},
-			Selection: &tree.Identifier{
-				Value: argument.Label,
+		Target: &tree.ChainExpression{
+			Expressions: []tree.Expression{
+				&tree.Identifier{
+					Value: constructedFieldName,
+				},
+				&tree.Identifier{
+					Value: argument.Label,
+				},
 			},
 		},
 		Value:    argument.Value,
