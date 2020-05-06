@@ -32,7 +32,7 @@ type ClassArgument struct {
 }
 
 type TypeParameter struct {
-	Class *Class
+	Class ClassName
 	Wildcard bool
 }
 
@@ -58,16 +58,16 @@ func (class *Class) FindField(name string) (Field, bool) {
 type Method struct {
 	Name string
 	Parameters []Parameter
-	ReturnType *ClassName
+	ReturnType ClassName
 }
 
 type Parameter struct {
 	Name string
 	Label string
-	Class *ClassName
+	Class ClassName
 }
 
 type Field struct {
 	Name string
-	Class *ClassName
+	Class ClassName
 }

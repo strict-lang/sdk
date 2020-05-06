@@ -62,11 +62,16 @@ func (encoding *encoding) beginClass() {
 	_, _ = encoding.output.WriteRune(classBeginKey)
 }
 
-const itemSeparator = ';'
+const itemSeparator = '.'
+const classItemSeparator = ';'
 const classSeparator = '\n'
 
 func (encoding *encoding) completeItem() {
 	_, _ = encoding.output.WriteRune(itemSeparator)
+}
+
+func (encoding *encoding) completeClassItem() {
+	_, _ = encoding.output.WriteRune(classItemSeparator)
 }
 
 func (encoding *encoding) completeClass() {
@@ -109,6 +114,8 @@ func (class *Class) encodeItems(encoding *encoding) {
 func (class *Class) maybeEncodeParameters(encoding *encoding) {
 	if len(class.Parameters) != 0 {
 		class.encodeParameters(encoding)
+		encoding.completeItem()
+	} else {
 		encoding.completeItem()
 	}
 }
@@ -156,7 +163,7 @@ func (method *Method) encode(encoding *encoding) {
 		encoding.completeItem()
 	}
 	method.ReturnType.encode(encoding)
-	encoding.completeItem()
+	encoding.completeClassItem()
 }
 
 func (parameter *Parameter) encode(encoding *encoding) {
@@ -177,5 +184,5 @@ func (field *Field) encode(encoding *encoding) {
 	encoding.writeSymbol(field.Name)
 	encoding.completeItem()
 	field.Class.encode(encoding)
-	encoding.completeItem()
+	encoding.completeClassItem()
 }

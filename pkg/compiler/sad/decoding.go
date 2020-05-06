@@ -1,16 +1,130 @@
 package sad
 
+import "log"
+
 type decoding struct {
 	input []rune
 	offset int
 }
 
 func (decoding *decoding) decode() {
-
 }
 
 func (decoding *decoding) decodeMethod() Method {
-	return Method{}
+	name := decoding.readIdentifier()
+	decoding.skip('.')
+	parameters := decoding.decodeParameterList()
+	decoding.skip('.')
+	returnType := decoding.decodeClassName()
+	return Method{
+		Name: name,
+		Parameters: parameters,
+		ReturnType: returnType,
+	}
+}
+
+func (decoding *decoding) decodeField() Field {
+	name := decoding.readIdentifier()
+	decoding.skip('.')
+	className := decoding.decodeClassName()
+	return Field{
+		Name:  name,
+		Class: className,
+	}
+}
+
+func (decoding *decoding) decodeClass() Class {
+	name := decoding.readIdentifier()
+	methods, fields := decoding.decodeMappedClassItems()
+	return Class{
+		Kind:       0,
+		Traits:     nil,
+		Name:       name,
+		Parameters: nil,
+		Methods: methods,
+		Fields: fields,
+	}
+}
+
+func (decoding *decoding) decodeParameters() []Parameter {
+	if decoding.isLookingAt(itemSeparator) {
+		decoding.offset++
+		return []Parameter{}
+	}
+	parameters := []Parameter{decoding.decodeParameter()}
+	for decoding.isLookingAt(itemSeparator) {
+		decoding.offset++
+		parameters = append(parameters, decoding.decodeParameter())
+	}
+	return parameters
+}
+
+func (decoding *decoding) decodeTraits() []ClassName {
+	if decoding.isLookingAt(itemSeparator) {
+		decoding.offset++
+		return []ClassName{}
+	}
+	traits := []ClassName{decoding.decodeClassName()}
+	for decoding.isLookingAt(itemSeparator) {
+		decoding.offset++
+		traits = append(traits, decoding.decodeClassName())
+	}
+	return traits
+}
+
+func (decoding *decoding) decodeMappedClassItems() (map[string] Method, map[string] Field) {
+	methods := map[string] Method{}
+	fields := map[string] Field{}
+	for _, item := range decoding.decodeClassItems() {
+		if method, isMethod := item.(Method); isMethod{
+			methods[method.Name] = method
+		}
+		if field, isField := item.(Field); isField {
+			fields[field.Name] = field
+		}
+	}
+	return methods, fields
+}
+
+func (decoding *decoding) decodeClassItems() []interface{} {
+	if decoding.isLookingAt(classSeparator) {
+		return []interface{}{}
+	}
+	items := []interface{}{decoding.decodeClassItem()}
+	for decoding.isLookingAt(itemSeparator) {
+		decoding.skip(itemSeparator)
+		if decoding.isLookingAt(classSeparator) {
+			break
+		}
+		items = append(items, decoding.decodeClassItem())
+	}
+	return items
+}
+
+func (decoding *decoding) decodeClassItem() interface{} {
+	if decoding.isLookingAt(methodBeginKey) {
+		return decoding.decodeMethod()
+	}
+	if decoding.isLookingAt(fieldBeginKey) {
+		return decoding.decodeField()
+	}
+	log.Printf("invalid item specifier: '%c'", decoding.current())
+	return nil
+}
+
+func (decoding *decoding) skip(value rune) {
+	if !decoding.isLookingAt(value) {
+		log.Printf("could not skip '%c'", value)
+	}
+	decoding.offset++
+}
+
+func (decoding *decoding) decodeClassName() ClassName {
+	return ClassName{}
+}
+
+func (decoding *decoding) decodeParameterList() []Parameter {
+	return nil
 }
 
 const parameterWithoutLabelIdentifierCount = 2
