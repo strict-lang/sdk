@@ -12,27 +12,27 @@ type Node interface {
 }
 
 type Class struct {
-	Kind    TypeKind
-	Traits  []ClassName
-	Name string
+	Kind       TypeKind
+	Traits     []ClassName
+	Name       string
 	Parameters []TypeParameter
-	Methods map[string] Method
-	Fields  map[string] Field
+	Methods    map[string]Method
+	Fields     map[string]Field
 }
 
 type ClassName struct {
-	Name string
-	Wildcard bool
+	Name      string
+	Wildcard  bool
 	Arguments []ClassName
 }
 
 type ClassArgument struct {
-	Class ClassName
+	Class    ClassName
 	Wildcard bool
 }
 
 type TypeParameter struct {
-	Class ClassName
+	Class    ClassName
 	Wildcard bool
 }
 
@@ -56,18 +56,18 @@ func (class *Class) FindField(name string) (Field, bool) {
 }
 
 type Method struct {
-	Name string
+	Name       string
 	Parameters []Parameter
 	ReturnType ClassName
 }
 
 type Parameter struct {
-	Name string
+	Name  string
 	Label string
 	Class ClassName
 }
 
 type Field struct {
-	Name string
+	Name  string
 	Class ClassName
 }

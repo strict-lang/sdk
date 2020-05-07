@@ -29,7 +29,7 @@ type DelegatingExpressionTransformer struct {
 	CallArgumentVisitor          func(node *CallArgument) Expression
 	CallExpressionVisitor        func(node *CallExpression) Expression
 	LetBindingVisitor            func(node *LetBinding) Expression
-	ListExpressionVisitor                  func(node *ListExpression) Expression
+	ListExpressionVisitor        func(node *ListExpression) Expression
 }
 
 func NewDelegatingExpressionTransformer() *DelegatingExpressionTransformer {

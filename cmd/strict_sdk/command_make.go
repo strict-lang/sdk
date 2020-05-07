@@ -44,7 +44,7 @@ func prepareOptions() {
 		strings.ReplaceAll(makeContext.version, "/", "-"),
 		makeContext.platform,
 		makeContext.architecture)
-	
+
 	makeContext.resultOutputPath = path.Join(findWorkingDirectory(), fixPath(makeContext.resultOutputPath))
 	makeContext.workOutputPath = chooseWorkOutputPath()
 	makeContext.ensureDirectoryExists(makeContext.workOutputPath)

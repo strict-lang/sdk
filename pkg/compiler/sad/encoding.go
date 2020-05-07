@@ -7,7 +7,7 @@ import (
 
 type symbolTable struct {
 	count int
-	table map[string] int
+	table map[string]int
 }
 
 func (symbols *symbolTable) register(name string) int {
@@ -22,7 +22,7 @@ func (symbols *symbolTable) register(name string) int {
 
 type encoding struct {
 	symbols symbolTable
-	output *bufio.Writer
+	output  *bufio.Writer
 }
 
 func (encoding *encoding) writeSymbol(name string) {
@@ -43,23 +43,39 @@ const classParameterListBegin = '<'
 const classParameterListEnd = '>'
 
 func (encoding *encoding) beginMethod() {
-	_, _ = encoding.output.WriteRune(methodBeginKey)
+	encoding.writeRune(methodBeginKey)
 }
 
 func (encoding *encoding) beginClassParameterList() {
-	_, _ = encoding.output.WriteRune(classParameterListBegin)
+	encoding.writeRune(classParameterListBegin)
 }
 
 func (encoding *encoding) endClassParameterList() {
-	_, _ = encoding.output.WriteRune(classParameterListEnd)
+	encoding.writeRune(classParameterListEnd)
 }
 
 func (encoding *encoding) beginField() {
-	_, _ = encoding.output.WriteRune(fieldBeginKey)
+	encoding.writeRune(fieldBeginKey)
 }
 
 func (encoding *encoding) beginClass() {
-	_, _ = encoding.output.WriteRune(classBeginKey)
+	encoding.writeRune(classBeginKey)
+}
+
+const parameterListBegin = '('
+const parameterListEnd = ')'
+const parameterSeparator = ','
+
+func (encoding *encoding) completeParameter() {
+	encoding.writeRune(parameterSeparator)
+}
+
+func (encoding *encoding) beginParameterList() {
+	encoding.writeRune(parameterListBegin)
+}
+
+func (encoding *encoding) endParameterList() {
+	encoding.writeRune(parameterListEnd)
 }
 
 const itemSeparator = '.'
@@ -67,15 +83,15 @@ const classItemSeparator = ';'
 const classSeparator = '\n'
 
 func (encoding *encoding) completeItem() {
-	_, _ = encoding.output.WriteRune(itemSeparator)
+	encoding.writeRune(itemSeparator)
 }
 
 func (encoding *encoding) completeClassItem() {
-	_, _ = encoding.output.WriteRune(classItemSeparator)
+	encoding.writeRune(classItemSeparator)
 }
 
 func (encoding *encoding) completeClass() {
-	_, _ = encoding.output.WriteRune(classSeparator)
+	encoding.writeRune(classSeparator)
 }
 
 func (encoding *encoding) writeSymbolTable() {
@@ -113,10 +129,9 @@ func (class *Class) encodeItems(encoding *encoding) {
 
 func (class *Class) maybeEncodeParameters(encoding *encoding) {
 	if len(class.Parameters) != 0 {
+		encoding.beginParameterList()
 		class.encodeParameters(encoding)
-		encoding.completeItem()
-	} else {
-		encoding.completeItem()
+		encoding.endParameterList()
 	}
 }
 
@@ -130,7 +145,6 @@ func (class *Class) encodeParameters(encoding *encoding) {
 	}
 	encoding.endClassParameterList()
 }
-
 
 func (name *ClassName) encode(encoding *encoding) {
 	if name.Wildcard {
@@ -157,13 +171,19 @@ func (name *ClassName) encodeArguments(encoding *encoding) {
 func (method *Method) encode(encoding *encoding) {
 	encoding.beginMethod()
 	encoding.writeSymbol(method.Name)
+	method.encodeParameters(encoding)
 	encoding.completeItem()
-	for _, parameter := range method.Parameters {
-		parameter.encode(encoding)
-		encoding.completeItem()
-	}
 	method.ReturnType.encode(encoding)
 	encoding.completeClassItem()
+}
+
+func (method *Method) encodeParameters(encoding *encoding) {
+	encoding.beginParameterList()
+	for _, parameter := range method.Parameters {
+		parameter.encode(encoding)
+		encoding.completeParameter()
+	}
+	encoding.endParameterList()
 }
 
 func (parameter *Parameter) encode(encoding *encoding) {

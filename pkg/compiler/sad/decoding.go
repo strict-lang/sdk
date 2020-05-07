@@ -3,7 +3,7 @@ package sad
 import "log"
 
 type decoding struct {
-	input []rune
+	input  []rune
 	offset int
 }
 
@@ -17,7 +17,7 @@ func (decoding *decoding) decodeMethod() Method {
 	decoding.skip('.')
 	returnType := decoding.decodeClassName()
 	return Method{
-		Name: name,
+		Name:       name,
 		Parameters: parameters,
 		ReturnType: returnType,
 	}
@@ -41,8 +41,8 @@ func (decoding *decoding) decodeClass() Class {
 		Traits:     nil,
 		Name:       name,
 		Parameters: nil,
-		Methods: methods,
-		Fields: fields,
+		Methods:    methods,
+		Fields:     fields,
 	}
 }
 
@@ -72,11 +72,11 @@ func (decoding *decoding) decodeTraits() []ClassName {
 	return traits
 }
 
-func (decoding *decoding) decodeMappedClassItems() (map[string] Method, map[string] Field) {
-	methods := map[string] Method{}
-	fields := map[string] Field{}
+func (decoding *decoding) decodeMappedClassItems() (map[string]Method, map[string]Field) {
+	methods := map[string]Method{}
+	fields := map[string]Field{}
 	for _, item := range decoding.decodeClassItems() {
-		if method, isMethod := item.(Method); isMethod{
+		if method, isMethod := item.(Method); isMethod {
 			methods[method.Name] = method
 		}
 		if field, isField := item.(Field); isField {
@@ -124,7 +124,14 @@ func (decoding *decoding) decodeClassName() ClassName {
 }
 
 func (decoding *decoding) decodeParameterList() []Parameter {
-	return nil
+	if decoding.isLookingAt(parameterListBegin) {
+		return []Parameter{}
+	}
+	parameters := []Parameter{decoding.decodeParameter()}
+	for decoding.isLookingAt(parameterSeparator) {
+		parameters = append(parameters, decoding.decodeParameter())
+	}
+	return parameters
 }
 
 const parameterWithoutLabelIdentifierCount = 2
@@ -186,4 +193,3 @@ func isIdentifierTail(value rune) bool {
 func isInRange(character rune, begin rune, end rune) bool {
 	return character >= begin && character <= end
 }
-

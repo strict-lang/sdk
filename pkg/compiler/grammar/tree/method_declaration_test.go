@@ -40,7 +40,7 @@ func TestMethodDeclaration_AcceptRecursive(testing *testing.T) {
 		Expect(MethodDeclarationNodeKind).
 		Expect(ConcreteTypeNameNodeKind).
 		Expect(ParameterNodeKind).
-		Expect(IdentifierNodeKind).       // Of Parameter
+		Expect(IdentifierNodeKind). // Of Parameter
 		Expect(ConcreteTypeNameNodeKind). // of Parameter
 		Expect(WildcardNodeKind).
 		RunRecursive()

@@ -9,11 +9,11 @@ import (
 )
 
 type diagnosticRendering struct {
-	diagnostic Diagnostic
-	color *color.Color
-	buffer *strings.Builder
+	diagnostic   Diagnostic
+	color        *color.Color
+	buffer       *strings.Builder
 	regionInLine input.Region
-	line input.Line
+	line         input.Line
 }
 
 func newDiagnosticRendering(
@@ -43,10 +43,10 @@ func createRelativeRegion(region PositionRange, line input.Line) input.Region {
 	begin := region.BeginPosition.Column
 	if region.EndPosition.Line == region.BeginPosition.Line &&
 		region.EndPosition.Offset != region.BeginPosition.Offset {
-		end := minimum(region.EndPosition.Column, length + 1)
+		end := minimum(region.EndPosition.Column, length+1)
 		return input.CreateRegion(input.Offset(begin), input.Offset(end))
 	}
-	return input.CreateRegion(input.Offset(begin), input.Offset(length) + 1)
+	return input.CreateRegion(input.Offset(begin), input.Offset(length)+1)
 }
 
 func findFixedLength(line input.Line) int {

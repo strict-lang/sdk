@@ -7,8 +7,8 @@ import (
 
 type ChainExpression struct {
 	Expressions []Expression
-	Region       input.Region
-	Parent       Node
+	Region      input.Region
+	Parent      Node
 }
 
 func (chain *ChainExpression) LastChild() Expression {

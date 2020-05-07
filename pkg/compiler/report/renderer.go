@@ -9,15 +9,15 @@ import (
 )
 
 type renderingOutput struct {
-	buffer strings.Builder
-	report Report
+	buffer          strings.Builder
+	report          Report
 	diagnosticStats diagnosticStats
-	lineMap *linemap.LineMap
+	lineMap         *linemap.LineMap
 }
 
 func NewRenderingOutput(report Report, lineMap *linemap.LineMap) Output {
 	output := &renderingOutput{
-		report: report,
+		report:  report,
 		lineMap: lineMap,
 	}
 	output.calculateDiagnosticStats()
@@ -26,8 +26,8 @@ func NewRenderingOutput(report Report, lineMap *linemap.LineMap) Output {
 
 type diagnosticStats struct {
 	warningCount int
-	infoCount int
-	errorCount int
+	infoCount    int
+	errorCount   int
 }
 
 func (output *renderingOutput) Print(writer io.Writer) error {

@@ -34,14 +34,14 @@ type Diagnostic struct {
 }
 
 type TextRange struct {
-	Text     string   `json:"text"`
-	Range    PositionRange `json:"range"`
-	File      string  `json:"file"`
+	Text  string        `json:"text"`
+	Range PositionRange `json:"range"`
+	File  string        `json:"file"`
 }
 
 type PositionRange struct {
 	BeginPosition Position `json:"beginPosition"`
-	EndPosition Position `json:"endPosition"`
+	EndPosition   Position `json:"endPosition"`
 }
 
 type Position struct {

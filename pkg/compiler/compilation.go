@@ -25,9 +25,9 @@ type Compilation struct {
 	Name    string
 	Backend string
 
-	beginTime time.Time
+	beginTime   time.Time
 	diagnostics *diagnostic.Diagnostics
-	err error
+	err         error
 }
 
 type Result struct {
@@ -35,7 +35,7 @@ type Result struct {
 	GeneratedFiles []backend.GeneratedFile
 	Report         report.Report
 	Error          error
-	LineMap *linemap.LineMap
+	LineMap        *linemap.LineMap
 }
 
 type Generated struct {
@@ -55,9 +55,9 @@ const success = true
 
 func (compilation *Compilation) createReport(success bool) report.Report {
 	return report.Report{
-		Success:     success,
-		Time:        report.Time{
-			Begin: compilation.beginTime.UnixNano(),
+		Success: success,
+		Time: report.Time{
+			Begin:      compilation.beginTime.UnixNano(),
 			Completion: compilation.beginTime.UnixNano(),
 		},
 		Diagnostics: translateDiagnostics(compilation.diagnostics),
@@ -77,15 +77,15 @@ func translateDiagnostics(diagnostics *diagnostic.Diagnostics) []report.Diagnost
 
 func translateDiagnosticEntry(entry diagnostic.Entry) report.Diagnostic {
 	return report.Diagnostic{
-		Kind: translateDiagnosticKind(entry.Kind),
+		Kind:    translateDiagnosticKind(entry.Kind),
 		Message: entry.Message,
 		TextRange: report.TextRange{
-			Text:     entry.Source,
+			Text: entry.Source,
 			Range: report.PositionRange{
 				BeginPosition: translatePosition(entry.Position.Begin),
 				EndPosition:   translatePosition(entry.Position.End),
 			},
-			File:     entry.UnitName,
+			File: entry.UnitName,
 		},
 	}
 }
@@ -116,6 +116,7 @@ func (compilation *Compilation) Compile() Result {
 	parseResult := compilation.parse()
 	compilation.diagnostics = parseResult.Diagnostics
 	if parseResult.Error != nil {
+		log.Printf("could not parse input file: %v", parseResult.Error)
 		return Result{
 			GeneratedFiles: []backend.GeneratedFile{},
 			Report:         compilation.createReport(failure),
@@ -132,7 +133,7 @@ func (compilation *Compilation) Compile() Result {
 		Report:         compilation.createReport(success),
 		Error:          err,
 		UnitName:       parseResult.TranslationUnit.Name,
-		LineMap: parseResult.LineMap,
+		LineMap:        parseResult.LineMap,
 	}
 }
 
@@ -172,5 +173,6 @@ func (compilation *Compilation) invokeBackend(
 		log.Printf("compiling files with %s backend", backendId)
 		return chosenBackend.Generate(input)
 	}
+	log.Printf("could not find backend %s", backendId)
 	return backend.Output{}, fmt.Errorf("no such backend: %s", backendId)
 }

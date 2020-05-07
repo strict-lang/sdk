@@ -11,11 +11,13 @@ import (
 	"testing"
 )
 
-func NewTestParser(tokens token.Stream) *Parsing {
+func NewTestParser(tokens token.StreamWithLineMap) *Parsing {
 	return NewDefaultFactory().WithTokenStream(tokens).NewParser()
 }
 
-func NewTestParserAndDiagnosticBag(tokens token.Stream) (*Parsing, *diagnostic.Bag) {
+func NewTestParserAndDiagnosticBag(
+	tokens token.StreamWithLineMap) (*Parsing, *diagnostic.Bag) {
+
 	bag := diagnostic.NewBag()
 	return NewDefaultFactory().
 		WithDiagnosticBag(bag).

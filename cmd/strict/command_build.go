@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -17,17 +18,19 @@ var buildCommand = &cobra.Command{
 	Use:   "build",
 	Short: "Builds a Strict package",
 	Long:  `Build compiles a file to a specified output file.`,
-	RunE:   RunCompile,
+	RunE:  RunCompile,
 }
 
 var buildOptions struct {
-	outputPath string
+	outputPath   string
 	reportFormat string
-	debug bool
+	backendName  string
+	debug        bool
 }
 
 func init() {
 	flags := buildCommand.Flags()
+	flags.StringVarP(&buildOptions.backendName, "backend", "b", "c++", "backend used in code generation")
 	flags.StringVarP(&buildOptions.outputPath, "destination", "d", "build/silk", "build destination")
 	flags.BoolVarP(&buildOptions.debug, "debug", "z", false, "enable debug mode")
 	flags.StringVarP(&buildOptions.reportFormat, "report-format", "r", "text",
@@ -41,7 +44,7 @@ func disableLogging() {
 	}
 }
 
-var reportFormats = map[string] func(report.Report, *linemap.LineMap) report.Output {
+var reportFormats = map[string]func(report.Report, *linemap.LineMap) report.Output{
 	"text": report.NewRenderingOutput,
 	"json": func(input report.Report, lineMap *linemap.LineMap) report.Output {
 		return report.NewSerializingOutput(report.NewJsonSerializationFormat(), input)
@@ -59,9 +62,9 @@ var reportFormats = map[string] func(report.Report, *linemap.LineMap) report.Out
 
 func createFailedReport(beginTime time.Time) report.Report {
 	return report.Report{
-		Success:     false,
-		Time:        report.Time{
-			Begin: beginTime.UnixNano(),
+		Success: false,
+		Time: report.Time{
+			Begin:      beginTime.UnixNano(),
 			Completion: time.Now().UnixNano(),
 		},
 		Diagnostics: []report.Diagnostic{},
@@ -70,9 +73,14 @@ func createFailedReport(beginTime time.Time) report.Report {
 
 func RunCompile(command *cobra.Command, arguments []string) error {
 	disableLogging()
+	fixOptions()
 	compilationReport, lineMap := compile(command, arguments)
 	output := createOutput(compilationReport, lineMap)
 	return output.Print(command.OutOrStdout())
+}
+
+func fixOptions() {
+	buildOptions.outputPath = filepath.Join(findWorkingDirectory(), buildOptions.outputPath)
 }
 
 func createOutput(
@@ -108,21 +116,25 @@ func runCompilation(
 	file *os.File) (report.Report, *linemap.LineMap) {
 
 	compilation := &compiler.Compilation{
-		Name:    unitName,
-		Source:  &compiler.FileSource{File: file},
+		Name:   unitName,
+		Backend: buildOptions.backendName,
+		Source: &compiler.FileSource{File: file},
 	}
 	result := compilation.Compile()
 	if result.Error != nil {
 		return result.Report, result.LineMap
 	}
 	if err := writeGeneratedSources(result); err != nil {
-		command.PrintErrf("failed to write generated sources %v\n", err)
+		command.PrintErrf("failed to write generated sources: %v\n", err)
 		result.Report.Success = false
 	}
 	return result.Report, result.LineMap
 }
 
 func writeGeneratedSources(compilation compiler.Result) (err error) {
+	if err := createDirectoryIfNotExists(buildOptions.outputPath); err != nil {
+		return fmt.Errorf("could not create directory: %v", err)
+	}
 	for _, generated := range compilation.GeneratedFiles {
 		if err = writeGeneratedSourceFile(generated); err != nil {
 			return err
@@ -142,7 +154,7 @@ func writeGeneratedSourceFile(generated backend.GeneratedFile) error {
 
 func targetFile(name string) (*os.File, error) {
 	if buildOptions.outputPath != "" {
-		return createNewFile(fmt.Sprintf("./%s", buildOptions.outputPath))
+		return createNewFile(filepath.Join(buildOptions.outputPath, name))
 	}
-	return createNewFile(fmt.Sprintf("./%s", name))
+	return createNewFile(name)
 }

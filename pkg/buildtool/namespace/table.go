@@ -1,7 +1,7 @@
 package namespace
 
 type Table struct {
-	namespaces map[string] Namespace
+	namespaces map[string]Namespace
 }
 
 func NewTable() *Table {

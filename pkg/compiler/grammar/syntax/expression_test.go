@@ -23,7 +23,7 @@ func TestParseListExpression(testing *testing.T) {
 	ExpectAllResults(testing,
 		[]ParserTestEntry{
 			{
-				Input: `[]`,
+				Input:          `[]`,
 				ExpectedOutput: &tree.ListExpression{},
 			},
 			{
@@ -32,9 +32,9 @@ func TestParseListExpression(testing *testing.T) {
 					Expressions: []tree.Expression{
 						&tree.Identifier{Value: `abc`},
 						&tree.BinaryExpression{
-							LeftOperand: &tree.Identifier{Value: `a`},
+							LeftOperand:  &tree.Identifier{Value: `a`},
 							RightOperand: &tree.Identifier{Value: `b`},
-							Operator: token.AddOperator,
+							Operator:     token.AddOperator,
 						},
 						&tree.CallExpression{
 							Target: &tree.Identifier{Value: "a"},

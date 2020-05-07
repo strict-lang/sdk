@@ -109,7 +109,7 @@ func TopLevelMethodType() *Class {
 		DeclarationName:   "",
 		ActualClass:       nil,
 		declarationOffset: 0,
-	}	
+	}
 }
 
 func AsMethodSymbol(symbol Symbol) (*Method, bool) {

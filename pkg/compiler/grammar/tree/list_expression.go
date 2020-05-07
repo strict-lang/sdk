@@ -6,9 +6,9 @@ import (
 )
 
 type ListExpression struct {
-	Expressions []Expression
-	Region input.Region
-	Parent Node
+	Expressions  []Expression
+	Region       input.Region
+	Parent       Node
 	resolvedType resolvedType
 }
 

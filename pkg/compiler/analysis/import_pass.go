@@ -56,7 +56,7 @@ func (pass *ImportPass) importWorkingDirectory(scope scope.MutableScope) {
 
 func (pass *ImportPass) shouldImportFile(info os.FileInfo) bool {
 	name := info.Name()
-	return strings.HasSuffix(name, pass.currentFile + strictFileExtension)
+	return strings.HasSuffix(name, pass.currentFile+strictFileExtension)
 }
 
 func filterFiles(

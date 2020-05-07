@@ -19,8 +19,8 @@ type Entry interface {
 
 type namespace struct {
 	qualifiedName string
-	entries  []Entry
-	computed bool
+	entries       []Entry
+	computed      bool
 }
 
 func (namespace *namespace) QualifiedName() string {
@@ -37,7 +37,7 @@ func (namespace *namespace) Dependencies() []Namespace {
 }
 
 type entry struct {
-	fileName string
+	fileName        string
 	translationUnit *tree.TranslationUnit
 }
 
@@ -52,5 +52,3 @@ func (entry *entry) TranslationUnit() *tree.TranslationUnit {
 func NewRoot(directory string) Namespace {
 	return nil
 }
-
-

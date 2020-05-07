@@ -26,7 +26,6 @@ func findSourceFileInArguments(command *cobra.Command, arguments []string) (*os.
 	return file, true
 }
 
-
 func findWorkingDirectory() string {
 	directory, err := os.Getwd()
 	if err != nil {

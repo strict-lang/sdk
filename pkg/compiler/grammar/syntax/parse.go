@@ -12,7 +12,7 @@ type Result struct {
 	Error           error
 	Diagnostics     *diagnostic.Diagnostics
 	TranslationUnit *tree.TranslationUnit
-	LineMap *linemap.LineMap
+	LineMap         *linemap.LineMap
 }
 
 func Parse(name string, reader input.Reader) Result {
@@ -36,7 +36,7 @@ func Parse(name string, reader input.Reader) Result {
 		Error:           err,
 		TranslationUnit: unit,
 		Diagnostics:     diagnostics,
-		LineMap: lineMap,
+		LineMap:         lineMap,
 	}
 }
 
