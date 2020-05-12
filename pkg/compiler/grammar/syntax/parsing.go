@@ -53,6 +53,7 @@ func (parsing *Parsing) parseTranslationUnit() *tree.TranslationUnit {
 	}
 }
 
+
 // openBlock opens a new block of code, updates the grammar block pointer and
 // creates a new scope for that block that is a child-scope of the parsers
 // last block. Only statements with the blocks indent may go into the block.

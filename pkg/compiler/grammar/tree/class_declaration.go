@@ -13,6 +13,7 @@ type ClassDeclaration struct {
 	Children   []Node
 	Region     input.Region
 	Parent     Node
+	Trait      bool
 	scope      scope.Scope
 }
 

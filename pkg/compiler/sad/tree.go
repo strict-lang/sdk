@@ -11,10 +11,15 @@ type Node interface {
 	encode(encoding *encoding)
 }
 
+type Tree struct {
+	Classes []*Class
+}
+
 type Class struct {
 	Kind       TypeKind
 	Traits     []ClassName
 	Name       string
+	// TODO: Support generics
 	Parameters []TypeParameter
 	Methods    map[string]Method
 	Fields     map[string]Field

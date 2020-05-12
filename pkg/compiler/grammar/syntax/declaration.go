@@ -21,8 +21,18 @@ func (parsing *Parsing) parseClassDeclaration() *tree.ClassDeclaration {
 		Parameters: []*tree.ClassParameter{},
 		SuperTypes: []tree.TypeName{},
 		Children:   nodes,
+		Trait: isTrait(nodes),
 		Region:     parsing.completeStructure(tree.ClassDeclarationNodeKind),
 	}
+}
+
+func isTrait(nodes []tree.Node) bool {
+	for _, child := range nodes {
+		if method, ok := child.(*tree.MethodDeclaration); ok && method.Abstract {
+			return true
+		}
+	}
+	return false
 }
 
 func (parsing *Parsing) parseTestStatement() tree.Node {

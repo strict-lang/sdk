@@ -2,12 +2,42 @@ package sad
 
 import "log"
 
+func Decode(input string) *Tree {
+	decoding := &decoding{input:  []rune(input)}
+	return decoding.decode()
+}
+
 type decoding struct {
 	input  []rune
 	offset int
+	symbols []string
 }
 
-func (decoding *decoding) decode() {
+func (decoding *decoding) decode() *Tree {
+	decoding.symbols = decoding.decodeSymbols()
+	return nil
+}
+
+func (decoding *decoding) decodeSymbols() (symbols []string) {
+	for !decoding.isLookingAt(symbolListSeparator) {
+		symbols = append(symbols, decoding.readIdentifier())
+		if !decoding.isLookingAt(symbolListSeparator) {
+			break
+		}
+	}
+	if decoding.isLookingAt(symbolListSeparator) {
+		decoding.offset++
+	}
+	return symbols
+}
+
+func (decoding *decoding) findIndexOfNext(value rune) int {
+	for offset := decoding.offset; offset < len(decoding.input); offset++ {
+		if decoding.input[offset] == value {
+			return offset
+		}
+	}
+	return -1
 }
 
 func (decoding *decoding) decodeMethod() Method {

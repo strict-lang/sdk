@@ -1,13 +1,26 @@
 package sad
 
 import (
-	"bufio"
 	"strconv"
+	"strings"
 )
+
+func Encode(tree *Tree) string {
+	encoding := newEncoding(tree)
+	return encoding.generate()
+}
 
 type symbolTable struct {
 	count int
 	table map[string]int
+	ordered []string
+}
+
+func newSymbolTable() symbolTable {
+	return symbolTable{
+		count: 0,
+		table: map[string]int{},
+	}
 }
 
 func (symbols *symbolTable) register(name string) int {
@@ -16,13 +29,54 @@ func (symbols *symbolTable) register(name string) int {
 	}
 	nextIndex := symbols.count
 	symbols.table[name] = nextIndex
+	symbols.ordered = append(symbols.ordered, name)
 	symbols.count++
 	return nextIndex
 }
 
 type encoding struct {
 	symbols symbolTable
-	output  *bufio.Writer
+	output  *strings.Builder
+	tree    *Tree
+}
+
+func newEncoding(tree *Tree) *encoding {
+	return &encoding{
+		symbols: newSymbolTable(),
+		output:  &strings.Builder{},
+		tree:    tree,
+	}
+}
+
+func (encoding *encoding) generate() string {
+	for _, class := range encoding.tree.Classes {
+		class.encode(encoding)
+	}
+	tail := encoding.output.String()
+	encoding.output = &strings.Builder{}
+	encoding.writeSymbols()
+	encoding.completeSymbolList()
+	return encoding.output.String() + tail
+}
+
+func (encoding *encoding) writeSymbols() {
+	for index, symbol := range encoding.symbols.ordered {
+		encoding.output.WriteString(symbol)
+		if index != len(encoding.symbols.ordered) - 1 {
+			encoding.completeSymbol()
+		}
+	}
+}
+
+const symbolListSeparator = '\n'
+const symbolSeparator = ';'
+
+func (encoding *encoding) completeSymbolList() {
+	encoding.writeRune(symbolListSeparator)
+}
+
+func (encoding *encoding) completeSymbol() {
+	encoding.writeRune(symbolSeparator)
 }
 
 func (encoding *encoding) writeSymbol(name string) {
@@ -96,25 +150,31 @@ func (encoding *encoding) completeClass() {
 
 func (encoding *encoding) writeSymbolTable() {
 	_, _ = encoding.output.WriteRune(symbolTableBeginKey)
-	for symbol := range encoding.symbols.table {
+	for index, symbol := range encoding.symbols.ordered {
 		_, _ = encoding.output.WriteString(symbol)
-		_, _ = encoding.output.WriteRune(itemSeparator)
+		if index != len(encoding.symbols.ordered) - 1 {
+			_, _ = encoding.output.WriteRune(itemSeparator)
+		}
 	}
 }
 
 func (class *Class) encode(encoding *encoding) {
 	encoding.beginClass()
 	encoding.writeSymbol(class.Name)
+	encoding.completeItem()
 	class.maybeEncodeParameters(encoding)
 	class.encodeTraits(encoding)
+	encoding.completeClassItem()
 	class.encodeItems(encoding)
 	encoding.completeClass()
 }
 
 func (class *Class) encodeTraits(encoding *encoding) {
-	for _, trait := range class.Traits {
+	for index, trait := range class.Traits {
 		trait.encode(encoding)
-		encoding.completeItem()
+		if index != len(class.Traits) - 1 {
+			encoding.completeItem()
+		}
 	}
 }
 
@@ -161,9 +221,11 @@ func (name *ClassName) encode(encoding *encoding) {
 
 func (name *ClassName) encodeArguments(encoding *encoding) {
 	encoding.beginClassParameterList()
-	for _, argument := range name.Arguments {
+	for index, argument := range name.Arguments {
 		argument.encode(encoding)
-		encoding.completeItem()
+		if index != len(name.Arguments) - 1 {
+			encoding.completeItem()
+		}
 	}
 	encoding.endClassParameterList()
 }
@@ -172,22 +234,22 @@ func (method *Method) encode(encoding *encoding) {
 	encoding.beginMethod()
 	encoding.writeSymbol(method.Name)
 	method.encodeParameters(encoding)
-	encoding.completeItem()
 	method.ReturnType.encode(encoding)
 	encoding.completeClassItem()
 }
 
 func (method *Method) encodeParameters(encoding *encoding) {
 	encoding.beginParameterList()
-	for _, parameter := range method.Parameters {
+	for index, parameter := range method.Parameters {
 		parameter.encode(encoding)
-		encoding.completeParameter()
+		if index != len(method.Parameters) - 1 {
+			encoding.completeParameter()
+		}
 	}
 	encoding.endParameterList()
 }
 
 func (parameter *Parameter) encode(encoding *encoding) {
-	encoding.writeRune('(')
 	if len(parameter.Label) != 0 {
 		encoding.writeSymbol(parameter.Label)
 		encoding.completeItem()
@@ -195,8 +257,6 @@ func (parameter *Parameter) encode(encoding *encoding) {
 	encoding.writeSymbol(parameter.Name)
 	encoding.completeItem()
 	parameter.Class.encode(encoding)
-	encoding.completeItem()
-	encoding.writeRune(')')
 }
 
 func (field *Field) encode(encoding *encoding) {

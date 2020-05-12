@@ -16,6 +16,7 @@ type TranslationUnit struct {
 	LineMap *linemap.LineMap
 	Region  input.Region
 	scope   scope.Scope
+	Trait   bool
 }
 
 func (unit *TranslationUnit) UpdateScope(target scope.Scope) {
@@ -63,6 +64,7 @@ func (unit *TranslationUnit) Matches(node Node) bool {
 	}
 	return false
 }
+
 
 func (unit *TranslationUnit) MatchesImports(imports []*ImportStatement) bool {
 	if len(unit.Imports) != len(imports) {
