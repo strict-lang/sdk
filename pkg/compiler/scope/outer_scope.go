@@ -3,7 +3,7 @@ package scope
 type OuterScope struct {
 	id      Id
 	parent  Scope
-	entries map[string]Entry
+	entries map[string] []Entry
 }
 
 func NewOuterScope(id Id, parent Scope) MutableScope {
@@ -15,7 +15,7 @@ func NewOuterScopeWithRootId(id Id, parent Scope) MutableScope {
 	return &OuterScope{
 		id:      id,
 		parent:  parent,
-		entries: map[string]Entry{},
+		entries: map[string] []Entry{},
 	}
 }
 
@@ -55,8 +55,10 @@ func (scope *OuterScope) Lookup(point ReferencePoint) EntrySet {
 }
 
 func (scope *OuterScope) lookupOwn(point ReferencePoint) EntrySet {
-	if symbol, ok := scope.entries[point.name]; ok {
-		return EntrySet{symbol}
+	if symbols, ok := scope.entries[point.name]; ok {
+		copied := make([]Entry, len(symbols))
+		copy(copied, symbols)
+		return copied
 	}
 	return EntrySet{}
 }
@@ -71,7 +73,8 @@ func (scope *OuterScope) createEntry(symbol Symbol) Entry {
 
 func (scope *OuterScope) insertToSelf(symbol Symbol) Entry {
 	entry := scope.createEntry(symbol)
-	scope.entries[symbol.Name()] = entry
+	currentSymbols := scope.entries[symbol.Name()]
+	scope.entries[symbol.Name()] = append(currentSymbols, entry)
 	return entry
 }
 
@@ -100,9 +103,11 @@ func (scope *OuterScope) Search(filter symbolFilter) EntrySet {
 }
 
 func (scope *OuterScope) searchOwn(filter symbolFilter) (result EntrySet) {
-	for _, entry := range scope.entries {
-		if filter(entry.Symbol) {
-			result = append(result, entry)
+	for _, bucket := range scope.entries {
+		for _, entry := range bucket {
+			if filter(entry.Symbol) {
+				result = append(result, entry)
+			}
 		}
 	}
 	return result
