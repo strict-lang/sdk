@@ -187,7 +187,7 @@ var buildConfig = Template{
 	content: createBuildConfig,
 }
 
-const baseBuildConfig = `name: %s
+const baseBuildConfig = `package: %s
 author: %s`
 
 func createBuildConfig() string {
