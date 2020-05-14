@@ -511,7 +511,7 @@ func (printing *Printing) printBlockStatement(statement *tree.StatementBlock) {
 func (printing *Printing) printImportStatement(statement *tree.ImportStatement) {
 	printing.printNodeBegin("ImportStatement")
 	target := statement.Target
-	targetString := fmt.Sprintf("{path: %s, moduleName: %s}", target.FilePath(), target.ToModuleName())
+	targetString := fmt.Sprintf("{path: %s, moduleName: %s}", target.FilePath(), target.Namespace())
 	printing.printIndentedStringField("target", targetString)
 	if statement.Alias != nil {
 		printing.printIndentedNodeField("alias", statement.Alias)

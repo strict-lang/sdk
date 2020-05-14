@@ -1,18 +1,20 @@
 package scope
 
-func NewNamespaceScope(namespace *Namespace) Scope {
-	id := Id("namespace." + namespace.QualifiedName)
+import "github.com/strict-lang/sdk/pkg/buildtool/namespace"
+
+func NewNamespaceScope(namespace namespace.Namespace, classes []*Class) Scope {
+	id := Id("namespace." + namespace.QualifiedName())
 	scope := NewOuterScopeWithRootId(id, builtinScope)
 	creation := &namespaceScopeCreation{
-		namespace: namespace,
-		scope:     scope,
+		scope: scope,
+		classes: classes,
 	}
 	creation.run()
 	return scope
 }
 
 type namespaceScopeCreation struct {
-	namespace *Namespace
+	classes []*Class
 	scope MutableScope
 }
 
@@ -21,11 +23,7 @@ func (creation *namespaceScopeCreation) run() {
 }
 
 func (creation *namespaceScopeCreation) populateContents() {
-	for _, child := range creation.scope.Search(findAll) {
-		creation.scope.Insert(child.Symbol)
+	for _, class := range creation.classes {
+		creation.scope.Insert(class)
 	}
-}
-
-func findAll(symbol Symbol) bool {
-	return true
 }

@@ -20,11 +20,13 @@ func init() {
 type NameResolutionPass struct {
 	context *passes.Context
 	visitor tree.Visitor
+	importScope scope.Scope
 }
 
 func (pass *NameResolutionPass) Run(context *passes.Context) {
 	pass.context = context
 	pass.visitor = pass.createVisitor()
+	pass.importScope = RequireInIsolate(context.Isolate).ImportScope
 	context.Unit.AcceptRecursive(pass.visitor)
 }
 
@@ -59,13 +61,46 @@ func (pass *NameResolutionPass) visitIdentifier(identifier *tree.Identifier) {
 func (pass *NameResolutionPass) resolveIdentifier(identifier *tree.Identifier) {
 	searchScope := pass.selectResolutionScope(identifier)
 	if entries := searchScope.Lookup(identifier.ReferencePoint()); !entries.IsEmpty() {
-		symbol := entries.First().Symbol
+		symbol := pass.selectIdentifierLookupEntry(identifier, entries)
 		identifier.Bind(symbol)
 		identifier.ResolveType(pass.resolveFieldSymbolType(symbol))
 	} else {
 		identifier.ResolveType(scope.Builtins.Any)
 		pass.reportUnresolvedField(identifier)
 	}
+}
+
+func (pass *NameResolutionPass) selectIdentifierLookupEntry(
+	identifier *tree.Identifier,
+	entries scope.EntrySet) scope.Symbol {
+
+	if len(entries) == 1 {
+		return entries.First().Symbol
+	}
+	shouldPermitNamespace := pass.shouldPermitNamespaceEntry(identifier)
+	for _, entry := range entries {
+		_, isNamespace := entry.Symbol.(*scope.Namespace)
+		if !isNamespace || shouldPermitNamespace {
+			return entry.Symbol
+		}
+	}
+	return entries.First().Symbol
+}
+
+func (pass *NameResolutionPass) shouldPermitNamespaceEntry(
+	identifier *tree.Identifier) bool {
+
+	return pass.isQualifier(identifier)
+}
+
+func (pass *NameResolutionPass) isQualifier(identifier *tree.Identifier) bool {
+	if chain, ok := identifier.Parent.(*tree.ChainExpression); ok {
+		index := findIndexInChain(identifier.Region.Begin(), chain)
+		if index != len(chain.Expressions) - 1 {
+			return true
+		}
+	}
+	return false
 }
 
 func (pass *NameResolutionPass) resolveFieldSymbolType(symbol scope.Symbol) *scope.Class {
@@ -121,19 +156,33 @@ func (pass *NameResolutionPass) resolveUnresolvedCall(call *tree.CallExpression)
 
 func (pass *NameResolutionPass) selectResolutionScope(node tree.Expression) scope.Scope {
 	if chain, ok := tree.SearchEnclosingChain(node); ok {
-		index := findIndexInChain(node.Locate().Begin(), chain)
-		formerIndex := index - 1
-		if formerIndex >= 0 && formerIndex < len(chain.Expressions) {
-			if lastType, ok := chain.Expressions[formerIndex].ResolvedType(); ok {
-				return lastType.Scope
-			}
-			return scope.NewEmptyScope("invalid")
-		}
+		return pass.selectResolutionScopeInChain(node, chain)
 	}
+	return pass.selectResolutionScopeWithoutQualifier(node)
+}
+
+func (pass *NameResolutionPass) selectResolutionScopeWithoutQualifier(
+	node tree.Expression) scope.Scope {
+
 	if localScope, ok := tree.ResolveNearestScope(node); ok {
 		return localScope
 	}
-	return scope.NewEmptyScope("invalid")
+	return pass.importScope
+}
+
+
+func (pass *NameResolutionPass) selectResolutionScopeInChain(
+	node tree.Node,
+	chain *tree.ChainExpression) scope.Scope {
+
+	index := findIndexInChain(node.Locate().Begin(), chain)
+	formerIndex := index - 1
+	if formerIndex >= 0 && formerIndex < len(chain.Expressions) {
+		if lastType, ok := chain.Expressions[formerIndex].ResolvedType(); ok {
+			return lastType.Scope
+		}
+	}
+	return pass.importScope
 }
 
 func findIndexInChain(position input.Offset, chain *tree.ChainExpression) int {

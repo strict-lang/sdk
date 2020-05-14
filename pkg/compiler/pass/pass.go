@@ -1,6 +1,7 @@
 package pass
 
 import (
+	"errors"
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/isolate"
@@ -49,4 +50,12 @@ func Register(pass Pass) {
 		name := string(pass.Id())
 		isolate.Properties.Insert(name, pass)
 	})
+}
+
+func RunWithId(id Id, context *Context) error {
+	execution, ok := NewExecution(id, context)
+	if !ok {
+		return errors.New("could not create passes")
+	}
+	return execution.Run()
 }

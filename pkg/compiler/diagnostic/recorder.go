@@ -2,6 +2,7 @@ package diagnostic
 
 import (
 	"github.com/strict-lang/sdk/pkg/compiler/input"
+	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 )
 
 type RecordedEntry struct {
@@ -37,27 +38,34 @@ func (recorder *Bag) Record(entry RecordedEntry) {
 
 type OffsetConversionFunction func(input.Offset) input.Position
 
+func ConvertWithLineMap(lineMap *linemap.LineMap) OffsetConversionFunction {
+	return lineMap.PositionAtOffset
+}
+
 func (recorder *Bag) CreateDiagnostics(converter OffsetConversionFunction) *Diagnostics {
-	mappedEntries := make(map[string][]Entry)
+	entries := make([]Entry, len(*recorder.entries))
 	for _, recorded := range *recorder.entries {
-		position := converter(recorded.Position.Begin())
-		entry := Entry{
-			Position: Position{
-				Begin: position,
-				End:   converter(recorded.Position.End()),
-			},
-			Source:   position.Line.Text,
-			UnitName: recorded.UnitName,
-			Kind:     recorded.Kind,
-			Message:  recorded.Message,
-			Stage:    recorded.Stage,
-			Error:    recorded.Error,
-		}
-		kindName := entry.Kind.Name
-		current := mappedEntries[kindName]
-		mappedEntries[kindName] = append(current, entry)
+		entry := translateEntry(converter, recorded)
+		entries = append(entries, entry)
 	}
-	return &Diagnostics{
-		entries: mappedEntries,
+	return &Diagnostics{entries: entries}
+}
+
+func translateEntry(
+	converter OffsetConversionFunction,
+	recorded RecordedEntry) Entry {
+
+	position := converter(recorded.Position.Begin())
+	return Entry{
+		Position: Position{
+			Begin: position,
+			End:   converter(recorded.Position.End()),
+		},
+		Source:   position.Line.Text,
+		UnitName: recorded.UnitName,
+		Kind:     recorded.Kind,
+		Message:  recorded.Message,
+		Stage:    recorded.Stage,
+		Error:    recorded.Error,
 	}
 }

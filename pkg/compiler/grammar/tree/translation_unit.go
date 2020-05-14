@@ -10,13 +10,14 @@ import (
 // input code. It can have multiple children, which are seen as the roots
 // of the actual tree. This node however, is the real unit of the tree.
 type TranslationUnit struct {
-	Name    string
-	Imports []*ImportStatement
-	Class   *ClassDeclaration
-	LineMap *linemap.LineMap
-	Region  input.Region
-	scope   scope.Scope
-	Trait   bool
+	Name      string
+	Namespace string
+	Imports   []*ImportStatement
+	Class     *ClassDeclaration
+	LineMap   *linemap.LineMap
+	Region    input.Region
+	scope     scope.Scope
+	Trait     bool
 }
 
 func (unit *TranslationUnit) UpdateScope(target scope.Scope) {
@@ -64,7 +65,6 @@ func (unit *TranslationUnit) Matches(node Node) bool {
 	}
 	return false
 }
-
 
 func (unit *TranslationUnit) MatchesImports(imports []*ImportStatement) bool {
 	if len(unit.Imports) != len(imports) {

@@ -1,8 +1,7 @@
 package namespace
 
-import "github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-
 type Namespace interface {
+	Name() string
 	QualifiedName() string
 	Dependencies() []Dependency
 	Entries() []Entry
@@ -14,13 +13,18 @@ type Dependency interface {
 
 type Entry interface {
 	FileName() string
-	TranslationUnit() *tree.TranslationUnit
+	IsDirectory() bool
 }
 
 type namespace struct {
+	name string
 	qualifiedName string
 	entries       []Entry
 	computed      bool
+}
+
+func (namespace *namespace) Name() string {
+	return namespace.name
 }
 
 func (namespace *namespace) QualifiedName() string {
@@ -37,17 +41,18 @@ func (namespace *namespace) Dependencies() []Namespace {
 }
 
 type entry struct {
-	fileName        string
-	translationUnit *tree.TranslationUnit
+	fileName string
+	directory bool
 }
 
 func (entry *entry) FileName() string {
 	return entry.fileName
 }
 
-func (entry *entry) TranslationUnit() *tree.TranslationUnit {
-	return entry.translationUnit
+func (entry *entry) IsDirectory() bool {
+	return entry.directory
 }
+
 
 func NewRoot(directory string) Namespace {
 	return nil

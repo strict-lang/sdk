@@ -158,6 +158,8 @@ func (pass *SymbolEnterPass) newMethodSymbol(
 // in the targetScope. This replacement is an empty class with the required name.
 // By doing this, the name resolution can continue and more semantic errors may
 // be provided to the user, even if the method declaration itself is invalid.
+// TODO: This is not supporting qualified name access. Add namespace lookup using
+//  type-name qualifiers
 func (pass *SymbolEnterPass) requireClass(
 	name tree.TypeName, targetScope scope.MutableScope) *scope.Class {
 

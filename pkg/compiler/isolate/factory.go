@@ -35,6 +35,10 @@ var cachedGlobalIsolate = struct {
 	isolate *Isolate
 }{}
 
+func New() *Isolate {
+	return factory.createIsolate()
+}
+
 func SingleThreaded() *Isolate {
 	cachedGlobalIsolate.lock.Lock()
 	defer cachedGlobalIsolate.lock.Unlock()

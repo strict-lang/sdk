@@ -27,7 +27,7 @@ method testing(any Any)
 
 `)
 	if result.Error != nil {
-		log.Printf("failed to parse unit: %v\n", result.Error)
+		log.Printf("failed to parse Unit: %v\n", result.Error)
 	}
 	return result.TranslationUnit
 }
