@@ -4,16 +4,16 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 	"strings"
 )
 
 func buildBinary(destination string) TarballEntry {
 	executionPath := selectExecutionPath()
-	executeOrFail("go", "build", "-o="+destination, path.Join(executionPath, "cmd/strict"))
+	executeOrFail("go", "build", "-o="+destination,filepath.Join  (executionPath, "cmd/strict"))
 	return TarballEntry{
 		SystemPath: destination,
-		Name:       path.Join("bin", selectBinaryName()),
+		Name:      filepath.Join  ("bin", selectBinaryName()),
 	}
 }
 
@@ -39,7 +39,7 @@ func selectExecutionPath() string {
 	}
 	if strings.HasPrefix(makeContext.executablePath, "./") {
 		fixedPath := strings.Replace(makeContext.executablePath, "./", "", 1)
-		return path.Join(findWorkingDirectory(), fixedPath)
+		return filepath.Join  (findWorkingDirectory(), fixedPath)
 	}
 	return makeContext.executablePath
 }

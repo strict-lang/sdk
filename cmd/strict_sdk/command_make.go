@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -45,7 +45,7 @@ func prepareOptions() {
 		makeContext.platform,
 		makeContext.architecture)
 
-	makeContext.resultOutputPath = path.Join(findWorkingDirectory(), fixPath(makeContext.resultOutputPath))
+	makeContext.resultOutputPath =filepath.Join  (findWorkingDirectory(), fixPath(makeContext.resultOutputPath))
 	makeContext.workOutputPath = chooseWorkOutputPath()
 	makeContext.ensureDirectoryExists(makeContext.workOutputPath)
 	makeContext.ensureDirectoryExists(makeContext.resultOutputPath)
@@ -63,7 +63,7 @@ func RunMake(command *cobra.Command, arguments []string) error {
 	files := append(createTemplateFiles(), downloadBasePackage()...)
 	files = append(files, TarballEntry{
 		SystemPath: makeContext.executablePath,
-		Name:       path.Join("bin", selectBinaryName()),
+		Name:      filepath.Join  ("bin", selectBinaryName()),
 	})
 	if makeContext.bundle {
 		bundleSdk(files)
@@ -90,7 +90,7 @@ func changeParentDirectory(entries []TarballEntry, directory string) (fixed []Ta
 	for _, entry := range entries {
 		fixed = append(fixed, TarballEntry{
 			SystemPath: entry.SystemPath,
-			Name:       path.Join(directory, entry.Name),
+			Name:      filepath.Join  (directory, entry.Name),
 		})
 	}
 	return
@@ -138,7 +138,7 @@ func (context *Make) ensureOutputPathExists() {
 
 func (context *Make) inNewDirectory(directory string, file string) string {
 	context.ensureDirectoryExists(context.createPath(directory))
-	return path.Join(directory, file)
+	return filepath.Join  (directory, file)
 }
 
 func (context *Make) writeFile(name string, content string) TarballEntry {
@@ -163,11 +163,11 @@ func (context *Make) ensureSuccess(file string, err error) {
 }
 
 func (context *Make) createPath(name string) string {
-	return path.Clean(path.Join(context.workOutputPath, name))
+	return filepath.Clean(filepath.Join  (context.workOutputPath, name))
 }
 
 func (context *Make) createResultPath(name string) string {
-	return path.Clean(path.Join(context.resultOutputPath, name))
+	return filepath.Clean(filepath.Join  (context.resultOutputPath, name))
 }
 
 func findWorkingDirectory() string {

@@ -1,4 +1,4 @@
-package analysis
+package entering
 
 import (
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
@@ -13,7 +13,7 @@ import (
 const SymbolEnterPassId = "SymbolEnterPass"
 
 func init() {
-	registerPassInstance(&SymbolEnterPass{})
+	passes.Register(&SymbolEnterPass{})
 }
 
 // SymbolEnterPass enters symbols into the scope that they are defined in.
@@ -32,7 +32,7 @@ func (pass *SymbolEnterPass) Run(context *passes.Context) {
 }
 
 func (pass *SymbolEnterPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ScopeCreationPassId, ImportPassId)
+	return passes.ListInIsolate(isolate, ScopeCreationPassId)
 }
 
 func (pass *SymbolEnterPass) Id() passes.Id {
@@ -65,21 +65,22 @@ func (pass *SymbolEnterPass) enterClassDeclaration(
 
 	name := declaration.Name
 	surroundingScope := requireNearestMutableScope(declaration)
-	if pass.ensureNameDoesNotExist(name, declaration, surroundingScope) {
-		symbol := pass.newClassSymbol(declaration)
-		pass.currentClassSymbol = symbol
-		surroundingScope.Insert(symbol)
+	referencePoint := scope.NewReferencePoint(name)
+	if class, ok := scope.LookupClass(surroundingScope, referencePoint); ok {
+		pass.initializeClassSymbol(declaration, class)
+		pass.currentClassSymbol = class
+		surroundingScope.Insert(class)
+	} else {
+		log.Fatalf("class %s was not eagerly inserted into the namespace-scope", name)
 	}
 }
 
-func (pass *SymbolEnterPass) newClassSymbol(
-	declaration *tree.ClassDeclaration) *scope.Class {
+func (pass *SymbolEnterPass) initializeClassSymbol(
+	declaration *tree.ClassDeclaration,
+	symbol *scope.Class) {
 
-	return &scope.Class{
-		DeclarationName: declaration.Name,
-		Scope:           ensureScopeIsMutable(declaration.Scope()),
-		ActualClass:     declaration.NewActualClass(),
-	}
+	symbol.Scope = ensureScopeIsMutable(declaration.Scope())
+	symbol.ActualClass = declaration.NewActualClass()
 }
 
 func (pass *SymbolEnterPass) visitMethodDeclaration(
@@ -293,4 +294,14 @@ func (pass *SymbolEnterPass) reportNameCollision(
 	node tree.Node,
 	existingSymbol scope.Symbol) {
 
+	pass.diagnostics.Record(diagnostic.RecordedEntry{
+		Kind:     &diagnostic.Error,
+		Stage:    &diagnostic.SemanticAnalysis,
+		Message:  "collision for name " + name,
+		UnitName: pass.currentUnit.Name,
+		Error:    &diagnostic.RichError{
+			Error:         &diagnostic.NameCollisionError{Symbol: name},
+		},
+		Position: node.Locate(),
+	})
 }

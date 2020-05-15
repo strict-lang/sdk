@@ -14,6 +14,14 @@ type KnownError interface {
 	Name() string
 }
 
+type NameCollisionError struct {
+	Symbol string
+}
+
+func (error *NameCollisionError) Name() string {
+	return fmt.Sprintf("name %s collides with another entry in the same scope", error.Symbol)
+}
+
 type UnexpectedTokenError struct {
 	Expected string
 	Received string

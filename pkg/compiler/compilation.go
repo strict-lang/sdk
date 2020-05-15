@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	"github.com/strict-lang/sdk/pkg/buildtool"
 	"github.com/strict-lang/sdk/pkg/compiler/backend"
 	_ "github.com/strict-lang/sdk/pkg/compiler/backend/arduino"
 	_ "github.com/strict-lang/sdk/pkg/compiler/backend/cpp"
@@ -10,7 +11,6 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
-	"github.com/strict-lang/sdk/pkg/compiler/input"
 	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 	isolates "github.com/strict-lang/sdk/pkg/compiler/isolate"
 	"github.com/strict-lang/sdk/pkg/compiler/lowering"
@@ -60,56 +60,10 @@ func (compilation *Compilation) createReport(success bool) report.Report {
 			Begin:      compilation.beginTime.UnixNano(),
 			Completion: compilation.beginTime.UnixNano(),
 		},
-		Diagnostics: translateDiagnostics(compilation.diagnostics),
+		Diagnostics: buildtool.TranslateDiagnostics(compilation.diagnostics),
 	}
 }
 
-func translateDiagnostics(diagnostics *diagnostic.Diagnostics) []report.Diagnostic {
-	var translated []report.Diagnostic
-	for _, entry := range diagnostics.ListEntries() {
-		translated = append(translated, translateDiagnosticEntry(entry))
-	}
-	if translated == nil {
-		return []report.Diagnostic{}
-	}
-	return translated
-}
-
-func translateDiagnosticEntry(entry diagnostic.Entry) report.Diagnostic {
-	return report.Diagnostic{
-		Kind:    translateDiagnosticKind(entry.Kind),
-		Message: entry.Message,
-		TextRange: report.TextRange{
-			Text: entry.Source,
-			Range: report.PositionRange{
-				BeginPosition: translatePosition(entry.Position.Begin),
-				EndPosition:   translatePosition(entry.Position.End),
-			},
-			File: entry.UnitName,
-		},
-	}
-}
-
-func translatePosition(position input.Position) report.Position {
-	return report.Position{
-		Line:   int(position.Line.Index),
-		Column: int(position.Column),
-		Offset: int(position.Offset),
-	}
-}
-
-func translateDiagnosticKind(kind *diagnostic.Kind) report.DiagnosticKind {
-	switch kind.Name {
-	case diagnostic.Error.Name:
-		return report.DiagnosticError
-	case diagnostic.Info.Name:
-		return report.DiagnosticInfo
-	case diagnostic.Warning.Name:
-		return report.DiagnosticWarning
-	default:
-		return report.DiagnosticError
-	}
-}
 
 func (compilation *Compilation) Compile() Result {
 	compilation.beginTime = time.Now()

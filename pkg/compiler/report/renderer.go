@@ -12,13 +12,13 @@ type renderingOutput struct {
 	buffer          strings.Builder
 	report          Report
 	diagnosticStats diagnosticStats
-	lineMap         *linemap.LineMap
+	lineMaps        *linemap.Table
 }
 
-func NewRenderingOutput(report Report, lineMap *linemap.LineMap) Output {
+func NewRenderingOutput(report Report, lineMaps *linemap.Table) Output {
 	output := &renderingOutput{
 		report:  report,
-		lineMap: lineMap,
+		lineMaps: lineMaps,
 	}
 	output.calculateDiagnosticStats()
 	return output
@@ -47,7 +47,11 @@ func (output *renderingOutput) render() {
 
 func (output *renderingOutput) renderDiagnostic(diagnostic Diagnostic) {
 	errorColor := color.New(color.FgRed)
-	rendering := newDiagnosticRendering(diagnostic, errorColor, output.lineMap)
+	rendering, err := newDiagnosticRendering(diagnostic, errorColor, output.lineMaps)
+	if err != nil {
+		output.buffer.WriteString(err.Error())
+		return
+	}
 	output.buffer.WriteString(rendering.print())
 }
 

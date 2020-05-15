@@ -1,17 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/strict-lang/sdk/pkg/compiler"
-	"github.com/strict-lang/sdk/pkg/compiler/backend"
+	"github.com/strict-lang/sdk/pkg/buildtool"
 	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 	"github.com/strict-lang/sdk/pkg/compiler/report"
 	"io/ioutil"
 	"log"
-	"os"
 	"path/filepath"
-	"time"
 )
 
 var buildCommand = &cobra.Command{
@@ -44,38 +40,30 @@ func disableLogging() {
 	}
 }
 
-var reportFormats = map[string]func(report.Report, *linemap.LineMap) report.Output{
+var reportFormats = map[string]func(report.Report, *linemap.Table) report.Output{
 	"text": report.NewRenderingOutput,
-	"json": func(input report.Report, lineMap *linemap.LineMap) report.Output {
+	"json": func(input report.Report, lineMaps *linemap.Table) report.Output {
 		return report.NewSerializingOutput(report.NewJsonSerializationFormat(), input)
 	},
-	"pretty-json": func(input report.Report, lineMap *linemap.LineMap) report.Output {
+	"pretty-json": func(input report.Report, lineMaps *linemap.Table) report.Output {
 		return report.NewSerializingOutput(report.NewPrettyJsonSerializationFormat(), input)
 	},
-	"xml": func(input report.Report, lineMap *linemap.LineMap) report.Output {
+	"xml": func(input report.Report, lineMaps *linemap.Table) report.Output {
 		return report.NewSerializingOutput(report.NewXmlSerializationFormat(), input)
 	},
-	"pretty-xml": func(input report.Report, lineMap *linemap.LineMap) report.Output {
+	"pretty-xml": func(input report.Report, lineMaps *linemap.Table) report.Output {
 		return report.NewSerializingOutput(report.NewPrettyXmlSerializationFormat(), input)
 	},
-}
-
-func createFailedReport(beginTime time.Time) report.Report {
-	return report.Report{
-		Success: false,
-		Time: report.Time{
-			Begin:      beginTime.UnixNano(),
-			Completion: time.Now().UnixNano(),
-		},
-		Diagnostics: []report.Diagnostic{},
-	}
 }
 
 func RunCompile(command *cobra.Command, arguments []string) error {
 	disableLogging()
 	fixOptions()
-	compilationReport, lineMap := compile(command, arguments)
-	output := createOutput(compilationReport, lineMap)
+	compilationReport, lineMaps, err := runCompilation()
+	if err != nil {
+		return err
+	}
+	output := createOutput(compilationReport, lineMaps)
 	return output.Print(command.OutOrStdout())
 }
 
@@ -85,76 +73,37 @@ func fixOptions() {
 
 func createOutput(
 	compilationReport report.Report,
-	lineMap *linemap.LineMap) report.Output {
+	table *linemap.Table) report.Output {
 
 	if output, ok := reportFormats[buildOptions.reportFormat]; ok {
-		return output(compilationReport, lineMap)
+		return output(compilationReport, table)
 	}
-	return report.NewRenderingOutput(compilationReport, lineMap)
+	return report.NewRenderingOutput(compilationReport, table)
 }
 
-func compile(
-	command *cobra.Command, arguments []string) (report.Report, *linemap.LineMap) {
-
-	beginTime := time.Now()
-	file, ok := findSourceFileInArguments(command, arguments)
-	if !ok {
-		return createFailedReport(beginTime), linemap.Empty()
+func runCompilation() (report.Report, *linemap.Table, error) {
+	directory := findWorkingDirectory()
+	build := buildtool.Build{
+		RootPath:      directory,
+		Configuration: readBuildConfigOrFallback(directory),
 	}
-	defer file.Close()
-	name, err := ParseUnitName(file.Name())
-	if err != nil {
-		command.Printf("Invalid filename: %s\n", file.Name())
-		return createFailedReport(beginTime), linemap.Empty()
-	}
-	return runCompilation(command, name, file)
+  return build.Run()
 }
 
-func runCompilation(
-	command *cobra.Command,
-	unitName string,
-	file *os.File) (report.Report, *linemap.LineMap) {
+const buildFileName = `build.yml`
 
-	compilation := &compiler.Compilation{
-		Name:   unitName,
-		Backend: buildOptions.backendName,
-		Source: &compiler.FileSource{File: file},
+func readBuildConfigOrFallback(workingDirectory string) buildtool.Configuration {
+	if config, err := readBuildConfig(workingDirectory); err != nil {
+		return config
 	}
-	result := compilation.Compile()
-	if result.Error != nil {
-		return result.Report, result.LineMap
+	return buildtool.Configuration{
+		PackageName:  "",
+		Author:       "Undefined",
+		Description:  "Undefined",
 	}
-	if err := writeGeneratedSources(result); err != nil {
-		command.PrintErrf("failed to write generated sources: %v\n", err)
-		result.Report.Success = false
-	}
-	return result.Report, result.LineMap
 }
 
-func writeGeneratedSources(compilation compiler.Result) (err error) {
-	if err := createDirectoryIfNotExists(buildOptions.outputPath); err != nil {
-		return fmt.Errorf("could not create directory: %v", err)
-	}
-	for _, generated := range compilation.GeneratedFiles {
-		if err = writeGeneratedSourceFile(generated); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func writeGeneratedSourceFile(generated backend.GeneratedFile) error {
-	file, err := targetFile(generated.Name)
-	if err != nil {
-		return err
-	}
-	_, err = file.Write(generated.Content)
-	return err
-}
-
-func targetFile(name string) (*os.File, error) {
-	if buildOptions.outputPath != "" {
-		return createNewFile(filepath.Join(buildOptions.outputPath, name))
-	}
-	return createNewFile(name)
+func readBuildConfig(workingDirectory string) (buildtool.Configuration, error) {
+	configPath :=filepath.Join  (workingDirectory, buildFileName)
+	return buildtool.ReadConfiguration(configPath)
 }

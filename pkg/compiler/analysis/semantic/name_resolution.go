@@ -1,6 +1,7 @@
-package analysis
+package semantic
 
 import (
+	"github.com/strict-lang/sdk/pkg/compiler/analysis"
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
@@ -14,7 +15,7 @@ import (
 const NameResolutionPassId = "NameResolutionPass"
 
 func init() {
-	registerPassInstance(&NameResolutionPass{})
+	passes.Register(&NameResolutionPass{})
 }
 
 type NameResolutionPass struct {
@@ -26,12 +27,12 @@ type NameResolutionPass struct {
 func (pass *NameResolutionPass) Run(context *passes.Context) {
 	pass.context = context
 	pass.visitor = pass.createVisitor()
-	pass.importScope = RequireInIsolate(context.Isolate).ImportScope
+	pass.importScope = analysis.RequireInIsolate(context.Isolate).ImportScope
 	context.Unit.AcceptRecursive(pass.visitor)
 }
 
 func (pass *NameResolutionPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ScopeCreationPassId, SymbolEnterPassId)
+	return passes.EmptySet
 }
 
 func (pass *NameResolutionPass) Id() passes.Id {

@@ -1,14 +1,34 @@
 package backend
 
 import (
+	"fmt"
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/isolate"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 type GeneratedFile struct {
 	Name    string
 	Content []byte
+}
+
+func (file *GeneratedFile) Save() error {
+	parent := filepath.Dir(file.Name)
+	if err := createDirectoryIfNotExists(parent); err != nil {
+		return fmt.Errorf("could not create directory: %v", err)
+	}
+	return ioutil.WriteFile(file.Name, file.Content, os.ModePerm)
+}
+
+func createDirectoryIfNotExists(directory string) error {
+	err := os.MkdirAll(directory, os.ModePerm)
+	if os.IsExist(err) {
+		return nil
+	}
+	return err
 }
 
 type Output struct {

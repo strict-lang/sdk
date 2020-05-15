@@ -1,4 +1,4 @@
-package analysis
+package entering
 
 import (
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
@@ -9,7 +9,7 @@ import (
 const ParentAssignPassId = "ParentAssignPass"
 
 func init() {
-	registerPassInstance(&ParentAssignPass{})
+	pass.Register(&ParentAssignPass{})
 }
 
 type ParentAssignPass struct{}

@@ -19,8 +19,13 @@ type diagnosticRendering struct {
 func newDiagnosticRendering(
 	diagnostic Diagnostic,
 	color *color.Color,
-	lineMap *linemap.LineMap) diagnosticRendering {
+	lineMaps *linemap.Table) (diagnosticRendering, error) {
 
+	lineMap, ok := lineMaps.Lookup(diagnostic.TextRange.File)
+	if !ok {
+		err := fmt.Errorf("could not find LineMap for %s", diagnostic.TextRange.File)
+		return diagnosticRendering{}, err
+	}
 	line := findLineForDiagnostic(diagnostic, lineMap)
 	region := createRelativeRegion(diagnostic.TextRange.Range, line)
 	return diagnosticRendering{
@@ -29,7 +34,7 @@ func newDiagnosticRendering(
 		buffer:       &strings.Builder{},
 		regionInLine: region,
 		line:         line,
-	}
+	}, nil
 }
 
 func findLineForDiagnostic(diagnostic Diagnostic, lineMap *linemap.LineMap) input.Line {

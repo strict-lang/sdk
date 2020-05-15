@@ -32,7 +32,7 @@ func (generation *Generation) importArduinoHeader() {
 }
 
 func (generation *Generation) VisitImportStatement(statement *tree.ImportStatement) {
-	generation.parent.EmitFormatted("#include %s", statement.Target.FilePath())
+	generation.parent.EmitFormatted("#include %s", statement.Target.Namespace())
 	generation.parent.EmitEndOfLine()
 }
 

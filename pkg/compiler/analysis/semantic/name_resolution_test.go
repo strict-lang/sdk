@@ -1,12 +1,14 @@
-package analysis
+package semantic
 
 import (
+	"github.com/strict-lang/sdk/pkg/compiler/analysis"
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/syntax"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty"
-	"github.com/strict-lang/sdk/pkg/compiler/isolate"
+	isolates "github.com/strict-lang/sdk/pkg/compiler/isolate"
 	passes "github.com/strict-lang/sdk/pkg/compiler/pass"
+	"github.com/strict-lang/sdk/pkg/compiler/scope"
 	"log"
 	"testing"
 )
@@ -33,14 +35,28 @@ method testing(any Any)
 }
 
 func TestNameResolutionPass(testing *testing.T) {
+	isolate := isolates.New()
+	testAnalysis := analysis.Analysis{
+		ImportScope: createImportScope(),
+	}
+	testAnalysis.Store(isolate)
 	context := &passes.Context{
 		Unit:       parseTestUnit(),
 		Diagnostic: diagnostic.NewBag(),
-		Isolate:    isolate.SingleThreaded(),
+		Isolate: isolate,
 	}
 	execution, _ := passes.NewExecution(NameResolutionPassId, context)
 	if err := execution.Run(); err != nil {
 		testing.Error(err)
 	}
 	pretty.Print(context.Unit)
+}
+
+func createImportScope() scope.Scope {
+	testScope := scope.NewOuterScope(scope.Id("test-scope"), scope.NewBuiltinScope())
+	testScope.Insert(&scope.Class{
+		DeclarationName: "Test",
+		QualifiedName:   "Test",
+	})
+	return testScope
 }

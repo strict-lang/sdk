@@ -1,6 +1,7 @@
-package analysis
+package entering
 
 import (
+	"github.com/strict-lang/sdk/pkg/compiler/analysis"
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree/pretty"
@@ -13,16 +14,18 @@ import (
 const ScopeCreationPassId = "ScopeCreationPass"
 
 func init() {
-	registerPassInstance(&ScopeCreationPass{})
+	passes.Register(&ScopeCreationPass{})
 }
 
 type ScopeCreationPass struct {
 	diagnostics  *diagnostic.Bag
+	importScope  scope.Scope
 	localIdCount int
 }
 
 func (pass *ScopeCreationPass) Run(context *passes.Context) {
 	visitor := pass.createScopeResolutionVisitor()
+	pass.importScope = analysis.RequireInIsolate(context.Isolate).ImportScope
 	context.Unit.AcceptRecursive(visitor)
 }
 
@@ -44,7 +47,16 @@ func (pass *ScopeCreationPass) createScopeResolutionVisitor() tree.Visitor {
 	return visitor
 }
 
-func (*ScopeCreationPass) createMethodDeclarationScope(method *tree.MethodDeclaration) {
+
+func (pass *ScopeCreationPass) createBlockStatementScope(block *tree.StatementBlock) {
+	surroundingScope := requireNearestScope(block)
+	localScope := scope.NewLocalScope(pass.nextLocalIdSuffix(),
+		block.Region,
+		surroundingScope)
+	block.UpdateScope(localScope)
+}
+
+func (pass *ScopeCreationPass) createMethodDeclarationScope(method *tree.MethodDeclaration) {
 	surroundingScope := requireNearestScope(method)
 	localScope := scope.NewLocalScope(
 		scope.Id(method.Name.Value),
@@ -53,19 +65,9 @@ func (*ScopeCreationPass) createMethodDeclarationScope(method *tree.MethodDeclar
 	method.UpdateScope(localScope)
 }
 
-func (pass *ScopeCreationPass) createBlockStatementScope(block *tree.StatementBlock) {
-	surroundingScope := requireNearestScope(block)
-	localScope := scope.NewLocalScope(
-		pass.nextLocalIdSuffix(),
-		block.Region,
-		surroundingScope)
-	block.UpdateScope(localScope)
-}
-
 func (pass *ScopeCreationPass) createTranslationUnitScope(unit *tree.TranslationUnit) {
 	id := scope.Id(unit.Name)
-	builtinScope := scope.NewBuiltinScope()
-	unitScope := scope.NewOuterScopeWithRootId(id, builtinScope)
+	unitScope := scope.NewOuterScopeWithRootId(id, pass.importScope)
 	unit.UpdateScope(unitScope)
 }
 
@@ -103,11 +105,13 @@ func requireNearestScope(node tree.Node) scope.Scope {
 	return nil
 }
 
-func requireNearestMutableScope(node tree.Node) scope.MutableScope {
+func requireNearestMutableScope(
+	node tree.Node) scope.MutableScope {
+
 	if surroundingScope, ok := tree.ResolveNearestMutableScope(node); ok {
 		return surroundingScope
 	}
-	log.Fatalf("surrounding mutable scope does not exist: %v", pretty.Format(node))
+	log.Fatalf("surrounding scope does not exist: %v", pretty.Format(node))
 	return nil
 }
 

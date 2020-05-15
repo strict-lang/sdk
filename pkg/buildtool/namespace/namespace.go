@@ -3,8 +3,9 @@ package namespace
 type Namespace interface {
 	Name() string
 	QualifiedName() string
-	Dependencies() []Dependency
 	Entries() []Entry
+	MarkAsCompiled()
+	IsCompiled() bool
 }
 
 type Dependency interface {
@@ -20,7 +21,15 @@ type namespace struct {
 	name string
 	qualifiedName string
 	entries       []Entry
-	computed      bool
+	compiled bool
+}
+
+func (namespace *namespace) MarkAsCompiled() {
+	namespace.compiled = true
+}
+
+func (namespace *namespace) IsCompiled() bool {
+	return namespace.compiled
 }
 
 func (namespace *namespace) Name() string {
@@ -33,11 +42,6 @@ func (namespace *namespace) QualifiedName() string {
 
 func (namespace *namespace) Entries() []Entry {
 	return namespace.entries
-}
-
-func (namespace *namespace) Dependencies() []Namespace {
-
-	return nil
 }
 
 type entry struct {
