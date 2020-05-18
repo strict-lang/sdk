@@ -51,7 +51,9 @@ func (pass *SymbolEnterPass) createVisitor() tree.Visitor {
 	return visitor
 }
 
-func (pass *SymbolEnterPass) visitTranslationUnit(unit *tree.TranslationUnit) {}
+func (pass *SymbolEnterPass) visitTranslationUnit(unit *tree.TranslationUnit) {
+	pass.currentUnit = unit
+}
 
 func (pass *SymbolEnterPass) visitClassDeclaration(
 	declaration *tree.ClassDeclaration) {
@@ -69,9 +71,23 @@ func (pass *SymbolEnterPass) enterClassDeclaration(
 	if class, ok := scope.LookupClass(surroundingScope, referencePoint); ok {
 		pass.initializeClassSymbol(declaration, class)
 		pass.currentClassSymbol = class
+		pass.enterGenerics(declaration)
 		surroundingScope.Insert(class)
 	} else {
+		scope.Log(surroundingScope)
 		log.Fatalf("class %s was not eagerly inserted into the namespace-scope", name)
+	}
+}
+
+func (pass *SymbolEnterPass) enterGenerics(declaration *tree.ClassDeclaration) {
+	for _, parameter := range declaration.Parameters {
+		targetScope := requireNearestMutableScope(declaration)
+		targetScope.Insert(&scope.Class{
+			Scope:           targetScope,
+			DeclarationName: parameter.Name,
+			QualifiedName:   parameter.Name,
+			ActualClass:     &typing.ConcreteType{Name:   "Any"},
+		})
 	}
 }
 

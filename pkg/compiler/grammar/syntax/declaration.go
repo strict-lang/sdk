@@ -17,7 +17,7 @@ func (parsing *Parsing) parseClassDeclaration() *tree.ClassDeclaration {
 	parsing.beginStructure(tree.ClassDeclarationNodeKind)
 	nodes := parsing.parseTopLevelNodes()
 	return &tree.ClassDeclaration{
-		Name:       parseFileName(parsing.unitName),
+		Name:       convertFileNameToClassName(parsing.unitName),
 		Parameters: []*tree.ClassParameter{},
 		SuperTypes: []tree.TypeName{},
 		Children:   nodes,

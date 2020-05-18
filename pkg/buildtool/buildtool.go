@@ -4,6 +4,7 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/input"
 	"github.com/strict-lang/sdk/pkg/compiler/report"
+	"log"
 )
 
 func TranslateDiagnostics(diagnostics *diagnostic.Diagnostics) []report.Diagnostic {
@@ -41,6 +42,10 @@ func translatePosition(position input.Position) report.Position {
 }
 
 func translateDiagnosticKind(kind *diagnostic.Kind) report.DiagnosticKind {
+	if kind == nil {
+		log.Print("diagnostic-kind is nil")
+		return report.DiagnosticError
+	}
 	switch kind.Name {
 	case diagnostic.Error.Name:
 		return report.DiagnosticError

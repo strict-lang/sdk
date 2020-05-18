@@ -1,7 +1,6 @@
 package semantic
 
 import (
-	"github.com/strict-lang/sdk/pkg/compiler/analysis"
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
@@ -21,13 +20,11 @@ func init() {
 type NameResolutionPass struct {
 	context *passes.Context
 	visitor tree.Visitor
-	importScope scope.Scope
 }
 
 func (pass *NameResolutionPass) Run(context *passes.Context) {
 	pass.context = context
 	pass.visitor = pass.createVisitor()
-	pass.importScope = analysis.RequireInIsolate(context.Isolate).ImportScope
 	context.Unit.AcceptRecursive(pass.visitor)
 }
 
@@ -168,7 +165,8 @@ func (pass *NameResolutionPass) selectResolutionScopeWithoutQualifier(
 	if localScope, ok := tree.ResolveNearestScope(node); ok {
 		return localScope
 	}
-	return pass.importScope
+	log.Print("could not find resolution scope")
+	return scope.NewEmptyScope("not_found")
 }
 
 
@@ -183,7 +181,7 @@ func (pass *NameResolutionPass) selectResolutionScopeInChain(
 			return lastType.Scope
 		}
 	}
-	return pass.importScope
+	return scope.NewEmptyScope("not_found")
 }
 
 func findIndexInChain(position input.Offset, chain *tree.ChainExpression) int {

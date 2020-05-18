@@ -19,6 +19,8 @@ type Generation struct {
 	importModules                 map[string]string
 	shouldInsertNamespaceSelector bool
 	shouldImportStdlibClasses     bool
+	isGeneratingApp               bool
+	runMethod                     *tree.MethodDeclaration
 }
 
 type FileNaming interface {

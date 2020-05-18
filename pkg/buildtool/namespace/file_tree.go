@@ -3,6 +3,7 @@ package namespace
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -20,6 +21,7 @@ type FileTree struct {
 type treeEntry struct {
 	kind kind
 	name string
+	fileName string
 	children []treeEntry
 }
 
@@ -45,6 +47,9 @@ func (tree *FileTree) CreateTable() *Table {
 
 func (tree *FileTree) ListNamespaces() (namespaces []Namespace) {
 	for qualifiedName, treeEntry := range tree.entries {
+		if treeEntry.kind == fileKind {
+			continue
+		}
 		namespace := &namespace{
 			name:          extractNameFromQualifiedName(qualifiedName),
 			qualifiedName: qualifiedName,
@@ -58,7 +63,7 @@ func (tree *FileTree) ListNamespaces() (namespaces []Namespace) {
 func translateEntries(entries []treeEntry) (result []Entry) {
 	for _, treeEntry := range entries {
 		result = append(result, &entry{
-			fileName:  treeEntry.name,
+			fileName:  treeEntry.fileName,
 			directory: treeEntry.kind == directoryKind,
 		})
 	}
@@ -70,7 +75,7 @@ func extractNameFromQualifiedName(qualifiedName string) string {
 	if lastDot == -1 {
 		return qualifiedName
 	}
-	return qualifiedName[lastDot:]
+	return qualifiedName[lastDot + 1:]
 }
 
 func (tree *FileTree) findByQualifier(qualifier string) (treeEntry, bool) {
@@ -102,6 +107,7 @@ func scanFiles(
 
 type treeCreation struct {
   rootNamespace string
+  relativePath string
   mapped map[string] treeEntry
 }
 
@@ -128,6 +134,7 @@ func (creation *treeCreation) createFileEntry(info os.FileInfo) treeEntry {
 	fileEntry := treeEntry{
 		kind:     fileKind,
 		name:     qualifiedName,
+		fileName: filepath.Join(creation.relativePath, info.Name()),
 	}
 	creation.mapped[qualifiedName] = fileEntry
 	return fileEntry
@@ -136,7 +143,12 @@ func (creation *treeCreation) createFileEntry(info os.FileInfo) treeEntry {
 func (creation *treeCreation) createRecursiveForDirectory(
 	info os.FileInfo) (treeEntry, error) {
 
-	children, err := ioutil.ReadDir(info.Name())
+	oldPath := creation.relativePath
+	directoryPath := filepath.Join(creation.relativePath, info.Name())
+	creation.changeRelativePath(directoryPath)
+	defer creation.changeRelativePath(oldPath)
+
+	children, err := ioutil.ReadDir(directoryPath)
 	if err != nil {
 		return treeEntry{}, err
 	}
@@ -147,6 +159,10 @@ func (creation *treeCreation) createRecursiveForDirectory(
 	return creation.createDirectoryEntry(info, entries), nil
 }
 
+func (creation *treeCreation) changeRelativePath(target string) {
+	creation.relativePath = target
+}
+
 func (creation *treeCreation) createDirectoryEntry(
 	info os.FileInfo,
 	entries []treeEntry) treeEntry {
@@ -155,6 +171,7 @@ func (creation *treeCreation) createDirectoryEntry(
 	directoryEntry := treeEntry{
 		kind:     directoryKind,
 		name:     qualifiedName,
+		fileName: filepath.Join(creation.relativePath, info.Name()),
 		children: entries,
 	}
 	creation.mapped[qualifiedName] = directoryEntry
@@ -175,11 +192,28 @@ func (creation *treeCreation) createDirectoryEntries(
 	return entries, nil
 }
 
+const sourceDirectory = "src"
+
 func  (creation *treeCreation) createQualifiedName(path string) string {
+	if path == sourceDirectory {
+		return creation.rootNamespace
+	}
 	pathQualifier := convertPathToQualifier(path)
-	return creation.rootNamespace + "." + pathQualifier
+	if len(creation.rootNamespace) != 0 {
+		return creation.rootNamespace + "." + pathQualifier
+	}
+	return pathQualifier
 }
 
 func convertPathToQualifier(path string) string {
-	return strings.ReplaceAll(path, string(os.PathSeparator), ".")
+	pathWithoutExtension := removeExtension(path)
+	return strings.ReplaceAll(pathWithoutExtension, string(os.PathSeparator), ".")
+}
+
+func removeExtension(path string) string {
+	lastDot := strings.LastIndex(path, ".")
+	if lastDot == -1 {
+		return path
+	}
+	return path[:lastDot]
 }

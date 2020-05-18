@@ -2,7 +2,7 @@ package scope
 
 import "log"
 
-func NewImportScope(name string, symbols []Symbol) Scope {
+func NewImportScope(name string, symbols []Symbol) MutableScope {
 	id := Id("import." + name)
 	scope := NewOuterScopeWithRootId(id, builtinScope)
 	creation := &importScopeCreation{

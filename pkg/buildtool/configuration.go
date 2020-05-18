@@ -1,11 +1,9 @@
 package buildtool
 
 import (
-	"encoding/json"
-	"errors"
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"path"
 )
 
 type Configuration struct {
@@ -16,33 +14,18 @@ type Configuration struct {
 }
 
 type RepositoryConfiguration struct {
-	Url  string `yaml:"url" json:"url"`
-	Name string `yaml:"name" json:"name"`
+	Url  string `yaml:"url"`
+	Name string `yaml:"name"`
 }
 
 func ReadConfiguration(file string) (Configuration, error) {
-	function, err := createUnmarshalFunction(file)
-	if err != nil	{
-		return Configuration{}, err
-	}
-	contents, err := ioutil.ReadFile(file)
+	content, err := ioutil.ReadFile(file)
 	if err != nil {
-		return Configuration{}, err
+		return Configuration{}, fmt.Errorf("could not read build config: %v", err)
 	}
-	configuration := &Configuration{}
-	err = function(contents, configuration)
-	return *configuration, err
-}
-
-type unmarshalFunction func(bytes []byte, target interface{}) error
-
-func createUnmarshalFunction(fileName string) (unmarshalFunction, error) {
-	switch path.Ext(fileName) {
-	case "yml", "yaml":
-		return yaml.Unmarshal, nil
-	case "json":
-		return json.Unmarshal, nil
-
+  var configuration Configuration
+	if err := yaml.Unmarshal(content, &configuration); err != nil {
+		return Configuration{}, fmt.Errorf("could not parse build config: %v", err)
 	}
-	return nil, errors.New("unsupported configuration type")
+	return configuration, nil
 }

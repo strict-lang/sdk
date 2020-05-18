@@ -13,9 +13,9 @@ func (diagnostics *Diagnostics) Merge(target *Diagnostics) *Diagnostics {
 	return &Diagnostics{entries: mergedEntries}
 }
 
-func (diagnostics *Diagnostics) ListEntries() (values []Entry) {
+func (diagnostics *Diagnostics) ListEntries() []Entry {
 	copied := make([]Entry, len(diagnostics.entries))
-	copy(copied, values)
+	copy(copied, diagnostics.entries)
 	return copied
 }
 

@@ -23,4 +23,5 @@ func init() {
 	baseCommand.AddCommand(treeCommand)
 	baseCommand.AddCommand(tokenizeCommand)
 	baseCommand.AddCommand(initCommand)
+	baseCommand.AddCommand(runCommand)
 }

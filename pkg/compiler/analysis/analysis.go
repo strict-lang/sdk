@@ -21,7 +21,9 @@ func RequireInIsolate(isolate *isolate.Isolate) *Analysis {
 		if analysis, ok := property.(*Analysis); ok {
 			return analysis
 		}
+		log.Fatalf(`found invalid property named "analysis": %+v`, property)
 	}
+	isolate.Properties.Log()
 	log.Fatalln("can not find scope in isolate")
 	return nil
 }
@@ -29,6 +31,7 @@ func RequireInIsolate(isolate *isolate.Isolate) *Analysis {
 type Creation struct {
 	Unit       *tree.TranslationUnit
 	Namespaces *namespace.Table
+	NamespaceSymbol *scope.Namespace
 }
 
 func (creation *Creation) Create() *Analysis {
@@ -37,8 +40,10 @@ func (creation *Creation) Create() *Analysis {
 }
 
 func (creation *Creation) createImportScope() scope.Scope {
-	namespaces := creation.resolveAllNamespaces()
-	return scope.NewImportScope(creation.Unit.Name, namespaces)
+	namespaces := append(creation.resolveAllNamespaces(), creation.NamespaceSymbol)
+	importScope := scope.NewImportScope(creation.Unit.Name, namespaces)
+	namespaceScope := creation.NamespaceSymbol.Scope
+	return scope.Combine(importScope.Id(), namespaceScope, importScope)
 }
 
 func (creation *Creation) listImportedNamespaces() (namespaces []string) {

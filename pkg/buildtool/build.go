@@ -28,7 +28,7 @@ func (build *Build) Run() (report.Report, *linemap.Table, error) {
 	beginTime := time.Now().UnixNano()
 	result := build.run()
 	return report.Report{
-		Success: result.error != nil && !containsError(result.diagnostics),
+		Success: result.error == nil && !containsError(result.diagnostics),
 		Time: report.Time{
 			Begin:      beginTime,
 			Completion: time.Now().UnixNano(),

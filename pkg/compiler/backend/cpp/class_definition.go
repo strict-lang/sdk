@@ -5,6 +5,10 @@ import (
 )
 
 func (generation *Generation) GenerateClassDeclaration(declaration *tree.ClassDeclaration) {
+	generation.isGeneratingApp = isApp(declaration)
+	if generation.isGeneratingApp {
+		generation.runMethod = findRunMethod(declaration)
+	}
 	for _, child := range declaration.Children {
 		generation.EmitNode(child)
 	}

@@ -43,7 +43,7 @@ func ConvertWithLineMap(lineMap *linemap.LineMap) OffsetConversionFunction {
 }
 
 func (recorder *Bag) CreateDiagnostics(converter OffsetConversionFunction) *Diagnostics {
-	entries := make([]Entry, len(*recorder.entries))
+	var entries []Entry
 	for _, recorded := range *recorder.entries {
 		entry := translateEntry(converter, recorded)
 		entries = append(entries, entry)

@@ -1,6 +1,8 @@
 package scope
 
-import "github.com/strict-lang/sdk/pkg/buildtool/namespace"
+import (
+	"github.com/strict-lang/sdk/pkg/buildtool/namespace"
+)
 
 func NewNamespaceScope(namespace namespace.Namespace, classes []*Class) Scope {
 	id := Id("namespace." + namespace.QualifiedName())

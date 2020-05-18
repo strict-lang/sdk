@@ -16,8 +16,6 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/scope"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
 )
 
 func compileNamespace(
@@ -36,6 +34,7 @@ type namespaceCompilation struct {
 	diagnostics *diagnostic.Diagnostics
 	units       []*tree.TranslationUnit
 	scope       scope.Scope
+	symbol      *scope.Namespace
 	namespace   namespace.Namespace
 	namespaces  *namespace.Table
 	backend     backend.Backend
@@ -58,8 +57,8 @@ func newNamespaceCompilation(
 }
 
 func (compilation *namespaceCompilation) run() {
-	symbol := compilation.createNamespace()
-	scope.GlobalNamespaceTable().Insert(symbol.QualifiedName, symbol)
+	log.Printf("\ncompiling namespace: %v", compilation.namespace.QualifiedName())
+	compilation.createNamespace()
 	compilation.generateOutputForAll()
 }
 
@@ -98,11 +97,12 @@ func (compilation *namespaceCompilation) generateOutput(
 	return nil
 }
 
-func (compilation *namespaceCompilation) createNamespace() *scope.Namespace {
-	symbol := compilation.createEmptyNamespace()
+func (compilation *namespaceCompilation) createNamespace() {
+	compilation.parseFiles()
+	compilation.symbol = compilation.createEmptyNamespace()
+	scope.GlobalNamespaceTable().Insert(compilation.symbol.QualifiedName, compilation.symbol)
 	compilation.runEarlyEnteringForAll()
 	compilation.completeAnalysisForAll()
-	return symbol
 }
 
 func (compilation *namespaceCompilation) completeAnalysisForAll() {
@@ -152,6 +152,7 @@ func (compilation *namespaceCompilation) prepareIsolate(
 	creation := &analysis.Creation{
 		Unit:       unit,
 		Namespaces: compilation.namespaces,
+		NamespaceSymbol: compilation.symbol,
 	}
 	isolate := isolates.New()
 	creation.Create().Store(isolate)
@@ -189,37 +190,39 @@ func (compilation *namespaceCompilation) addQualifierToName(name string) string 
 	return name + "." + qualifier
 }
 
-func (compilation *namespaceCompilation) compileFiles() {
+func (compilation *namespaceCompilation) parseFiles() {
 	for _, entry := range compilation.namespace.Entries() {
 		if entry.IsDirectory() {
 			continue
 		}
-		unit, err := compilation.compileFileAtPath(entry.FileName())
+		unit, err := compilation.parseFileAtPath(entry.FileName())
 		if err != nil {
-			log.Printf("failed to compile %s", entry.FileName())
+			log.Printf("failed to compile %s, %v", entry.FileName(), err)
 			continue
 		}
 		compilation.units = append(compilation.units, unit)
 	}
 }
 
-func (compilation *namespaceCompilation) compileFileAtPath(
+func (compilation *namespaceCompilation) parseFileAtPath(
 	filePath string) (*tree.TranslationUnit, error) {
 
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
-	return compilation.compileFile(filePath, file)
+	return compilation.parseFile(filePath, file)
 }
 
-func (compilation *namespaceCompilation) compileFile(
+func (compilation *namespaceCompilation) parseFile(
 	filePath string, file *os.File) (*tree.TranslationUnit, error) {
 
-	name := strings.TrimSuffix(filePath, filepath.Ext(filePath))
-	result := syntax.Parse(name, input.NewStreamReader(file))
+	log.Printf("compiling file at path %s", filePath)
+	result := syntax.Parse(filePath, input.NewStreamReader(file))
 	compilation.addDiagnostics(result.Diagnostics)
-	compilation.lineMaps.Insert(result.TranslationUnit.Name, result.LineMap)
+	if result.LineMap != nil {
+		compilation.lineMaps.Insert(filePath, result.LineMap)
+	}
 	return result.TranslationUnit, result.Error
 }
 

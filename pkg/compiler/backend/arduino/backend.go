@@ -27,7 +27,7 @@ func (backend *Backend) Generate(input backends.Input) (backends.Output, error) 
 	return backends.Output{
 		GeneratedFiles: []backends.GeneratedFile{
 			{
-				Name:    input.Unit.Name + ".ino",
+				Name:    input.Unit.Class.Name + ".ino",
 				Content: []byte(generation.Generate()),
 			},
 		},

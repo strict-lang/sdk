@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/spf13/cobra"
 	"github.com/strict-lang/sdk/pkg/buildtool"
+	"github.com/strict-lang/sdk/pkg/compiler/backend"
+	"github.com/strict-lang/sdk/pkg/compiler/backend/cpp"
 	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
+	"github.com/strict-lang/sdk/pkg/compiler/isolate"
 	"github.com/strict-lang/sdk/pkg/compiler/report"
 	"io/ioutil"
 	"log"
@@ -34,10 +38,8 @@ func init() {
 }
 
 func disableLogging() {
-	if !buildOptions.debug {
-		log.SetFlags(0)
-		log.SetOutput(ioutil.Discard)
-	}
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
 }
 
 var reportFormats = map[string]func(report.Report, *linemap.Table) report.Output{
@@ -57,8 +59,10 @@ var reportFormats = map[string]func(report.Report, *linemap.Table) report.Output
 }
 
 func RunCompile(command *cobra.Command, arguments []string) error {
-	disableLogging()
 	fixOptions()
+	if !buildOptions.debug {
+		disableLogging()
+	}
 	compilationReport, lineMaps, err := runCompilation()
 	if err != nil {
 		return err
@@ -83,17 +87,34 @@ func createOutput(
 
 func runCompilation() (report.Report, *linemap.Table, error) {
 	directory := findWorkingDirectory()
+	config := readBuildConfigOrFallback(directory)
+	log.Printf("using build config: %s", prettyPrint(config))
 	build := buildtool.Build{
 		RootPath:      directory,
-		Configuration: readBuildConfigOrFallback(directory),
+		Configuration: config,
+		Backend: selectBackend(),
 	}
   return build.Run()
 }
 
-const buildFileName = `build.yml`
+func selectBackend() backend.Backend {
+	found, ok := backend.LookupInIsolate(isolate.SingleThreaded(), buildOptions.backendName)
+	if ok {
+		return found
+	}
+	return cpp.NewBackend()
+}
+
+func prettyPrint(value interface{}) string {
+	content, err := json.MarshalIndent(value, "  ", "  ")
+	if err == nil {
+		return string(content)
+	}
+	return err.Error()
+}
 
 func readBuildConfigOrFallback(workingDirectory string) buildtool.Configuration {
-	if config, err := readBuildConfig(workingDirectory); err != nil {
+	if config, err := readBuildConfig(workingDirectory); err == nil {
 		return config
 	}
 	return buildtool.Configuration{
@@ -103,7 +124,9 @@ func readBuildConfigOrFallback(workingDirectory string) buildtool.Configuration 
 	}
 }
 
+const buildFileName = `build.yml`
+
 func readBuildConfig(workingDirectory string) (buildtool.Configuration, error) {
-	configPath :=filepath.Join  (workingDirectory, buildFileName)
+	configPath := filepath.Join(workingDirectory, buildFileName)
 	return buildtool.ReadConfiguration(configPath)
 }

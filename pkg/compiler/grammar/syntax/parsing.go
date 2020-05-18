@@ -7,6 +7,8 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/input"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -109,14 +111,14 @@ func (parsing *Parsing) updateTopStructureKind(kind tree.NodeKind) {
 	}
 }
 
-func parseFileName(name string) string {
-	if lastSlash := strings.LastIndex(name, "\\"); lastSlash != -1 {
-		return parseFileName(name[lastSlash+1:])
+func convertFileNameToClassName(fileName string) string {
+	nameWithoutExtension := strings.TrimSuffix(fileName, filepath.Ext(fileName))
+	lastDot := strings.LastIndex(nameWithoutExtension, string(os.PathSeparator))
+	if lastDot != -1 {
+		return nameWithoutExtension[lastDot + 1:]
+
 	}
-	if extensionPoint := strings.LastIndex(name, "."); extensionPoint != -1 {
-		return name[:extensionPoint]
-	}
-	return name
+	return nameWithoutExtension
 }
 
 func (parsing *Parsing) completeStructure(expectedKind tree.NodeKind) input.Region {

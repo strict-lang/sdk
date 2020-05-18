@@ -23,7 +23,7 @@ func newDiagnosticRendering(
 
 	lineMap, ok := lineMaps.Lookup(diagnostic.TextRange.File)
 	if !ok {
-		err := fmt.Errorf("could not find LineMap for %s", diagnostic.TextRange.File)
+		err := fmt.Errorf("could not find line-map for %s", diagnostic.TextRange.File)
 		return diagnosticRendering{}, err
 	}
 	line := findLineForDiagnostic(diagnostic, lineMap)
