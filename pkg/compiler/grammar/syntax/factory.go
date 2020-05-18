@@ -7,7 +7,7 @@ import (
 
 // Factory is responsible for creating new grammar instances.
 type Factory struct {
-	tokens   token.Stream
+	tokens   token.StreamWithLineMap
 	unitName string
 	bag      *diagnostic.Bag
 }
@@ -29,7 +29,7 @@ func (factory *Factory) WithUnitName(name string) *Factory {
 // WithTokenStream set the input of tokens. This field is not copied per
 // parser thus, creating multiple Parsings from a factory is not possible,
 // unless the stream is changed each time.
-func (factory *Factory) WithTokenStream(reader token.Stream) *Factory {
+func (factory *Factory) WithTokenStream(reader token.StreamWithLineMap) *Factory {
 	factory.tokens = reader
 	return factory
 }

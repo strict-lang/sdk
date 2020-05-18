@@ -19,11 +19,13 @@ func (parsing *Parsing) parseMethodDeclaration() *tree.MethodDeclaration {
 	parsing.skipKeyword(token.MethodKeyword)
 	signature := parsing.parseMethodSignature()
 	parsing.updateCurrentMethod(signature)
+	body := parsing.parseMethodBody()
 	return &tree.MethodDeclaration{
 		Type:       signature.returnTypeName,
 		Name:       signature.name,
 		Parameters: signature.parameters,
-		Body:       parsing.parseMethodBody(),
+		Abstract:   len(body.Children) == 0,
+		Body:       body,
 		Region:     parsing.completeStructure(tree.MethodDeclarationNodeKind),
 	}
 }
@@ -48,15 +50,12 @@ type methodSignature struct {
 	returnTypeName tree.TypeName
 }
 
-func (parsing *Parsing) parseMethodBody() tree.Node {
-	if token.OperatorValue(parsing.token()) == token.ArrowOperator {
-		return parsing.parseAssignedMethodBody()
-	}
+func (parsing *Parsing) parseMethodBody() *tree.StatementBlock {
 	parsing.skipEndOfStatement()
 	return parsing.parseMethodBlockBody()
 }
 
-func (parsing *Parsing) parseMethodBlockBody() tree.Node {
+func (parsing *Parsing) parseMethodBlockBody() *tree.StatementBlock {
 	return parsing.parseStatementBlock()
 }
 

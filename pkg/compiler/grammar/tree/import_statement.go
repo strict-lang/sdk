@@ -50,8 +50,7 @@ func (statement *ImportStatement) matchesAlias(target *ImportStatement) bool {
 
 // ImportTarget is the File or package that is imported with an ImportStatement.
 type ImportTarget interface {
-	ToModuleName() string
-	FilePath() string
+	Namespace() string
 	Matches(ImportTarget) bool
 }
 
@@ -66,7 +65,7 @@ func (statement *ImportStatement) ModuleName() string {
 	if statement.HasAlias() {
 		return statement.Alias.Value
 	}
-	return statement.Target.ToModuleName()
+	return statement.Target.Namespace()
 }
 
 type IdentifierChainImport struct {
@@ -112,7 +111,7 @@ func writePath(parts []string, builder *strings.Builder) {
 	}
 }
 
-func (target *IdentifierChainImport) ToModuleName() string {
+func (target *IdentifierChainImport) Namespace() string {
 	// The module is imported into an anonymous namespace
 	return ""
 }
@@ -132,7 +131,7 @@ func (target *FileImport) FilePath() string {
 	return fmt.Sprintf("%s", target.Path)
 }
 
-func (target *FileImport) ToModuleName() string {
+func (target *FileImport) Namespace() string {
 	path := target.Path
 	begin := findFileNameBegin(path)
 	end := findFileNameEnd(path)

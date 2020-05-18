@@ -59,7 +59,7 @@ func (parsing *Parsing) throwError(cause *diagnostic.RichError) {
 	panic(&parsingError{
 		Structure: structure.nodeKind,
 		Position:  region,
-		Cause:     fmt.Errorf("could not parse %s", structure.nodeKind),
+		Cause:     fmt.Errorf("could not parse %s: %s", structure.nodeKind, cause.Error.Name()),
 	})
 }
 func newNoIdentifierError(token token.Token) *diagnostic.RichError {

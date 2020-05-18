@@ -75,12 +75,12 @@ func (call *CallExpression) hasArguments(arguments CallArgumentList) bool {
 	return true
 }
 
-func (call *CallExpression) TargetName() *Identifier {
+func (call *CallExpression) TargetName() (*Identifier, bool) {
 	call.maybeTryToResolveName()
-	return call.name.value
+	return call.name.value, call.name.found
 }
 
-func (call *CallExpression) IsNamedCall() bool {
+func (call *CallExpression) IsNamedmCall() bool {
 	call.maybeTryToResolveName()
 	return call.name.found
 }
@@ -101,11 +101,6 @@ func (call *CallExpression) createNameResolveVisitor() Visitor {
 	return &DelegatingVisitor{
 		IdentifierVisitor: func(identifier *Identifier) {
 			call.name.found = true
-			call.name.value = identifier
-		},
-		FieldSelectExpressionVisitor: func(expression *FieldSelectExpression) {
-			identifier, found := expression.FindLastIdentifier()
-			call.name.found = found
 			call.name.value = identifier
 		},
 	}

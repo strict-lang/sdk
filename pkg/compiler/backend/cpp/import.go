@@ -6,7 +6,7 @@ import (
 
 func (generation *Generation) GenerateImportStatement(statement *tree.ImportStatement) {
 	moduleName := statement.ModuleName()
-	generation.importModule(moduleName, statement.Target.FilePath())
+	generation.importModule(moduleName, statement.Target.Namespace())
 }
 
 func (generation *Generation) importModule(name, path string) {

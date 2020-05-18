@@ -9,16 +9,16 @@ import (
 )
 
 type renderingOutput struct {
-	buffer strings.Builder
-	report Report
+	buffer          strings.Builder
+	report          Report
 	diagnosticStats diagnosticStats
-	lineMap *linemap.LineMap
+	lineMaps        *linemap.Table
 }
 
-func NewRenderingOutput(report Report, lineMap *linemap.LineMap) Output {
+func NewRenderingOutput(report Report, lineMaps *linemap.Table) Output {
 	output := &renderingOutput{
-		report: report,
-		lineMap: lineMap,
+		report:  report,
+		lineMaps: lineMaps,
 	}
 	output.calculateDiagnosticStats()
 	return output
@@ -26,8 +26,8 @@ func NewRenderingOutput(report Report, lineMap *linemap.LineMap) Output {
 
 type diagnosticStats struct {
 	warningCount int
-	infoCount int
-	errorCount int
+	infoCount    int
+	errorCount   int
 }
 
 func (output *renderingOutput) Print(writer io.Writer) error {
@@ -47,7 +47,11 @@ func (output *renderingOutput) render() {
 
 func (output *renderingOutput) renderDiagnostic(diagnostic Diagnostic) {
 	errorColor := color.New(color.FgRed)
-	rendering := newDiagnosticRendering(diagnostic, errorColor, output.lineMap)
+	rendering, err := newDiagnosticRendering(diagnostic, errorColor, output.lineMaps)
+	if err != nil {
+		output.buffer.WriteString(err.Error())
+		return
+	}
 	output.buffer.WriteString(rendering.print())
 }
 

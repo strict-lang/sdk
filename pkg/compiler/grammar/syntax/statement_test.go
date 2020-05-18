@@ -157,9 +157,11 @@ func TestParsing_ParseAssignStatement(testing *testing.T) {
 			{
 				Input: `this.name = name`,
 				ExpectedOutput: &tree.AssignStatement{
-					Target: &tree.FieldSelectExpression{
-						Target:    &tree.Identifier{Value: `this`},
-						Selection: &tree.Identifier{Value: `name`},
+					Target: &tree.ChainExpression{
+						Expressions: []tree.Expression{
+							&tree.Identifier{Value: `this`},
+							&tree.Identifier{Value: `name`},
+						},
 					},
 					Value:    &tree.Identifier{Value: `name`},
 					Operator: token.AssignOperator,

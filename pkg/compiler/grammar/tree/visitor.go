@@ -16,12 +16,13 @@ type Visitor interface {
 	VisitTestStatement(*TestStatement)
 	VisitStringLiteral(*StringLiteral)
 	VisitNumberLiteral(*NumberLiteral)
+	VisitListExpression(*ListExpression)
 	VisitCallExpression(*CallExpression)
 	VisitEmptyStatement(*EmptyStatement)
 	VisitYieldStatement(*YieldStatement)
 	VisitBreakStatement(*BreakStatement)
 	VisitBlockStatement(*StatementBlock)
-	VisitWildcardNode(node *WildcardNode)
+	VisitWildcardNode(*WildcardNode)
 	VisitAssertStatement(*AssertStatement)
 	VisitUnaryExpression(*UnaryExpression)
 	VisitImportStatement(*ImportStatement)
@@ -44,7 +45,7 @@ type Visitor interface {
 	VisitForEachLoopStatement(*ForEachLoopStatement)
 	VisitConditionalStatement(*ConditionalStatement)
 	VisitListSelectExpression(*ListSelectExpression)
-	VisitFieldSelectExpression(*FieldSelectExpression)
+	VisitFieldSelectExpression(*ChainExpression)
 	VisitConstructorDeclaration(*ConstructorDeclaration)
 }
 
@@ -57,6 +58,7 @@ type DelegatingVisitor struct {
 	TestStatementVisitor          func(*TestStatement)
 	StringLiteralVisitor          func(*StringLiteral)
 	NumberLiteralVisitor          func(*NumberLiteral)
+	ListExpressionVisitor         func(*ListExpression)
 	CallExpressionVisitor         func(*CallExpression)
 	EmptyStatementVisitor         func(*EmptyStatement)
 	WildcardNodeVisitor           func(*WildcardNode)
@@ -85,7 +87,7 @@ type DelegatingVisitor struct {
 	ForEachLoopStatementVisitor   func(*ForEachLoopStatement)
 	ConditionalStatementVisitor   func(*ConditionalStatement)
 	ListSelectExpressionVisitor   func(*ListSelectExpression)
-	FieldSelectExpressionVisitor  func(*FieldSelectExpression)
+	FieldSelectExpressionVisitor  func(*ChainExpression)
 	ConstructorDeclarationVisitor func(*ConstructorDeclaration)
 }
 
@@ -100,6 +102,7 @@ func NewEmptyVisitor() *DelegatingVisitor {
 		StringLiteralVisitor:          func(*StringLiteral) {},
 		NumberLiteralVisitor:          func(*NumberLiteral) {},
 		CallExpressionVisitor:         func(*CallExpression) {},
+		ListExpressionVisitor:         func(*ListExpression) {},
 		EmptyStatementVisitor:         func(*EmptyStatement) {},
 		YieldStatementVisitor:         func(*YieldStatement) {},
 		WildcardNodeVisitor:           func(*WildcardNode) {},
@@ -125,7 +128,7 @@ func NewEmptyVisitor() *DelegatingVisitor {
 		ForEachLoopStatementVisitor:   func(*ForEachLoopStatement) {},
 		ConditionalStatementVisitor:   func(*ConditionalStatement) {},
 		ListSelectExpressionVisitor:   func(*ListSelectExpression) {},
-		FieldSelectExpressionVisitor:  func(*FieldSelectExpression) {},
+		FieldSelectExpressionVisitor:  func(*ChainExpression) {},
 		ImplementStatementVisitor:     func(*ImplementStatement) {},
 		OptionalTypeNameVisitor:       func(*OptionalTypeName) {},
 		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {},
@@ -251,7 +254,7 @@ func (visitor *DelegatingVisitor) VisitConditionalStatement(node *ConditionalSta
 	visitor.ConditionalStatementVisitor(node)
 }
 
-func (visitor *DelegatingVisitor) VisitFieldSelectExpression(node *FieldSelectExpression) {
+func (visitor *DelegatingVisitor) VisitFieldSelectExpression(node *ChainExpression) {
 	visitor.FieldSelectExpressionVisitor(node)
 }
 
@@ -281,6 +284,10 @@ func (visitor *DelegatingVisitor) VisitLetBinding(node *LetBinding) {
 
 func (visitor *DelegatingVisitor) VisitImplementStatement(node *ImplementStatement) {
 	visitor.ImplementStatementVisitor(node)
+}
+
+func (visitor *DelegatingVisitor) VisitListExpression(expression *ListExpression) {
+	visitor.ListExpressionVisitor(expression)
 }
 
 type nodeReporter interface {
@@ -385,8 +392,8 @@ func NewReportingVisitor(reporter nodeReporter) Visitor {
 		ConstructorDeclarationVisitor: func(*ConstructorDeclaration) {
 			reporter.reportNodeEncounter(ConstructorDeclarationNodeKind)
 		},
-		FieldSelectExpressionVisitor: func(*FieldSelectExpression) {
-			reporter.reportNodeEncounter(FieldSelectExpressionNodeKind)
+		FieldSelectExpressionVisitor: func(*ChainExpression) {
+			reporter.reportNodeEncounter(ChainExpressionNodeKind)
 		},
 		PostfixExpressionVisitor: func(*PostfixExpression) {
 			reporter.reportNodeEncounter(PostfixExpressionNodeKind)
@@ -402,6 +409,9 @@ func NewReportingVisitor(reporter nodeReporter) Visitor {
 		},
 		ImplementStatementVisitor: func(*ImplementStatement) {
 			reporter.reportNodeEncounter(ImplementStatementNodeKind)
+		},
+		ListExpressionVisitor: func(*ListExpression) {
+			reporter.reportNodeEncounter(ListExpressionNodeKind)
 		},
 	}
 }
@@ -546,9 +556,13 @@ func (visitor *SingleFunctionVisitor) VisitConditionalStatement(node *Conditiona
 func (visitor *SingleFunctionVisitor) VisitListSelectExpression(node *ListSelectExpression) {
 	visitor.visit(node)
 }
-func (visitor *SingleFunctionVisitor) VisitFieldSelectExpression(node *FieldSelectExpression) {
+func (visitor *SingleFunctionVisitor) VisitFieldSelectExpression(node *ChainExpression) {
 	visitor.visit(node)
 }
 func (visitor *SingleFunctionVisitor) VisitConstructorDeclaration(node *ConstructorDeclaration) {
+	visitor.visit(node)
+}
+
+func (visitor *SingleFunctionVisitor) VisitListExpression(node *ListExpression) {
 	visitor.visit(node)
 }

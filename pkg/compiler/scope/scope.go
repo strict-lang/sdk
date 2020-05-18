@@ -70,9 +70,10 @@ func NewReferencePointWithPosition(
 
 func LookupClass(scope Scope, point ReferencePoint) (*Class, bool) {
 	if entries := scope.Lookup(point); !entries.IsEmpty() {
-		first := entries.First().Symbol
-		class, isClass := first.(*Class)
-		return class, isClass
+		for _, entry := range entries {
+			class, isClass := entry.Symbol.(*Class)
+			return class, isClass
+		}
 	}
 	return nil, false
 }

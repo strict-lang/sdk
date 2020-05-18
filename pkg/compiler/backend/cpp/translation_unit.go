@@ -13,6 +13,22 @@ func (generation *Generation) GenerateTranslationUnit(unit *tree.TranslationUnit
 	generation.EmitEndOfLine()
 	generation.EmitNode(unit.Class)
 	generation.Emit("\n")
+
+	if generation.isGeneratingApp {
+		generation.generateMainMethodCall()
+	}
+}
+
+func (generation *Generation) generateMainMethodCall() {
+	generation.Emit(`void main(int argc, char** argv) {`)
+	generation.IncreaseIndent()
+	generation.EmitIndent()
+	generation.EmitFormatted(`auto app = new %s();`, generation.Unit.Class.Name)
+	generation.EmitIndent()
+	generation.Emit("app.Run();")
+	generation.EmitEndOfLine()
+	generation.DecreaseIndent()
+	generation.Emit(`}`)
 }
 
 func (generation *Generation) generateImplicitImports() {

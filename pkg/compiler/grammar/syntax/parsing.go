@@ -7,13 +7,15 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/input"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
 var notParsingMethod = parsedMethod{name: `!none`}
 
 type Parsing struct {
-	tokenReader     token.Stream
+	tokenReader     token.StreamWithLineMap
 	recorder        *diagnostic.Bag
 	block           *Block
 	unitName        string
@@ -48,9 +50,11 @@ func (parsing *Parsing) parseTranslationUnit() *tree.TranslationUnit {
 		Name:    parsing.unitName,
 		Imports: imports,
 		Class:   class,
+		LineMap: parsing.tokenReader.NewLineMap(),
 		Region:  parsing.completeStructure(tree.TranslationUnitNodeKind),
 	}
 }
+
 
 // openBlock opens a new block of code, updates the grammar block pointer and
 // creates a new scope for that block that is a child-scope of the parsers
@@ -107,14 +111,14 @@ func (parsing *Parsing) updateTopStructureKind(kind tree.NodeKind) {
 	}
 }
 
-func parseFileName(name string) string {
-	if lastSlash := strings.LastIndex(name, "\\"); lastSlash != -1 {
-		return parseFileName(name[lastSlash+1:])
+func convertFileNameToClassName(fileName string) string {
+	nameWithoutExtension := strings.TrimSuffix(fileName, filepath.Ext(fileName))
+	lastDot := strings.LastIndex(nameWithoutExtension, string(os.PathSeparator))
+	if lastDot != -1 {
+		return nameWithoutExtension[lastDot + 1:]
+
 	}
-	if extensionPoint := strings.LastIndex(name, "."); extensionPoint != -1 {
-		return name[:extensionPoint]
-	}
-	return name
+	return nameWithoutExtension
 }
 
 func (parsing *Parsing) completeStructure(expectedKind tree.NodeKind) input.Region {

@@ -25,6 +25,17 @@ func SearchEnclosingClass(node Node) (*ClassDeclaration, bool) {
 	return nil, false
 }
 
+func SearchEnclosingChain(node Node) (*ChainExpression, bool) {
+	currentParent, _ := node.EnclosingNode()
+	for currentParent != nil {
+		if chain, isChain := currentParent.(*ChainExpression); isChain {
+			return chain, true
+		}
+		currentParent, _ = currentParent.EnclosingNode()
+	}
+	return nil, false
+}
+
 type NodeFilter func(Node) bool
 
 func SearchFirstMatchingEnclosingNode(node Node, filter NodeFilter) (Node, bool) {

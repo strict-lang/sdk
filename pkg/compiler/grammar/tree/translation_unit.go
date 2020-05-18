@@ -2,6 +2,7 @@ package tree
 
 import (
 	"github.com/strict-lang/sdk/pkg/compiler/input"
+	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 	"github.com/strict-lang/sdk/pkg/compiler/scope"
 )
 
@@ -9,11 +10,14 @@ import (
 // input code. It can have multiple children, which are seen as the roots
 // of the actual tree. This node however, is the real unit of the tree.
 type TranslationUnit struct {
-	Name    string
-	Imports []*ImportStatement
-	Class   *ClassDeclaration
-	Region  input.Region
-	scope   scope.Scope
+	Name      string
+	Namespace string
+	Imports   []*ImportStatement
+	Class     *ClassDeclaration
+	LineMap   *linemap.LineMap
+	Region    input.Region
+	scope     scope.Scope
+	Trait     bool
 }
 
 func (unit *TranslationUnit) UpdateScope(target scope.Scope) {

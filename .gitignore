@@ -335,5 +335,5 @@ tags
 /vendor/
 /Godeps/
 
-.idea
+.idea/
 *.iml

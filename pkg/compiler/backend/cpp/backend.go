@@ -48,7 +48,7 @@ func isContainingTestDefinitions(node tree.Node) bool {
 func (backend *Backend) generateHeaderFile(input backends.Input) backends.GeneratedFile {
 	generation := NewGenerationWithExtension(input, NewHeaderFileGeneration())
 	return backends.GeneratedFile{
-		Name:    input.Unit.Name + ".h",
+		Name:    input.Unit.Class.Name + ".h",
 		Content: []byte(generation.Generate()),
 	}
 }
@@ -56,7 +56,7 @@ func (backend *Backend) generateHeaderFile(input backends.Input) backends.Genera
 func (backend *Backend) generateSourceFile(input backends.Input) backends.GeneratedFile {
 	generation := NewGenerationWithExtension(input, NewSourceFileGeneration())
 	return backends.GeneratedFile{
-		Name:    input.Unit.Name + ".cc",
+		Name:    input.Unit.Class.Name + ".cc",
 		Content: []byte(generation.Generate()),
 	}
 }
@@ -64,7 +64,7 @@ func (backend *Backend) generateSourceFile(input backends.Input) backends.Genera
 func (backend *Backend) generateTestFile(input backends.Input) backends.GeneratedFile {
 	generation := NewGenerationWithExtension(input, NewTestFileGeneration())
 	return backends.GeneratedFile{
-		Name:    input.Unit.Name + "_test.cc",
+		Name:    input.Unit.Class.Name + "_test.cc",
 		Content: []byte(generation.Generate()),
 	}
 }

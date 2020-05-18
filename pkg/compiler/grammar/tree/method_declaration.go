@@ -14,6 +14,7 @@ type MethodDeclaration struct {
 	Body       Node
 	Region     input.Region
 	Parent     Node
+	Abstract   bool
 	scope      scope.Scope
 }
 
@@ -39,7 +40,9 @@ func (declaration *MethodDeclaration) Accept(visitor Visitor) {
 
 func (declaration *MethodDeclaration) AcceptRecursive(visitor Visitor) {
 	declaration.Accept(visitor)
-	declaration.Type.AcceptRecursive(visitor)
+	if declaration.Type != nil {
+		declaration.Type.AcceptRecursive(visitor)
+	}
 	for _, parameter := range declaration.Parameters {
 		parameter.AcceptRecursive(visitor)
 	}

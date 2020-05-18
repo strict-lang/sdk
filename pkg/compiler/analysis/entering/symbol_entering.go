@@ -1,4 +1,4 @@
-package analysis
+package entering
 
 import (
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
@@ -13,7 +13,7 @@ import (
 const SymbolEnterPassId = "SymbolEnterPass"
 
 func init() {
-	registerPassInstance(&SymbolEnterPass{})
+	passes.Register(&SymbolEnterPass{})
 }
 
 // SymbolEnterPass enters symbols into the scope that they are defined in.
@@ -32,7 +32,7 @@ func (pass *SymbolEnterPass) Run(context *passes.Context) {
 }
 
 func (pass *SymbolEnterPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ScopeCreationPassId, ImportPassId)
+	return passes.ListInIsolate(isolate, ScopeCreationPassId)
 }
 
 func (pass *SymbolEnterPass) Id() passes.Id {
@@ -51,7 +51,9 @@ func (pass *SymbolEnterPass) createVisitor() tree.Visitor {
 	return visitor
 }
 
-func (pass *SymbolEnterPass) visitTranslationUnit(unit *tree.TranslationUnit) {}
+func (pass *SymbolEnterPass) visitTranslationUnit(unit *tree.TranslationUnit) {
+	pass.currentUnit = unit
+}
 
 func (pass *SymbolEnterPass) visitClassDeclaration(
 	declaration *tree.ClassDeclaration) {
@@ -65,21 +67,36 @@ func (pass *SymbolEnterPass) enterClassDeclaration(
 
 	name := declaration.Name
 	surroundingScope := requireNearestMutableScope(declaration)
-	if pass.ensureNameDoesNotExist(name, declaration, surroundingScope) {
-		symbol := pass.newClassSymbol(declaration)
-		pass.currentClassSymbol = symbol
-		surroundingScope.Insert(symbol)
+	referencePoint := scope.NewReferencePoint(name)
+	if class, ok := scope.LookupClass(surroundingScope, referencePoint); ok {
+		pass.initializeClassSymbol(declaration, class)
+		pass.currentClassSymbol = class
+		pass.enterGenerics(declaration)
+		surroundingScope.Insert(class)
+	} else {
+		scope.Log(surroundingScope)
+		log.Fatalf("class %s was not eagerly inserted into the namespace-scope", name)
 	}
 }
 
-func (pass *SymbolEnterPass) newClassSymbol(
-	declaration *tree.ClassDeclaration) *scope.Class {
-
-	return &scope.Class{
-		DeclarationName: declaration.Name,
-		Scope:           ensureScopeIsMutable(declaration.Scope()),
-		ActualClass:     declaration.NewActualClass(),
+func (pass *SymbolEnterPass) enterGenerics(declaration *tree.ClassDeclaration) {
+	for _, parameter := range declaration.Parameters {
+		targetScope := requireNearestMutableScope(declaration)
+		targetScope.Insert(&scope.Class{
+			Scope:           targetScope,
+			DeclarationName: parameter.Name,
+			QualifiedName:   parameter.Name,
+			ActualClass:     &typing.ConcreteType{Name:   "Any"},
+		})
 	}
+}
+
+func (pass *SymbolEnterPass) initializeClassSymbol(
+	declaration *tree.ClassDeclaration,
+	symbol *scope.Class) {
+
+	symbol.Scope = ensureScopeIsMutable(declaration.Scope())
+	symbol.ActualClass = declaration.NewActualClass()
 }
 
 func (pass *SymbolEnterPass) visitMethodDeclaration(
@@ -158,6 +175,8 @@ func (pass *SymbolEnterPass) newMethodSymbol(
 // in the targetScope. This replacement is an empty class with the required name.
 // By doing this, the name resolution can continue and more semantic errors may
 // be provided to the user, even if the method declaration itself is invalid.
+// TODO: This is not supporting qualified name access. Add namespace lookup using
+//  type-name qualifiers
 func (pass *SymbolEnterPass) requireClass(
 	name tree.TypeName, targetScope scope.MutableScope) *scope.Class {
 
@@ -291,4 +310,14 @@ func (pass *SymbolEnterPass) reportNameCollision(
 	node tree.Node,
 	existingSymbol scope.Symbol) {
 
+	pass.diagnostics.Record(diagnostic.RecordedEntry{
+		Kind:     &diagnostic.Error,
+		Stage:    &diagnostic.SemanticAnalysis,
+		Message:  "collision for name " + name,
+		UnitName: pass.currentUnit.Name,
+		Error:    &diagnostic.RichError{
+			Error:         &diagnostic.NameCollisionError{Symbol: name},
+		},
+		Position: node.Locate(),
+	})
 }

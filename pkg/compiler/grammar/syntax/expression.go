@@ -93,18 +93,26 @@ func (parsing *Parsing) parseBinaryExpressionWithLeftHandSide(
 	}
 }
 
-func (parsing *Parsing) parseOperand() tree.Expression {
+func (parsing *Parsing) parseFirstOperand() tree.Expression {
 	switch last := parsing.token(); {
-	case token.HasKeywordValue(last, token.LetKeyword):
-		return parsing.parseLetBinding()
 	case token.IsIdentifierToken(last):
 		return parsing.parseIdentifier()
+	case token.HasOperatorValue(last, token.LeftBracketOperator):
+		return parsing.parseListExpression()
 	case token.IsStringLiteralToken(last):
 		return parsing.parseStringLiteral()
 	case token.IsNumberLiteralToken(last):
 		return parsing.parseNumberLiteral()
 	case token.OperatorValue(last) == token.LeftParenOperator:
 		return parsing.completeLeftParenExpression()
+	}
+	parsing.throwInvalidOperandError()
+	return nil
+}
+
+func (parsing *Parsing) parseChainedOperand() tree.Expression {
+	if token.IsIdentifierToken(parsing.token()) {
+		return parsing.parseIdentifier()
 	}
 	parsing.throwInvalidOperandError()
 	return nil
@@ -173,8 +181,19 @@ func (parsing *Parsing) expectEndOfLeftParenExpression() {
 // ParseOperation parses the initial operand and continues to grammar operands on
 // that operand, forming a node for another expression.
 func (parsing *Parsing) parseOperation() tree.Expression {
-	operand := parsing.parseOperand()
-	return parsing.parseOperationsOnOperand(operand)
+	parsing.beginStructure(tree.UnknownNodeKind)
+	operand := parsing.parseFirstOperand()
+	operation := parsing.parseMultipleOperationsOnOperand(operand)
+	if token.HasOperatorValue(parsing.token(), token.DotOperator) {
+		return parsing.parseChainExpression(operation)
+	}
+	parsing.completeStructure(tree.UnknownNodeKind)
+	return operation
+}
+
+func (parsing *Parsing) parseOperationInChain() tree.Expression {
+	operand := parsing.parseChainedOperand()
+	return parsing.parseMultipleOperationsOnOperand(operand)
 }
 
 func (parsing *Parsing) parseOperationOrAssign(node tree.Node) tree.Node {
@@ -184,7 +203,7 @@ func (parsing *Parsing) parseOperationOrAssign(node tree.Node) tree.Node {
 	return node
 }
 
-func (parsing *Parsing) parseOperationsOnOperand(operand tree.Expression) tree.Expression {
+func (parsing *Parsing) parseMultipleOperationsOnOperand(operand tree.Expression) tree.Expression {
 	for {
 		if node, done := parsing.parseOperationOnOperand(operand); !done {
 			operand = node
@@ -204,8 +223,6 @@ func (parsing *Parsing) parseOperationOnOperand(
 		return parsing.parseCallOnNode(operand), false
 	case token.HasOperatorValue(next, token.LeftBracketOperator):
 		return parsing.parseListSelectExpression(operand), false
-	case token.HasOperatorValue(next, token.DotOperator):
-		return parsing.parseFieldSelectExpression(operand), false
 	}
 	return nil, true
 }
@@ -243,14 +260,39 @@ func newEndOfListSelectError(received token.Token) *diagnostic.RichError {
 	}
 }
 
-func (parsing *Parsing) parseFieldSelectExpression(target tree.Expression) *tree.FieldSelectExpression {
-	parsing.beginStructure(tree.FieldSelectExpressionNodeKind)
-	parsing.skipOperator(token.DotOperator)
-	field := parsing.parseOperand()
-	return &tree.FieldSelectExpression{
-		Target:    target,
-		Selection: field,
-		Region:    parsing.completeStructure(tree.FieldSelectExpressionNodeKind),
+func (parsing *Parsing) parseListExpression() *tree.ListExpression {
+	parsing.beginStructure(tree.ListExpressionNodeKind)
+	parsing.skipOperator(token.LeftBracketOperator)
+	var expressions []tree.Expression
+	if !token.HasOperatorValue(parsing.token(), token.RightBracketOperator) {
+		expressions = parsing.parseCommaSeparatedExpressions()
+	}
+	parsing.skipOperator(token.RightBracketOperator)
+	return &tree.ListExpression{
+		Expressions: expressions,
+		Region:      parsing.completeStructure(tree.ListExpressionNodeKind),
+	}
+}
+
+func (parsing *Parsing) parseCommaSeparatedExpressions() []tree.Expression {
+	expressions := []tree.Expression{parsing.parseExpression()}
+	for token.HasOperatorValue(parsing.token(), token.CommaOperator) {
+		parsing.skipOperator(token.CommaOperator)
+		expressions = append(expressions, parsing.parseExpression())
+	}
+	return expressions
+}
+
+func (parsing *Parsing) parseChainExpression(firstElement tree.Expression) *tree.ChainExpression {
+	parsing.updateTopStructureKind(tree.ChainExpressionNodeKind)
+	elements := []tree.Expression{firstElement}
+	for token.HasOperatorValue(parsing.token(), token.DotOperator) {
+		parsing.skipOperator(token.DotOperator)
+		elements = append(elements, parsing.parseOperationInChain())
+	}
+	return &tree.ChainExpression{
+		Expressions: elements,
+		Region:      parsing.completeStructure(tree.ChainExpressionNodeKind),
 	}
 }
 

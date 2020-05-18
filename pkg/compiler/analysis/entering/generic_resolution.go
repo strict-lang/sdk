@@ -1,4 +1,4 @@
-package analysis
+package entering
 
 import (
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"

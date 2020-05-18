@@ -55,6 +55,7 @@ func newPrinting() *Printing {
 		ListSelectExpressionVisitor:   printing.printListSelectExpression,
 		ConstructorDeclarationVisitor: printing.printConstructorDeclaration,
 		WildcardNodeVisitor:           printing.printWildcardNode,
+		ListExpressionVisitor:         printing.printListExpression,
 	}
 	printing.visitor = visitor
 	return printing
@@ -112,12 +113,12 @@ func (printing *Printing) decreaseIndent() {
 
 func (printing *Printing) printFieldName(name string) {
 	if printing.colored {
-		coloredName := color.CyanString("\"%s\"", name)
-		coloredAssign := color.RedString(" = ")
+		coloredName := color.CyanString("%s", name)
+		coloredAssign := color.RedString(": ")
 		printing.print(coloredName + coloredAssign)
 		return
 	}
-	printing.printFormatted("\"%s\" = ", name)
+	printing.printFormatted("%s: ", name)
 }
 
 func (printing *Printing) printIndentedFieldName(name string) {
@@ -334,6 +335,16 @@ func (printing *Printing) printYieldStatement(statement *tree.YieldStatement) {
 	printing.printNodeEnd()
 }
 
+func (printing *Printing) printListExpression(list *tree.ListExpression) {
+	printing.printNodeBegin("List")
+	printing.printIndentedListFieldBegin("children")
+	for _, child := range list.Expressions {
+		printing.printListField(child)
+	}
+	printing.printListFieldEnd()
+	printing.printNodeEnd()
+}
+
 func (printing *Printing) printConditionalStatement(statement *tree.ConditionalStatement) {
 	printing.printNodeBegin("ConditionalStatement")
 	printing.printIndentedNodeField("condition", statement.Condition)
@@ -428,10 +439,13 @@ func (printing *Printing) printPostfixExpression(statement *tree.PostfixExpressi
 	printing.printNodeEnd()
 }
 
-func (printing *Printing) printFieldSelectExpression(expression *tree.FieldSelectExpression) {
-	printing.printNodeBegin("Select")
-	printing.printIndentedNodeField("target", expression.Target)
-	printing.printIndentedNodeField("selection", expression.Selection)
+func (printing *Printing) printFieldSelectExpression(expression *tree.ChainExpression) {
+	printing.printNodeBegin("Chain")
+	printing.printIndentedListFieldBegin("Expressions")
+	for _, expression := range expression.Expressions {
+		printing.printListField(expression)
+	}
+	printing.printListFieldEnd()
 	printing.printResolvedType(expression)
 	printing.printNodeEnd()
 }
@@ -497,7 +511,7 @@ func (printing *Printing) printBlockStatement(statement *tree.StatementBlock) {
 func (printing *Printing) printImportStatement(statement *tree.ImportStatement) {
 	printing.printNodeBegin("ImportStatement")
 	target := statement.Target
-	targetString := fmt.Sprintf("{path: %s, moduleName: %s}", target.FilePath(), target.ToModuleName())
+	targetString := fmt.Sprintf("{namespace: %s}",target.Namespace())
 	printing.printIndentedStringField("target", targetString)
 	if statement.Alias != nil {
 		printing.printIndentedNodeField("alias", statement.Alias)

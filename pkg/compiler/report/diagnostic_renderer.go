@@ -9,18 +9,23 @@ import (
 )
 
 type diagnosticRendering struct {
-	diagnostic Diagnostic
-	color *color.Color
-	buffer *strings.Builder
+	diagnostic   Diagnostic
+	color        *color.Color
+	buffer       *strings.Builder
 	regionInLine input.Region
-	line input.Line
+	line         input.Line
 }
 
 func newDiagnosticRendering(
 	diagnostic Diagnostic,
 	color *color.Color,
-	lineMap *linemap.LineMap) diagnosticRendering {
+	lineMaps *linemap.Table) (diagnosticRendering, error) {
 
+	lineMap, ok := lineMaps.Lookup(diagnostic.TextRange.File)
+	if !ok {
+		err := fmt.Errorf("could not find line-map for %s", diagnostic.TextRange.File)
+		return diagnosticRendering{}, err
+	}
 	line := findLineForDiagnostic(diagnostic, lineMap)
 	region := createRelativeRegion(diagnostic.TextRange.Range, line)
 	return diagnosticRendering{
@@ -29,7 +34,7 @@ func newDiagnosticRendering(
 		buffer:       &strings.Builder{},
 		regionInLine: region,
 		line:         line,
-	}
+	}, nil
 }
 
 func findLineForDiagnostic(diagnostic Diagnostic, lineMap *linemap.LineMap) input.Line {
@@ -43,10 +48,10 @@ func createRelativeRegion(region PositionRange, line input.Line) input.Region {
 	begin := region.BeginPosition.Column
 	if region.EndPosition.Line == region.BeginPosition.Line &&
 		region.EndPosition.Offset != region.BeginPosition.Offset {
-		end := minimum(region.EndPosition.Column, length + 1)
+		end := minimum(region.EndPosition.Column, length+1)
 		return input.CreateRegion(input.Offset(begin), input.Offset(end))
 	}
-	return input.CreateRegion(input.Offset(begin), input.Offset(length) + 1)
+	return input.CreateRegion(input.Offset(begin), input.Offset(length)+1)
 }
 
 func findFixedLength(line input.Line) int {

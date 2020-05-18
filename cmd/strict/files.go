@@ -20,12 +20,9 @@ func createNewFile(filepath string) (*os.File, error) {
 }
 
 func createDirectoryIfNotExists(directory string) error {
-	if _, err := os.Stat(directory); err != nil {
+	err := os.MkdirAll(directory, os.ModePerm)
+	if os.IsExist(err) {
 		return nil
-	}
-	dir, err := os.Create(directory)
-	if err != nil {
-		dir.Close()
 	}
 	return err
 }

@@ -16,7 +16,7 @@ var initCommand = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize strict package",
 	Long:  `init generates a set of files that should be in every strict package`,
-	RunE:   RunInit,
+	RunE:  RunInit,
 }
 
 var initOptions struct {
@@ -127,7 +127,6 @@ func initializeGit() {
 	_ = command.Run()
 }
 
-
 type Template struct {
 	content func() string
 	name    string
@@ -167,7 +166,7 @@ end_of_line = lf
 `
 
 var editorconfig = Template{
-	name: ".editorconfig",
+	name:    ".editorconfig",
 	content: staticContent(editorconfigContent),
 }
 
@@ -179,17 +178,16 @@ const gitignoreContent = `*.exe
 `
 
 var gitignore = Template{
-	name: ".gitignore",
+	name:    ".gitignore",
 	content: staticContent(gitignoreContent),
 }
 
-
 var buildConfig = Template{
-	name: "build.yml",
+	name:    "build.yml",
 	content: createBuildConfig,
 }
 
-const baseBuildConfig = `name: %s
+const baseBuildConfig = `package: %s
 author: %s`
 
 func createBuildConfig() string {

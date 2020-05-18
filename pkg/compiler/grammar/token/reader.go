@@ -1,5 +1,7 @@
 package token
 
+import "github.com/strict-lang/sdk/pkg/compiler/input/linemap"
+
 // Stream interface represents a peekable stream of tokens. It is implemented
 // by the scanning and provides a rather narrow interface. Other modules like
 // the grammar, only depend on the token.Stream and not the scanning, this allows
@@ -15,4 +17,9 @@ type Stream interface {
 	Peek() Token
 	// Last returns the most recently pulled token.
 	Last() Token
+}
+
+type StreamWithLineMap interface {
+	Stream
+	NewLineMap() *linemap.LineMap
 }

@@ -33,7 +33,7 @@ const (
 	IdentifierNodeKind
 	StringLiteralNodeKind
 	NumberLiteralNodeKind
-	FieldSelectExpressionNodeKind
+	ChainExpressionNodeKind
 	ListSelectExpressionNodeKind
 	BinaryExpressionNodeKind
 	UnaryExpressionNodeKind
@@ -59,6 +59,7 @@ const (
 	ForEachLoopStatementNodeKind
 	RangedLoopStatementNodeKind
 	ImplementStatementNodeKind
+	ListExpressionNodeKind
 	GenericStatementNodeKind
 	statementKindEnd
 	declarationKindBegin
@@ -84,7 +85,7 @@ var nodeKindNames = map[NodeKind]string{
 	IdentifierNodeKind:             "Identifier",
 	StringLiteralNodeKind:          "StringLiteral",
 	NumberLiteralNodeKind:          "NumberLiteral",
-	FieldSelectExpressionNodeKind:  "FieldSelectExpression",
+	ChainExpressionNodeKind:        "ChainExpression",
 	ListSelectExpressionNodeKind:   "ListSelectExpression",
 	BinaryExpressionNodeKind:       "BinaryExpression",
 	UnaryExpressionNodeKind:        "UnaryExpression",

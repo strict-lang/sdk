@@ -36,20 +36,25 @@ func isPointerTarget(node tree.Node) bool {
 	return false
 }
 
-func (generation *Generation) GenerateFieldSelectExpression(expression *tree.FieldSelectExpression) {
-	if id, ok := expression.Target.(*tree.Identifier); ok {
+func (generation *Generation) GenerateFieldSelectExpression(expression *tree.ChainExpression) {
+	if id, ok := expression.FirstChild().(*tree.Identifier); ok {
 		if _, moduleExists := generation.importModules[id.Value]; moduleExists {
 			generation.generateNamespaceSelector(expression)
 			return
 		}
 	}
-	generation.EmitNode(expression.Target)
-	if isPointerTarget(expression.Target) {
-		generation.Emit("->")
-	} else {
-		generation.Emit(".")
+	remaining := expression.Expressions[1:]
+	lastIndex := len(remaining) - 1
+	for index, remaining := range remaining {
+		generation.EmitNode(remaining)
+		if index != lastIndex {
+			if isPointerTarget(remaining) {
+				generation.Emit("->")
+			} else {
+				generation.Emit(".")
+			}
+		}
 	}
-	generation.EmitNode(expression.Selection)
 }
 
 func (generation *Generation) GenerateListSelectExpression(expression *tree.ListSelectExpression) {
@@ -59,10 +64,10 @@ func (generation *Generation) GenerateListSelectExpression(expression *tree.List
 	generation.Emit("]")
 }
 
-func (generation *Generation) generateNamespaceSelector(selector *tree.FieldSelectExpression) {
+func (generation *Generation) generateNamespaceSelector(selector *tree.ChainExpression) {
 	if generation.shouldInsertNamespaceSelector {
-		generation.EmitNode(selector.Target)
+		generation.EmitNode(selector.FirstChild())
 		generation.Emit("::")
 	}
-	generation.EmitNode(selector.Selection)
+	generation.EmitNode(selector.LastChild())
 }

@@ -104,30 +104,6 @@ method printList(numbers Number[])
 					},
 				},
 			},
-			{
-				Input: `
-method greet() => log("Hello")
-`,
-				ExpectedOutput: &tree.MethodDeclaration{
-					Name:       &tree.Identifier{Value: `greet`},
-					Type:       &tree.ConcreteTypeName{Name: `Void`},
-					Parameters: tree.ParameterList{},
-					Body: &tree.StatementBlock{
-						Children: []tree.Statement{
-							&tree.ReturnStatement{
-								Value: &tree.CallExpression{
-									Target: &tree.Identifier{Value: `log`},
-									Arguments: tree.CallArgumentList{
-										&tree.CallArgument{
-											Value: &tree.StringLiteral{Value: `Hello`},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
 		}, func(parsing *Parsing) tree.Node {
 			return parsing.parseMethodDeclaration()
 		})

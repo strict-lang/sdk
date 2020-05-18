@@ -12,7 +12,7 @@ type Result struct {
 	Error           error
 	Diagnostics     *diagnostic.Diagnostics
 	TranslationUnit *tree.TranslationUnit
-	LineMap *linemap.LineMap
+	LineMap         *linemap.LineMap
 }
 
 func Parse(name string, reader input.Reader) Result {
@@ -24,14 +24,19 @@ func Parse(name string, reader input.Reader) Result {
 		WithUnitName(name)
 
 	unit, err := parserFactory.NewParser().Parse()
-	lineMap := tokenReader.NewLineMap()
+	var lineMap *linemap.LineMap
+	if err != nil {
+		lineMap = tokenReader.NewLineMap()
+	} else {
+		lineMap = unit.LineMap
+	}
 	offsetConverter := lineMap.PositionAtOffset
 	diagnostics := diagnosticBag.CreateDiagnostics(offsetConverter)
 	return Result{
 		Error:           err,
 		TranslationUnit: unit,
 		Diagnostics:     diagnostics,
-		LineMap: lineMap,
+		LineMap:         lineMap,
 	}
 }
 

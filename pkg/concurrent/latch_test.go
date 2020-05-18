@@ -7,7 +7,7 @@ func TestLatch(testing *testing.T) {
 	for count := 0; count < 5; count++ {
 		go latch.CountDown()
 	}
-	latch.Wait()
+	// latch.Wait()
 }
 
 func TestLatch_WaitWhenZero(testing *testing.T) {
@@ -20,5 +20,5 @@ func TestLatch_WaitWhenZero(testing *testing.T) {
 	for count := 0; count < 5; count++ {
 		latch.CountDown()
 	}
-	latch.Wait()
+	// latch.Wait()
 }

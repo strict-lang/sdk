@@ -32,11 +32,17 @@ func (method *Method) DeclarationOffset() input.Offset {
 	return method.declarationOffset
 }
 
+
 type Class struct {
 	Scope             MutableScope
 	DeclarationName   string
+	QualifiedName     string
 	ActualClass       typing.Type
 	declarationOffset input.Offset
+}
+
+func (class *Class) ToTopLevelClassType() *Class {
+	return class
 }
 
 func (class *Class) Name() string {
@@ -83,12 +89,13 @@ func (field *Field) DeclarationOffset() input.Offset {
 }
 
 type Namespace struct {
-	PackageName string
-	Scope       Scope
+	DeclarationName  string
+	QualifiedName    string
+	Scope Scope
 }
 
 func (namespace *Namespace) Name() string {
-	return namespace.PackageName
+	return namespace.DeclarationName
 }
 
 func (namespace *Namespace) DeclarationOffset() input.Offset {
@@ -96,7 +103,16 @@ func (namespace *Namespace) DeclarationOffset() input.Offset {
 }
 
 func (namespace *Namespace) String() string {
-	return fmt.Sprintf("Namespace{Name: %s}", namespace.PackageName)
+	return fmt.Sprintf("Namespace{Name: %s}", namespace.DeclarationName)
+}
+
+func TopLevelMethodType() *Class {
+	return &Class{
+		Scope:             nil,
+		DeclarationName:   "",
+		ActualClass:       nil,
+		declarationOffset: 0,
+	}
 }
 
 func AsMethodSymbol(symbol Symbol) (*Method, bool) {

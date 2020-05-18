@@ -1,4 +1,4 @@
-package analysis
+package semantic
 
 import (
 	"github.com/strict-lang/sdk/pkg/compiler/diagnostic"
@@ -18,7 +18,7 @@ const (
 const NamingCheckPassId = "NamingCheckPass"
 
 func init() {
-	registerPassInstance(&NamingCheckPass{})
+	passes.Register(&NamingCheckPass{})
 }
 
 // NamingCheckPass is traversing the tree and ensures that the names of all declared declaration

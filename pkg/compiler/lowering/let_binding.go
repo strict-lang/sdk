@@ -1,7 +1,7 @@
 package lowering
 
 import (
-	"github.com/strict-lang/sdk/pkg/compiler/analysis"
+	"github.com/strict-lang/sdk/pkg/compiler/analysis/semantic"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/token"
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
 	"github.com/strict-lang/sdk/pkg/compiler/isolate"
@@ -34,7 +34,7 @@ func (lowering *LetBindingLowering) Id() passes.Id {
 }
 
 func (lowering *LetBindingLowering) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, analysis.TypeResolutionPassId)
+	return passes.ListInIsolate(isolate, semantic.NameResolutionPassId)
 }
 
 func (lowering *LetBindingLowering) createExpressionTransformer() tree.ExpressionTransformer {
