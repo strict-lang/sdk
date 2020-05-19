@@ -1,8 +1,8 @@
-<p align="center"><img src="docs/assets/strict_logo.png" width="360"></p>
+<img src="assets/banner.png" width="1000" alt="logo">
 
 # Coding Style
 
-Go coding style is based on https://golang.org/doc/effective_go.html<br/>
+Go coding style is based on https://golang.org/doc/effective_go.html
 - Execute fmt for proper formatting before committing, Ctrl+Shift+Alt+P to format whole project (and use Ctrl+Shift+Alt+F when saving files)
 - See .editorconfig for rules (tabs, 2 spaces used)
 
