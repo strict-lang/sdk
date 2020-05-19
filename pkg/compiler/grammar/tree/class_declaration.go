@@ -89,7 +89,7 @@ func (class *ClassDeclaration) hasParameters(parameters []*ClassParameter) bool 
 		return false
 	}
 	for index := 0; index < len(parameters); index++ {
-		if class.Parameters[index].Matches(parameters[index]) {
+		if !class.Parameters[index].Matches(parameters[index]) {
 			return false
 		}
 	}
@@ -101,7 +101,7 @@ func (class *ClassDeclaration) hasSuperTypes(types []TypeName) bool {
 		return false
 	}
 	for index := 0; index < len(types); index++ {
-		if class.SuperTypes[index].Matches(types[index]) {
+		if !class.SuperTypes[index].Matches(types[index]) {
 			return false
 		}
 	}

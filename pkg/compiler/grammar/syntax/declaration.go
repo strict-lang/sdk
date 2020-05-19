@@ -15,15 +15,26 @@ func (parsing *Parsing) parseImportStatementList() (imports []*tree.ImportStatem
 
 func (parsing *Parsing) parseClassDeclaration() *tree.ClassDeclaration {
 	parsing.beginStructure(tree.ClassDeclarationNodeKind)
+	superTypes := parsing.parseImplementStatements()
 	nodes := parsing.parseTopLevelNodes()
 	return &tree.ClassDeclaration{
 		Name:       convertFileNameToClassName(parsing.unitName),
 		Parameters: []*tree.ClassParameter{},
-		SuperTypes: []tree.TypeName{},
+		SuperTypes: superTypes,
 		Children:   nodes,
 		Trait: isTrait(nodes),
 		Region:     parsing.completeStructure(tree.ClassDeclarationNodeKind),
 	}
+}
+
+func (parsing *Parsing) parseImplementStatements() (types []tree.TypeName) {
+	for token.IsEndOfStatementToken(parsing.token()) {
+		parsing.advance()
+	}
+	for parsing.isLookingAtKeyword(token.ImplementKeyword) {
+		types = append(types, parsing.parseImplementStatement().Trait)
+	}
+	return types
 }
 
 func isTrait(nodes []tree.Node) bool {
@@ -114,7 +125,7 @@ func (parsing *Parsing) parseLetBindingStatement() tree.Statement {
 	}
 }
 
-func (parsing *Parsing) parseImplementStatement() tree.Node {
+func (parsing *Parsing) parseImplementStatement() *tree.ImplementStatement {
 	parsing.beginStructure(tree.ImplementStatementNodeKind)
 	parsing.skipKeyword(token.ImplementKeyword)
 	trait := parsing.parseTypeName()

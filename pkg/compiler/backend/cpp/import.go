@@ -2,11 +2,21 @@ package cpp
 
 import (
 	"github.com/strict-lang/sdk/pkg/compiler/grammar/tree"
+	"path/filepath"
+	"strings"
 )
 
 func (generation *Generation) GenerateImportStatement(statement *tree.ImportStatement) {
 	moduleName := statement.ModuleName()
-	generation.importModule(moduleName, statement.Target.Namespace())
+	path := generation.resolveImportPath(statement.Target.Namespace())
+	generation.importModule(moduleName, path)
+}
+
+const namespaceHeader = "_namespace.h"
+
+func (generation *Generation) resolveImportPath(namespace string) string {
+	basePath := strings.ReplaceAll(namespace, ".", string(filepath.Separator))
+	return filepath.Join(basePath, namespaceHeader)
 }
 
 func (generation *Generation) importModule(name, path string) {
