@@ -16,16 +16,20 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/scope"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
-func compileNamespace(
-	lineMaps *linemap.Table,
-	backend backend.Backend,
-	namespace namespace.Namespace,
-	namespaces *namespace.Table) *diagnostic.Diagnostics {
+type namespaceCompilationConfig struct {
+	lineMaps *linemap.Table
+	backend backend.Backend
+	namespace namespace.Namespace
+	namespaces *namespace.Table
+	outputPath string
+}
 
-
-	compilation := newNamespaceCompilation(lineMaps, backend, namespace, namespaces)
+func compileNamespace(config namespaceCompilationConfig) *diagnostic.Diagnostics {
+	compilation := newNamespaceCompilation(config)
 	compilation.run()
 	return compilation.diagnostics
 }
@@ -39,20 +43,17 @@ type namespaceCompilation struct {
 	namespaces  *namespace.Table
 	backend     backend.Backend
 	lineMaps    *linemap.Table
+	outputPath  string
 }
 
-func newNamespaceCompilation(
-	lineMaps *linemap.Table,
-	backend backend.Backend,
-	namespace namespace.Namespace,
-	namespaces *namespace.Table) *namespaceCompilation {
-
+func newNamespaceCompilation(config namespaceCompilationConfig) *namespaceCompilation {
 	return &namespaceCompilation{
-		namespace: namespace,
-		namespaces: namespaces,
+		namespace: config.namespace,
+		namespaces: config.namespaces,
 		diagnostics: diagnostic.Empty(),
-		backend: backend,
-		lineMaps: lineMaps,
+		backend: config.backend,
+		lineMaps: config.lineMaps,
+		outputPath: config.outputPath,
 	}
 }
 
@@ -89,12 +90,19 @@ func (compilation *namespaceCompilation) generateOutput(
 	if err != nil {
 		return err
 	}
+	outputDirectory := compilation.selectOutputDirectory()
 	for _, file := range output.GeneratedFiles {
-		if err := file.Save(); err != nil {
+		if err := file.Save(outputDirectory); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func (compilation *namespaceCompilation) selectOutputDirectory() string {
+	qualifiedName := compilation.namespace.QualifiedName()
+	relativePath := strings.ReplaceAll(qualifiedName, ".", string(filepath.Separator))
+	return filepath.Join(compilation.outputPath, relativePath)
 }
 
 func (compilation *namespaceCompilation) createNamespace() {

@@ -15,6 +15,7 @@ var Builtins = struct {
 	Boolean *Class
 	String  *Class
 	Void    *Class
+	Computation *Class
 	True    *Field
 	False   *Field
 }{
@@ -26,6 +27,7 @@ var Builtins = struct {
 	String:  createStringType(),
 	True:    createBuiltinField("True", booleanType),
 	False:   createBuiltinField("False", booleanType),
+	Computation: createComputationType(),
 }
 
 func init() {
@@ -54,6 +56,15 @@ func createAnyContents() MutableScope {
 		ReturnType:        booleanType,
 	})
 	return contents
+}
+
+func createComputationType() *Class {
+	actualClass := typing.NewEmptyClass("Computation")
+	return &Class{
+		DeclarationName:   "Computation",
+		QualifiedName:     "Strict.Base.Computation",
+		ActualClass:       actualClass,
+	}
 }
 
 func createVoidType() *Class {

@@ -8,6 +8,19 @@ const InitMethodName = "Generated$Init"
 
 func (generation *Generation) EmitMethodDeclaration(declaration *tree.MethodDeclaration) {
 	generation.EmitIndent()
+	generation.emitPossiblyAbstractMethodSignature(declaration)
+}
+
+func (generation *Generation) emitPossiblyAbstractMethodSignature(
+	declaration *tree.MethodDeclaration) {
+
+	if generation.Unit.Class.Trait {
+		generation.Emit("virtual ")
+	}
+	generation.emitMethodSignature(declaration)
+}
+
+func (generation *Generation) emitMethodSignature(declaration *tree.MethodDeclaration) {
 	generation.EmitNode(declaration.Type)
 	generation.Emit(" ")
 	generation.EmitNode(declaration.Name)

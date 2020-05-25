@@ -174,7 +174,7 @@ const gitignoreContent = `*.exe
 *.dll
 *.silk
 
-.build/
+.strict/
 `
 
 var gitignore = Template{

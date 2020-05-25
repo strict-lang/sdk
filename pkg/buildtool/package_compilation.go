@@ -7,11 +7,14 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/input/linemap"
 )
 
-func compilePackage(
-	backend backend.Backend,
-	namespaces *namespace.Table) packageCompilationResult {
+type packageCompilationConfig struct {
+	backend backend.Backend
+	namespaces *namespace.Table
+	outputPath string
+}
 
-	compilation := newPackageCompilation(backend, namespaces)
+func compilePackage(config packageCompilationConfig) packageCompilationResult {
+	compilation := newPackageCompilation(config)
 	compilation.run()
 	return packageCompilationResult{
 		diagnostics: compilation.diagnostics,
@@ -24,6 +27,7 @@ type packageCompilation struct {
 	backend backend.Backend
 	namespaces *namespace.Table
 	diagnostics *diagnostic.Diagnostics
+	outputPath string
 }
 
 type packageCompilationResult struct {
@@ -31,15 +35,13 @@ type packageCompilationResult struct {
 	lineMaps *linemap.Table
 }
 
-func newPackageCompilation(
-	backend backend.Backend,
-	namespaces *namespace.Table) *packageCompilation {
-
+func newPackageCompilation(config packageCompilationConfig) *packageCompilation {
 	return &packageCompilation{
 		lineMaps: linemap.NewEmptyTable(),
-		backend: backend,
-		namespaces:  namespaces,
+		backend:  config.backend,
+		namespaces:  config.namespaces,
 		diagnostics: diagnostic.Empty(),
+		outputPath: config.outputPath,
 	}
 }
 
@@ -53,13 +55,22 @@ func (compilation *packageCompilation) compileNamespace(namespace namespace.Name
 	if namespace.IsCompiled() {
 		return
 	}
-	diagnostics := compileNamespace(
-		compilation.lineMaps,
-		compilation.backend,
-		namespace,
-		compilation.namespaces)
+	config := compilation.createNamespaceCompilationConfig(namespace)
+	diagnostics := compileNamespace(config)
 	compilation.addDiagnostics(diagnostics)
 	namespace.MarkAsCompiled()
+}
+
+func (compilation *packageCompilation) createNamespaceCompilationConfig(
+	namespace namespace.Namespace) namespaceCompilationConfig {
+
+	return namespaceCompilationConfig{
+		lineMaps:   compilation.lineMaps,
+		backend:    compilation.backend,
+		namespace:  namespace,
+		namespaces: compilation.namespaces,
+		outputPath: compilation.outputPath,
+	}
 }
 
 func (compilation *packageCompilation) addDiagnostics(

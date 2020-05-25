@@ -72,10 +72,24 @@ func (chain *ChainExpression) childrenMatch(target []Expression) bool {
 	return true
 }
 
+// TransformExpressions transforms the child expressions of this expressions by invoking
+// the transformer function on every child. If the transformed expression is of type
+// ChainExpression, it is inlined. (Since chain expressions should not have children which
+// are themselves ChainExpressions).
+// TODO: This method could recalculate the nodes regions and may also have to offset
+//  positions after inlining chain expressions.
 func (chain *ChainExpression) TransformExpressions(transformer ExpressionTransformer) {
-	for index, expression := range chain.Expressions {
-		chain.Expressions[index] = expression.Transform(transformer)
+	var transformedChildren []Expression
+	for _, expression := range chain.Expressions {
+		transformed := expression.Transform(transformer)
+		transformed.SetEnclosingNode(chain)
+		if transformedChain, isChain := transformed.(*ChainExpression); isChain {
+			transformedChildren = append(transformedChildren, transformedChain.Expressions...)
+		} else {
+			transformedChildren = append(transformedChildren, transformed)
+		}
 	}
+	chain.Expressions = transformedChildren
 }
 
 func (chain *ChainExpression) Transform(transformer ExpressionTransformer) Expression {

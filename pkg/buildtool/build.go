@@ -47,18 +47,35 @@ func containsError(diagnostics *diagnostic.Diagnostics) bool {
 }
 
 func (build *Build) run() result {
-	namespaces, err := build.scanNamespaces()
+	config, err := build.createPackageCompilationConfig()
 	if err != nil {
 		return result{
 			error:       err,
 			diagnostics: diagnostic.Empty(),
 		}
 	}
-	packageResult := compilePackage(build.Backend, namespaces)
+	packageResult := compilePackage(config)
 	return result{
 		diagnostics: packageResult.diagnostics,
 		lineMaps: packageResult.lineMaps,
 	}
+}
+
+func (build *Build) createPackageCompilationConfig() (packageCompilationConfig, error) {
+	namespaces, err := build.scanNamespaces()
+	if err != nil {
+		return packageCompilationConfig{}, err
+	}
+	return packageCompilationConfig{
+		backend:    build.Backend,
+		namespaces: namespaces,
+		outputPath: build.selectOutputDirectory(),
+	}, nil
+}
+
+func (build *Build) selectOutputDirectory() string {
+	hiddenDirectory := filepath.Join(build.RootPath, ".strict")
+	return filepath.Join(hiddenDirectory, "build")
 }
 
 func (build *Build) scanNamespaces() (*namespace.Table, error) {

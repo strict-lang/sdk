@@ -15,12 +15,13 @@ type GeneratedFile struct {
 	Content []byte
 }
 
-func (file *GeneratedFile) Save() error {
-	parent := filepath.Dir(file.Name)
+func (file *GeneratedFile) Save(rootDirectory string) error {
+	fullPath := filepath.Join(rootDirectory, file.Name)
+	parent := filepath.Dir(fullPath)
 	if err := createDirectoryIfNotExists(parent); err != nil {
 		return fmt.Errorf("could not create directory: %v", err)
 	}
-	return ioutil.WriteFile(file.Name, file.Content, os.ModePerm)
+	return ioutil.WriteFile(fullPath, file.Content, os.ModePerm)
 }
 
 func createDirectoryIfNotExists(directory string) error {

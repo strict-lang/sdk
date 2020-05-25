@@ -68,6 +68,17 @@ func NewReferencePointWithPosition(
 	}
 }
 
+func LookupNamedMethod(scope Scope, name string) (*Method, bool) {
+	point := NewReferencePoint(name)
+	if entries := scope.Lookup(point); !entries.IsEmpty() {
+		for _, entry := range entries {
+			method, isMethod := entry.Symbol.(*Method)
+			return method, isMethod
+		}
+	}
+	return nil, false
+}
+
 func LookupClass(scope Scope, point ReferencePoint) (*Class, bool) {
 	if entries := scope.Lookup(point); !entries.IsEmpty() {
 		for _, entry := range entries {

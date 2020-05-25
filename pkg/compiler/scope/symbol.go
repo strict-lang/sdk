@@ -18,6 +18,7 @@ type Method struct {
 	ReturnType        *Class
 	// Parameters are lazily added
 	Parameters []*Field
+	IsFactory  bool
 }
 
 func (method *Method) Name() string {

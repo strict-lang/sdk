@@ -11,6 +11,7 @@ type MethodDefinition struct {
 	buffer      *strings.Builder
 	prologue    map[string]ProloguePart
 	epilogue    map[string]EpiloguePart
+	abstract    bool
 }
 
 type ProloguePart func()
@@ -23,6 +24,7 @@ func (generation *Generation) NewMethodGeneration(method *tree.MethodDeclaration
 		buffer:      &strings.Builder{},
 		epilogue:    map[string]EpiloguePart{},
 		prologue:    map[string]ProloguePart{},
+		abstract:    generation.Unit.Class.Trait,
 	}
 }
 
@@ -45,6 +47,9 @@ func (definition *MethodDefinition) Emit() {
 
 	generator.buffer = generator.output
 	generator.Emit(declaration)
+	if definition.abstract {
+		generator.Emit(" override")
+	}
 	generator.Emit(" {\n")
 	generator.EmitIndent()
 	generator.Emit(prologue)
