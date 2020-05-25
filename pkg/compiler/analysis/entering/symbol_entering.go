@@ -161,12 +161,24 @@ func (pass *SymbolEnterPass) newMethodSymbol(
 	method *tree.MethodDeclaration,
 	surroundingScope scope.MutableScope) *scope.Method {
 
-	class := pass.requireClass(method.Type, surroundingScope)
+	class := pass.selectMethodClass(method, surroundingScope)
 	return &scope.Method{
 		DeclarationName: method.Name.Value,
 		ReturnType:      class,
+		Factory:         method.Factory,
 	}
 }
+
+func (pass *SymbolEnterPass) selectMethodClass(
+	method *tree.MethodDeclaration,
+	surroundingScope scope.MutableScope) *scope.Class {
+
+	if method.Factory {
+		return pass.currentClassSymbol
+	}
+	return pass.requireClass(method.Type, surroundingScope)
+}
+
 
 // requireClass is used to resolve classes of certain declarations. While this
 // pass is mainly inserting stuff into the scope, it has to get a reference of

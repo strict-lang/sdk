@@ -128,13 +128,14 @@ func (pass *NameResolutionPass) visitCallExpression(call *tree.CallExpression) {
 func (pass *NameResolutionPass) resolveCallExpression(call *tree.CallExpression) {
 	if name, ok := call.TargetName(); ok && !name.IsBound() {
 		searchScope := pass.selectResolutionScope(call)
-		if entries := searchScope.Lookup(name.ReferencePoint()); !entries.IsEmpty() {
-			if methodSymbol, ok := scope.AsMethodSymbol(entries.First().Symbol); ok {
+		for _, entry := range searchScope.Lookup(name.ReferencePoint()) {
+			if methodSymbol, ok := scope.AsMethodSymbol(entry.Symbol); ok {
 				name.Bind(methodSymbol)
 				name.ResolveType(methodSymbol.ReturnType)
 				call.ResolveType(methodSymbol.ReturnType)
 				return
 			}
+			// TODO: Implement factory resolution
 		}
 	}
 	pass.resolveUnresolvedCall(call)

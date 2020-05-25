@@ -35,6 +35,7 @@ const (
 	ReturnsKeyword
 	HasKeyword
 	ExistsKeyword
+	FactoryKeyword
 )
 
 var keywordNameTable = map[Keyword]string{
@@ -64,6 +65,7 @@ var keywordNameTable = map[Keyword]string{
 	AssertKeyword:    "assert",
 	CreateKeyword:    "create",
 	ExistsKeyword:    "exists",
+	FactoryKeyword:   "factory",
 }
 
 var operatorKeywords = map[Keyword]Operator{

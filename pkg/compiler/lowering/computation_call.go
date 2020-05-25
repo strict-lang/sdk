@@ -76,7 +76,7 @@ func (lowering *ComputationCallLowering) resolveComputationFactoryCallClass(
 
 	if name, ok := call.TargetName(); ok && name.IsBound() {
 		if method, isMethod := scope.AsMethodSymbol(name.Binding()); isMethod {
-			if method.IsFactory	&& isComputation(method.ReturnType) {
+			if method.Factory && isComputation(method.ReturnType) {
 				return method.ReturnType
 			}
 		}

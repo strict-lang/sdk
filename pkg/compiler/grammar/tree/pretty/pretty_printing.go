@@ -380,7 +380,15 @@ func (printing *Printing) printMethodDeclaration(method *tree.MethodDeclaration)
 	if method.Body != nil {
 		printing.printIndentedNodeField("body", method.Body)
 	}
+	printing.printIndentedStringField("factory", convertBooleanToString(method.Factory))
 	printing.printNodeEnd()
+}
+
+func convertBooleanToString(value bool) string {
+	if value {
+		return "True"
+	}
+	return "False"
 }
 
 func (printing *Printing) printParameterList(parameters tree.ParameterList) {

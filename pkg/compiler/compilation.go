@@ -92,7 +92,7 @@ func (compilation *Compilation) Compile() Result {
 }
 
 func (compilation *Compilation) Lower(unit *tree.TranslationUnit) {
-	execution, _ := pass.NewExecution(lowering.FullLoweringI, &pass.Context{
+	execution, _ := pass.NewExecution(lowering.FullLoweringId, &pass.Context{
 		Unit:       unit,
 		Diagnostic: diagnostic.NewBag(),
 		Isolate:    isolates.SingleThreaded(),

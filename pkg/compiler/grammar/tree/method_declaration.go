@@ -15,6 +15,7 @@ type MethodDeclaration struct {
 	Region     input.Region
 	Parent     Node
 	Abstract   bool
+	Factory    bool
 	scope      scope.Scope
 }
 
@@ -55,7 +56,8 @@ func (declaration *MethodDeclaration) Locate() input.Region {
 
 func (declaration *MethodDeclaration) Matches(node Node) bool {
 	if target, ok := node.(*MethodDeclaration); ok {
-		return declaration.Name.Matches(target.Name) &&
+		return declaration.Factory == target.Factory &&
+			declaration.Name.Matches(target.Name) &&
 			declaration.Type.Matches(target.Type) &&
 			declaration.Parameters.Matches(target.Parameters) &&
 			declaration.Body.Matches(target.Body)
