@@ -119,7 +119,9 @@ func createAssignmentVisitor() tree.Visitor {
 			for _, parameter := range declaration.Parameters {
 				parameter.SetEnclosingNode(declaration)
 			}
-			declaration.Type.SetEnclosingNode(declaration)
+			if declaration.Type != nil {
+				declaration.Type.SetEnclosingNode(declaration)
+			}
 			declaration.Body.SetEnclosingNode(declaration)
 		},
 		RangedLoopStatementVisitor: func(statement *tree.RangedLoopStatement) {

@@ -28,7 +28,7 @@ func (pass *ImplicitFactoryPass) Id() passes.Id {
 }
 
 func (pass *ImplicitFactoryPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ParentAssignPassId)
+	return passes.EmptySet
 }
 
 func (pass *ImplicitFactoryPass) Run(context *passes.Context) {
@@ -48,6 +48,7 @@ func (pass *ImplicitFactoryPass) createImplicitFactory() *tree.MethodDeclaration
 		Body:       &tree.StatementBlock{
 			Children: pass.createAssignStatements(),
 		},
+		Type: &tree.ConcreteTypeName{Name: pass.class.Name},
 		Factory:    true,
 	}
 }

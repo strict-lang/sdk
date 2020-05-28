@@ -113,6 +113,7 @@ func (generation *SourceFileGeneration) generateMethodDeclaration(
 		Type:       declaration.Type,
 		Parameters: declaration.Parameters,
 		Body:       declaration.Body,
+		Factory:    declaration.Factory,
 	}
 	generation.generation.GenerateMethod(instanceMethod)
 }

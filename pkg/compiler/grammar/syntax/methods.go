@@ -86,6 +86,7 @@ func (parsing *Parsing) parseFactorySignature() methodSignature {
 	return methodSignature{
 		name:           parsing.parseIdentifier(),
 		parameters:     parsing.parseParameterListWithParens(),
+		returnTypeName: &tree.ConcreteTypeName{Name: voidReturnType},
 	}
 }
 

@@ -31,7 +31,7 @@ func (parsing *Parsing) parseImplementStatements() (types []tree.TypeName) {
 	for token.IsEndOfStatementToken(parsing.token()) {
 		parsing.advance()
 	}
-	for parsing.isLookingAtKeyword(token.ImplementKeyword) {
+	for token.HasKeywordValue(parsing.token(), token.ImplementKeyword) {
 		types = append(types, parsing.parseImplementStatement().Trait)
 	}
 	return types

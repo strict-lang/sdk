@@ -21,9 +21,19 @@ func (generation *Generation) emitPossiblyAbstractMethodSignature(
 }
 
 func (generation *Generation) emitMethodSignature(declaration *tree.MethodDeclaration) {
+	if declaration.Factory {
+		generation.emitFactorySignature(declaration)
+		return
+	}
 	generation.EmitNode(declaration.Type)
 	generation.Emit(" ")
 	generation.EmitNode(declaration.Name)
+	generation.EmitParameterList(declaration.Parameters)
+}
+
+func (generation *Generation) emitFactorySignature(declaration *tree.MethodDeclaration) {
+	generation.Emit("explicit ")
+	generation.Emit(generation.Unit.Class.Name)
 	generation.EmitParameterList(declaration.Parameters)
 }
 
