@@ -130,15 +130,25 @@ func (pass *NameResolutionPass) resolveCallExpression(call *tree.CallExpression)
 		searchScope := pass.selectResolutionScope(call)
 		for _, entry := range searchScope.Lookup(name.ReferencePoint()) {
 			if methodSymbol, ok := scope.AsMethodSymbol(entry.Symbol); ok {
-				name.Bind(methodSymbol)
-				name.ResolveType(methodSymbol.ReturnType)
-				call.ResolveType(methodSymbol.ReturnType)
-				return
+				resolveToMethod(call, name, methodSymbol)
+			} else if classSymbol, ok := scope.AsClassSymbol(entry.Symbol); ok {
+				resolveToFactory(call, name, classSymbol)
 			}
-			// TODO: Implement factory resolution
 		}
 	}
 	pass.resolveUnresolvedCall(call)
+}
+
+func resolveToMethod(call *tree.CallExpression, name *tree.Identifier, method *scope.Method) {
+	name.Bind(method)
+	name.ResolveType(method.ReturnType)
+	call.ResolveType(method.ReturnType)
+}
+
+func resolveToFactory(call *tree.CallExpression, name *tree.Identifier, class *scope.Class) {
+	name.ResolveType(class)
+	call.ResolveType(class)
+
 }
 
 func (pass *NameResolutionPass) resolveUnresolvedCall(call *tree.CallExpression) {

@@ -135,3 +135,11 @@ func AsNamespaceSymbol(symbol Symbol) (*Namespace, bool) {
 	namespace, ok := symbol.(*Namespace)
 	return namespace, ok
 }
+
+
+const DefaultFactoryName = "__factory"
+
+func LookupDefaultFactoryInScope(scope Scope) (*Method, bool) {
+	return LookupNamedMethod(scope, DefaultFactoryName)
+}
+

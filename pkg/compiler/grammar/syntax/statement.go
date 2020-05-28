@@ -40,6 +40,9 @@ func init() {
 		token.MethodKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseMethodDeclaration()
 		},
+		token.FactoryKeyword: func(parsing *Parsing) tree.Node {
+			return parsing.parseFactoryDeclaration()
+		},
 		token.LetKeyword: func(parsing *Parsing) tree.Node {
 			return parsing.parseLetBindingStatement()
 		},

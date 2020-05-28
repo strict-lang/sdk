@@ -35,7 +35,7 @@ func (pass *GenericResolutionPass) Id() passes.Id {
 }
 
 func (pass *GenericResolutionPass) Dependencies(isolate *isolate.Isolate) passes.Set {
-	return passes.ListInIsolate(isolate, ParentAssignPassId)
+	return passes.EmptySet
 }
 
 func (pass *GenericResolutionPass) Run(context *passes.Context) {

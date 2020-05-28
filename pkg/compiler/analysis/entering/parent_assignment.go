@@ -19,8 +19,8 @@ func (assign *ParentAssignPass) Run(context *pass.Context) {
 	context.Unit.AcceptRecursive(assignmentVisitor)
 }
 
-func (assign *ParentAssignPass) Dependencies(*isolate.Isolate) pass.Set {
-	return pass.EmptySet
+func (assign *ParentAssignPass) Dependencies(isolate *isolate.Isolate) pass.Set {
+	return pass.ListInIsolate(isolate, GenericResolutionPassId, ImplicitFactoryPassId)
 }
 
 func (assign *ParentAssignPass) Id() pass.Id {

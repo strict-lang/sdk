@@ -7,11 +7,26 @@ import (
 	"github.com/strict-lang/sdk/pkg/compiler/input"
 )
 
-const voidReturnType = `void`
+const voidReturnType = `Void`
 
 type parsedMethod struct {
 	name   string
 	isVoid bool
+}
+
+func (parsing *Parsing) parseFactoryDeclaration() *tree.MethodDeclaration {
+	parsing.beginStructure(tree.MethodDeclarationNodeKind)
+	parsing.skipKeyword(token.FactoryKeyword)
+	signature := parsing.parseFactorySignature()
+	parsing.updateCurrentMethod(signature)
+	body := parsing.parseMethodBody()
+	return &tree.MethodDeclaration{
+		Name:       signature.name,
+		Parameters: signature.parameters,
+		Body:       body,
+		Region:     parsing.completeStructure(tree.MethodDeclarationNodeKind),
+		Factory:    true,
+	}
 }
 
 func (parsing *Parsing) parseMethodDeclaration() *tree.MethodDeclaration {
@@ -64,6 +79,13 @@ func (parsing *Parsing) parseMethodSignature() methodSignature {
 		name:           parsing.parseIdentifier(),
 		parameters:     parsing.parseParameterListWithParens(),
 		returnTypeName: parsing.parseOptionalReturnTypeName(),
+	}
+}
+
+func (parsing *Parsing) parseFactorySignature() methodSignature {
+	return methodSignature{
+		name:           parsing.parseIdentifier(),
+		parameters:     parsing.parseParameterListWithParens(),
 	}
 }
 

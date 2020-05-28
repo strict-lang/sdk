@@ -163,10 +163,17 @@ func (pass *SymbolEnterPass) newMethodSymbol(
 
 	class := pass.selectMethodClass(method, surroundingScope)
 	return &scope.Method{
-		DeclarationName: method.Name.Value,
+		DeclarationName: selectMethodSymbolName(method),
 		ReturnType:      class,
 		Factory:         method.Factory,
 	}
+}
+
+func selectMethodSymbolName(method *tree.MethodDeclaration) string {
+	if method.Factory {
+		return scope.DefaultFactoryName
+	}
+	return method.Name.Value
 }
 
 func (pass *SymbolEnterPass) selectMethodClass(
